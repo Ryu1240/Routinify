@@ -6,9 +6,9 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
-      POSTGRES_DB: routinify_development
+      POSTGRES_DB: routinify
     ports:
       - "5432:5432"
 
@@ -16,18 +16,15 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    command: bash -c "bundle install && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    command: bash -c "bundle install && bundle exec rails s -p 8000 -b '0.0.0.0'"
     volumes:
       - ./backend:/app
       - bundle_cache:/usr/local/bundle
     user: "${UID:-1000}:${GID:-1000}"
     ports:
-      - "3000:3000"
+      - "8000:8000"
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=password
-      - RAILS_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/routinify
     depends_on:
       - db
 
@@ -40,9 +37,20 @@ services:
       - /app/node_modules
     user: "${UID:-1000}:${GID:-1000}"
     ports:
-      - "3001:3000"
+      - "3000:3000"
     environment:
-      - REACT_APP_API_URL=http://localhost:3000
+      - REACT_APP_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - SWAGGER_JSON=/app/api/openapi.yaml
+    volumes:
+      - ./api/openapi.yaml:/app/api/openapi.yaml
     depends_on:
       - backend
 
