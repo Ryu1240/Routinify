@@ -5,7 +5,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Routinify</h1>
-        <p>あなたの日常を管理するアプリ</p>
+        <p>あなたの日常を習慣によって豊かにするアプリ</p>
       </header>
     </div>
   );

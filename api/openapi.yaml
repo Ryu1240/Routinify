@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: タスク管理API
+  version: 1.0.0
+paths:
+  /auth/signin:
+    post:
+      summary: ユーザーサインイン
+      responses:
+        '200':
+          description: 成功
+  /auth/signup:
+    post:
+      summary: ユーザーサインアップ
+      responses:
+        '200':
+          description: 成功
+  /tasks:
+    get:
+      summary: タスクの一覧表示
+      responses:
+        '200':
+          description: 成功
+    post:
+      summary: 新しいタスクの登録
+      responses:
+        '201':
+          description: 作成成功
+  /tasks/{id}:
+    get:
+      summary: 特定のタスクの詳細表示
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+    put:
+      summary: タスクの編集
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+    delete:
+      summary: タスクの削除
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除成功
+  /tasks/search:
+    get:
+      summary: タスクの検索
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+  /recurring-tasks:
+    post:
+      summary: 繰り返しタスクの登録
+      responses:
+        '201':
+          description: 作成成功
+  /recurring-tasks/{id}:
+    get:
+      summary: 特定の繰り返しタスクの詳細表示
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+    put:
+      summary: 繰り返しタスクの編集
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功
+    delete:
+      summary: 繰り返しタスクの削除
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: 削除成功
+  /habit-status/{task_id}:
+    get:
+      summary: 習慣化状況の表示
+      parameters:
+        - name: task_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: period
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+      required:
+        - id
+        - username
+        - email
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: ["未完了", "完了"]
+      required:
+        - id
+        - title
+    RecurringTask:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        frequency:
+          type: string
+          enum: ["毎日", "毎週", "毎月"]
+      required:
+        - id
+        - title
+        - frequency
+    HabitStatus:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        status:
+          type: string
+          enum: ["達成", "未達成"]
+      required:
+        - id
+        - date
+        - status
