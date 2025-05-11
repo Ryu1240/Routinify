@@ -35,8 +35,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./frontend:/app
-      - /app/node_modules
-    user: "${UID:-1000}:${GID:-1000}"
+      - frontend_node_modules:/app/node_modules
+    user: "node"
     ports:
       - "3001:3000"
     environment:
@@ -60,4 +60,5 @@ services:
 
 volumes:
   postgres_data:
-  bundle_cache: 
+  bundle_cache:
+  frontend_node_modules: 
