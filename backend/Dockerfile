@@ -22,6 +22,10 @@ RUN groupadd -r -g 1000 app && \
 
 WORKDIR /app
 
+# bundleディレクトリの権限を設定
+RUN mkdir -p /usr/local/bundle && \
+    chown -R app:app /usr/local/bundle
+
 # Gemfileのコピーとインストール
 COPY Gemfile* ./
 RUN bundle install
