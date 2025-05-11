@@ -416,3 +416,115 @@ Started GET "/ws" for 192.168.65.1 at 2025-05-08 16:04:12 +0000
   
 ActionController::RoutingError (No route matches [GET] "/ws"):
   
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:41:57 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (4.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:08 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:10 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:14 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:18 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:19 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:22 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:26 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:35 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:41 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:43 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:45 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:42:50 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:43:56 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:43:58 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:43:59 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:00 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:02 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:03 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:05 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:07 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:12 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:21 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:44:38 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/ws" for 192.168.65.1 at 2025-05-11 06:45:11 +0000
+  
+ActionController::RoutingError (No route matches [GET] "/ws"):
+  
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 06:58:33 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (3.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 27ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 06:58:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 0ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
