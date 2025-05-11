@@ -20,8 +20,10 @@ function Dashboard() {
         setTasks(response.data);
         setLoading(false);
       } catch (err) {
-        setError('タスクの取得に失敗しました');
+        const errorMessage = err.response?.data?.error || 'タスクの取得に失敗しました';
+        setError(errorMessage);
         setLoading(false);
+        console.error('Error fetching tasks:', err);
       }
     };
 

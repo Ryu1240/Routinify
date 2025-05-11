@@ -528,3 +528,657 @@ Processing by Api::V1::TasksController#index as HTML
 Completed 200 OK in 0ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
 
 
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:11:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 123ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:11:30 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 8ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:11:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:11:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:11:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:12:00 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:19:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 14ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:19:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:19:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 4ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:20:34 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 403ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:20:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 186ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:21:30 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 15ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:21:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 6ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443))
+Caused by: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443)
+
+Information for: Errno::ECONNREFUSED (Failed to open TCP connection to :443 (Connection refused - connect(2) for "" port 443)):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+
+Information for cause: Errno::ECONNREFUSED (Connection refused - connect(2) for "" port 443):
+  
+lib/auth0_client.rb:38:in 'Auth0Client.get_jwks'
+lib/auth0_client.rb:43:in 'Auth0Client.validate_token'
+app/controllers/concerns/secured.rb:26:in 'Secured#authorize'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:23:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 733ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:23:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 161ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:24:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 223ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:24:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 179ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:27:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 283ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:27:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 65ms (Views: 0.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.4ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:27:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 258ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:27:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 114ms (Views: 1.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:27:59 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 159ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 9.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:27:59 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 135ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 29.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:29:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 171ms (Views: 1.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 4.8ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:29:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 100ms (Views: 1.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:29:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 388ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:29:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 134ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:29:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 173ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:29:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 65ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:31:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 304ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:31:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 108ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:32:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 185ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:32:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 76ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 14.5ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:32:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 75ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.1ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:32:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 148ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.2ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:34:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 202ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:34:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 74ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:35:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 183ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:35:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 248ms (Views: 170.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:38:07 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 162ms (Views: 1.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:38:07 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 518ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:38:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 70ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:38:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 60ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:44:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 240ms (Views: 4.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:44:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 179ms (Views: 0.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:45:31 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 236ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:45:31 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 56ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:45:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 142ms (Views: 18.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.2ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:45:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 142ms (Views: 0.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:46:05 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 125ms (Views: 44.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:46:05 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 144ms (Views: 0.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:46:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 200ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:46:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 72ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.1ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:46:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 130ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:46:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 58ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:48:10 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 226ms (Views: 4.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:48:10 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 119ms (Views: 2.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:48:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 168ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:48:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 403 Forbidden in 63ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:49:34 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 6ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:51:05 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 1ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:51:07 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:52:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:52:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 1ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:53:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:53:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 1ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:53:28 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:53:29 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 0ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  
+NoMethodError (undefined method 'token' for an instance of Array):
+  
+app/controllers/api/v1/tasks_controller.rb:7:in 'Api::V1::TasksController#index'
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:53:59 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 284ms (Views: 8.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 4.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:54:00 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 203ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:54:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 119ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:54:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 125ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:54:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 138ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.9ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 07:54:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 90ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 2.5ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 08:39:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 310ms (Views: 2.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[35m (12.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='App'*/[0m
+  [1m[35m (7.7ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 2ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mTRANSACTION (5.9ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 1ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 14:12:48 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (1.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 896ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-05-11 14:12:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 251ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mActiveRecord::SchemaMigration Load (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 6ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (40.4ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 30ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 22.6ms)
+
+
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 500 Internal Server Error in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 8ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (9.3ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 63ms (Views: 58.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (3.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 9ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (87.8ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mBEGIN /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 4ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
