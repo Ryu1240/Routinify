@@ -2,134 +2,53 @@ openapi: 3.0.0
 info:
   title: タスク管理API
   version: 1.0.0
-paths:
-  /auth/signin:
-    post:
-      summary: ユーザーサインイン
-      responses:
-        '200':
-          description: 成功
-  /auth/signup:
-    post:
-      summary: ユーザーサインアップ
-      responses:
-        '200':
-          description: 成功
-  /tasks:
-    get:
-      summary: タスクの一覧表示
-      responses:
-        '200':
-          description: 成功
-    post:
-      summary: 新しいタスクの登録
-      responses:
-        '201':
-          description: 作成成功
-  /tasks/{id}:
-    get:
-      summary: 特定のタスクの詳細表示
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 成功
-    put:
-      summary: タスクの編集
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 成功
-    delete:
-      summary: タスクの削除
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: 削除成功
-  /tasks/search:
-    get:
-      summary: タスクの検索
-      parameters:
-        - name: keyword
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: 成功
-  /recurring-tasks:
-    post:
-      summary: 繰り返しタスクの登録
-      responses:
-        '201':
-          description: 作成成功
-  /recurring-tasks/{id}:
-    get:
-      summary: 特定の繰り返しタスクの詳細表示
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 成功
-    put:
-      summary: 繰り返しタスクの編集
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 成功
-    delete:
-      summary: 繰り返しタスクの削除
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: 削除成功
-  /habit-status/{task_id}:
-    get:
-      summary: 習慣化状況の表示
-      parameters:
-        - name: task_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: period
-          in: query
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: 成功
+  description: タスク管理システムのAPI仕様書
+
+tags:
+  - name: 認証
+    description: ユーザー認証関連のエンドポイント
+  - name: タスク
+    description: タスクの基本操作（作成、取得、更新、削除）
+  - name: タグ管理
+    description: タスクのタグ管理
+  - name: 繰り返しタスク
+    description: 繰り返しタスクの管理
+  - name: マイルストーン
+    description: マイルストーンの管理
+  - name: 習慣化
+    description: 習慣化状況の管理
+  - name: ユーザー管理
+    description: ユーザー管理（管理者用）
+  - name: カテゴリ
+    description: タスクカテゴリの管理
+
 components:
+  securitySchemes:
+    Auth0:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://YOUR_DOMAIN/authorize
+          scopes:
+            read:tasks: タスクの読み取り
+            write:tasks: タスクの作成・更新
+            delete:tasks: タスクの削除
+            read:recurring-tasks: 繰り返しタスクの読み取り
+            write:recurring-tasks: 繰り返しタスクの作成・更新
+            delete:recurring-tasks: 繰り返しタスクの削除
+            read:milestones: マイルストーンの読み取り
+            write:milestones: マイルストーンの作成・更新
+            delete:milestones: マイルストーンの削除
+            read:users: ユーザー情報の読み取り
+            write:users: ユーザー情報の作成・更新
+            delete:users: ユーザーの削除
+            read:categories: カテゴリの読み取り
+            write:categories: カテゴリの作成・更新
+            read:tags: タグの読み取り
+            write:tags: タグの作成・更新
+            read:habit-status: 習慣化状況の読み取り
+            write:habit-status: 習慣化状況の記録
+
   schemas:
     User:
       type: object
@@ -141,15 +60,22 @@ components:
         email:
           type: string
           format: email
+        role:
+          type: string
+          enum: [admin, user]
       required:
         - id
         - username
         - email
+        - role
+
     Task:
       type: object
       properties:
         id:
           type: integer
+        accountId:
+          type: string
         title:
           type: string
         description:
@@ -159,10 +85,19 @@ components:
           format: date
         status:
           type: string
-          enum: ["未完了", "完了"]
+          enum: [未着手, 進行中, 完了]
+        tags:
+          type: array
+          items:
+            type: string
+        priority:
+          type: string
+        category:
+          type: string
       required:
         - id
         - title
+
     RecurringTask:
       type: object
       properties:
@@ -174,23 +109,631 @@ components:
           type: string
         frequency:
           type: string
-          enum: ["毎日", "毎週", "毎月"]
+          enum: [毎日, 毎週, 毎月]
       required:
         - id
         - title
         - frequency
+
     HabitStatus:
       type: object
       properties:
         id:
+          type: integer
+        taskId:
           type: integer
         date:
           type: string
           format: date
         status:
           type: string
-          enum: ["達成", "未達成"]
+          enum: [達成, 未達成]
       required:
         - id
+        - taskId
         - date
         - status
+
+    Milestone:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          type: string
+          format: date
+        relatedTasks:
+          type: array
+          items:
+            type: integer
+      required:
+        - id
+        - title
+        - dueDate
+
+paths:
+  /auth/signin:
+    post:
+      tags:
+        - 認証
+      summary: ユーザーサインイン
+      security: []  # 認証不要
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: サインイン成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: 認証エラー
+
+  /auth/signup:
+    post:
+      tags:
+        - 認証
+      summary: ユーザーサインアップ
+      security: []  # 認証不要
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '201':
+          description: サインアップ成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /tasks:
+    get:
+      tags:
+        - タスク
+      summary: タスクの一覧表示
+      security:
+        - Auth0: [read:tasks]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+    post:
+      tags:
+        - タスク
+      summary: 新しいタスクの登録
+      security:
+        - Auth0: [write:tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+
+  /tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - タスク
+      summary: 特定のタスクの詳細表示
+      security:
+        - Auth0: [read:tasks]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    put:
+      tags:
+        - タスク
+      summary: タスクの編集
+      security:
+        - Auth0: [write:tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      tags:
+        - タスク
+      summary: タスクの削除
+      security:
+        - Auth0: [delete:tasks]
+      responses:
+        '204':
+          description: 削除成功
+
+  /tasks/search:
+    get:
+      tags:
+        - タスク
+      summary: タスクの検索
+      security:
+        - Auth0: [read:tasks]
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+  /tasks/{id}/tags:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags:
+        - タグ管理
+      summary: タスクにタグを追加
+      security:
+        - Auth0: [write:tags]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag:
+                  type: string
+              required:
+                - tag
+      responses:
+        '201':
+          description: タグ追加成功
+
+  /tasks/{id}/tags/{tag_name}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: tag_name
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      tags:
+        - タグ管理
+      summary: タスクからタグを削除
+      security:
+        - Auth0: [write:tags]
+      responses:
+        '204':
+          description: タグ削除成功
+
+  /tags:
+    get:
+      tags:
+        - タグ管理
+      summary: 全てのタグの一覧を取得
+      security:
+        - Auth0: [read:tags]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /recurring-tasks:
+    post:
+      tags:
+        - 繰り返しタスク
+      summary: 繰り返しタスクの登録
+      security:
+        - Auth0: [write:recurring-tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringTask'
+      responses:
+        '201':
+          description: 作成成功
+
+  /recurring-tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - 繰り返しタスク
+      summary: 特定の繰り返しタスクの詳細表示
+      security:
+        - Auth0: [read:recurring-tasks]
+      responses:
+        '200':
+          description: 成功
+    put:
+      tags:
+        - 繰り返しタスク
+      summary: 繰り返しタスクの編集
+      security:
+        - Auth0: [write:recurring-tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecurringTask'
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      tags:
+        - 繰り返しタスク
+      summary: 繰り返しタスクの削除
+      security:
+        - Auth0: [delete:recurring-tasks]
+      responses:
+        '204':
+          description: 削除成功
+
+  /milestones:
+    post:
+      tags:
+        - マイルストーン
+      summary: マイルストーンの登録
+      security:
+        - Auth0: [write:milestones]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Milestone'
+      responses:
+        '201':
+          description: 作成成功
+
+  /milestones/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - マイルストーン
+      summary: 特定のマイルストーンの詳細表示
+      security:
+        - Auth0: [read:milestones]
+      responses:
+        '200':
+          description: 成功
+    put:
+      tags:
+        - マイルストーン
+      summary: マイルストーンの編集
+      security:
+        - Auth0: [write:milestones]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Milestone'
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      tags:
+        - マイルストーン
+      summary: マイルストーンの削除
+      security:
+        - Auth0: [delete:milestones]
+      responses:
+        '204':
+          description: 削除成功
+
+  /milestones/{id}/tasks:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - マイルストーン
+      summary: マイルストーンに関連付けられたタスクの一覧取得
+      security:
+        - Auth0: [read:milestones]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+  /habit-status/{task_id}:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: period
+        in: query
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - 習慣化
+      summary: 習慣化状況の表示
+      security:
+        - Auth0: [read:habit-status]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HabitStatus'
+    post:
+      tags:
+        - 習慣化
+      summary: 習慣化状況を記録
+      security:
+        - Auth0: [write:habit-status]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HabitStatus'
+      responses:
+        '201':
+          description: 記録成功
+
+  /users:
+    get:
+      tags:
+        - ユーザー管理
+      summary: ユーザーの一覧取得（管理者権限必要）
+      security:
+        - Auth0: [read:users]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - ユーザー管理
+      summary: 新しいユーザーの登録（管理者権限必要）
+      security:
+        - Auth0: [write:users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: 作成成功
+
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      tags:
+        - ユーザー管理
+      summary: 特定のユーザーの詳細表示（管理者権限必要）
+      security:
+        - Auth0: [read:users]
+      responses:
+        '200':
+          description: 成功
+    put:
+      tags:
+        - ユーザー管理
+      summary: ユーザー情報の編集（管理者権限必要）
+      security:
+        - Auth0: [write:users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: 更新成功
+    delete:
+      tags:
+        - ユーザー管理
+      summary: ユーザーの削除（管理者権限必要）
+      security:
+        - Auth0: [delete:users]
+      responses:
+        '204':
+          description: 削除成功
+
+  /tasks/{id}/priority:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    put:
+      tags:
+        - タスク
+      summary: タスクの優先度を設定/更新
+      security:
+        - Auth0: [write:tasks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                priority:
+                  type: string
+              required:
+                - priority
+      responses:
+        '200':
+          description: 更新成功
+
+  /categories:
+    get:
+      tags:
+        - カテゴリ
+      summary: 全てのタスクカテゴリの一覧取得
+      security:
+        - Auth0: [read:categories]
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+    post:
+      tags:
+        - カテゴリ
+      summary: タスクカテゴリの登録
+      security:
+        - Auth0: [write:categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+              required:
+                - name
+      responses:
+        '201':
+          description: 作成成功
+
+  /tasks/{id}/category:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    put:
+      tags:
+        - カテゴリ
+      summary: タスクのカテゴリを設定/更新
+      security:
+        - Auth0: [write:categories]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+              required:
+                - category
+      responses:
+        '200':
+          description: 更新成功
