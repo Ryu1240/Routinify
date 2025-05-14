@@ -1,13 +1,47 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
+import { auth0Config } from './auth0-config';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+
+// 認証が必要なルートを保護するコンポーネント
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1>Routinify</h1>
-        <p>あなたの日常を習慣によって豊かにするアプリ</p>
-      </header>
-    </div>
+    <Auth0Provider {...auth0Config}>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </Router>
+    </Auth0Provider>
   );
 }
 
