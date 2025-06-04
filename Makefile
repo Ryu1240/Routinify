@@ -36,7 +36,3 @@ pull p:
 exec e:
 	docker compose exec $(service) sh
 
-git-add-commit-push gacp:
-	git add .
-	git commit -m "$(msg)"
-	git push
