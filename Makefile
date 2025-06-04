@@ -1,12 +1,15 @@
 up u:
+	docker compose up
+
+up-d ud:
 	docker compose up -d
 
 down d:
-	docker compose down
+	docker compose down -v
 
 down-up du:
-	docker compose down
-	docker compose up -d
+	docker compose down -v
+	docker compose up
 
 build-up bu:
 	docker compose build
@@ -42,6 +45,25 @@ rm r:
 pull p:
 	docker compose pull
 
-exec e:
-	docker compose exec $(service) sh
+exec-backend be:
+	docker compose exec backend bash
 
+exec-frontend fe:
+	docker compose exec frontend bash
+
+exec-swagger-ui se:
+	docker compose exec swagger-ui bash
+
+exec-db db:
+	docker compose exec db bash
+
+exec-redis r:
+	docker compose exec redis bash
+
+exec-rabbitmq rq:	
+
+ridgepole-apply ra:
+	docker compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+
+ridgepole-dry-run rr:
+	docker compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --dry-run

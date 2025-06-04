@@ -1182,3 +1182,7 @@ Completed 200 OK in 4ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached
 
 
   [1m[36mTRANSACTION (1.0ms)[0m  [1m[31mROLLBACK /*application='App'*/[0m
+  [1m[35mSQL (1.2ms)[0m  [1m[35mSET search_path TO public /*application='App'*/[0m
+  [1m[35m (602.3ms)[0m  [1m[35mCREATE DATABASE "routinify_development" ENCODING = 'unicode' /*application='App'*/[0m
+  [1m[35mSQL (1.2ms)[0m  [1m[35mSET search_path TO public /*application='App'*/[0m
+  [1m[35m (434.4ms)[0m  [1m[35mCREATE DATABASE "routinify_test" ENCODING = 'unicode' /*application='App'*/[0m
