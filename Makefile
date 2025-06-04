@@ -21,6 +21,15 @@ logs l:
 build b:
 	docker compose build
 
+build-frontend bf:
+	docker compose build frontend
+
+build-backend bb:
+	docker compose build backend
+
+build-swagger-ui bs:
+	docker compose build swagger-ui
+
 restart r:
 	docker compose restart
 
