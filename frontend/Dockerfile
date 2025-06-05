@@ -11,7 +11,7 @@ RUN mkdir -p /app/node_modules/.cache && \
 USER node
 
 # パッケージのインストール
-COPY --chown=node:node package*.json ./
+COPY --chown=node:node package.json package-lock.json ./
 RUN npm install
 
 # アプリケーションのコピー
