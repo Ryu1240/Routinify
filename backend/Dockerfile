@@ -39,7 +39,7 @@ RUN chown -R app:app /app && \
     chown -R app:app /app/tmp
 
 # アプリケーションユーザーに切り替え
-USER app
+# USER app
 
 # サーバーの起動
 CMD ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
