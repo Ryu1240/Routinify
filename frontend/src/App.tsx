@@ -5,8 +5,12 @@ import { auth0Config } from './auth0-config';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
 // 認証が必要なルートを保護するコンポーネント
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
 
   if (isLoading) {
@@ -21,10 +25,10 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <>{children}</>;
 };
 
-function App() {
+const App: React.FC = () => {
   return (
     <Auth0Provider {...auth0Config}>
       <Router>

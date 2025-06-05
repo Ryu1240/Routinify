@@ -12,8 +12,8 @@ down-up du:
 	docker compose up
 
 build-up bu:
-	docker compose build
-	docker compose up -d
+	docker compose build --no-cache
+	docker compose up
 
 ps p:
 	docker compose ps

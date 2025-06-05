@@ -30,3 +30,33 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.python-version
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Test coverage
+/coverage/
+.coverage
+htmlcov/
+
+# Local development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
