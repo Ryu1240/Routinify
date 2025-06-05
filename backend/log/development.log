@@ -1186,3 +1186,92 @@ Completed 200 OK in 4ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached
   [1m[35m (602.3ms)[0m  [1m[35mCREATE DATABASE "routinify_development" ENCODING = 'unicode' /*application='App'*/[0m
   [1m[35mSQL (1.2ms)[0m  [1m[35mSET search_path TO public /*application='App'*/[0m
   [1m[35m (434.4ms)[0m  [1m[35mCREATE DATABASE "routinify_test" ENCODING = 'unicode' /*application='App'*/[0m
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 15:29:31 +0000
+  [1m[35m (12.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='App'*/[0m
+  [1m[35m (10.6ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 604ms (Views: 0.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 17.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 15:29:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 152ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.6ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:26:46 +0000
+  [1m[35m (104.6ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='App'*/[0m
+  [1m[35m (7.6ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:26:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 723ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 7.4ms)
+
+
+Completed 200 OK in 275ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 2.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:26:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 209ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:26:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 72ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:26:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 109ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:38:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 173ms (Views: 1.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:38:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 155ms (Views: 16.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:40:32 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 191ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:40:32 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 81ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:40:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 82ms (Views: 2.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-04 16:40:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 318ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 148.5ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-05 12:37:56 +0000
+  [1m[35m (34.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='App'*/[0m
+  [1m[35m (17.7ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='App'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (3.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 1031ms (Views: 1.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 66.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-05 12:39:28 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 341ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 7.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-06-05 12:39:29 +0000
+Processing by Api::V1::TasksController#index as HTML
+Completed 200 OK in 177ms (Views: 1.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 4.7ms)
+
+
