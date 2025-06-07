@@ -12,34 +12,21 @@ FROM ruby:3.4.2
 
 # 必要なパッケージのインストール
 RUN apt-get update -qq && \
-    apt-get install -y build-essential libpq-dev nodejs npm
-
-# アプリケーションユーザーの作成
-RUN groupadd -r -g 1000 app && \
-    useradd -r -u 1000 -g app app && \
-    mkdir -p /home/app && \
-    chown -R app:app /home/app
+    apt-get install -y build-essential libpq-dev
 
 WORKDIR /app
 
-# bundleディレクトリの権限を設定
-RUN mkdir -p /usr/local/bundle && \
-    chown -R app:app /usr/local/bundle
-
-# Gemfileのコピーとインストール
-COPY Gemfile* ./
+# GemfileとGemfile.lockだけを先にコピーしてbundle install
+COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
-# アプリケーションのコピー
+# アプリケーションの全ファイルをコピー
 COPY . .
 
-# 権限の設定
-RUN chown -R app:app /app && \
-    mkdir -p /app/tmp/pids && \
-    chown -R app:app /app/tmp
+# tmp/pidsディレクトリの作成
+RUN mkdir -p /app/tmp/pids
 
-# アプリケーションユーザーに切り替え
+# USER切り替え（必要なら）
 # USER app
 
-# サーバーの起動
 CMD ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]

@@ -256,12 +256,12 @@ paths:
                 $ref: '#/components/schemas/Task'
 
   /tasks/{id}:
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
     get:
       tags:
         - タスク
@@ -282,10 +282,10 @@ paths:
       security:
         - Auth0: [write:tasks]
       requestBody:
-          required: true
+        required: true
         content:
           application/json:
-          schema:
+            schema:
               $ref: '#/components/schemas/Task'
       responses:
         '200':
@@ -408,12 +408,12 @@ paths:
           description: 作成成功
 
   /recurring-tasks/{id}:
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
     get:
       tags:
         - 繰り返しタスク
@@ -466,12 +466,12 @@ paths:
           description: 作成成功
 
   /milestones/{id}:
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
     get:
       tags:
         - マイルストーン
@@ -507,12 +507,12 @@ paths:
           description: 削除成功
 
   /milestones/{id}/tasks:
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
     get:
       tags:
         - マイルストーン
@@ -530,17 +530,17 @@ paths:
                   $ref: '#/components/schemas/Task'
 
   /habit-status/{task_id}:
-      parameters:
-        - name: task_id
-          in: path
-          required: true
-          schema:
-            type: integer
-        - name: period
-          in: query
-          required: true
-          schema:
-            type: string
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: period
+        in: query
+        required: true
+        schema:
+          type: string
     get:
       tags:
         - 習慣化
@@ -666,7 +666,7 @@ paths:
               type: object
               properties:
                 priority:
-          type: string
+                  type: string
               required:
                 - priority
       responses:
@@ -688,7 +688,7 @@ paths:
               schema:
                 type: array
                 items:
-          type: string
+                  type: string
     post:
       tags:
         - カテゴリ
@@ -700,8 +700,8 @@ paths:
         content:
           application/json:
             schema:
-      type: object
-      properties:
+              type: object
+              properties:
                 name:
                   type: string
               required:
@@ -728,11 +728,11 @@ paths:
         content:
           application/json:
             schema:
-      type: object
-      properties:
+              type: object
+              properties:
                 category:
-          type: string
-      required:
+                  type: string
+              required:
                 - category
       responses:
         '200':
