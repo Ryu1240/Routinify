@@ -9,6 +9,9 @@
 build b: ## 全サービスを並列ビルド
 	docker compose build --parallel
 
+build-no-cache bnc: ## 全サービスを並列ビルド
+	docker compose build --parallel --no-cache
+
 build-frontend bf: ## フロントエンドのみビルド
 	docker compose build frontend
 
