@@ -1,9 +1,9 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import TaskList from './pages/TaskList';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -28,24 +28,49 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
+// ナビゲーション処理を行うコンポーネント
+const AppContent: React.FC = () => {
+  const navigate = useNavigate();
+
+  return (
+    <Auth0Provider 
+      {...auth0Config}
+      onRedirectCallback={(appState) => {
+        // リダイレクト後の処理をカスタマイズ
+        console.log('Redirect callback:', appState);
+        // ユーザーを意図したページにリダイレクト
+        window.history.replaceState(
+          {},
+          document.title,
+          appState?.returnTo || window.location.pathname
+        );
+        // 必要に応じてナビゲーションを実行
+        if (appState?.returnTo) {
+          navigate(appState.returnTo);
+        }
+      }}
+    >
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <TaskList />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Auth0Provider>
+  );
+};
+
 const App: React.FC = () => {
   return (
-    <Auth0Provider {...auth0Config}>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Router>
-    </Auth0Provider>
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
