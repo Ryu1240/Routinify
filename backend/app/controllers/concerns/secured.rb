@@ -33,10 +33,15 @@ render json: { message: error.message }, status: error.status
     end
 
     def validate_permissions(permissions)
-raise 'validate_permissions needs to be called with a block' unless block_given?
-return yield if @decoded_token.validate_permissions(permissions)
+      raise 'validate_permissions needs to be called with a block' unless block_given?
+      return yield if @decoded_token.validate_permissions(permissions)
 
-render json: INSUFFICIENT_PERMISSIONS, status: :forbidden
+      render json: INSUFFICIENT_PERMISSIONS, status: :forbidden
+    end
+
+    def current_user_id
+      return nil unless @decoded_token
+      @decoded_token.token[0]['sub']
     end
 
     private
