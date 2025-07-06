@@ -1,7 +1,7 @@
 module Api
   module V1
     class TasksController < ApplicationController
-      before_action :authorize
+      
       def index
         validate_permissions(['read:tasks']) do 
           user_id = current_user_id
