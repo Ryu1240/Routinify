@@ -19,13 +19,9 @@ module AuthorizationHelper
     controller.instance_variable_set(:@decoded_token, decoded_token)
   end
 
-  def skip_authentication
-    stub_authorize(ApplicationController)
-  end
+# Removed unused skip_authentication method
 
-  def enable_authentication
-    allow_any_instance_of(ApplicationController).to receive(:authorize).and_call_original
-  end
+# Removed unused enable_authentication method
   private
 
   def stub_authorize(klass)
