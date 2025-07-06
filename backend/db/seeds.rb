@@ -17,7 +17,7 @@ test_user_id = "google-oauth2|114430600905307477148"
 # サンプルタスクデータ
 sample_tasks = [
   {
-    account_id: test_user_id,
+    accountId: test_user_id,
     title: "朝の運動",
     due_date: Date.current,
     status: "未着手",
