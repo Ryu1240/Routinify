@@ -20,10 +20,15 @@ module AuthorizationHelper
   end
 
   def skip_authentication
-    allow_any_instance_of(ApplicationController).to receive(:authorize).and_return(true)
+    stub_authorize(ApplicationController)
   end
 
   def enable_authentication
     allow_any_instance_of(ApplicationController).to receive(:authorize).and_call_original
+  end
+  private
+
+  def stub_authorize(klass)
+    allow_any_instance_of(klass).to receive(:authorize).and_return(true)
   end
 end
