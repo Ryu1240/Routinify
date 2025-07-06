@@ -30,7 +30,13 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
 const App: React.FC = () => {
   return (
-    <Auth0Provider {...auth0Config}>
+    <Auth0Provider 
+      {...auth0Config}
+      onRedirectCallback={(appState) => {
+        // リダイレクト後の処理をカスタマイズ
+        console.log('Redirect callback:', appState);
+      }}
+    >
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />

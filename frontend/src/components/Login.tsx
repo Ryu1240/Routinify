@@ -16,6 +16,9 @@ const Login: React.FC<LoginProps> = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  // ログイン処理の状態管理
+  const [isLoggingIn, setIsLoggingIn] = React.useState(false);
+
   if (isLoading) {
     return (
       <Center style={{ minHeight: '100vh', background: COLORS.DARK }}>
@@ -24,18 +27,10 @@ const Login: React.FC<LoginProps> = () => {
     );
   }
 
+  // エラーが発生した場合でも、ログイン画面を表示する
+  // エラーはコンソールに出力するのみ
   if (error) {
-    return (
-      <Center style={{ minHeight: '100vh', background: COLORS.DARK }}>
-        <Paper shadow="md" p="xl" radius="md" withBorder bg={COLORS.MEDIUM}>
-          <Stack align="center" gap="md">
-            <Title order={3} c="red">エラーが発生しました</Title>
-            <Text c="white">{error.message}</Text>
-            <Button color="brand" onClick={() => window.location.reload()}>再試行</Button>
-          </Stack>
-        </Paper>
-      </Center>
-    );
+    console.error('Auth0 error:', error);
   }
 
   return (
@@ -71,9 +66,21 @@ const Login: React.FC<LoginProps> = () => {
             radius="md"
             color="brand"
             style={{ width: 220 }}
-            onClick={() => loginWithRedirect()}
+            loading={isLoggingIn}
+            disabled={isLoggingIn}
+            onClick={() => {
+              if (isLoggingIn) return; // 重複クリックを防ぐ
+              
+              setIsLoggingIn(true);
+              try {
+                loginWithRedirect();
+              } catch (err) {
+                console.error('Login error:', err);
+                setIsLoggingIn(false);
+              }
+            }}
           >
-            ログイン
+            {isLoggingIn ? 'ログイン中...' : 'ログイン'}
           </Button>
           <Text size="sm" c="gray.4" ta="center">
             アカウントをお持ちでない場合は、ログインボタンをクリックして新規登録できます
