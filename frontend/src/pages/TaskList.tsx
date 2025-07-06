@@ -1,15 +1,20 @@
 import React from 'react';
+import { Container, Title, Paper } from '@mantine/core';
 import TaskListComponent from '../components/tasks/TaskList';
+import Layout from '../components/Layout';
 
 const TaskList: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+    <Layout>
+      <Container size="xl">
+        <Title order={1} mb="lg" style={{ color: 'var(--mantine-color-dark-9)' }}>
+          タスク一覧
+        </Title>
+        <Paper shadow="xs" p="md" radius="md" withBorder>
           <TaskListComponent />
-        </div>
-      </main>
-    </div>
+        </Paper>
+      </Container>
+    </Layout>
   );
 };
 
