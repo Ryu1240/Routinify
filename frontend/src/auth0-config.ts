@@ -3,10 +3,10 @@ import { Auth0ProviderOptions } from '@auth0/auth0-react';
 // 環境変数の存在チェックとエラーログ出力
 const checkEnvironmentVariable = (name: string, value: string | undefined): string => {
   if (!value) {
-    console.error(`❌ 環境変数 ${name} が設定されていません。`);
-    console.error(`   アプリケーションが正常に動作しない可能性があります。`);
-    console.error(`   .env ファイルまたは環境変数で ${name} を設定してください。`);
-    return '';
+    const errorMessage = `❌ 環境変数 ${name} が設定されていません。\n` +
+                         `   アプリケーションが正常に動作しない可能性があります。\n` +
+                         `   .env ファイルまたは環境変数で ${name} を設定してください。`;
+    throw new Error(errorMessage);
   }
   console.log(`✅ 環境変数 ${name} が正常に設定されています。`);
   return value;
