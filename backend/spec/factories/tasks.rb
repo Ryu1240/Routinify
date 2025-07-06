@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :task do
-    sequence(:accountId) { |n| "user-#{n}" }
+    sequence(:account_id) { |n| "user-#{n}" }
     sequence(:title) { |n| "タスク #{n}" }
     due_date { Date.current + 1.week }
     status { "未着手" }

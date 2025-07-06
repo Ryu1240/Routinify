@@ -11,7 +11,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
   describe 'GET #index' do
     context '正常系' do
       before do
-        create_list(:task, 3, accountId: user_id)
+        create_list(:task, 3, account_id: user_id)
         request.headers['Authorization'] = "Bearer #{dummy_token}"
       end
 
@@ -28,18 +28,18 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       end
 
       it 'returns tasks for the authenticated user only' do
-        other_user_task = create(:task, accountId: 'other-user')
+        other_user_task = create(:task, account_id: 'other-user')
         get :index
         
         json_response = JSON.parse(response.body)
         task_ids = json_response['data'].map { |task| task['id'] }
         
-        expect(task_ids).to include(*Task.where(accountId: user_id).pluck(:id))
+        expect(task_ids).to include(*Task.where(account_id: user_id).pluck(:id))
         expect(task_ids).not_to include(other_user_task.id)
       end
 
       it 'returns correct task attributes' do
-        task = create(:task, accountId: user_id, title: 'Test Task')
+        task = create(:task, account_id: user_id, title: 'Test Task')
         get :index
         
         json_response = JSON.parse(response.body)
@@ -47,15 +47,15 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         
         expect(returned_task).to include(
           'id' => task.id,
-          'accountId' => task.accountId,
+          'account_id' => task.account_id,
           'title' => task.title,
           'status' => task.status,
           'priority' => task.priority,
           'category' => task.category
         )
-        expect(returned_task['dueDate']).to eq(task.due_date&.iso8601)
-        expect(returned_task['createdAt']).to eq(task.created_at.iso8601(3))
-        expect(returned_task['updatedAt']).to eq(task.updated_at.iso8601(3))
+        expect(returned_task['due_date']).to eq(task.due_date&.iso8601)
+        expect(returned_task['created_at']).to eq(task.created_at.iso8601(3))
+        expect(returned_task['updated_at']).to eq(task.updated_at.iso8601(3))
       end
     end
 
@@ -108,7 +108,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       end
 
       it '大量のタスクがある場合でも正常に動作すること' do
-        create_list(:task, 100, accountId: user_id)
+        create_list(:task, 100, account_id: user_id)
         request.headers['Authorization'] = "Bearer #{dummy_token}"
         
         get :index

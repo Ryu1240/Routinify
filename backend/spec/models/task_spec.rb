@@ -28,17 +28,17 @@ RSpec.describe Task, type: :model do
       end
     end
 
-    context 'accountId' do
-      it 'accountIdが必須であること' do
-        subject.accountId = nil
+    context 'account_id' do
+      it 'account_idが必須であること' do
+        subject.account_id = nil
         expect(subject).to be_invalid
-        expect(subject.errors[:accountId]).to include("can't be blank")
+        expect(subject.errors[:account_id]).to include("can't be blank")
       end
 
-      it 'accountIdが空文字列の場合、無効であること' do
-        subject.accountId = ''
+      it 'account_idが空文字列の場合、無効であること' do
+        subject.account_id = ''
         expect(subject).to be_invalid
-        expect(subject.errors[:accountId]).to include("can't be blank")
+        expect(subject.errors[:account_id]).to include("can't be blank")
       end
     end
 
@@ -95,9 +95,9 @@ RSpec.describe Task, type: :model do
   end
 
   describe 'スコープ' do
-    let!(:user1_task1) { create(:task, accountId: 'user1') }
-    let!(:user1_task2) { create(:task, accountId: 'user1') }
-    let!(:user2_task) { create(:task, accountId: 'user2') }
+    let!(:user1_task1) { create(:task, account_id: 'user1') }
+    let!(:user1_task2) { create(:task, account_id: 'user1') }
+    let!(:user2_task) { create(:task, account_id: 'user2') }
 
     describe '.by_account' do
       it '指定されたアカウントIDのタスクのみを返すこと' do

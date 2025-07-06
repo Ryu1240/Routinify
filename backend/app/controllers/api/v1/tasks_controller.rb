@@ -6,19 +6,11 @@ module Api
         validate_permissions(['read:tasks']) do 
           user_id = current_user_id
           tasks = Task.for_user(user_id)
-          render json: { 
+          render json: {
             data: tasks.map do |task|
-              {
-                id: task.id,
-                accountId: task.accountId,
-                title: task.title,
-                dueDate: task.due_date&.iso8601,
-                status: task.status,
-                priority: task.priority,
-                category: task.category,
-                createdAt: task.created_at.iso8601(3),
-                updatedAt: task.updated_at.iso8601(3)
-              }
+              task.as_json(
+                only: [:id, :account_id, :title, :due_date, :status, :priority, :category, :created_at, :updated_at]
+              ).transform_keys { |k| k.to_s.camelize(:lower) }
             end
           }, status: :ok
         end
