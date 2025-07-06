@@ -38,15 +38,6 @@ const Sidebar: React.FC = () => {
         overflowY: 'auto'
       }}
     >
-      {/* セクション1: タイトル */}
-      <Box mb="md">
-        <Text size="xs" fw={500} c="dimmed" mb="xs" style={{ textTransform: 'uppercase' }}>
-          タスク管理
-        </Text>
-      </Box>
-
-      {/* セクション2: ナビゲーションリンク */}
-      <Box>
         {navItems.map((item) => (
           <NavLink
             key={item.path}
@@ -63,7 +54,6 @@ const Sidebar: React.FC = () => {
           />
         ))}
       </Box>
-    </Box>
   );
 };
 
