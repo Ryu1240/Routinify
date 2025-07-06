@@ -61,7 +61,7 @@ sample_tasks = [
 # タスクを作成（重複を避けるためfind_or_create_byを使用）
 sample_tasks.each do |task_attrs|
   task = Task.find_or_create_by(
-    accountId: task_attrs[:accountId],
+    account_id: task_attrs[:accountId],
     title: task_attrs[:title]
   ) do |t|
     t.due_date = task_attrs[:due_date]

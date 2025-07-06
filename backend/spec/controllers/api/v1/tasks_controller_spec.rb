@@ -47,15 +47,15 @@ RSpec.describe Api::V1::TasksController, type: :controller do
         
         expect(returned_task).to include(
           'id' => task.id,
-          'account_id' => task.account_id,
+          'accountId' => task.account_id,
           'title' => task.title,
           'status' => task.status,
           'priority' => task.priority,
           'category' => task.category
         )
-        expect(returned_task['due_date']).to eq(task.due_date&.iso8601)
-        expect(returned_task['created_at']).to eq(task.created_at.iso8601(3))
-        expect(returned_task['updated_at']).to eq(task.updated_at.iso8601(3))
+        expect(returned_task['dueDate']).to eq(task.due_date&.iso8601)
+        expect(returned_task['createdAt']).to eq(task.created_at.iso8601(3))
+        expect(returned_task['updatedAt']).to eq(task.updated_at.iso8601(3))
       end
     end
 
