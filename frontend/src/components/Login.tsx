@@ -33,6 +33,11 @@ const Login: React.FC<LoginProps> = () => {
     console.error('Auth0 error:', error);
   }
 
+  const errorMessage = error ? (
+    <Text c="red" size="sm" ta="center" style={{ marginBottom: '1rem' }}>
+      ログイン中にエラーが発生しました: {error.message || '不明なエラー'}
+    </Text>
+  ) : null;
   return (
     <Center style={{ minHeight: '100vh', background: COLORS.DARK, flexDirection: 'column' }}>
       <div style={{ 
