@@ -18,17 +18,7 @@ const Header: React.FC = () => {
         <Group justify="space-between" h={60}>
           {/* 左側: ロゴとサービス名 */}
           <Group gap="xs">
-            <div style={{ 
-              width: 300, 
-              height: 300, 
-              overflow: 'hidden', 
-              borderRadius: '50%',
-              marginBottom: '1.5rem',
-              position: 'relative',
-              boxShadow: '0 0 20px rgba(0,0,0,0.3)'
-            }}>
             <Image src="/Routinify-Logo.png" alt="Routinify Logo" width={36} height={36} radius="md"/>
-            </div>
             <Text 
               size="xl" 
               fw={700}
