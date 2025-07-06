@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
 import Login from './components/Login';
-import Dashboard from './components/Dashboard';
+import TaskList from './pages/TaskList';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -35,10 +35,10 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
-            path="/dashboard"
+            path="/tasks"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <TaskList />
               </ProtectedRoute>
             }
           />
