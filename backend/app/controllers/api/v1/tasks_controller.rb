@@ -12,12 +12,12 @@ module Api
                 id: task.id,
                 accountId: task.accountId,
                 title: task.title,
-                dueDate: task.due_date,
+                dueDate: task.due_date&.iso8601,
                 status: task.status,
                 priority: task.priority,
                 category: task.category,
-                createdAt: task.created_at,
-                updatedAt: task.updated_at
+                createdAt: task.created_at.iso8601(3),
+                updatedAt: task.updated_at.iso8601(3)
               }
             end
           }, status: :ok
