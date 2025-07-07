@@ -1814,3 +1814,1865 @@ Completed 200 OK in 20ms (Views: 0.6ms | ActiveRecord: 2.0ms (1 query, 0 cached)
   [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' AND "tasks"."title" = '買い物リストの作成' LIMIT 1 /*application='App'*/[0m
   [1m[36mTask Load (0.5ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' AND "tasks"."title" = '読書（技術書）' LIMIT 1 /*application='App'*/[0m
   [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' AND "tasks"."title" = '部屋の掃除' LIMIT 1 /*application='App'*/[0m
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:33 +0000
+  [1m[36mActiveRecord::SchemaMigration Load (3.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='App'*/[0m
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 8ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:34 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.7ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 4ms (Views: 0.9ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 7ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 4ms (Views: 1.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 19ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 1.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:35 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 7ms (Views: 3.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:36 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 14ms (Views: 9.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 4ms (Views: 2.6ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:37 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:38 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 53ms (Views: 36.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 20ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:41 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:42 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:42 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:42 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:42 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:42 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:42 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:44 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:45 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:46 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:47 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:48 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:49 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:50 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:51 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:52 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:55 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:57 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:57 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:57 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:53:57 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:11 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:13 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 1.4ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:16 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 17ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:17 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 4ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 3ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:54:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:18 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.4ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.5ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:19 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 2ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:24 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:24 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.2ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:24 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:24 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:24 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:24 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.3ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:25 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 12:58:25 +0000
+Processing by Api::V1::TasksController#index as HTML
+Filter chain halted as :authorize rendered or redirected
+Completed 401 Unauthorized in 1ms (Views: 0.1ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:01:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (4.1ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 656ms (Views: 5.9ms | ActiveRecord: 42.1ms (1 query, 0 cached) | GC: 19.2ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:02:05 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (1.4ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 96ms (Views: 1.5ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 9.2ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:07:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.8ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 224ms (Views: 0.1ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 7.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:10:40 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 333ms (Views: 0.2ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 5.9ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:10:57 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.7ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 287ms (Views: 0.1ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 8.9ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:11:22 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.7ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 185ms (Views: 0.1ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:12:06 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (2.3ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 154ms (Views: 0.3ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.9ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:15:08 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 179ms (Views: 0.3ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 1.2ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:15:21 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (1.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 97ms (Views: 0.1ms | ActiveRecord: 1.7ms (1 query, 0 cached) | GC: 1.4ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:15:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.7ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 78ms (Views: 0.1ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:15:39 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.8ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 160ms (Views: 0.1ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:17:23 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (1.3ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 199ms (Views: 0.1ms | ActiveRecord: 1.3ms (1 query, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:17:27 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.5ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 98ms (Views: 0.3ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.6ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:17:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (1.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 177ms (Views: 0.4ms | ActiveRecord: 1.5ms (1 query, 0 cached) | GC: 0.8ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:20:54 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 165ms (Views: 0.2ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:21:12 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.9ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 175ms (Views: 0.1ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:21:15 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 98ms (Views: 0.1ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:22:14 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (1.2ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 151ms (Views: 0.1ms | ActiveRecord: 1.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-07 13:22:20 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (1.0ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 71ms (Views: 0.2ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+

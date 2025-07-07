@@ -32,6 +32,36 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
 
+  // Auth0のリダイレクト処理をここで行う
+  React.useEffect(() => {
+    const handleRedirect = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnTo = urlParams.get('returnTo');
+      if (returnTo) {
+        navigate(returnTo);
+      }
+    };
+
+    handleRedirect();
+  }, [navigate]);
+
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <TaskList />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to="/tasks" replace />} />
+    </Routes>
+  );
+};
+
+const App: React.FC = () => {
   return (
     <Auth0Provider 
       {...auth0Config}
@@ -44,33 +74,12 @@ const AppContent: React.FC = () => {
           document.title,
           appState?.returnTo || window.location.pathname
         );
-        // 必要に応じてナビゲーションを実行
-        if (appState?.returnTo) {
-          navigate(appState.returnTo);
-        }
       }}
     >
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/tasks"
-          element={
-            <ProtectedRoute>
-              <TaskList />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/" element={<Navigate to="/tasks" replace />} />
-      </Routes>
+      <Router>
+        <AppContent />
+      </Router>
     </Auth0Provider>
-  );
-};
-
-const App: React.FC = () => {
-  return (
-    <Router>
-      <AppContent />
-    </Router>
   );
 }
 
