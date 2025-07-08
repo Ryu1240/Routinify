@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
-import { Center, Stack, Title, Button, Paper, Loader, Text, Image } from '@mantine/core';
-import { COLORS } from '../constants/colors';
+import { Center, Stack, Button, Paper, Loader, Text, Image } from '@mantine/core';
+import { COLORS } from '../../constants/colors';
 
 interface LoginProps {}
 
@@ -33,11 +33,10 @@ const Login: React.FC<LoginProps> = () => {
     console.error('Auth0 error:', error);
   }
 
-  const errorMessage = error ? (
-    <Text c="red" size="sm" ta="center" style={{ marginBottom: '1rem' }}>
-      ログイン中にエラーが発生しました: {error.message || '不明なエラー'}
-    </Text>
-  ) : null;
+  // エラーメッセージはコンソールに出力するのみ
+  if (error) {
+    console.error('Auth0 error:', error);
+  }
   return (
     <Center style={{ minHeight: '100vh', background: COLORS.DARK, flexDirection: 'column' }}>
       <div style={{ 

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Container, Title, Paper } from '@mantine/core';
 import { TaskList as TaskListComponent } from '../../components/tasks';
 import { Layout } from '../../components/common';
 

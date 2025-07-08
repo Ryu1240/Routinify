@@ -1,18 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from '../config/axios';
 import { useAuth } from './useAuth';
-
-export interface Task {
-  id: number;
-  accountId: string;
-  title: string;
-  dueDate: string | null;
-  status: string | null;
-  priority: string | null;
-  category: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Task } from '../components/tasks/definitions';
 
 export const useTasks = () => {
   const { isAuthenticated, accessToken } = useAuth();
@@ -34,10 +23,6 @@ export const useTasks = () => {
     }
   }, [isAuthenticated, accessToken]);
 
-  useEffect(() => {
-    filterAndSortTasks();
-  }, [tasks, search, sortBy, reverseSortDirection]);
-
   const fetchTasks = async () => {
     try {
       setLoading(true);
@@ -52,7 +37,7 @@ export const useTasks = () => {
     }
   };
 
-  const filterAndSortTasks = () => {
+  const filterAndSortTasks = useCallback(() => {
     let filtered = tasks.filter((task) =>
       task.title.toLowerCase().includes(search.toLowerCase()) ||
       (task.category && task.category.toLowerCase().includes(search.toLowerCase())) ||
@@ -64,9 +49,8 @@ export const useTasks = () => {
         const aValue = a[sortBy];
         const bValue = b[sortBy];
         
-        if (aValue === null && bValue === null) return 0;
-        if (aValue === null) return 1;
-        if (bValue === null) return -1;
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
         
         const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
         return reverseSortDirection ? -comparison : comparison;
@@ -74,7 +58,11 @@ export const useTasks = () => {
     }
 
     setFilteredTasks(filtered);
-  };
+  }, [tasks, search, sortBy, reverseSortDirection]);
+
+  useEffect(() => {
+    filterAndSortTasks();
+  }, [filterAndSortTasks]);
 
   const setSorting = (field: keyof Task) => {
     const reversed = field === sortBy ? !reverseSortDirection : false;
