@@ -2,6 +2,7 @@ import React from 'react';
 import { Box } from '@mantine/core';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import { LAYOUT_CONSTANTS } from '../constants/layout';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -19,10 +20,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* メインコンテンツ */}
       <Box
         style={{
-          marginLeft: 280, // サイドバーの幅
-          marginTop: 60, // ヘッダーの高さ
+          marginLeft: LAYOUT_CONSTANTS.SIDEBAR_WIDTH,
+          marginTop: LAYOUT_CONSTANTS.HEADER_HEIGHT,
           padding: 'var(--mantine-spacing-md)',
-          minHeight: 'calc(100vh - 60px)',
+          minHeight: `calc(100vh - ${LAYOUT_CONSTANTS.HEADER_HEIGHT}px)`,
           backgroundColor: 'var(--mantine-color-gray-0)'
         }}
       >

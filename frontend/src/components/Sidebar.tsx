@@ -1,11 +1,13 @@
 import React from 'react';
-import { Box, NavLink, Text, rem } from '@mantine/core';
+import { Box, NavLink, Text, rem, useMantineTheme } from '@mantine/core';
 import { IconChecklist, IconPlus } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { LAYOUT_CONSTANTS } from '../constants/layout';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useMantineTheme();
 
   const navItems = [
     {
@@ -25,17 +27,22 @@ const Sidebar: React.FC = () => {
   return (
     <Box
       component="nav"
+      aria-label="Task management navigation"
       p="md"
       style={{
-        borderRight: `${rem(1)} solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))`,
-        backgroundColor: 'var(--mantine-color-body)',
-        height: 'calc(100vh - 60px)', // ヘッダーの高さ(60px)を引く
+        borderRight: `${rem(1)} solid ${theme.colors.gray[3]}`,
+        backgroundColor: theme.colors.gray[0],
+        height: `calc(100vh - ${LAYOUT_CONSTANTS.HEADER_HEIGHT})`, // ヘッダーの高さを引く
         position: 'fixed',
-        top: 60, // ヘッダーの下に配置
+        top: LAYOUT_CONSTANTS.HEADER_HEIGHT, // ヘッダーの下に配置
         left: 0,
         zIndex: 50,
-        width: 280,
-        overflowY: 'auto'
+        width: LAYOUT_CONSTANTS.SIDEBAR_WIDTH,
+        overflowY: 'auto',
+        '@media (max-width: 768px)': {
+          transform: 'translateX(-100%)',
+          transition: 'transform 0.3s ease',
+        },
       }}
     >
         {navItems.map((item) => (

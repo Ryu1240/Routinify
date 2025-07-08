@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Group, Button, Text, Container, rem, Image } from '@mantine/core';
 import { IconLogout } from '@tabler/icons-react';
+import { LAYOUT_CONSTANTS } from '../constants/layout';
 
 const Header: React.FC = () => {
   const { logout } = useAuth0();
@@ -15,7 +16,7 @@ const Header: React.FC = () => {
       zIndex: 100
     }}>
       <Container size="lg">
-        <Group justify="space-between" h={60}>
+        <Group justify="space-between" h={LAYOUT_CONSTANTS.HEADER_HEIGHT}>
           {/* 左側: ロゴとサービス名 */}
           <Group gap="xs">
             <Image src="/Routinify-Logo.png" alt="Routinify Logo" width={36} height={36} radius="md"/>
