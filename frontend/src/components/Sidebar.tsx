@@ -25,6 +25,7 @@ const Sidebar: React.FC = () => {
   return (
     <Box
       component="nav"
+      aria-label="Task management navigation"
       p="md"
       style={{
         borderRight: `${rem(1)} solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))`,
