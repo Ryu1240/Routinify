@@ -4,8 +4,6 @@ import Header from '../Header';
 const TaskList: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <div className="bg-white shadow overflow-hidden sm:rounded-lg m-6">
         <div className="px-4 py-5 sm:px-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">タスク一覧</h2>
