@@ -7,7 +7,7 @@ const TaskList: React.FC = () => {
   return (
     <Layout>
       <Container size="xl">
-        <Title order={1} mb="lg" style={{ color: 'var(--mantine-color-dark-9)' }}>
+        <Title order={1} mb="lg" color="dark">
           タスク一覧
         </Title>
         <Paper shadow="xs" p="md" radius="md" withBorder>
