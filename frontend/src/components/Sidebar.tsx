@@ -28,14 +28,14 @@ const Sidebar: React.FC = () => {
       aria-label="Task management navigation"
       p="md"
       style={{
-        borderRight: `${rem(1)} solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4))`,
-        backgroundColor: 'var(--mantine-color-body)',
-        height: 'calc(100vh - 60px)', // ヘッダーの高さ(60px)を引く
+        borderRight: `${rem(1)} solid ${theme.colors.gray[3]}`,
+        backgroundColor: theme.colors.body,
+        height: `calc(100vh - ${LAYOUT_CONSTANTS.HEADER_HEIGHT})`, // ヘッダーの高さを引く
         position: 'fixed',
-        top: 60, // ヘッダーの下に配置
+        top: LAYOUT_CONSTANTS.HEADER_HEIGHT, // ヘッダーの下に配置
         left: 0,
         zIndex: 50,
-        width: 280,
+        width: LAYOUT_CONSTANTS.SIDEBAR_WIDTH,
         overflowY: 'auto',
         '@media (max-width: 768px)': {
           transform: 'translateX(-100%)',
