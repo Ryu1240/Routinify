@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
-import Login from './components/Login';
-import TaskList from './pages/TaskList';
+import { Login } from './components/auth';
+import { TaskList } from './pages/tasks';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

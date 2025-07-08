@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Title, Paper } from '@mantine/core';
-import TaskListComponent from '../components/tasks/TaskList';
-import Layout from '../components/Layout';
+import { TaskList as TaskListComponent } from '../../components/tasks';
+import { Layout } from '../../components/common';
 
 const TaskList: React.FC = () => {
   return (

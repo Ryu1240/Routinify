@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box } from '@mantine/core';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import { Header, Sidebar } from './';
 import { LAYOUT_CONSTANTS } from '../constants/layout';
 
 interface LayoutProps {
