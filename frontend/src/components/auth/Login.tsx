@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { Center, Stack, Button, Paper, Loader, Text, Image } from '@mantine/core';
 import { COLORS } from '../../constants/colors';
+import styles from './Login.module.css';
 
 interface LoginProps {}
 
@@ -33,21 +34,9 @@ const Login: React.FC<LoginProps> = () => {
     console.error('Auth0 error:', error);
   }
 
-  // エラーメッセージはコンソールに出力するのみ
-  if (error) {
-    console.error('Auth0 error:', error);
-  }
   return (
     <Center style={{ minHeight: '100vh', background: COLORS.DARK, flexDirection: 'column' }}>
-      <div style={{ 
-        width: 300, 
-        height: 300, 
-        overflow: 'hidden', 
-        borderRadius: '50%',
-        marginBottom: '1.5rem',
-        position: 'relative',
-        boxShadow: '0 0 20px rgba(0,0,0,0.3)'
-      }}>
+      <div className={styles.logoCircle}>
         <Image
           src="/Routinify-Logo.png"
           alt="Routinify Logo"

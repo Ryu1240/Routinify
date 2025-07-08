@@ -1,5 +1,6 @@
 import React from 'react';
 import { Task, TaskColumn } from './types';
+import { Text } from '@mantine/core';
 
 // 日付フォーマット関数
 const formatDate = (dateString: string | null) => {
@@ -15,12 +16,14 @@ export const taskColumns: TaskColumn[] = [
     sortable: true,
     width: 'w-1/3',
     render: (task) => (
-      <div className="font-medium text-gray-900">
+      <Text fw={500} c="dark">
         {task.title}
         {task.description && (
-          <p className="text-sm text-gray-500 mt-1">{task.description}</p>
+          <Text size="sm" c="dimmed" mt={4}>
+            {task.description}
+          </Text>
         )}
-      </div>
+      </Text>
     )
   },
   {
@@ -29,9 +32,9 @@ export const taskColumns: TaskColumn[] = [
     sortable: true,
     width: 'w-24',
     render: (task) => (
-      <span className="text-sm text-gray-600">
+      <Text size="sm" c="gray">
         {task.category || '-'}
-      </span>
+      </Text>
     )
   },
   {
@@ -40,9 +43,9 @@ export const taskColumns: TaskColumn[] = [
     sortable: true,
     width: 'w-24',
     render: (task) => (
-      <span className="text-sm text-gray-600">
+      <Text size="sm" c="gray">
         {task.status || '-'}
-      </span>
+      </Text>
     )
   },
   {
@@ -51,9 +54,9 @@ export const taskColumns: TaskColumn[] = [
     sortable: true,
     width: 'w-20',
     render: (task) => (
-      <span className="text-sm text-gray-600">
+      <Text size="sm" c="gray">
         {task.priority || '-'}
-      </span>
+      </Text>
     )
   },
   {
@@ -62,9 +65,9 @@ export const taskColumns: TaskColumn[] = [
     sortable: true,
     width: 'w-32',
     render: (task) => (
-      <span className="text-sm text-gray-600">
+      <Text size="sm" c="gray">
         {formatDate(task.dueDate ?? null)}
-      </span>
+      </Text>
     )
   },
   {
@@ -73,9 +76,9 @@ export const taskColumns: TaskColumn[] = [
     sortable: true,
     width: 'w-32',
     render: (task) => (
-      <span className="text-sm text-gray-600">
+      <Text size="sm" c="gray">
         {formatDate(task.createdAt)}
-      </span>
+      </Text>
     )
   }
 ]; 

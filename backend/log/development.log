@@ -3796,3 +3796,24 @@ Processing by Api::V1::TasksController#index as HTML
 Completed 200 OK in 76ms (Views: 0.2ms | ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 0.4ms)
 
 
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-08 14:51:43 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.7ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 151ms (Views: 0.2ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-08 14:52:53 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.6ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 134ms (Views: 0.1ms | ActiveRecord: 0.6ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/api/v1/tasks" for 192.168.65.1 at 2025-07-08 14:52:56 +0000
+Processing by Api::V1::TasksController#index as HTML
+  [1m[36mTask Load (0.9ms)[0m  [1m[34mSELECT "tasks".* FROM "tasks" WHERE "tasks"."account_id" = 'google-oauth2|114430600905307477148' /*action='index',application='App',controller='tasks'*/[0m
+  ↳ app/controllers/api/v1/tasks_controller.rb:10:in 'Enumerable#map'
+Completed 200 OK in 75ms (Views: 0.3ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 0.0ms)
+
+
