@@ -35,7 +35,11 @@ const Sidebar: React.FC = () => {
         left: 0,
         zIndex: 50,
         width: 280,
-        overflowY: 'auto'
+        overflowY: 'auto',
+        '@media (max-width: 768px)': {
+          transform: 'translateX(-100%)',
+          transition: 'transform 0.3s ease',
+        },
       }}
     >
         {navItems.map((item) => (
