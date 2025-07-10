@@ -8,9 +8,6 @@
     "@mantine/core": "^7.6.1",
     "@mantine/hooks": "^7.6.1",
     "@tabler/icons-react": "^3.34.0",
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "axios": "^1.6.7",
     "react": "^18.2.0",
@@ -22,7 +19,9 @@
   "scripts": {
     "start": "WDS_SOCKET_PORT=0 react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "vitest --config vitest.config.ts",
+    "test:ui": "vitest --ui --config vitest.config.ts",
+    "test:run": "vitest run --config vitest.config.ts",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,10 +43,17 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
     "@types/node": "^22.15.29",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
     "@types/react-router-dom": "^5.3.3",
-    "typescript": "^4.9.5"
+    "@vitejs/plugin-react": "^4.6.0",
+    "@vitest/ui": "^3.2.4",
+    "jsdom": "^26.1.0",
+    "typescript": "^4.9.5",
+    "vitest": "^3.2.4"
   }
 }

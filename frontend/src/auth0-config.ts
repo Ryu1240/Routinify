@@ -27,7 +27,7 @@ export const auth0Config: Auth0ProviderOptions = {
   clientId,
   authorizationParams: {
     redirect_uri: `${window.location.origin}/tasks`,
-    audience,
+    audience: audience || `https://${domain}/api/v2/`,
     scope: "read:tasks"
   },
   cacheLocation: "localstorage",

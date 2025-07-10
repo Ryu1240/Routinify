@@ -1,11 +1,13 @@
 import React from 'react';
-import { Box, NavLink, Text, rem } from '@mantine/core';
+import { Box, NavLink, rem, useMantineTheme } from '@mantine/core';
 import { IconChecklist, IconPlus } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { LAYOUT_CONSTANTS } from '../../constants/layout';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useMantineTheme();
 
   const navItems = [
     {
@@ -29,7 +31,7 @@ const Sidebar: React.FC = () => {
       p="md"
       style={{
         borderRight: `${rem(1)} solid ${theme.colors.gray[3]}`,
-        backgroundColor: theme.colors.body,
+        backgroundColor: theme.colors.gray[0],
         height: `calc(100vh - ${LAYOUT_CONSTANTS.HEADER_HEIGHT})`, // ヘッダーの高さを引く
         position: 'fixed',
         top: LAYOUT_CONSTANTS.HEADER_HEIGHT, // ヘッダーの下に配置

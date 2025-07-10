@@ -31,7 +31,7 @@ class Auth0Client
          algorithm: 'RS256',
          iss: domain_url,
          verify_iss: true,
-         aud: ENV['REACT_APP_AUTH0_AUDIENCE'],
+         aud: ENV['AUTH0_AUDIENCE'] || ENV['REACT_APP_AUTH0_AUDIENCE'],
          verify_aud: true,
          jwks: { keys: jwks_hash[:keys] }
        })
