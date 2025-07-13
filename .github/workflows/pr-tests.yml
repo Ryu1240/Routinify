@@ -74,11 +74,11 @@ jobs:
     - name: Build backend service
       run: docker compose -f docker-compose.test.yml build --parallel backend
 
+    - name: Run RuboCop (auto-correct)
+      run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rubocop --autocorrect --format progress
+
     - name: Run RuboCop (check)
       run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rubocop --format progress --format offenses --out /app/backend/rubocop.txt
-
-    - name: Run RuboCop (auto-correct)
-      run: docker compose -f docker-compose.test.yml run --rm backend bundle exec rubocop --auto-correct --format progress
 
     - name: Run Brakeman security check
       run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec brakeman --no-progress --format json --output /app/backend/brakeman-report.json

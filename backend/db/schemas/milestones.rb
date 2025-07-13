@@ -3,4 +3,4 @@ create_table "milestones", force: :cascade do |t|
   t.date     "due_date"
   t.datetime "created_at"
   t.datetime "updated_at"
-end 
+end

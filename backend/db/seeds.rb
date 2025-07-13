@@ -69,7 +69,7 @@ sample_tasks.each do |task_attrs|
     t.priority = task_attrs[:priority]
     t.category = task_attrs[:category]
   end
-  
+
   if task.persisted?
     puts "Task created/updated: #{task.title}"
   else
