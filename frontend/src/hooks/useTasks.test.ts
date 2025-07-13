@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { renderHook, waitFor } from '@testing-library/react'
+import { renderHook, waitFor, act } from '@testing-library/react'
 import { useTasks } from './useTasks'
 import axios from '../config/axios'
 
@@ -100,8 +100,9 @@ describe('useTasks', () => {
       expect(result.current.tasks).toEqual(mockTasks)
     })
 
-    // 検索を実行
-    result.current.setSearch('Work')
+    act(() => {
+      result.current.setSearch('Work')
+    })
 
     await waitFor(() => {
       expect(result.current.filteredTasks).toHaveLength(1)
@@ -126,8 +127,9 @@ describe('useTasks', () => {
       expect(result.current.tasks).toEqual(mockTasks)
     })
 
-    // ソートを実行
-    result.current.setSorting('title')
+    act(() => {
+      result.current.setSorting('title')
+    })
 
     await waitFor(() => {
       expect(result.current.sortBy).toBe('title')
@@ -152,16 +154,18 @@ describe('useTasks', () => {
       expect(result.current.tasks).toEqual(mockTasks)
     })
 
-    // 最初のソート
-    result.current.setSorting('title')
+    act(() => {
+      result.current.setSorting('title')
+    })
     
     await waitFor(() => {
       expect(result.current.sortBy).toBe('title')
       expect(result.current.reverseSortDirection).toBe(false)
     })
 
-    // 同じフィールドで再度ソート
-    result.current.setSorting('title')
+    act(() => {
+      result.current.setSorting('title')
+    })
     
     await waitFor(() => {
       expect(result.current.sortBy).toBe('title')
@@ -193,7 +197,9 @@ describe('useTasks', () => {
     } as any)
 
     // リフレッシュを実行
-    result.current.refreshTasks()
+    act(() => {
+      result.current.refreshTasks()
+    })
 
     await waitFor(() => {
       expect(result.current.tasks).toEqual(newTasks)

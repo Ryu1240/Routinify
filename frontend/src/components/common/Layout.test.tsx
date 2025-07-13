@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Layout from './Layout'
+import React from 'react'
 
 // Mantineのモック
 vi.mock('@mantine/core', () => ({
@@ -32,22 +33,26 @@ const renderWithRouter = (component: React.ReactElement) => {
 }
 
 describe('Layout', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('renders header component', () => {
     renderWithRouter(<Layout>Test Content</Layout>)
     
-    expect(screen.getByTestId('header')).toBeInTheDocument()
+    expect(screen.getByTestId('header')).toBeDefined()
   })
 
   it('renders sidebar component', () => {
     renderWithRouter(<Layout>Test Content</Layout>)
     
-    expect(screen.getByTestId('sidebar')).toBeInTheDocument()
+    expect(screen.getByTestId('sidebar')).toBeDefined()
   })
 
   it('renders children content', () => {
     renderWithRouter(<Layout>Test Content</Layout>)
     
-    expect(screen.getByText('Test Content')).toBeInTheDocument()
+    expect(screen.getByText('Test Content')).toBeDefined()
   })
 
   it('renders multiple children', () => {
@@ -58,8 +63,8 @@ describe('Layout', () => {
       </Layout>
     )
     
-    expect(screen.getByText('Child 1')).toBeInTheDocument()
-    expect(screen.getByText('Child 2')).toBeInTheDocument()
+    expect(screen.getByText('Child 1')).toBeDefined()
+    expect(screen.getByText('Child 2')).toBeDefined()
   })
 
   it('has correct layout structure', () => {

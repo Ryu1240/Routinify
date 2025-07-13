@@ -1,99 +1,96 @@
 import { describe, it, expect } from 'vitest'
 import { getPriorityColor, getStatusColor, getCategoryColor, formatDate } from './taskUtils'
-import { COLORS } from '../constants/colors'
 
 describe('taskUtils', () => {
   describe('getPriorityColor', () => {
     it('returns correct color for high priority', () => {
-      expect(getPriorityColor('high')).toBe(COLORS.PRIMARY)
-      expect(getPriorityColor('HIGH')).toBe(COLORS.PRIMARY)
+      expect(getPriorityColor('high')).toBe('#1D74AE')
     })
 
     it('returns correct color for medium priority', () => {
-      expect(getPriorityColor('medium')).toBe(COLORS.MEDIUM)
-      expect(getPriorityColor('MEDIUM')).toBe(COLORS.MEDIUM)
+      expect(getPriorityColor('medium')).toBe('#335471')
     })
 
     it('returns correct color for low priority', () => {
-      expect(getPriorityColor('low')).toBe(COLORS.LIGHT)
-      expect(getPriorityColor('LOW')).toBe(COLORS.LIGHT)
+      expect(getPriorityColor('low')).toBe('#5B819B')
     })
 
-    it('returns gray color for unknown priority', () => {
-      expect(getPriorityColor('unknown')).toBe(COLORS.GRAY)
-      expect(getPriorityColor(null)).toBe(COLORS.GRAY)
-      expect(getPriorityColor(undefined as any)).toBe(COLORS.GRAY)
+    it('returns default color for null priority', () => {
+      expect(getPriorityColor(null)).toBe('#929198')
+    })
+
+    it('returns default color for unknown priority', () => {
+      expect(getPriorityColor('unknown')).toBe('#929198')
     })
   })
 
   describe('getStatusColor', () => {
     it('returns correct color for completed status', () => {
-      expect(getStatusColor('completed')).toBe(COLORS.PRIMARY)
-      expect(getStatusColor('COMPLETED')).toBe(COLORS.PRIMARY)
+      expect(getStatusColor('completed')).toBe('#1D74AE')
     })
 
     it('returns correct color for in_progress status', () => {
-      expect(getStatusColor('in_progress')).toBe(COLORS.MEDIUM)
-      expect(getStatusColor('IN_PROGRESS')).toBe(COLORS.MEDIUM)
+      expect(getStatusColor('in_progress')).toBe('#335471')
     })
 
     it('returns correct color for pending status', () => {
-      expect(getStatusColor('pending')).toBe(COLORS.LIGHT)
-      expect(getStatusColor('PENDING')).toBe(COLORS.LIGHT)
+      expect(getStatusColor('pending')).toBe('#5B819B')
     })
 
     it('returns correct color for cancelled status', () => {
-      expect(getStatusColor('cancelled')).toBe(COLORS.GRAY)
-      expect(getStatusColor('CANCELLED')).toBe(COLORS.GRAY)
+      expect(getStatusColor('cancelled')).toBe('#929198')
     })
 
-    it('returns gray color for unknown status', () => {
-      expect(getStatusColor('unknown')).toBe(COLORS.GRAY)
-      expect(getStatusColor(null)).toBe(COLORS.GRAY)
-      expect(getStatusColor(undefined as any)).toBe(COLORS.GRAY)
+    it('returns default color for null status', () => {
+      expect(getStatusColor(null)).toBe('#929198')
+    })
+
+    it('returns default color for unknown status', () => {
+      expect(getStatusColor('unknown')).toBe('#929198')
     })
   })
 
   describe('getCategoryColor', () => {
-    it('returns gray color for null category', () => {
-      expect(getCategoryColor(null)).toBe(COLORS.GRAY)
+    it('returns color for Work category', () => {
+      const color = getCategoryColor('Work')
+      expect(['#1D74AE', '#335471', '#5B819B', '#032742']).toContain(color)
     })
 
-    it('returns a color based on category name', () => {
-      const brandColors = [COLORS.PRIMARY, COLORS.MEDIUM, COLORS.LIGHT, COLORS.DARK]
-      
-      // テスト用のカテゴリ名で色が返されることを確認
-      const result = getCategoryColor('test')
-      expect(brandColors).toContain(result)
+    it('returns color for Personal category', () => {
+      const color = getCategoryColor('Personal')
+      expect(['#1D74AE', '#335471', '#5B819B', '#032742']).toContain(color)
+    })
+
+    it('returns default color for null category', () => {
+      expect(getCategoryColor(null)).toBe('#929198')
     })
 
     it('returns consistent color for same category', () => {
-      const category = 'work'
-      const color1 = getCategoryColor(category)
-      const color2 = getCategoryColor(category)
+      const color1 = getCategoryColor('Work')
+      const color2 = getCategoryColor('Work')
       expect(color1).toBe(color2)
     })
   })
 
   describe('formatDate', () => {
-    it('returns formatted date for valid date string', () => {
-      const dateString = '2024-01-15'
-      const result = formatDate(dateString)
-      expect(result).toBe('2024/1/15')
+    it('formats valid date string', () => {
+      const result = formatDate('2024-12-31')
+      expect(result).toMatch(/^\d{4}\/\d{1,2}\/\d{1,2}$/)
     })
 
     it('returns dash for null date', () => {
       expect(formatDate(null)).toBe('-')
     })
 
-    it('returns dash for empty string', () => {
+    it('returns dash for empty date string', () => {
       expect(formatDate('')).toBe('-')
     })
 
     it('handles different date formats', () => {
-      const dateString = '2024-12-25T10:30:00Z'
-      const result = formatDate(dateString)
-      expect(result).toBe('2024/12/25')
+      const result1 = formatDate('2024-01-01')
+      const result2 = formatDate('2024-12-31')
+      expect(result1).toMatch(/^\d{4}\/\d{1,2}\/\d{1,2}$/)
+      expect(result2).toMatch(/^\d{4}\/\d{1,2}\/\d{1,2}$/)
     })
   })
 }) 

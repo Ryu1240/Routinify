@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import React from 'react'
 
 // React Routerのモック
 const mockNavigate = vi.fn()
@@ -56,23 +57,23 @@ describe('Sidebar', () => {
   it('renders sidebar with navigation items', () => {
     renderWithRouter(<Sidebar />)
     
-    expect(screen.getByTestId('sidebar')).toBeInTheDocument()
-    expect(screen.getByText('タスク一覧')).toBeInTheDocument()
-    expect(screen.getByText('タスク作成')).toBeInTheDocument()
+    expect(screen.getByTestId('sidebar')).toBeDefined()
+    expect(screen.getByText('タスク一覧')).toBeDefined()
+    expect(screen.getByText('タスク作成')).toBeDefined()
   })
 
   it('renders navigation items with descriptions', () => {
     renderWithRouter(<Sidebar />)
     
-    expect(screen.getByText('すべてのタスクを表示')).toBeInTheDocument()
-    expect(screen.getByText('新しいタスクを作成')).toBeInTheDocument()
+    expect(screen.getByText('すべてのタスクを表示')).toBeDefined()
+    expect(screen.getByText('新しいタスクを作成')).toBeDefined()
   })
 
   it('renders navigation items with icons', () => {
     renderWithRouter(<Sidebar />)
     
-    expect(screen.getByTestId('checklist-icon')).toBeInTheDocument()
-    expect(screen.getByTestId('plus-icon')).toBeInTheDocument()
+    expect(screen.getByTestId('checklist-icon')).toBeDefined()
+    expect(screen.getByTestId('plus-icon')).toBeDefined()
   })
 
   it('calls navigate when navigation item is clicked', () => {
@@ -99,6 +100,6 @@ describe('Sidebar', () => {
     const navLinks = screen.getAllByTestId('nav-link')
     const activeLink = navLinks.find(link => link.getAttribute('data-active') === 'true')
     
-    expect(activeLink).toBeInTheDocument()
+    expect(activeLink).toBeDefined()
   })
 }) 

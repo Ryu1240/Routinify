@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Header from './Header'
+import React from 'react'
 
 // Auth0のモック
 const mockLogout = vi.fn()
@@ -42,19 +43,23 @@ const renderWithRouter = (component: React.ReactElement) => {
 }
 
 describe('Header', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('renders the header with logo and service name', () => {
     renderWithRouter(<Header />)
     
-    expect(screen.getByText('Routinify')).toBeInTheDocument()
-    expect(screen.getByText('習慣化支援サービス')).toBeInTheDocument()
-    expect(screen.getByAltText('Routinify Logo')).toBeInTheDocument()
+    expect(screen.getByText('Routinify')).toBeDefined()
+    expect(screen.getByText('習慣化支援サービス')).toBeDefined()
+    expect(screen.getByAltText('Routinify Logo')).toBeDefined()
   })
 
   it('renders logout button', () => {
     renderWithRouter(<Header />)
     
-    expect(screen.getByText('ログアウト')).toBeInTheDocument()
-    expect(screen.getByTestId('logout-icon')).toBeInTheDocument()
+    expect(screen.getByText('ログアウト')).toBeDefined()
+    expect(screen.getByTestId('logout-icon')).toBeDefined()
   })
 
   it('calls logout function when logout button is clicked', () => {
@@ -69,7 +74,7 @@ describe('Header', () => {
   it('has correct header structure', () => {
     renderWithRouter(<Header />)
     
-    expect(screen.getByTestId('container')).toBeInTheDocument()
+    expect(screen.getByTestId('container')).toBeDefined()
     expect(screen.getAllByTestId('group')).toHaveLength(2) // 左側と右側のGroup
   })
 }) 

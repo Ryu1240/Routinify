@@ -1,34 +1,36 @@
+import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { TaskTable } from './TaskTable'
 
 // DataTableのモック
-vi.mock('../common/DataTable/index', () => ({
-  DataTable: Object.assign(
-    ({ children, ...props }: any) => <div data-testid="data-table" {...props}>{children}</div>,
-    {
-      Thead: ({ children, ...props }: any) => <thead data-testid="thead" {...props}>{children}</thead>,
-      Tbody: ({ children, emptyMessage, colSpan, ...props }: any) => (
-        <tbody data-testid="tbody" {...props}>
-          {children || <tr><td colSpan={colSpan}>{emptyMessage}</td></tr>}
-        </tbody>
-      ),
-      HeaderRow: ({ columns, sortBy, reverseSortDirection, onSort, ...props }: any) => (
-        <tr data-testid="header-row" {...props}>
-          {columns.map((column: any) => (
-            <th key={column.key} data-testid={`header-${column.key}`}>
-              {column.label}
-            </th>
-          ))}
-        </tr>
-      ),
-      Tr: ({ children, ...props }: any) => <tr data-testid="table-row" {...props}>{children}</tr>,
-      Td: ({ children, ...props }: any) => <td data-testid="table-cell" {...props}>{children}</td>,
-    }
-  ),
-  TableColumn: {},
-}))
+vi.mock('../common/DataTable/index', () => {
+  const DataTableMock = ({ children, ...props }: any) => <div data-testid="data-table" {...props}>{children}</div>
+  DataTableMock.Thead = ({ children, ...props }: any) => <div data-testid="thead" {...props}>{children}</div>
+  DataTableMock.Tbody = ({ children, emptyMessage, colSpan, ...props }: any) => (
+    <div data-testid="tbody" {...props}>
+      {children || <div data-testid="empty-message">{emptyMessage}</div>}
+    </div>
+  )
+  DataTableMock.HeaderRow = ({ columns, sortBy, reverseSortDirection, onSort, ...props }: any) => (
+    <div data-testid="header-row" {...props}>
+      {columns.map((column: any) => (
+        <div key={column.key} data-testid="header-cell">
+          {column.label}
+        </div>
+      ))}
+    </div>
+  )
+  DataTableMock.Tr = ({ children, ...props }: any) => <div data-testid="table-row" {...props}>{children}</div>
+  DataTableMock.Td = ({ children, ...props }: any) => <div data-testid="table-cell" {...props}>{children}</div>
+  DataTableMock.TableColumn = {}
+
+  return {
+    DataTable: DataTableMock,
+    TableColumn: {},
+  }
+})
 
 // Mantineのモック
 vi.mock('@mantine/core', () => ({
@@ -84,6 +86,14 @@ vi.mock('../../utils/taskUtils', () => ({
   },
 }))
 
+// COLORSのモック
+vi.mock('../../constants/colors', () => ({
+  COLORS: {
+    PRIMARY: '#1D74AE',
+    GRAY: '#929198',
+  },
+}))
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
     <BrowserRouter>
@@ -134,7 +144,7 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByTestId('data-table')).toBeInTheDocument()
+    expect(screen.getByTestId('data-table')).toBeDefined()
   })
 
   it('renders task titles', () => {
@@ -149,8 +159,8 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByText('Test Task 1')).toBeInTheDocument()
-    expect(screen.getByText('Test Task 2')).toBeInTheDocument()
+    expect(screen.getByText('Test Task 1')).toBeDefined()
+    expect(screen.getByText('Test Task 2')).toBeDefined()
   })
 
   it('renders category badges', () => {
@@ -165,8 +175,8 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByText('Work')).toBeInTheDocument()
-    expect(screen.getByText('Personal')).toBeInTheDocument()
+    expect(screen.getByText('Work')).toBeDefined()
+    expect(screen.getByText('Personal')).toBeDefined()
   })
 
   it('renders priority badges', () => {
@@ -181,8 +191,8 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByText('high')).toBeInTheDocument()
-    expect(screen.getByText('medium')).toBeInTheDocument()
+    expect(screen.getByText('high')).toBeDefined()
+    expect(screen.getByText('medium')).toBeDefined()
   })
 
   it('renders status badges', () => {
@@ -197,8 +207,8 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByText('pending')).toBeInTheDocument()
-    expect(screen.getByText('completed')).toBeInTheDocument()
+    expect(screen.getByText('pending')).toBeDefined()
+    expect(screen.getByText('completed')).toBeDefined()
   })
 
   it('renders formatted dates', () => {
@@ -213,9 +223,9 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByText('2024/12/31')).toBeInTheDocument()
-    expect(screen.getByText('2024/1/1')).toBeInTheDocument()
-    expect(screen.getByText('2024/1/2')).toBeInTheDocument()
+    expect(screen.getByText('2024/12/31')).toBeDefined()
+    expect(screen.getByText('2024/1/1')).toBeDefined()
+    expect(screen.getByText('2024/1/2')).toBeDefined()
   })
 
   it('renders action icons', () => {
@@ -288,7 +298,7 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByTestId('data-table')).toBeInTheDocument()
+    expect(screen.getByTestId('data-table')).toBeDefined()
   })
 
   it('handles tasks with null values', () => {
@@ -315,7 +325,7 @@ describe('TaskTable', () => {
       />
     )
     
-    expect(screen.getByText('Test Task')).toBeInTheDocument()
+    expect(screen.getByText('Test Task')).toBeDefined()
     // category, priority, dueDateの3つのnull値が'-'として表示される
     const dashElements = screen.getAllByText('-')
     expect(dashElements.length).toBeGreaterThanOrEqual(3)
