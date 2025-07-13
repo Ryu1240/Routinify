@@ -7,4 +7,4 @@ create_table "tasks", force: :cascade do |t|
   t.string   "category",  limit: 50
   t.datetime "created_at"
   t.datetime "updated_at"
-end 
+end

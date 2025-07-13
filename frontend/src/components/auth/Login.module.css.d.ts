@@ -1,2 +1,2 @@
 declare const styles: { [className: string]: string };
-export default styles; 
+export default styles;

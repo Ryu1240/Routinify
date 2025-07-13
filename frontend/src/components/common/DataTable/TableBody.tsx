@@ -11,7 +11,7 @@ interface TableBodyProps {
 export const TableBody: React.FC<TableBodyProps> = ({
   children,
   emptyMessage = 'データがありません',
-  colSpan = 1
+  colSpan = 1,
 }) => {
   return (
     <MantineTable.Tbody>
@@ -28,4 +28,4 @@ export const TableBody: React.FC<TableBodyProps> = ({
       )}
     </MantineTable.Tbody>
   );
-}; 
+};

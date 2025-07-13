@@ -1,5 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
 import { Login } from './components/auth';
@@ -63,7 +69,7 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Auth0Provider 
+    <Auth0Provider
       {...auth0Config}
       onRedirectCallback={(appState) => {
         // リダイレクト後の処理をカスタマイズ
@@ -81,6 +87,6 @@ const App: React.FC = () => {
       </Router>
     </Auth0Provider>
   );
-}
+};
 
-export default App; 
+export default App;

@@ -6,19 +6,19 @@ require 'set'
 
 # Auth0Client class to handle JWT token validation
 class Auth0Client
-  # Auth0 Client Objects 
+  # Auth0 Client Objects
   Error = Struct.new(:message, :status)
   Response = Struct.new(:decoded_token, :error)
   Token = Struct.new(:token) do
     def validate_permissions(permissions)
         required_permissions = Set.new permissions
         scopes = token[0]['scope']
-        token_permissions = scopes && !scopes.empty? ? Set.new(scopes.split(" ")) : Set.new
+        token_permissions = scopes && !scopes.empty? ? Set.new(scopes.split(' ')) : Set.new
         required_permissions <= token_permissions
     end
   end
 
-  # Helper Functions 
+  # Helper Functions
   def self.domain_url
     # .envファイルから環境変数を読み込む
     require 'dotenv'
@@ -42,7 +42,7 @@ class Auth0Client
     Net::HTTP.get_response jwks_uri
   end
 
-  # Token Validation 
+  # Token Validation
   def self.validate_token(token)
     jwks_response = get_jwks
 

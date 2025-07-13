@@ -62,4 +62,4 @@ render json: BAD_CREDENTIALS, status: :unauthorized and return unless scheme.dow
 
 token
     end
-  end
+end

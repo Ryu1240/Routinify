@@ -10,21 +10,23 @@ interface TableHeaderCellProps {
   isActionHeader?: boolean;
 }
 
-export const TableHeaderCell: React.FC<TableHeaderCellProps> = ({ 
-  children, 
-  sorted, 
-  onSort, 
-  isActionHeader 
+export const TableHeaderCell: React.FC<TableHeaderCellProps> = ({
+  children,
+  sorted,
+  onSort,
+  isActionHeader,
 }) => {
   const Icon = sorted === 'asc' ? '↑' : '↓';
-  
+
   return (
     <MantineTable.Th>
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: isActionHeader ? "center" : "space-between",
-        alignItems: 'center'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: isActionHeader ? 'center' : 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <Text fw={500} fz="sm">
           {children}
         </Text>
@@ -35,7 +37,7 @@ export const TableHeaderCell: React.FC<TableHeaderCellProps> = ({
               border: 'none',
               cursor: 'pointer',
               color: COLORS.PRIMARY,
-              fontSize: '12px'
+              fontSize: '12px',
             }}
             onClick={onSort}
           >
@@ -45,4 +47,4 @@ export const TableHeaderCell: React.FC<TableHeaderCellProps> = ({
       </div>
     </MantineTable.Th>
   );
-}; 
+};

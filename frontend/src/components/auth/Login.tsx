@@ -1,7 +1,15 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
-import { Center, Stack, Button, Paper, Loader, Text, Image } from '@mantine/core';
+import {
+  Center,
+  Stack,
+  Button,
+  Paper,
+  Loader,
+  Text,
+  Image,
+} from '@mantine/core';
 import { COLORS } from '../../constants/colors';
 import styles from './Login.module.css';
 
@@ -35,25 +43,33 @@ const Login: React.FC<LoginProps> = () => {
   }
 
   return (
-    <Center style={{ minHeight: '100vh', background: COLORS.DARK, flexDirection: 'column' }}>
+    <Center
+      style={{
+        minHeight: '100vh',
+        background: COLORS.DARK,
+        flexDirection: 'column',
+      }}
+    >
       <div className={styles.logoCircle}>
         <Image
           src="/Routinify-Logo.png"
           alt="Routinify Logo"
           width={450}
           height={450}
-          style={{ 
+          style={{
             objectFit: 'cover',
             position: 'absolute',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
           }}
         />
       </div>
       <Paper shadow="md" p="xl" radius="md" withBorder bg={COLORS.MEDIUM}>
         <Stack align="center" gap="lg">
-          <Text c="white" size="lg" fw={500}>習慣化を始めましょう</Text>
+          <Text c="white" size="lg" fw={500}>
+            習慣化を始めましょう
+          </Text>
           <Button
             size="md"
             radius="md"
@@ -63,7 +79,7 @@ const Login: React.FC<LoginProps> = () => {
             disabled={isLoggingIn}
             onClick={() => {
               if (isLoggingIn) return; // 重複クリックを防ぐ
-              
+
               setIsLoggingIn(true);
               try {
                 loginWithRedirect();

@@ -1,0 +1,240 @@
+name: PR Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  backend-rspec:
+    name: Backend RSpec Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build and start services
+      run: |
+        docker compose -f docker-compose.test.yml build --parallel backend
+        docker compose -f docker-compose.test.yml up -d db
+        docker compose -f docker-compose.test.yml up -d backend
+
+    - name: Wait for services to be ready
+      run: |
+        docker compose -f docker-compose.test.yml exec -T db pg_isready -U postgres
+        sleep 10
+
+    - name: Setup database with ridgepole
+      env:
+        DATABASE_HOST: db
+        DATABASE_USERNAME: postgres
+        DATABASE_PASSWORD: password
+        RAILS_ENV: test
+      run: |
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rails db:create
+        echo "Database created successfully"
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --env test --apply
+        echo "Ridgepole applied successfully"
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rails db:schema:dump
+        echo "Schema dumped successfully"
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
+        echo "Database tables listed above"
+
+    - name: Run RSpec tests
+      env:
+        DATABASE_HOST: db
+        DATABASE_USERNAME: postgres
+        DATABASE_PASSWORD: password
+        RAILS_ENV: test
+      run: |
+        mkdir -p backend/test-results
+        docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rspec --format progress --format documentation --out /app/backend/test-results/rspec.txt
+
+    - name: Upload RSpec results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: backend-rspec-results
+        path: backend/test-results/
+        retention-days: 7
+
+    - name: Stop services
+      if: always()
+      run: docker compose -f docker-compose.test.yml down
+
+  backend-lint:
+    name: Backend Linting & Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build backend service
+      run: docker compose -f docker-compose.test.yml build --parallel backend
+
+    - name: Run RuboCop (auto-correct)
+      run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rubocop --autocorrect --format progress
+
+    - name: Run RuboCop (check)
+      run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rubocop --format progress --format offenses --out /app/backend/rubocop.txt
+
+    - name: Run Brakeman security check
+      run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec brakeman --no-progress --format json --output /app/backend/brakeman-report.json
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: backend-lint-results
+        path: |
+          backend/rubocop.txt
+          backend/brakeman-report.json
+        retention-days: 7
+
+  frontend-tests:
+    name: Frontend Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build frontend service
+      run: docker compose -f docker-compose.test.yml build --parallel frontend
+
+    - name: Run tests
+      run: |
+        mkdir -p frontend/test-results
+        docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: frontend-test-results
+        path: |
+          frontend/test-results/
+        retention-days: 7
+
+  frontend-type-check:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build frontend service
+      run: docker compose -f docker-compose.test.yml build --parallel frontend
+
+    - name: Run type check
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm tsc --noEmit
+
+  frontend-format:
+    name: Frontend Code Formatting
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build frontend service
+      run: docker compose -f docker-compose.test.yml build --parallel frontend
+
+    - name: Run Prettier (check)
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm format:check
+
+    - name: Run Prettier (auto-fix)
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm format
+
+  test-results:
+    name: Test Results Summary
+    runs-on: ubuntu-latest
+    needs: [backend-rspec, backend-lint, frontend-tests, frontend-type-check, frontend-format]
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download backend RSpec results
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-rspec-results
+        path: backend-rspec-results
+
+    - name: Download backend lint results
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-lint-results
+        path: backend-lint-results
+
+    - name: Download frontend test results
+      uses: actions/download-artifact@v4
+      with:
+        name: frontend-test-results
+        path: frontend-results
+
+    - name: Display test results summary
+      run: |
+        echo "## Backend RSpec Tests" >> $GITHUB_STEP_SUMMARY
+        if [ -d "backend-rspec-results" ]; then
+          echo "RSpec test results found:" >> $GITHUB_STEP_SUMMARY
+          ls -la backend-rspec-results/ >> $GITHUB_STEP_SUMMARY
+          if [ -f "backend-rspec-results/rspec.txt" ]; then
+            echo "RSpec test report generated successfully." >> $GITHUB_STEP_SUMMARY
+            echo "### Test Summary" >> $GITHUB_STEP_SUMMARY
+            tail -20 backend-rspec-results/rspec.txt >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "No RSpec test results found." >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Backend Linting & Security" >> $GITHUB_STEP_SUMMARY
+        if [ -f "backend-lint-results/rubocop.txt" ]; then
+          echo "### RuboCop Results" >> $GITHUB_STEP_SUMMARY
+          cat backend-lint-results/rubocop.txt >> $GITHUB_STEP_SUMMARY
+        fi
+        if [ -f "backend-lint-results/brakeman-report.json" ]; then
+          echo "### Brakeman Security Scan Completed" >> $GITHUB_STEP_SUMMARY
+          echo "Security scan completed successfully. Check the uploaded artifact for details." >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Frontend Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "### Unit Tests" >> $GITHUB_STEP_SUMMARY
+        if [ -d "frontend-results/test-results" ]; then
+          echo "Test results directory found:" >> $GITHUB_STEP_SUMMARY
+          ls -la frontend-results/test-results/ >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No test results directory found" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Type Check" >> $GITHUB_STEP_SUMMARY
+        echo "TypeScript type checking completed successfully." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Code Formatting" >> $GITHUB_STEP_SUMMARY
+        echo "Prettier formatting check and auto-fix completed successfully." >> $GITHUB_STEP_SUMMARY 

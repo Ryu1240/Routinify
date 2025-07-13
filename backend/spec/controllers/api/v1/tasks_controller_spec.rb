@@ -30,10 +30,10 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       it 'returns tasks for the authenticated user only' do
         other_user_task = create(:task, account_id: 'other-user')
         get :index
-        
+
         json_response = JSON.parse(response.body)
         task_ids = json_response['data'].map { |task| task['id'] }
-        
+
         expect(task_ids).to include(*Task.where(account_id: user_id).pluck(:id))
         expect(task_ids).not_to include(other_user_task.id)
       end
@@ -41,10 +41,10 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       it 'returns correct task attributes' do
         task = create(:task, account_id: user_id, title: 'Test Task')
         get :index
-        
+
         json_response = JSON.parse(response.body)
         returned_task = json_response['data'].find { |t| t['id'] == task.id }
-        
+
         expect(returned_task).to include(
           'id' => task.id,
           'accountId' => task.account_id,
@@ -65,9 +65,9 @@ RSpec.describe Api::V1::TasksController, type: :controller do
           # 認証モックを無効化して実際の認証処理を実行
           allow_any_instance_of(ApplicationController).to receive(:authorize).and_call_original
           allow(Auth0Client).to receive(:validate_token).and_raise(StandardError, 'Auth failed')
-          
+
           request.headers['Authorization'] = "Bearer #{dummy_token}"
-          
+
           # 例外が発生することを期待
           expect { get :index }.to raise_error(StandardError, 'Auth failed')
         end
@@ -78,10 +78,10 @@ RSpec.describe Api::V1::TasksController, type: :controller do
           # validate_permissionsをfalseにモック
           decoded_token = controller.instance_variable_get(:@decoded_token)
           allow(decoded_token).to receive(:validate_permissions).and_return(false)
-          
+
           request.headers['Authorization'] = "Bearer #{dummy_token}"
           get :index
-          
+
           expect(response).to have_http_status(:forbidden)
         end
       end
@@ -89,9 +89,9 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       context 'データベースエラー' do
         it 'データベースエラーが発生した場合、適切にハンドリングされること' do
           allow(Task).to receive(:for_user).and_raise(ActiveRecord::StatementInvalid, 'Database error')
-          
+
           request.headers['Authorization'] = "Bearer #{dummy_token}"
-          
+
           # 例外が発生することを期待
           expect { get :index }.to raise_error(ActiveRecord::StatementInvalid, 'Database error')
         end
@@ -102,7 +102,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       it 'タスクが存在しない場合、空の配列を返すこと' do
         request.headers['Authorization'] = "Bearer #{dummy_token}"
         get :index
-        
+
         json_response = JSON.parse(response.body)
         expect(json_response['data']).to eq([])
       end
@@ -110,9 +110,9 @@ RSpec.describe Api::V1::TasksController, type: :controller do
       it '大量のタスクがある場合でも正常に動作すること' do
         create_list(:task, 100, account_id: user_id)
         request.headers['Authorization'] = "Bearer #{dummy_token}"
-        
+
         get :index
-        
+
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
         expect(json_response['data'].length).to eq(100)
@@ -127,7 +127,7 @@ RSpec.describe Api::V1::TasksController, type: :controller do
 
     it 'validate_permissionsが正しく動作すること' do
       decoded_token = controller.instance_variable_get(:@decoded_token)
-      expect(decoded_token.validate_permissions(['read:tasks'])).to be true
+      expect(decoded_token.validate_permissions([ 'read:tasks' ])).to be true
     end
   end
-end 
+end

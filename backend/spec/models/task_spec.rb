@@ -133,4 +133,4 @@ RSpec.describe Task, type: :model do
       expect(task.updated_at).to be_present
     end
   end
-end 
+end

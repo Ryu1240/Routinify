@@ -7,4 +7,4 @@ export interface TableColumn {
 }
 
 // ソート方向の型
-export type SortDirection = 'asc' | 'desc' | null; 
+export type SortDirection = 'asc' | 'desc' | null;

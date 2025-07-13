@@ -24,7 +24,7 @@ export const taskColumns: TaskColumn[] = [
           </Text>
         )}
       </Text>
-    )
+    ),
   },
   {
     key: 'category',
@@ -35,7 +35,7 @@ export const taskColumns: TaskColumn[] = [
       <Text size="sm" c="gray">
         {task.category || '-'}
       </Text>
-    )
+    ),
   },
   {
     key: 'status',
@@ -46,7 +46,7 @@ export const taskColumns: TaskColumn[] = [
       <Text size="sm" c="gray">
         {task.status || '-'}
       </Text>
-    )
+    ),
   },
   {
     key: 'priority',
@@ -57,7 +57,7 @@ export const taskColumns: TaskColumn[] = [
       <Text size="sm" c="gray">
         {task.priority || '-'}
       </Text>
-    )
+    ),
   },
   {
     key: 'dueDate',
@@ -68,7 +68,7 @@ export const taskColumns: TaskColumn[] = [
       <Text size="sm" c="gray">
         {formatDate(task.dueDate ?? null)}
       </Text>
-    )
+    ),
   },
   {
     key: 'createdAt',
@@ -79,6 +79,6 @@ export const taskColumns: TaskColumn[] = [
       <Text size="sm" c="gray">
         {formatDate(task.createdAt)}
       </Text>
-    )
-  }
-]; 
+    ),
+  },
+];

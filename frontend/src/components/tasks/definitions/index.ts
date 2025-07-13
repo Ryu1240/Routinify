@@ -5,9 +5,9 @@ export type { Task, TaskColumn, TaskTableProps } from './types';
 export { taskColumns } from './columns';
 
 // ユーティリティ関数
-export { 
-  sortTasks, 
-  filterTasks, 
-  getTaskCounts, 
-  getPriorityCounts 
-} from './utils'; 
+export {
+  sortTasks,
+  filterTasks,
+  getTaskCounts,
+  getPriorityCounts,
+} from './utils';

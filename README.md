@@ -47,6 +47,27 @@ make down  # アプリケーションを停止
 make logs  # ログを表示
 ```
 
+### コード品質管理
+
+#### バックエンド（Ruby/Rails）
+```bash
+make lint-backend        # RuboCopでコードチェック
+make lint-backend-fix    # RuboCopで自動修正
+make lint-backend-check  # RuboCopでチェック（詳細出力）
+```
+
+#### フロントエンド（React/TypeScript）
+```bash
+make lint-frontend        # Prettierでコードチェック
+make lint-frontend-fix    # Prettierで自動修正
+make lint-frontend-check  # Prettierでチェック（詳細出力）
+```
+
+#### 全体的なフォーマット
+```bash
+make format-all  # バックエンドとフロントエンドの両方を自動修正
+```
+
 ### 環境変数
 
 - `REACT_APP_AUTH0_DOMAIN`: Auth0のドメイン

@@ -69,4 +69,4 @@ FactoryBot.define do
       title { "タスク (重要) - 緊急対応が必要です！" }
     end
   end
-end 
+end

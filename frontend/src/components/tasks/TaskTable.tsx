@@ -2,17 +2,28 @@ import React from 'react';
 import { Text, Badge, Group, ActionIcon, Tooltip } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { COLORS } from '../../constants/colors';
-import { getPriorityColor, getStatusColor, getCategoryColor, formatDate } from '../../utils/taskUtils';
+import {
+  getPriorityColor,
+  getStatusColor,
+  getCategoryColor,
+  formatDate,
+} from '../../utils/taskUtils';
 import { DataTable, TableColumn } from '../common/DataTable/index';
 import { Task, TaskTableProps } from './definitions';
 
 // タスクテーブルのカラム定義とレンダリング関数
-const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) => void, onDelete: (id: number) => void) => React.ReactNode })[] = [
+const taskColumns: (TableColumn & {
+  render: (
+    task: Task,
+    onEdit: (id: number) => void,
+    onDelete: (id: number) => void
+  ) => React.ReactNode;
+})[] = [
   {
     key: 'title',
     label: 'タスク名',
     sortable: true,
-    render: (task) => <Text fw={500}>{task.title}</Text>
+    render: (task) => <Text fw={500}>{task.title}</Text>,
   },
   {
     key: 'category',
@@ -22,7 +33,7 @@ const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) =>
       <Badge color={getCategoryColor(task.category || null)} variant="light">
         {task.category || '-'}
       </Badge>
-    )
+    ),
   },
   {
     key: 'priority',
@@ -32,7 +43,7 @@ const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) =>
       <Badge color={getPriorityColor(task.priority || null)} variant="light">
         {task.priority || '-'}
       </Badge>
-    )
+    ),
   },
   {
     key: 'status',
@@ -42,7 +53,7 @@ const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) =>
       <Badge color={getStatusColor(task.status || null)} variant="light">
         {task.status || '-'}
       </Badge>
-    )
+    ),
   },
   {
     key: 'dueDate',
@@ -52,7 +63,7 @@ const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) =>
       <Text size="sm" c={COLORS.GRAY}>
         {formatDate(task.dueDate || null)}
       </Text>
-    )
+    ),
   },
   {
     key: 'createdAt',
@@ -62,7 +73,7 @@ const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) =>
       <Text size="sm" c={COLORS.GRAY}>
         {formatDate(task.createdAt)}
       </Text>
-    )
+    ),
   },
   {
     key: 'actions',
@@ -91,12 +102,14 @@ const taskColumns: (TableColumn & { render: (task: Task, onEdit: (id: number) =>
           </ActionIcon>
         </Tooltip>
       </Group>
-    )
-  }
+    ),
+  },
 ];
 
 // テーブルヘッダー用のカラム定義（render関数を除外）
-const tableColumns: TableColumn[] = taskColumns.map(({ render, ...column }) => column);
+const tableColumns: TableColumn[] = taskColumns.map(
+  ({ render, ...column }) => column
+);
 
 export const TaskTable: React.FC<TaskTableProps> = ({
   tasks,
@@ -104,7 +117,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({
   reverseSortDirection,
   onSort,
   onEdit,
-  onDelete
+  onDelete,
 }) => {
   return (
     <DataTable>
@@ -129,4 +142,4 @@ export const TaskTable: React.FC<TaskTableProps> = ({
       </DataTable.Tbody>
     </DataTable>
   );
-}; 
+};

@@ -26,4 +26,4 @@ export interface TaskTableProps {
   onSort: (key: string) => void;
   onEdit: (taskId: number) => void;
   onDelete: (taskId: number) => void;
-} 
+}
