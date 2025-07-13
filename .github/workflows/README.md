@@ -36,15 +36,15 @@ GitHubのリポジトリページから手動でワークフローを実行で�
 - PostgreSQL 15のサービスコンテナ起動
 - データベースのセットアップ
 - RSpecテストの実行
-- RuboCopによるコードスタイルチェック（手動実行時はオプション）
-- Brakemanによるセキュリティチェック（手動実行時はオプション）
+- RuboCopによるコードスタイルチェックと自動修正
+- Brakemanによるセキュリティチェック
 
 **Frontend Tests**
 - Node.js 20のセットアップ（Docker環境と一致）
 - pnpmのインストール
 - 依存関係のインストール
 - Vitestによるテスト実行
-- TypeScriptの型チェック（手動実行時はオプション）
+- TypeScriptの型チェック
 
 **Test Results Summary**
 - テスト結果の集約
@@ -53,7 +53,7 @@ GitHubのリポジトリページから手動でワークフローを実行で�
 #### アーティファクト
 
 テスト結果は以下のアーティファクトとして保存されます：
-- `backend-test-results`: RSpec、RuboCop、Brakemanの結果
+- `backend-test-results`: RuboCop、Brakemanの結果
 - `frontend-test-results`: Vitestのテスト結果
 
 #### 環境変数
@@ -105,11 +105,19 @@ make test-frontend
 # 型チェック
 make type-check
 
-# リンター
-make lint-backend
+# リンター（チェックのみ）
+make lint-backend-check
+
+# リンター（自動修正）
+make lint-backend-fix
 
 # セキュリティチェック
 make security-check
+
+# コードフォーマット
+make format-backend    # Backendのコードフォーマット
+make format-frontend   # Frontendのコードフォーマット
+make format-all        # 全体のコードフォーマット
 ```
 
 **2. 直接実行**
@@ -123,12 +131,50 @@ docker-compose exec frontend pnpm test:run
 # 型チェック
 docker-compose exec frontend pnpm tsc --noEmit
 
-# RuboCop
+# RuboCop（チェックのみ）
 docker-compose exec backend bundle exec rubocop
+
+# RuboCop（自動修正）
+docker-compose exec backend bundle exec rubocop --auto-correct
 
 # Brakeman
 docker-compose exec backend bundle exec brakeman
 ```
+
+## コードフォーマット
+
+### RuboCop（Backend）
+
+RuboCopを使用してRubyコードのフォーマットとスタイルチェックを行います：
+
+**設定ファイル**: `backend/.rubocop.yml`
+
+**主な機能**:
+- コードスタイルの統一
+- 自動修正可能な問題の修正
+- コード品質の向上
+- Rails Omakaseスタイルの適用
+
+**使用方法**:
+```bash
+# スタイルチェック
+make lint-backend-check
+
+# 自動修正
+make lint-backend-fix
+
+# 詳細なレポート
+docker-compose exec backend bundle exec rubocop --format html --out rubocop.html
+```
+
+### フォーマット設定
+
+**RuboCop設定**:
+- 行の最大長: 120文字
+- 文字列リテラル: シングルクォート
+- メソッド長: 最大20行
+- クラス長: 最大150行
+- 複雑度: ABCサイズ最大30
 
 ## バージョン互換性
 
@@ -169,6 +215,10 @@ GitHub ActionsワークフローはDocker環境と互換性を保つように設
 6. **手動実行時の問題**
    - 実行オプションが正しく設定されているか確認
    - 必要なブランチが選択されているか確認
+
+7. **RuboCopエラー**
+   - 自動修正可能な問題は`make lint-backend-fix`で修正
+   - 手動修正が必要な問題は個別に対応
 
 ### ローカルでのテスト実行
 

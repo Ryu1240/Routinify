@@ -61,11 +61,15 @@ jobs:
         DATABASE_USERNAME: postgres
         DATABASE_PASSWORD: password
         RAILS_ENV: test
-      run: bundle exec rspec --format documentation --format RspecJunitFormatter --out rspec.xml
+      run: bundle exec rspec --format documentation
 
-    - name: Run RuboCop
+    - name: Run RuboCop (check)
       working-directory: ./backend
       run: bundle exec rubocop --format progress --format offenses --out rubocop.txt
+
+    - name: Run RuboCop (auto-correct)
+      working-directory: ./backend
+      run: bundle exec rubocop --auto-correct --format progress
 
     - name: Run Brakeman security check
       working-directory: ./backend
@@ -77,7 +81,6 @@ jobs:
       with:
         name: backend-test-results
         path: |
-          backend/rspec.xml
           backend/rubocop.txt
           backend/brakeman-report.json
         retention-days: 7
@@ -149,7 +152,6 @@ jobs:
       if: always()
       with:
         files: |
-          backend-results/rspec.xml
           frontend-results/test-results.xml
         comment_mode: create
         compare_to_earlier_commit: true 

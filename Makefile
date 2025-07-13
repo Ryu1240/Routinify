@@ -104,9 +104,21 @@ test-frontend-coverage:
 lint-backend:
 	docker-compose exec backend bundle exec rubocop
 
+lint-backend-fix:
+	docker-compose exec backend bundle exec rubocop --auto-correct
+
+lint-backend-check:
+	docker-compose exec backend bundle exec rubocop --format progress --format offenses
+
 security-check:
 	docker-compose exec backend bundle exec brakeman
 
 # Type checking
 type-check:
 	docker-compose exec frontend pnpm tsc --noEmit
+
+# Code formatting
+format-backend: lint-backend-fix
+format-frontend:
+	docker-compose exec frontend pnpm format
+format-all: format-backend format-frontend
