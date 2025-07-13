@@ -10,7 +10,10 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     css: true,
     reporters: ['verbose', 'junit'],
-    outputFile: 'test-results.xml'
+    outputFile: {
+      junit: 'test-results.xml'
+    },
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']
   },
   resolve: {
     alias: {
