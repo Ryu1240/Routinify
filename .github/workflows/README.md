@@ -12,6 +12,22 @@ PR作成時およびmain/developブランチへのプッシュ時に実行され
 - Pull Request作成時
 - mainブランチへのプッシュ
 - developブランチへのプッシュ
+- **手動実行**（GitHub UIから）
+
+#### 手動実行方法
+
+GitHubのリポジトリページから手動でワークフローを実行できます：
+
+1. **GitHubリポジトリページ**にアクセス
+2. **Actions**タブをクリック
+3. 左側のメニューから**PR Tests**を選択
+4. **Run workflow**ボタンをクリック
+5. 実行オプションを設定：
+   - **Run backend tests**: Backendテストの実行（デフォルト: true）
+   - **Run frontend tests**: Frontendテストの実行（デフォルト: true）
+   - **Run TypeScript type check**: 型チェックの実行（デフォルト: true）
+   - **Run linting and security checks**: リンターとセキュリティチェック（デフォルト: true）
+6. **Run workflow**をクリックして実行開始
 
 #### 実行内容
 
@@ -20,15 +36,15 @@ PR作成時およびmain/developブランチへのプッシュ時に実行され
 - PostgreSQL 15のサービスコンテナ起動
 - データベースのセットアップ
 - RSpecテストの実行
-- RuboCopによるコードスタイルチェック
-- Brakemanによるセキュリティチェック
+- RuboCopによるコードスタイルチェック（手動実行時はオプション）
+- Brakemanによるセキュリティチェック（手動実行時はオプション）
 
 **Frontend Tests**
 - Node.js 20のセットアップ（Docker環境と一致）
 - pnpmのインストール
 - 依存関係のインストール
 - Vitestによるテスト実行
-- TypeScriptの型チェック
+- TypeScriptの型チェック（手動実行時はオプション）
 
 **Test Results Summary**
 - テスト結果の集約
@@ -56,6 +72,14 @@ Backendテストで使用される環境変数：
 2. PRを作成すると、BackendとFrontendのテストが並行実行されます
 3. テスト結果はPRにコメントとして投稿されます
 4. 失敗したテストがある場合は、詳細な情報が表示されます
+
+### GitHub Actions（手動実行）
+
+特定のテストのみを実行したい場合や、PR以外のブランチでテストを実行したい場合：
+
+1. **GitHub UI**から手動実行
+2. **実行オプション**を選択して必要なテストのみ実行
+3. **実行結果**を確認
 
 ### Docker環境でのローカルテスト
 
@@ -141,6 +165,10 @@ GitHub ActionsワークフローはDocker環境と互換性を保つように設
 5. **TypeScript型エラー**
    - TypeScriptのバージョンが5.8.3以上であることを確認
    - @mantine/coreとの互換性を確認
+
+6. **手動実行時の問題**
+   - 実行オプションが正しく設定されているか確認
+   - 必要なブランチが選択されているか確認
 
 ### ローカルでのテスト実行
 
