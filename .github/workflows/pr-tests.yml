@@ -53,7 +53,7 @@ jobs:
         DATABASE_USERNAME: postgres
         DATABASE_PASSWORD: password
         RAILS_ENV: test
-      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format progress --parallel --workers 4
+      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format progress
 
     - name: Stop services
       if: always()
@@ -75,18 +75,13 @@ jobs:
       run: docker compose -f docker-compose.test.yml build --parallel backend
 
     - name: Run RuboCop (check)
-      run: docker compose -f docker-compose.test.yml run --rm backend bundle exec rubocop --format progress --format offenses --out rubocop.txt
+      run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rubocop --format progress --format offenses --out /app/backend/rubocop.txt
 
     - name: Run RuboCop (auto-correct)
       run: docker compose -f docker-compose.test.yml run --rm backend bundle exec rubocop --auto-correct --format progress
 
     - name: Run Brakeman security check
-      run: docker compose -f docker-compose.test.yml run --rm backend bundle exec brakeman --no-progress --format json --output brakeman-report.json
-
-    - name: Copy test results from container
-      run: |
-        docker compose -f docker-compose.test.yml cp backend:/app/rubocop.txt ./backend/rubocop.txt
-        docker compose -f docker-compose.test.yml cp backend:/app/brakeman-report.json ./backend/brakeman-report.json
+      run: docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec brakeman --no-progress --format json --output /app/backend/brakeman-report.json
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
