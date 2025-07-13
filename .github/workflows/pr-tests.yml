@@ -37,15 +37,20 @@ jobs:
     - name: Build and start services
       run: |
         docker compose build backend
-        docker compose up -d postgres
+        docker compose up -d db
         docker compose up -d backend
 
     - name: Wait for services to be ready
       run: |
-        docker compose exec -T postgres pg_isready -U postgres
+        docker compose exec -T db pg_isready -U postgres
         sleep 10
 
     - name: Setup database with ridgepole
+      env:
+        DATABASE_HOST: db
+        DATABASE_USERNAME: postgres
+        DATABASE_PASSWORD: password
+        RAILS_ENV: test
       run: |
         docker compose exec -T backend bundle exec rails db:create
         echo "Database created successfully"
@@ -59,6 +64,11 @@ jobs:
         echo "Database tables listed above"
 
     - name: Run RSpec tests
+      env:
+        DATABASE_HOST: db
+        DATABASE_USERNAME: postgres
+        DATABASE_PASSWORD: password
+        RAILS_ENV: test
       run: docker compose exec -T backend bundle exec rspec --format documentation
 
     - name: Run RuboCop (check)
@@ -97,44 +107,37 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2
-      with:
-        version: 8
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'pnpm'
-        cache-dependency-path: frontend/pnpm-lock.yaml
-
-    - name: Install dependencies
-      working-directory: ./frontend
-      run: pnpm install
+    - name: Build frontend service
+      run: docker compose build frontend
 
     - name: Run tests
-      working-directory: ./frontend
-      run: pnpm test:run
+      run: docker compose run --rm frontend pnpm test:run
 
     - name: Run type check
-      working-directory: ./frontend
-      run: pnpm tsc --noEmit
+      run: docker compose run --rm frontend pnpm tsc --noEmit
 
     - name: Run Prettier (check)
-      working-directory: ./frontend
-      run: pnpm format:check
+      run: docker compose run --rm frontend pnpm format:check
 
     - name: Run Prettier (auto-fix)
-      working-directory: ./frontend
-      run: pnpm format
+      run: docker compose run --rm frontend pnpm format
+
+    - name: Copy test results from container
+      run: |
+        docker compose run --rm frontend pnpm test:run --reporter=json --outputFile=test-results.json || true
+        docker compose cp frontend:/app/test-results.json ./frontend/test-results.json || true
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: frontend-test-results
-        path: frontend/test-results/
+        path: |
+          frontend/test-results.json
+          frontend/test-results/
         retention-days: 7
 
   test-results:
