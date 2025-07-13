@@ -53,7 +53,17 @@ jobs:
         DATABASE_USERNAME: postgres
         DATABASE_PASSWORD: password
         RAILS_ENV: test
-      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format progress
+      run: |
+        mkdir -p backend/test-results
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format progress --format documentation --out backend/test-results/rspec.txt
+
+    - name: Upload RSpec results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: backend-rspec-results
+        path: backend/test-results/
+        retention-days: 7
 
     - name: Stop services
       if: always()
@@ -192,7 +202,17 @@ jobs:
     - name: Display test results summary
       run: |
         echo "## Backend RSpec Tests" >> $GITHUB_STEP_SUMMARY
-        echo "RSpec tests completed successfully." >> $GITHUB_STEP_SUMMARY
+        if [ -d "backend-rspec-results" ]; then
+          echo "RSpec test results found:" >> $GITHUB_STEP_SUMMARY
+          ls -la backend-rspec-results/ >> $GITHUB_STEP_SUMMARY
+          if [ -f "backend-rspec-results/rspec.txt" ]; then
+            echo "RSpec test report generated successfully." >> $GITHUB_STEP_SUMMARY
+            echo "### Test Summary" >> $GITHUB_STEP_SUMMARY
+            tail -20 backend-rspec-results/rspec.txt >> $GITHUB_STEP_SUMMARY
+          fi
+        else
+          echo "No RSpec test results found." >> $GITHUB_STEP_SUMMARY
+        fi
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "## Backend Linting & Security" >> $GITHUB_STEP_SUMMARY
         if [ -f "backend-lint-results/rubocop.txt" ]; then
