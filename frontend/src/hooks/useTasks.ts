@@ -45,7 +45,16 @@ export const useTasks = () => {
     );
 
     if (sortBy) {
-      filtered = sortTasks(filtered, sortBy, reverseSortDirection);
+      filtered.sort((a, b) => {
+        const aValue = a[sortBy];
+        const bValue = b[sortBy];
+        
+        if (aValue === null || aValue === undefined) return 1;
+        if (bValue === null || bValue === undefined) return -1;
+        
+        const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+        return reverseSortDirection ? -comparison : comparison;
+      });
     }
 
     setFilteredTasks(filtered);
