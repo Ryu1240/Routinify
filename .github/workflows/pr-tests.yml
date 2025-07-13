@@ -11,21 +11,6 @@ jobs:
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: password
-          POSTGRES_USER: postgres
-          POSTGRES_DB: routinify_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
     - name: Checkout code
@@ -36,13 +21,13 @@ jobs:
 
     - name: Build and start services
       run: |
-        docker compose build backend
-        docker compose up -d db
-        docker compose up -d backend
+        docker compose -f docker-compose.test.yml build backend
+        docker compose -f docker-compose.test.yml up -d db
+        docker compose -f docker-compose.test.yml up -d backend
 
     - name: Wait for services to be ready
       run: |
-        docker compose exec -T db pg_isready -U postgres
+        docker compose -f docker-compose.test.yml exec -T db pg_isready -U postgres
         sleep 10
 
     - name: Setup database with ridgepole
@@ -52,15 +37,15 @@ jobs:
         DATABASE_PASSWORD: password
         RAILS_ENV: test
       run: |
-        docker compose exec -T backend bundle exec rails db:create
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rails db:create
         echo "Database created successfully"
-        docker compose exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --dry-run
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --dry-run
         echo "Ridgepole dry-run completed"
-        docker compose exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
         echo "Ridgepole applied successfully"
-        docker compose exec -T backend bundle exec rails db:schema:dump
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rails db:schema:dump
         echo "Schema dumped successfully"
-        docker compose exec -T backend bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
+        docker compose -f docker-compose.test.yml exec -T backend bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
         echo "Database tables listed above"
 
     - name: Run RSpec tests
@@ -69,21 +54,21 @@ jobs:
         DATABASE_USERNAME: postgres
         DATABASE_PASSWORD: password
         RAILS_ENV: test
-      run: docker compose exec -T backend bundle exec rspec --format documentation
+      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format documentation
 
     - name: Run RuboCop (check)
-      run: docker compose exec -T backend bundle exec rubocop --format progress --format offenses --out rubocop.txt
+      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rubocop --format progress --format offenses --out rubocop.txt
 
     - name: Run RuboCop (auto-correct)
-      run: docker compose exec -T backend bundle exec rubocop --auto-correct --format progress
+      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rubocop --auto-correct --format progress
 
     - name: Run Brakeman security check
-      run: docker compose exec -T backend bundle exec brakeman --no-progress --output-format json --output brakeman-report.json
+      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec brakeman --no-progress --output-format json --output brakeman-report.json
 
     - name: Copy test results from container
       run: |
-        docker compose cp backend:/app/rubocop.txt ./backend/rubocop.txt
-        docker compose cp backend:/app/brakeman-report.json ./backend/brakeman-report.json
+        docker compose -f docker-compose.test.yml cp backend:/app/rubocop.txt ./backend/rubocop.txt
+        docker compose -f docker-compose.test.yml cp backend:/app/brakeman-report.json ./backend/brakeman-report.json
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -97,7 +82,7 @@ jobs:
 
     - name: Stop services
       if: always()
-      run: docker compose down
+      run: docker compose -f docker-compose.test.yml down
 
   frontend-tests:
     name: Frontend Tests
@@ -111,24 +96,24 @@ jobs:
       uses: docker/setup-buildx-action@v3
 
     - name: Build frontend service
-      run: docker compose build frontend
+      run: docker compose -f docker-compose.test.yml build frontend
 
     - name: Run tests
-      run: docker compose run --rm frontend pnpm test:run
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run
 
     - name: Run type check
-      run: docker compose run --rm frontend pnpm tsc --noEmit
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm tsc --noEmit
 
     - name: Run Prettier (check)
-      run: docker compose run --rm frontend pnpm format:check
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm format:check
 
     - name: Run Prettier (auto-fix)
-      run: docker compose run --rm frontend pnpm format
+      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm format
 
     - name: Copy test results from container
       run: |
-        docker compose run --rm frontend pnpm test:run --reporter=json --outputFile=test-results.json || true
-        docker compose cp frontend:/app/test-results.json ./frontend/test-results.json || true
+        docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run --reporter=json --outputFile=test-results.json || true
+        docker compose -f docker-compose.test.yml cp frontend:/app/test-results.json ./frontend/test-results.json || true
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
