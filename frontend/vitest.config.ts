@@ -11,7 +11,7 @@ export default defineConfig({
     css: true,
     reporters: ['verbose', 'junit'],
     outputFile: {
-      junit: './test-results/results.xml'
+      junit: 'test-results/results.xml'
     },
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']
   },

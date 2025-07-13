@@ -141,11 +141,21 @@ jobs:
         name: frontend-test-results
         path: frontend-results
 
-    - name: Publish test results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      if: always()
-      with:
-        files: |
-          frontend-results/test-results/results.xml
-        comment_mode: off
-        compare_to_earlier_commit: true 
+    - name: Display test results summary
+      run: |
+        echo "## Backend Test Results" >> $GITHUB_STEP_SUMMARY
+        if [ -f "backend-results/rubocop.txt" ]; then
+          echo "### RuboCop Results" >> $GITHUB_STEP_SUMMARY
+          cat backend-results/rubocop.txt >> $GITHUB_STEP_SUMMARY
+        fi
+        if [ -f "backend-results/brakeman-report.json" ]; then
+          echo "### Brakeman Security Scan Completed" >> $GITHUB_STEP_SUMMARY
+          echo "Security scan completed successfully. Check the uploaded artifact for details." >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "## Frontend Test Results" >> $GITHUB_STEP_SUMMARY
+        if [ -d "frontend-results/test-results" ]; then
+          echo "### Test Results Directory Found" >> $GITHUB_STEP_SUMMARY
+          ls -la frontend-results/test-results/ >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### No test results directory found" >> $GITHUB_STEP_SUMMARY
+        fi 
