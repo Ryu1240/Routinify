@@ -6,33 +6,12 @@ on:
   push:
     branches: [ main, develop ]
   workflow_dispatch:
-    inputs:
-      run_backend_tests:
-        description: 'Run backend tests'
-        required: false
-        default: true
-        type: boolean
-      run_frontend_tests:
-        description: 'Run frontend tests'
-        required: false
-        default: true
-        type: boolean
-      run_type_check:
-        description: 'Run TypeScript type check'
-        required: false
-        default: true
-        type: boolean
-      run_linting:
-        description: 'Run linting and security checks'
-        required: false
-        default: true
-        type: boolean
 
 jobs:
   backend-tests:
     name: Backend Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' ? inputs.run_backend_tests : true
+    if: github.event_name == 'workflow_dispatch' ? true : true
     
     services:
       postgres:
@@ -87,12 +66,10 @@ jobs:
 
     - name: Run RuboCop
       working-directory: ./backend
-      if: github.event_name == 'workflow_dispatch' ? inputs.run_linting : true
       run: bundle exec rubocop --format progress --format offenses --out rubocop.txt
 
     - name: Run Brakeman security check
       working-directory: ./backend
-      if: github.event_name == 'workflow_dispatch' ? inputs.run_linting : true
       run: bundle exec brakeman --no-progress --output-format json --output brakeman-report.json
 
     - name: Upload test results
@@ -109,7 +86,6 @@ jobs:
   frontend-tests:
     name: Frontend Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' ? inputs.run_frontend_tests : true
 
     steps:
     - name: Checkout code
@@ -137,7 +113,6 @@ jobs:
 
     - name: Run type check
       working-directory: ./frontend
-      if: github.event_name == 'workflow_dispatch' ? inputs.run_type_check : true
       run: pnpm tsc --noEmit
 
     - name: Upload test results
