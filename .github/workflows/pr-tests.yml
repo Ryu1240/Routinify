@@ -53,9 +53,9 @@ jobs:
       run: |
         bundle exec rails db:create
         echo "Database created successfully"
-        bundle exec ridgepole -c ./config/database.yml -f ./db/Schemafile --dry-run -E test
+        bundle exec ridgepole -c ./config/database.yml -f ./db/Schemafile --dry-run
         echo "Ridgepole dry-run completed"
-        bundle exec ridgepole -c ./config/database.yml -f ./db/Schemafile --apply -E test
+        bundle exec ridgepole -c ./config/database.yml -f ./db/Schemafile --apply
         echo "Ridgepole applied successfully"
         bundle exec rails db:schema:dump
         echo "Schema dumped successfully"
