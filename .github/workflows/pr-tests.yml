@@ -108,18 +108,12 @@ jobs:
     - name: Run Prettier (auto-fix)
       run: docker compose -f docker-compose.test.yml run --rm frontend pnpm format
 
-    - name: Copy test results from container
-      run: |
-        docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run --reporter=json --outputFile=test-results.json || true
-        docker compose -f docker-compose.test.yml cp frontend:/app/test-results.json ./frontend/test-results.json || true
-
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: frontend-test-results
         path: |
-          frontend/test-results.json
           frontend/test-results/
         retention-days: 7
 
@@ -151,5 +145,5 @@ jobs:
       with:
         files: |
           frontend-results/test-results/
-        comment_mode: create
+        comment_mode: always
         compare_to_earlier_commit: true 
