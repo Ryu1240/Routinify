@@ -52,7 +52,7 @@ jobs:
         RAILS_ENV: test
       run: |
         bundle exec rails db:create
-        bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+        bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --env test
 
     - name: Run RSpec tests
       working-directory: ./backend
