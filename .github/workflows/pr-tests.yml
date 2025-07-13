@@ -98,7 +98,7 @@ jobs:
 
     - name: Run tests
       run: |
-        docker compose -f docker-compose.test.yml run --rm frontend mkdir -p test-results
+        mkdir -p frontend/test-results
         docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run
 
     - name: Run type check
