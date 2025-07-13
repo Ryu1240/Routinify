@@ -5,6 +5,7 @@ export const useAuth = () => {
   const { 
     isAuthenticated, 
     isLoading, 
+    user,
     getAccessTokenSilently, 
     loginWithRedirect,
     logout 
@@ -47,6 +48,7 @@ export const useAuth = () => {
   return {
     isAuthenticated,
     isLoading: isLoading || tokenLoading,
+    user,
     accessToken,
     login,
     logout: handleLogout,

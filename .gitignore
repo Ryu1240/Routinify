@@ -52,3 +52,4 @@ ENV/
 .venv/
 .python-version
 backend/log/development.log
+.pnpm-store/
