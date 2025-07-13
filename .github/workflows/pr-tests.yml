@@ -97,7 +97,9 @@ jobs:
       run: docker compose -f docker-compose.test.yml build frontend
 
     - name: Run tests
-      run: docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run
+      run: |
+        docker compose -f docker-compose.test.yml run --rm frontend mkdir -p test-results
+        docker compose -f docker-compose.test.yml run --rm frontend pnpm test:run
 
     - name: Run type check
       run: docker compose -f docker-compose.test.yml run --rm frontend pnpm tsc --noEmit
@@ -144,6 +146,6 @@ jobs:
       if: always()
       with:
         files: |
-          frontend-results/test-results/
-        comment_mode: always
+          frontend-results/test-results/results.xml
+        comment_mode: off
         compare_to_earlier_commit: true 
