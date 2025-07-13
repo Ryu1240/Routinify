@@ -31,27 +31,32 @@ export const useTasks = () => {
       setError(null);
     } catch (err) {
       console.error('タスクの取得に失敗しました:', err);
-      setError('タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。');
+      setError(
+        'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const filterAndSortTasks = useCallback(() => {
-    let filtered = tasks.filter((task) =>
-      task.title.toLowerCase().includes(search.toLowerCase()) ||
-      (task.category && task.category.toLowerCase().includes(search.toLowerCase())) ||
-      (task.status && task.status.toLowerCase().includes(search.toLowerCase()))
+    let filtered = tasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(search.toLowerCase()) ||
+        (task.category &&
+          task.category.toLowerCase().includes(search.toLowerCase())) ||
+        (task.status &&
+          task.status.toLowerCase().includes(search.toLowerCase()))
     );
 
     if (sortBy) {
       filtered.sort((a, b) => {
         const aValue = a[sortBy];
         const bValue = b[sortBy];
-        
+
         if (aValue === null || aValue === undefined) return 1;
         if (bValue === null || bValue === undefined) return -1;
-        
+
         const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
         return reverseSortDirection ? -comparison : comparison;
       });
@@ -86,4 +91,4 @@ export const useTasks = () => {
     setSorting,
     refreshTasks,
   };
-}; 
+};

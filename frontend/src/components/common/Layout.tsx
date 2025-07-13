@@ -12,10 +12,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     <Box style={{ minHeight: '100vh' }}>
       {/* ヘッダー */}
       <Header />
-      
+
       {/* サイドバー */}
       <Sidebar />
-      
+
       {/* メインコンテンツ */}
       <Box
         style={{
@@ -23,7 +23,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           marginTop: LAYOUT_CONSTANTS.HEADER_HEIGHT,
           padding: 'var(--mantine-spacing-md)',
           minHeight: `calc(100vh - ${LAYOUT_CONSTANTS.HEADER_HEIGHT}px)`,
-          backgroundColor: 'var(--mantine-color-gray-0)'
+          backgroundColor: 'var(--mantine-color-gray-0)',
         }}
       >
         {children}
@@ -32,4 +32,4 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 };
 
-export default Layout; 
+export default Layout;

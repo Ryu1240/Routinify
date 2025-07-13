@@ -10,4 +10,4 @@ const TaskList: React.FC = () => {
   );
 };
 
-export default TaskList; 
+export default TaskList;

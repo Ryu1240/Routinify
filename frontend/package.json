@@ -22,9 +22,8 @@
     "test": "vitest --config vitest.config.ts",
     "test:ui": "vitest --ui --config vitest.config.ts",
     "test:run": "vitest run --config vitest.config.ts",
-    "lint": "eslint src --ext .ts,.tsx,.js,.jsx",
-    "lint:fix": "eslint src --ext .ts,.tsx,.js,.jsx --fix",
-    "lint:check": "eslint src --ext .ts,.tsx,.js,.jsx --format=compact",
+    "format": "prettier --write src/**/*.{ts,tsx,js,jsx}",
+    "format:check": "prettier --check src/**/*.{ts,tsx,js,jsx}",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -52,13 +51,9 @@
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/ui": "^3.2.4",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
     "jsdom": "^26.1.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"

@@ -111,13 +111,13 @@ lint-backend-check:
 	docker-compose exec backend bundle exec rubocop --format progress --format offenses
 
 lint-frontend:
-	docker-compose exec frontend pnpm lint
+	docker-compose exec frontend pnpm format:check
 
 lint-frontend-fix:
-	docker-compose exec frontend pnpm lint:fix
+	docker-compose exec frontend pnpm format
 
 lint-frontend-check:
-	docker-compose exec frontend pnpm lint:check
+	docker-compose exec frontend pnpm format:check
 
 security-check:
 	docker-compose exec backend bundle exec brakeman

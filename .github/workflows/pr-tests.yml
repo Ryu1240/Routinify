@@ -117,13 +117,13 @@ jobs:
       working-directory: ./frontend
       run: pnpm tsc --noEmit
 
-    - name: Run ESLint (check)
+    - name: Run Prettier (check)
       working-directory: ./frontend
-      run: pnpm lint:check
+      run: pnpm format:check
 
-    - name: Run ESLint (auto-fix)
+    - name: Run Prettier (auto-fix)
       working-directory: ./frontend
-      run: pnpm lint:fix
+      run: pnpm format
 
     - name: Upload test results
       uses: actions/upload-artifact@v4

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // APIのベースURLを設定
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 
 // axiosのデフォルト設定
 axios.defaults.baseURL = API_BASE_URL;
@@ -37,4 +38,4 @@ axios.interceptors.response.use(
   }
 );
 
-export default axios; 
+export default axios;

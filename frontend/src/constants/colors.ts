@@ -18,4 +18,4 @@ export const BRAND_COLORS = [
   COLORS.PRIMARY, // 7
   COLORS.DARK, // 8
   COLORS.GRAY, // 9: 一番濃い
-] as const; 
+] as const;

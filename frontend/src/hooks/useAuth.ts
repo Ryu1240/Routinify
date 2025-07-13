@@ -2,13 +2,13 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
 
 export const useAuth = () => {
-  const { 
-    isAuthenticated, 
-    isLoading, 
+  const {
+    isAuthenticated,
+    isLoading,
     user,
-    getAccessTokenSilently, 
+    getAccessTokenSilently,
     loginWithRedirect,
-    logout 
+    logout,
   } = useAuth0();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
@@ -53,4 +53,4 @@ export const useAuth = () => {
     login,
     logout: handleLogout,
   };
-}; 
+};

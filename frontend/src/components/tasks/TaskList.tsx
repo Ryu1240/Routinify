@@ -1,13 +1,13 @@
 import React from 'react';
-import { 
-  TextInput, 
-  Group, 
-  Text, 
+import {
+  TextInput,
+  Group,
+  Text,
   Container,
   Loader,
   Alert,
   Button,
-  Title
+  Title,
 } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../constants/colors';
@@ -27,8 +27,6 @@ const TaskList: React.FC = () => {
     error,
     setSorting,
   } = useTasks();
-
-
 
   const handleEdit = (taskId: number) => {
     console.log('編集ボタンがクリックされました:', taskId);
@@ -80,8 +78,10 @@ const TaskList: React.FC = () => {
 
   return (
     <Container size="xl" py="xl">
-      <Title order={2} mb="lg">タスク一覧</Title>
-      
+      <Title order={2} mb="lg">
+        タスク一覧
+      </Title>
+
       <Group justify="space-between" mb="md">
         <TextInput
           placeholder="タスク名、カテゴリ、ステータスで検索..."
@@ -108,22 +108,22 @@ const TaskList: React.FC = () => {
         </Button>
       </Group>
 
-        <TaskTable
-          tasks={filteredTasks}
-          sortBy={sortBy}
-          reverseSortDirection={reverseSortDirection}
-          onSort={(key) => setSorting(key as any)}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+      <TaskTable
+        tasks={filteredTasks}
+        sortBy={sortBy}
+        reverseSortDirection={reverseSortDirection}
+        onSort={(key) => setSorting(key as any)}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-        {filteredTasks.length > 0 && (
-          <Text size="sm" c={COLORS.GRAY} ta="center" mt="sm">
-            {filteredTasks.length}件のタスクを表示中
-          </Text>
-        )}
+      {filteredTasks.length > 0 && (
+        <Text size="sm" c={COLORS.GRAY} ta="center" mt="sm">
+          {filteredTasks.length}件のタスクを表示中
+        </Text>
+      )}
     </Container>
   );
 };
 
-export default TaskList; 
+export default TaskList;

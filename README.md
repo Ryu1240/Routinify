@@ -58,9 +58,9 @@ make lint-backend-check  # RuboCopでチェック（詳細出力）
 
 #### フロントエンド（React/TypeScript）
 ```bash
-make lint-frontend        # ESLintでコードチェック
-make lint-frontend-fix    # ESLintで自動修正
-make lint-frontend-check  # ESLintでチェック（詳細出力）
+make lint-frontend        # Prettierでコードチェック
+make lint-frontend-fix    # Prettierで自動修正
+make lint-frontend-check  # Prettierでチェック（詳細出力）
 ```
 
 #### 全体的なフォーマット

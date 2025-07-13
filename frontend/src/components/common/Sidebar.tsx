@@ -14,14 +14,14 @@ const Sidebar: React.FC = () => {
       label: 'タスク一覧',
       icon: <IconChecklist size={16} />,
       path: '/tasks',
-      description: 'すべてのタスクを表示'
+      description: 'すべてのタスクを表示',
     },
     {
       label: 'タスク作成',
       icon: <IconPlus size={16} />,
       path: '/tasks/new',
-      description: '新しいタスクを作成'
-    }
+      description: '新しいタスクを作成',
+    },
   ];
 
   return (
@@ -45,23 +45,23 @@ const Sidebar: React.FC = () => {
         },
       }}
     >
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            label={item.label}
-            description={item.description}
-            leftSection={item.icon}
-            active={location.pathname === item.path}
-            onClick={() => navigate(item.path)}
-            variant="filled"
-            style={{
-              borderRadius: 'var(--mantine-radius-sm)',
-              marginBottom: 'var(--mantine-spacing-xs)'
-            }}
-          />
-        ))}
-      </Box>
+      {navItems.map((item) => (
+        <NavLink
+          key={item.path}
+          label={item.label}
+          description={item.description}
+          leftSection={item.icon}
+          active={location.pathname === item.path}
+          onClick={() => navigate(item.path)}
+          variant="filled"
+          style={{
+            borderRadius: 'var(--mantine-radius-sm)',
+            marginBottom: 'var(--mantine-spacing-xs)',
+          }}
+        />
+      ))}
+    </Box>
   );
 };
 
-export default Sidebar; 
+export default Sidebar;
