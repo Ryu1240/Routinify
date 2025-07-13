@@ -1,5 +1,8 @@
 FROM node:20
 
+# pnpmをグローバルインストール
+RUN npm install -g pnpm
+
 # 作業ディレクトリの作成
 WORKDIR /app
 
@@ -11,8 +14,8 @@ RUN mkdir -p /app/node_modules/.cache && \
 USER node
 
 # パッケージのインストール
-COPY --chown=node:node package.json package-lock.json ./
-RUN npm install
+COPY --chown=node:node package.json pnpm-lock.yaml ./
+RUN pnpm install
 
 # アプリケーションのコピー
 COPY --chown=node:node . .
@@ -23,4 +26,5 @@ RUN mkdir -p /app/node_modules/.cache && \
 
 EXPOSE 3000
 
-CMD ["npm", "start"] 
+# デフォルトコマンド
+CMD ["pnpm", "start"] 

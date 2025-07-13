@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
-import Login from './components/Login';
-import TaskList from './pages/TaskList';
+import { Login } from './components/auth';
+import { TaskList } from './pages/tasks';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -32,6 +32,36 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 const AppContent: React.FC = () => {
   const navigate = useNavigate();
 
+  // Auth0のリダイレクト処理をここで行う
+  React.useEffect(() => {
+    const handleRedirect = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnTo = urlParams.get('returnTo');
+      if (returnTo) {
+        navigate(returnTo);
+      }
+    };
+
+    handleRedirect();
+  }, [navigate]);
+
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/tasks"
+        element={
+          <ProtectedRoute>
+            <TaskList />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/" element={<Navigate to="/tasks" replace />} />
+    </Routes>
+  );
+};
+
+const App: React.FC = () => {
   return (
     <Auth0Provider 
       {...auth0Config}
@@ -44,33 +74,12 @@ const AppContent: React.FC = () => {
           document.title,
           appState?.returnTo || window.location.pathname
         );
-        // 必要に応じてナビゲーションを実行
-        if (appState?.returnTo) {
-          navigate(appState.returnTo);
-        }
       }}
     >
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/tasks"
-          element={
-            <ProtectedRoute>
-              <TaskList />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/" element={<Navigate to="/tasks" replace />} />
-      </Routes>
+      <Router>
+        <AppContent />
+      </Router>
     </Auth0Provider>
-  );
-};
-
-const App: React.FC = () => {
-  return (
-    <Router>
-      <AppContent />
-    </Router>
   );
 }
 
