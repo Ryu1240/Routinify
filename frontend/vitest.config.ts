@@ -9,10 +9,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
     css: true,
-    reporters: ['verbose', 'junit'],
-    outputFile: {
-      junit: 'test-results.xml'
-    },
+    reporters: ['verbose'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}']
   },
   resolve: {

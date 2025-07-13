@@ -110,6 +110,15 @@ lint-backend-fix:
 lint-backend-check:
 	docker-compose exec backend bundle exec rubocop --format progress --format offenses
 
+lint-frontend:
+	docker-compose exec frontend pnpm lint
+
+lint-frontend-fix:
+	docker-compose exec frontend pnpm lint:fix
+
+lint-frontend-check:
+	docker-compose exec frontend pnpm lint:check
+
 security-check:
 	docker-compose exec backend bundle exec brakeman
 
@@ -119,6 +128,5 @@ type-check:
 
 # Code formatting
 format-backend: lint-backend-fix
-format-frontend:
-	docker-compose exec frontend pnpm format
+format-frontend: lint-frontend-fix
 format-all: format-backend format-frontend

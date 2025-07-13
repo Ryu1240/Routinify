@@ -117,12 +117,20 @@ jobs:
       working-directory: ./frontend
       run: pnpm tsc --noEmit
 
+    - name: Run ESLint (check)
+      working-directory: ./frontend
+      run: pnpm lint:check
+
+    - name: Run ESLint (auto-fix)
+      working-directory: ./frontend
+      run: pnpm lint:fix
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: frontend-test-results
-        path: frontend/test-results.xml
+        path: frontend/test-results/
         retention-days: 7
 
   test-results:
@@ -152,6 +160,6 @@ jobs:
       if: always()
       with:
         files: |
-          frontend-results/test-results.xml
+          frontend-results/test-results/
         comment_mode: create
         compare_to_earlier_commit: true 
