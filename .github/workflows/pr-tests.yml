@@ -55,7 +55,7 @@ jobs:
         RAILS_ENV: test
       run: |
         mkdir -p backend/test-results
-        docker compose -f docker-compose.test.yml exec -T -v $(pwd)/backend:/app/backend backend bundle exec rspec --format progress --format documentation --out /app/backend/test-results/rspec.txt
+        docker compose -f docker-compose.test.yml run --rm -v $(pwd)/backend:/app/backend backend bundle exec rspec --format progress --format documentation --out /app/backend/test-results/rspec.txt
 
     - name: Upload RSpec results
       uses: actions/upload-artifact@v4
