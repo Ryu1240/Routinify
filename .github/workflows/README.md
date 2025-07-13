@@ -16,7 +16,7 @@ PR作成時およびmain/developブランチへのプッシュ時に実行され
 #### 実行内容
 
 **Backend Tests**
-- Ruby 3.3のセットアップ
+- Ruby 3.4.2のセットアップ（Docker環境と一致）
 - PostgreSQL 15のサービスコンテナ起動
 - データベースのセットアップ
 - RSpecテストの実行
@@ -24,7 +24,7 @@ PR作成時およびmain/developブランチへのプッシュ時に実行され
 - Brakemanによるセキュリティチェック
 
 **Frontend Tests**
-- Node.js 18のセットアップ
+- Node.js 20のセットアップ（Docker環境と一致）
 - pnpmのインストール
 - 依存関係のインストール
 - Vitestによるテスト実行
@@ -50,10 +50,73 @@ Backendテストで使用される環境変数：
 
 ## 使用方法
 
+### GitHub Actions（自動実行）
+
 1. このワークフローは自動的に実行されます
 2. PRを作成すると、BackendとFrontendのテストが並行実行されます
 3. テスト結果はPRにコメントとして投稿されます
 4. 失敗したテストがある場合は、詳細な情報が表示されます
+
+### Docker環境でのローカルテスト
+
+#### 前提条件
+```bash
+# Dockerコンテナを起動
+docker-compose up -d
+```
+
+#### テスト実行方法
+
+**1. Makefileを使用**
+```bash
+# すべてのテストを実行
+make test-all
+
+# Backendテストのみ
+make test-backend
+
+# Frontendテストのみ
+make test-frontend
+
+# 型チェック
+make type-check
+
+# リンター
+make lint-backend
+
+# セキュリティチェック
+make security-check
+```
+
+**2. 直接実行**
+```bash
+# Backendテスト
+docker-compose exec backend bundle exec rspec
+
+# Frontendテスト
+docker-compose exec frontend pnpm test:run
+
+# 型チェック
+docker-compose exec frontend pnpm tsc --noEmit
+
+# RuboCop
+docker-compose exec backend bundle exec rubocop
+
+# Brakeman
+docker-compose exec backend bundle exec brakeman
+```
+
+## バージョン互換性
+
+GitHub ActionsワークフローはDocker環境と互換性を保つように設定されています：
+
+| コンポーネント | GitHub Actions | Docker | 互換性 |
+|---------------|----------------|--------|--------|
+| Ruby | 3.4.2 | 3.4.2 | ✅ |
+| Node.js | 20 | 20 | ✅ |
+| PostgreSQL | 15 | 15 | ✅ |
+| pnpm | 8 | 8 | ✅ |
+| TypeScript | 5.8.3 | 5.8.3 | ✅ |
 
 ## トラブルシューティング
 
@@ -70,6 +133,14 @@ Backendテストで使用される環境変数：
 3. **テストタイムアウト**
    - テストの実行時間を確認
    - 必要に応じてタイムアウト時間を調整
+
+4. **Docker環境でのテスト失敗**
+   - コンテナが起動しているか確認
+   - ボリュームマウントが正しく設定されているか確認
+
+5. **TypeScript型エラー**
+   - TypeScriptのバージョンが5.8.3以上であることを確認
+   - @mantine/coreとの互換性を確認
 
 ### ローカルでのテスト実行
 

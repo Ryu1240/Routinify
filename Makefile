@@ -83,3 +83,30 @@ help: ## このヘルプを表示
 
 	@echo "使用可能なコマンド:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+# Testing commands
+test-backend:
+	docker-compose exec backend bundle exec rspec
+
+test-frontend:
+	docker-compose exec frontend pnpm test:run
+
+test-all: test-backend test-frontend
+
+# Test with coverage
+test-backend-coverage:
+	docker-compose exec backend bundle exec rspec --format documentation
+
+test-frontend-coverage:
+	docker-compose exec frontend pnpm test:run --coverage
+
+# Linting and security checks
+lint-backend:
+	docker-compose exec backend bundle exec rubocop
+
+security-check:
+	docker-compose exec backend bundle exec brakeman
+
+# Type checking
+type-check:
+	docker-compose exec frontend pnpm tsc --noEmit

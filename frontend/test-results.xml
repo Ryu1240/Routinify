@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="76" failures="0" errors="0" time="5.436880573">
+    <testsuite name="src/hooks/useAuth.test.ts" timestamp="2025-07-13T10:36:45.304Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.298113059">
+        <testcase classname="src/hooks/useAuth.test.ts" name="useAuth &gt; returns authentication state when user is authenticated" time="0.166219745">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/hooks/useAuth.test.ts" name="useAuth &gt; returns authentication state when user is not authenticated" time="0.009412334">
+        </testcase>
+        <testcase classname="src/hooks/useAuth.test.ts" name="useAuth &gt; returns loading state when Auth0 is loading" time="0.010470822">
+        </testcase>
+        <testcase classname="src/hooks/useAuth.test.ts" name="useAuth &gt; provides access token when authenticated" time="0.061667968">
+        </testcase>
+        <testcase classname="src/hooks/useAuth.test.ts" name="useAuth &gt; handles access token error gracefully" time="0.040549696">
+            <system-err>
+トークンの取得に失敗しました: Error: Token error
+    at [90m/Users/ryusei/Documents/devenv/Routinify/frontend/[39msrc/hooks/useAuth.test.ts:88:58
+    at [90mfile:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+    at runSuite [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runFiles [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1787:3[90m)[39m
+
+            </system-err>
+        </testcase>
+    </testsuite>
+    <testsuite name="src/hooks/useTasks.test.ts" timestamp="2025-07-13T10:36:45.317Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.548177158">
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; returns initial state" time="0.101153772">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; fetches tasks when authenticated" time="0.068717246">
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; handles fetch error" time="0.065512552">
+            <system-err>
+タスクの取得に失敗しました: Error: タスクの取得に失敗しました
+    at [90m/Users/ryusei/Documents/devenv/Routinify/frontend/[39msrc/hooks/useTasks.test.ts:76:36
+    at [90mfile:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:155:11
+    at [90mfile:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:752:26
+    at [90mfile:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (&lt;anonymous&gt;)
+    at runWithTimeout [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1863:10[90m)[39m
+    at runTest [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1574:12[90m)[39m
+    at runSuite [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runSuite [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1729:8[90m)[39m
+    at runFiles [90m(file:///Users/ryusei/Documents/devenv/Routinify/frontend/[39mnode_modules/[4m.pnpm[24m/@vitest+runner@3.2.4/node_modules/[4m@vitest[24m/runner/dist/chunk-hooks.js:1787:3[90m)[39m
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; filters tasks based on search term" time="0.067819783">
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; sorts tasks when sortBy is set" time="0.064614766">
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; toggles sort direction when same field is clicked" time="0.060367536">
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; refreshes tasks when refreshTasks is called" time="0.106848109">
+        </testcase>
+        <testcase classname="src/hooks/useTasks.test.ts" name="useTasks &gt; does not fetch tasks when not authenticated" time="0.00474325">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/utils/taskUtils.test.ts" timestamp="2025-07-13T10:36:45.330Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="19" failures="0" errors="0" skipped="0" time="0.415280449">
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getPriorityColor &gt; returns correct color for high priority" time="0.018770688">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getPriorityColor &gt; returns correct color for medium priority" time="0.000751618">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getPriorityColor &gt; returns correct color for low priority" time="0.000593265">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getPriorityColor &gt; returns default color for null priority" time="0.000904644">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getPriorityColor &gt; returns default color for unknown priority" time="0.000970949">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getStatusColor &gt; returns correct color for completed status" time="0.044040535">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getStatusColor &gt; returns correct color for in_progress status" time="0.000601968">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getStatusColor &gt; returns correct color for pending status" time="0.000862987">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getStatusColor &gt; returns correct color for cancelled status" time="0.001037177">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getStatusColor &gt; returns default color for null status" time="0.000945014">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getStatusColor &gt; returns default color for unknown status" time="0.00084611">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getCategoryColor &gt; returns color for Work category" time="0.025736627">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getCategoryColor &gt; returns color for Personal category" time="0.001020155">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getCategoryColor &gt; returns default color for null category" time="0.000494028">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; getCategoryColor &gt; returns consistent color for same category" time="0.000481893">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; formatDate &gt; formats valid date string" time="0.298891588">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; formatDate &gt; returns dash for null date" time="0.000822093">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; formatDate &gt; returns dash for empty date string" time="0.000760878">
+        </testcase>
+        <testcase classname="src/utils/taskUtils.test.ts" name="taskUtils &gt; formatDate &gt; handles different date formats" time="0.002204919">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/auth/Login.test.tsx" timestamp="2025-07-13T10:36:45.356Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="8" failures="0" errors="0" skipped="0" time="0.799444433">
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; renders login form" time="0.451880973">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; renders logo image" time="0.042962628">
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; renders help text" time="0.065061653">
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; calls loginWithRedirect when login button is clicked" time="0.096085465">
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; shows loading state when logging in" time="0.046158585">
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; navigates to tasks when authenticated" time="0.036338474">
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; shows loader when Auth0 is loading" time="0.019491503">
+        </testcase>
+        <testcase classname="src/components/auth/Login.test.tsx" name="Login &gt; logs error to console when Auth0 error occurs" time="0.031225707">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/tasks/TaskList.test.tsx" timestamp="2025-07-13T10:36:45.367Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="10" failures="0" errors="0" skipped="0" time="0.685066979">
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; renders task list title" time="0.304055116">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; renders search input" time="0.07019381">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; renders add task button" time="0.031877128">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; shows loading state when auth is loading" time="0.018846162">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; shows loading state when tasks are loading" time="0.022798757">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; shows authentication required alert when not authenticated" time="0.022642105">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; shows error alert when there is an error" time="0.016440588">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; renders task table with tasks" time="0.050158276">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; shows task count when tasks exist" time="0.038422173">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskList.test.tsx" name="TaskList &gt; calls handleAddTask when add task button is clicked" time="0.099729414">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/tasks/TaskTable.test.tsx" timestamp="2025-07-13T10:36:45.380Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="11" failures="0" errors="0" skipped="0" time="1.14584041">
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders data table" time="0.435744755">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders task titles" time="0.14224098">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders category badges" time="0.092653789">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders priority badges" time="0.071123034">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders status badges" time="0.080973144">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders formatted dates" time="0.06498045">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; renders action icons" time="0.054863096">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; calls onEdit when edit icon is clicked" time="0.090916774">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; calls onDelete when delete icon is clicked" time="0.052363892">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; handles empty tasks array" time="0.014813968">
+        </testcase>
+        <testcase classname="src/components/tasks/TaskTable.test.tsx" name="TaskTable &gt; handles tasks with null values" time="0.036586126">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/common/Header.test.tsx" timestamp="2025-07-13T10:36:45.397Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="4" failures="0" errors="0" skipped="0" time="0.424276146">
+        <testcase classname="src/components/common/Header.test.tsx" name="Header &gt; renders the header with logo and service name" time="0.28354922">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/common/Header.test.tsx" name="Header &gt; renders logout button" time="0.039985805">
+        </testcase>
+        <testcase classname="src/components/common/Header.test.tsx" name="Header &gt; calls logout function when logout button is clicked" time="0.060536111">
+        </testcase>
+        <testcase classname="src/components/common/Header.test.tsx" name="Header &gt; has correct header structure" time="0.027845029">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/common/Layout.test.tsx" timestamp="2025-07-13T10:36:45.405Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="5" failures="0" errors="0" skipped="0" time="0.357564741">
+        <testcase classname="src/components/common/Layout.test.tsx" name="Layout &gt; renders header component" time="0.236340774">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/common/Layout.test.tsx" name="Layout &gt; renders sidebar component" time="0.021076677">
+        </testcase>
+        <testcase classname="src/components/common/Layout.test.tsx" name="Layout &gt; renders children content" time="0.036609401">
+        </testcase>
+        <testcase classname="src/components/common/Layout.test.tsx" name="Layout &gt; renders multiple children" time="0.028579825">
+        </testcase>
+        <testcase classname="src/components/common/Layout.test.tsx" name="Layout &gt; has correct layout structure" time="0.025559238">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/components/common/Sidebar.test.tsx" timestamp="2025-07-13T10:36:45.411Z" hostname="okudaryuuseinoMacBook-Pro.local" tests="6" failures="0" errors="0" skipped="0" time="0.763117198">
+        <testcase classname="src/components/common/Sidebar.test.tsx" name="Sidebar &gt; renders sidebar with navigation items" time="0.526151739">
+            <system-err>
+Warning: `ReactDOMTestUtils.act` is deprecated in favor of `React.act`. Import `act` from `react` instead of `react-dom/test-utils`. See https://react.dev/warnings/react-dom-test-utils for more info.
+⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+            </system-err>
+        </testcase>
+        <testcase classname="src/components/common/Sidebar.test.tsx" name="Sidebar &gt; renders navigation items with descriptions" time="0.042366809">
+        </testcase>
+        <testcase classname="src/components/common/Sidebar.test.tsx" name="Sidebar &gt; renders navigation items with icons" time="0.026316598">
+        </testcase>
+        <testcase classname="src/components/common/Sidebar.test.tsx" name="Sidebar &gt; calls navigate when navigation item is clicked" time="0.091887137">
+        </testcase>
+        <testcase classname="src/components/common/Sidebar.test.tsx" name="Sidebar &gt; calls navigate to new task page when create task is clicked" time="0.023261196">
+        </testcase>
+        <testcase classname="src/components/common/Sidebar.test.tsx" name="Sidebar &gt; shows active state for current path" time="0.035364985">
+        </testcase>
+    </testsuite>
+</testsuites>
