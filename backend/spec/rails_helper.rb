@@ -73,7 +73,7 @@ RSpec.configure do |config|
 
   # FactoryBotの設定
   config.include FactoryBot::Syntax::Methods
-  
+
   # AuthorizationHelperの設定
   config.include AuthorizationHelper
 end
