@@ -21,7 +21,7 @@ jobs:
 
     - name: Build and start services
       run: |
-        docker compose -f docker-compose.test.yml build backend
+        docker compose -f docker-compose.test.yml build --no-cache backend
         docker compose -f docker-compose.test.yml up -d db
         docker compose -f docker-compose.test.yml up -d backend
 
