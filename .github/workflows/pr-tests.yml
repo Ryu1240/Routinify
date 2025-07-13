@@ -31,57 +31,49 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.4.2'
-        bundler-cache: true
-        working-directory: ./backend
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Install PostgreSQL client
+    - name: Build and start services
       run: |
-        sudo apt-get update
-        sudo apt-get install -y postgresql-client libpq-dev
+        docker compose build backend
+        docker compose up -d postgres
+        docker compose up -d backend
 
-    - name: Setup database
-      working-directory: ./backend
-      env:
-        DATABASE_HOST: localhost
-        DATABASE_USERNAME: postgres
-        DATABASE_PASSWORD: password
-        RAILS_ENV: test
+    - name: Wait for services to be ready
       run: |
-        bundle exec rails db:create
+        docker compose exec -T postgres pg_isready -U postgres
+        sleep 10
+
+    - name: Setup database with ridgepole
+      run: |
+        docker compose exec -T backend bundle exec rails db:create
         echo "Database created successfully"
-        bundle exec ridgepole -c ./config/database.yml -f ./db/Schemafile --dry-run
+        docker compose exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --dry-run
         echo "Ridgepole dry-run completed"
-        bundle exec ridgepole -c ./config/database.yml -f ./db/Schemafile --apply
+        docker compose exec -T backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
         echo "Ridgepole applied successfully"
-        bundle exec rails db:schema:dump
+        docker compose exec -T backend bundle exec rails db:schema:dump
         echo "Schema dumped successfully"
-        bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
+        docker compose exec -T backend bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
         echo "Database tables listed above"
 
     - name: Run RSpec tests
-      working-directory: ./backend
-      env:
-        DATABASE_HOST: localhost
-        DATABASE_USERNAME: postgres
-        DATABASE_PASSWORD: password
-        RAILS_ENV: test
-      run: bundle exec rspec --format documentation
+      run: docker compose exec -T backend bundle exec rspec --format documentation
 
     - name: Run RuboCop (check)
-      working-directory: ./backend
-      run: bundle exec rubocop --format progress --format offenses --out rubocop.txt
+      run: docker compose exec -T backend bundle exec rubocop --format progress --format offenses --out rubocop.txt
 
     - name: Run RuboCop (auto-correct)
-      working-directory: ./backend
-      run: bundle exec rubocop --auto-correct --format progress
+      run: docker compose exec -T backend bundle exec rubocop --auto-correct --format progress
 
     - name: Run Brakeman security check
-      working-directory: ./backend
-      run: bundle exec brakeman --no-progress --output-format json --output brakeman-report.json
+      run: docker compose exec -T backend bundle exec brakeman --no-progress --output-format json --output brakeman-report.json
+
+    - name: Copy test results from container
+      run: |
+        docker compose cp backend:/app/rubocop.txt ./backend/rubocop.txt
+        docker compose cp backend:/app/brakeman-report.json ./backend/brakeman-report.json
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -92,6 +84,10 @@ jobs:
           backend/rubocop.txt
           backend/brakeman-report.json
         retention-days: 7
+
+    - name: Stop services
+      if: always()
+      run: docker compose down
 
   frontend-tests:
     name: Frontend Tests
