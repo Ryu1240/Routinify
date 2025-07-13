@@ -6,10 +6,9 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    '@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:@typescript-eslint/recommended',
+    '@typescript-eslint/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
