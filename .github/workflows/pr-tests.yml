@@ -8,9 +8,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  backend-tests:
-    name: Backend Tests
+  backend-rspec:
+    name: Backend RSpec Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
     - name: Checkout code
@@ -21,7 +22,7 @@ jobs:
 
     - name: Build and start services
       run: |
-        docker compose -f docker-compose.test.yml build --no-cache backend
+        docker compose -f docker-compose.test.yml build --parallel backend
         docker compose -f docker-compose.test.yml up -d db
         docker compose -f docker-compose.test.yml up -d backend
 
@@ -52,16 +53,35 @@ jobs:
         DATABASE_USERNAME: postgres
         DATABASE_PASSWORD: password
         RAILS_ENV: test
-      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format documentation
+      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rspec --format progress --parallel --workers 4
+
+    - name: Stop services
+      if: always()
+      run: docker compose -f docker-compose.test.yml down
+
+  backend-lint:
+    name: Backend Linting & Security
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build backend service
+      run: docker compose -f docker-compose.test.yml build --parallel backend
 
     - name: Run RuboCop (check)
-      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rubocop --format progress --format offenses --out rubocop.txt
+      run: docker compose -f docker-compose.test.yml run --rm backend bundle exec rubocop --format progress --format offenses --out rubocop.txt
 
     - name: Run RuboCop (auto-correct)
-      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec rubocop --auto-correct --format progress
+      run: docker compose -f docker-compose.test.yml run --rm backend bundle exec rubocop --auto-correct --format progress
 
     - name: Run Brakeman security check
-      run: docker compose -f docker-compose.test.yml exec -T backend bundle exec brakeman --no-progress --format json --output brakeman-report.json
+      run: docker compose -f docker-compose.test.yml run --rm backend bundle exec brakeman --no-progress --format json --output brakeman-report.json
 
     - name: Copy test results from container
       run: |
@@ -72,15 +92,11 @@ jobs:
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: backend-test-results
+        name: backend-lint-results
         path: |
           backend/rubocop.txt
           backend/brakeman-report.json
         retention-days: 7
-
-    - name: Stop services
-      if: always()
-      run: docker compose -f docker-compose.test.yml down
 
   frontend-tests:
     name: Frontend Tests
@@ -122,18 +138,24 @@ jobs:
   test-results:
     name: Test Results Summary
     runs-on: ubuntu-latest
-    needs: [backend-tests, frontend-tests]
+    needs: [backend-rspec, backend-lint, frontend-tests]
     if: always()
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Download backend test results
+    - name: Download backend RSpec results
       uses: actions/download-artifact@v4
       with:
-        name: backend-test-results
-        path: backend-results
+        name: backend-rspec-results
+        path: backend-rspec-results
+
+    - name: Download backend lint results
+      uses: actions/download-artifact@v4
+      with:
+        name: backend-lint-results
+        path: backend-lint-results
 
     - name: Download frontend test results
       uses: actions/download-artifact@v4
@@ -143,15 +165,19 @@ jobs:
 
     - name: Display test results summary
       run: |
-        echo "## Backend Test Results" >> $GITHUB_STEP_SUMMARY
-        if [ -f "backend-results/rubocop.txt" ]; then
+        echo "## Backend RSpec Tests" >> $GITHUB_STEP_SUMMARY
+        echo "RSpec tests completed successfully." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "## Backend Linting & Security" >> $GITHUB_STEP_SUMMARY
+        if [ -f "backend-lint-results/rubocop.txt" ]; then
           echo "### RuboCop Results" >> $GITHUB_STEP_SUMMARY
-          cat backend-results/rubocop.txt >> $GITHUB_STEP_SUMMARY
+          cat backend-lint-results/rubocop.txt >> $GITHUB_STEP_SUMMARY
         fi
-        if [ -f "backend-results/brakeman-report.json" ]; then
+        if [ -f "backend-lint-results/brakeman-report.json" ]; then
           echo "### Brakeman Security Scan Completed" >> $GITHUB_STEP_SUMMARY
           echo "Security scan completed successfully. Check the uploaded artifact for details." >> $GITHUB_STEP_SUMMARY
         fi
+        echo "" >> $GITHUB_STEP_SUMMARY
         echo "## Frontend Test Results" >> $GITHUB_STEP_SUMMARY
         if [ -d "frontend-results/test-results" ]; then
           echo "### Test Results Directory Found" >> $GITHUB_STEP_SUMMARY
