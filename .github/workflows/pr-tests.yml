@@ -52,7 +52,15 @@ jobs:
         RAILS_ENV: test
       run: |
         bundle exec rails db:create
+        echo "Database created successfully"
+        bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --dry-run --env test
+        echo "Ridgepole dry-run completed"
         bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --env test
+        echo "Ridgepole applied successfully"
+        bundle exec rails db:schema:dump
+        echo "Schema dumped successfully"
+        bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
+        echo "Database tables listed above"
 
     - name: Run RSpec tests
       working-directory: ./backend
