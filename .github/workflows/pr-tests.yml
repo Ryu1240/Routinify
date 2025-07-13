@@ -38,7 +38,7 @@ jobs:
         RAILS_ENV: test
       run: |
         docker compose -f docker-compose.test.yml exec -T backend bundle exec rails db:create
-        echo "Database created successfully""
+        echo "Database created successfully"
         docker compose -f docker-compose.test.yml exec -T backend bundle exec rails db:schema:dump
         echo "Schema dumped successfully"
         docker compose -f docker-compose.test.yml exec -T backend bundle exec rails runner "puts ActiveRecord::Base.connection.tables"
