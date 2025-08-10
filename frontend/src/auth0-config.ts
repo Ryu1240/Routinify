@@ -26,20 +26,17 @@ const clientId = checkEnvironmentVariable(
   process.env.REACT_APP_AUTH0_CLIENT_ID
 );
 
-// オプション環境変数のチェック
-const audience = process.env.REACT_APP_AUTH0_AUDIENCE;
-if (!audience) {
-  console.warn(
-    '⚠️  REACT_APP_AUTH0_AUDIENCE が設定されていません。一部の機能が制限される可能性があります。'
-  );
-}
+const audience = checkEnvironmentVariable(
+  'REACT_APP_AUTH0_AUDIENCE',
+  process.env.REACT_APP_AUTH0_AUDIENCE
+);
 
 export const auth0Config: Auth0ProviderOptions = {
   domain,
   clientId,
   authorizationParams: {
     redirect_uri: `${window.location.origin}/tasks`,
-    audience: audience || `https://${domain}/api/v2/`,
+    audience,
     scope: 'openid profile email read:tasks write:tasks delete:tasks',
   },
   cacheLocation: 'localstorage',
