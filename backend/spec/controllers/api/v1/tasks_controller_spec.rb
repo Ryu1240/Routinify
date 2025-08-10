@@ -120,6 +120,169 @@ RSpec.describe Api::V1::TasksController, type: :controller do
     end
   end
 
+  describe 'POST #create' do
+    let(:valid_params) do
+      {
+        task: {
+          title: 'New Task',
+          due_date: Date.current + 1.week,
+          status: '未着手',
+          priority: 'high',
+          category: '仕事'
+        }
+      }
+    end
+
+    context '正常系' do
+      before do
+        request.headers['Authorization'] = "Bearer #{dummy_token}"
+      end
+
+      it 'returns a successful response with 201 status' do
+        post :create, params: valid_params
+        expect(response).to have_http_status(:created)
+      end
+
+      it 'creates a new task' do
+        expect {
+          post :create, params: valid_params
+        }.to change(Task, :count).by(1)
+      end
+
+      it 'returns the created task in camelCase format' do
+        post :create, params: valid_params
+        json_response = JSON.parse(response.body)
+
+        expect(json_response).to include(
+          'id' => be_a(Integer),
+          'accountId' => user_id,
+          'title' => 'New Task',
+          'status' => '未着手',
+          'priority' => 'high',
+          'category' => '仕事'
+        )
+        expect(json_response['dueDate']).to eq((Date.current + 1.week).iso8601)
+      end
+
+      it 'automatically sets account_id to current user' do
+        post :create, params: valid_params
+        created_task = Task.last
+        expect(created_task.account_id).to eq(user_id)
+      end
+
+      it 'creates task with minimal required params (title only)' do
+        minimal_params = { task: { title: 'Minimal Task' } }
+
+        post :create, params: minimal_params
+        expect(response).to have_http_status(:created)
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['title']).to eq('Minimal Task')
+        expect(json_response['accountId']).to eq(user_id)
+      end
+
+      it 'handles various status values correctly' do
+        %w[未着手 進行中 完了].each do |status|
+          params = valid_params.dup
+          params[:task][:status] = status
+
+          post :create, params: params
+          expect(response).to have_http_status(:created)
+
+          json_response = JSON.parse(response.body)
+          expect(json_response['status']).to eq(status)
+        end
+      end
+    end
+
+    context '異常系' do
+      context 'バリデーションエラー' do
+        before do
+          request.headers['Authorization'] = "Bearer #{dummy_token}"
+        end
+
+        it 'returns 422 when title is missing' do
+          invalid_params = { task: { due_date: Date.current } }
+
+          post :create, params: invalid_params
+          expect(response).to have_http_status(:unprocessable_entity)
+
+          json_response = JSON.parse(response.body)
+          expect(json_response['errors']).to include("Title can't be blank")
+        end
+
+        it 'returns 422 when title is too long' do
+          long_title_params = { task: { title: 'a' * 256 } }
+
+          post :create, params: long_title_params
+          expect(response).to have_http_status(:unprocessable_entity)
+
+          json_response = JSON.parse(response.body)
+          expect(json_response['errors']).to include('Title is too long (maximum is 255 characters)')
+        end
+      end
+
+      context '認証関連' do
+        it '認証が失敗した場合、適切なエラーを返すこと' do
+          allow_any_instance_of(ApplicationController).to receive(:authorize).and_call_original
+          allow(Auth0Client).to receive(:validate_token).and_raise(StandardError, 'Auth failed')
+
+          request.headers['Authorization'] = "Bearer #{dummy_token}"
+
+          expect { post :create, params: valid_params }.to raise_error(StandardError, 'Auth failed')
+        end
+      end
+
+      context '権限関連' do
+        it '権限が不足している場合、403エラーを返すこと' do
+          decoded_token = controller.instance_variable_get(:@decoded_token)
+          allow(decoded_token).to receive(:validate_permissions).and_return(false)
+
+          request.headers['Authorization'] = "Bearer #{dummy_token}"
+          post :create, params: valid_params
+
+          expect(response).to have_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'エッジケース' do
+      before do
+        request.headers['Authorization'] = "Bearer #{dummy_token}"
+      end
+
+      it '最大長のタイトルで正常に作成される' do
+        max_title_params = { task: { title: 'a' * 255 } }
+
+        post :create, params: max_title_params
+        expect(response).to have_http_status(:created)
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['title']).to eq('a' * 255)
+      end
+
+      it '特殊文字を含むタイトルで正常に作成される' do
+        special_params = { task: { title: 'タスク (重要) - 緊急対応が必要です！' } }
+
+        post :create, params: special_params
+        expect(response).to have_http_status(:created)
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['title']).to eq('タスク (重要) - 緊急対応が必要です！')
+      end
+
+      it 'due_dateがnilでも正常に作成される' do
+        no_due_date_params = { task: { title: 'No due date task', due_date: nil } }
+
+        post :create, params: no_due_date_params
+        expect(response).to have_http_status(:created)
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['dueDate']).to be_nil
+      end
+    end
+  end
+
   describe '認証・認可' do
     it 'current_user_idが正しく取得されること' do
       expect(controller.send(:current_user_id)).to eq(user_id)
