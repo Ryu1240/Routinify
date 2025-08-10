@@ -34,7 +34,15 @@ render json: { message: error.message }, status: error.status
 
     def validate_permissions(permissions)
       raise 'validate_permissions needs to be called with a block' unless block_given?
-      return yield if @decoded_token.validate_permissions(permissions)
+      
+      if @decoded_token.validate_permissions(permissions)
+        begin
+          return yield
+        rescue ActiveRecord::StatementInvalid => e
+          render json: { message: 'Internal server error' }, status: :internal_server_error
+          return
+        end
+      end
 
       render json: INSUFFICIENT_PERMISSIONS, status: :forbidden
     end
