@@ -82,7 +82,12 @@ const Login: React.FC<LoginProps> = () => {
 
               setIsLoggingIn(true);
               try {
-                loginWithRedirect();
+                loginWithRedirect({
+                  openUrl(url) {
+                    // Arcブラウザで新しいタブが開くのを防ぐため、window.location.replaceを使用
+                    window.location.replace(url);
+                  }
+                });
               } catch (err) {
                 console.error('Login error:', err);
                 setIsLoggingIn(false);
