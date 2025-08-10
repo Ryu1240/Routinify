@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from '../config/axios';
 import { useAuth } from './useAuth';
-import { Task } from '../components/tasks/definitions';
+import { Task, CreateTaskData } from '../components/tasks/definitions/types';
 
 export const useTasks = () => {
   const { isAuthenticated, accessToken } = useAuth();
@@ -11,6 +11,7 @@ export const useTasks = () => {
   const [sortBy, setSortBy] = useState<keyof Task | null>(null);
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [createLoading, setCreateLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,6 +80,34 @@ export const useTasks = () => {
     fetchTasks();
   };
 
+  const createTask = async (taskData: CreateTaskData) => {
+    try {
+      setCreateLoading(true);
+      setError(null);
+
+      const response = await axios.post('/api/v1/tasks', {
+        task: {
+          title: taskData.title,
+          due_date: taskData.dueDate,
+          status: taskData.status,
+          priority: taskData.priority,
+          category: taskData.category,
+        },
+      });
+
+      // 作成されたタスクを既存のリストに追加
+      setTasks((prevTasks) => [response.data, ...prevTasks]);
+    } catch (err) {
+      console.error('タスクの作成に失敗しました:', err);
+      setError(
+        'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+      throw err;
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   return {
     tasks,
     filteredTasks,
@@ -87,8 +116,10 @@ export const useTasks = () => {
     sortBy,
     reverseSortDirection,
     loading,
+    createLoading,
     error,
     setSorting,
     refreshTasks,
+    createTask,
   };
 };

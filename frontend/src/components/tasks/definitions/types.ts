@@ -27,3 +27,11 @@ export interface TaskTableProps {
   onEdit: (taskId: number) => void;
   onDelete: (taskId: number) => void;
 }
+
+export interface CreateTaskData {
+  title: string;
+  dueDate?: string | null;
+  status?: string | null;
+  priority?: string | null;
+  category?: string | null;
+}
