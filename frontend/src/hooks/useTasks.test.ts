@@ -235,10 +235,6 @@ describe('useTasks', () => {
     const mockAxiosGet = vi.mocked(axios.get);
     const mockAxiosPost = vi.mocked(axios.post);
 
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
-
     const newTask = {
       id: 3,
       title: 'New Task',
@@ -249,6 +245,11 @@ describe('useTasks', () => {
       accountId: 'user123',
       createdAt: '2023-01-01T00:00:00Z',
     };
+
+    // 初期fetch用のモック
+    mockAxiosGet.mockResolvedValue({
+      data: { data: mockTasks },
+    } as any);
 
     mockAxiosPost.mockResolvedValue({
       data: newTask,
@@ -268,6 +269,12 @@ describe('useTasks', () => {
       dueDate: null,
     };
 
+    // createTask後のfetchTasksで新しいタスクリストを返すようにモックを変更
+    const updatedTasks = [newTask, ...mockTasks];
+    mockAxiosGet.mockResolvedValue({
+      data: { data: updatedTasks },
+    } as any);
+
     await act(async () => {
       await result.current.createTask(taskData);
     });
@@ -275,10 +282,10 @@ describe('useTasks', () => {
     expect(mockAxiosPost).toHaveBeenCalledWith('/api/v1/tasks', {
       task: {
         title: 'New Task',
-        category: 'Work',
+        due_date: null,
         status: '未着手',
         priority: '中',
-        due_date: null,
+        category: 'Work',
       },
     });
 

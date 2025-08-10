@@ -85,7 +85,7 @@ export const useTasks = () => {
       setCreateLoading(true);
       setError(null);
 
-      const response = await axios.post('/api/v1/tasks', {
+      await axios.post('/api/v1/tasks', {
         task: {
           title: taskData.title,
           due_date: taskData.dueDate,
@@ -95,8 +95,8 @@ export const useTasks = () => {
         },
       });
 
-      // 作成されたタスクを既存のリストに追加
-      setTasks((prevTasks) => [response.data, ...prevTasks]);
+      // 作成後にタスクリストを再取得
+      await fetchTasks();
     } catch (err) {
       console.error('タスクの作成に失敗しました:', err);
       setError(
