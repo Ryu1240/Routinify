@@ -83,14 +83,15 @@ components:
           format: date
         status:
           type: string
-          enum: [未着手, 進行中, 完了]
+          enum: [pending, in_progress, completed, cancelled]
         priority:
           type: string
+          enum: [low, medium, high]
         category:
           type: string
       required:
         - id
-        - title
+        - title 
 
     # RecurringTask:
     #   type: object
