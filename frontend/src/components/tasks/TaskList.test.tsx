@@ -89,17 +89,18 @@ vi.mock('@mantine/core', () => ({
       {children}
     </h2>
   ),
-  Modal: ({ opened, onClose, title, children, ...props }: any) => (
+  Modal: ({ opened, onClose, title, children, ...props }: any) =>
     opened ? (
       <div data-testid="modal" {...props}>
         <div data-testid="modal-header">
           {title}
-          <button data-testid="modal-close" onClick={onClose}>×</button>
+          <button data-testid="modal-close" onClick={onClose}>
+            ×
+          </button>
         </div>
         <div data-testid="modal-body">{children}</div>
       </div>
-    ) : null
-  ),
+    ) : null,
   Stack: ({ children, ...props }: any) => (
     <div data-testid="stack" {...props}>
       {children}
@@ -113,11 +114,12 @@ vi.mock('@mantine/core', () => ({
         onChange={(e) => onChange && onChange(e.target.value)}
         {...props}
       >
-        {data && data.map((option: any) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {data &&
+          data.map((option: any) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
       </select>
     </div>
   ),
@@ -126,14 +128,20 @@ vi.mock('@mantine/core', () => ({
 // CreateTaskModalのモック
 vi.mock('./CreateTaskModal', () => ({
   __esModule: true,
-  default: ({ opened, onClose, onSubmit, loading }: any) => (
+  default: ({ opened, onClose, onSubmit, loading }: any) =>
     opened ? (
       <div data-testid="create-task-modal">
-        <button data-testid="modal-close-btn" onClick={onClose}>Close</button>
-        <button data-testid="modal-submit-btn" onClick={() => onSubmit({ title: 'Test Task' })}>Submit</button>
+        <button data-testid="modal-close-btn" onClick={onClose}>
+          Close
+        </button>
+        <button
+          data-testid="modal-submit-btn"
+          onClick={() => onSubmit({ title: 'Test Task' })}
+        >
+          Submit
+        </button>
       </div>
-    ) : null
-  ),
+    ) : null,
 }));
 
 // Tabler Iconsのモック
@@ -144,10 +152,12 @@ vi.mock('@tabler/icons-react', () => ({
 
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
-    <BrowserRouter future={{
-      v7_startTransition: true,
-      v7_relativeSplatPath: true
-    }}>
+    <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
       {component}
     </BrowserRouter>
   );

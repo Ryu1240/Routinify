@@ -54,3 +54,4 @@ ENV/
 backend/log/development.log
 .pnpm-store/
 .claude/develper-log
+frontend/test-results/results.xml

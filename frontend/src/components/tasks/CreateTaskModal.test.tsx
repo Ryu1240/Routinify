@@ -5,17 +5,18 @@ import { CreateTaskData } from './definitions/types';
 
 // Mantineコンポーネントのモック
 vi.mock('@mantine/core', () => ({
-  Modal: ({ opened, onClose, title, children }: any) => (
+  Modal: ({ opened, onClose, title, children }: any) =>
     opened ? (
       <div data-testid="modal">
         <div data-testid="modal-header">
           {title}
-          <button data-testid="modal-close" onClick={onClose}>×</button>
+          <button data-testid="modal-close" onClick={onClose}>
+            ×
+          </button>
         </div>
         <div data-testid="modal-body">{children}</div>
       </div>
-    ) : null
-  ),
+    ) : null,
   TextInput: ({ label, value, onChange, error, type, ...props }: any) => {
     const id = `input-${label?.toLowerCase().replace(/\s+/g, '-')}`;
     return (
@@ -44,11 +45,12 @@ vi.mock('@mantine/core', () => ({
           onChange={(e) => onChange && onChange(e.target.value)}
           data-testid={id}
         >
-          {data && data.map((option: any) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
+          {data &&
+            data.map((option: any) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
         </select>
       </div>
     );

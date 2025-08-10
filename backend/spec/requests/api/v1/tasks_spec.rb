@@ -72,9 +72,9 @@ RSpec.describe 'Tasks API', type: :request do
           allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
             controller.render json: { message: 'Invalid token' }, status: :unauthorized
           end
-          
+
           get '/api/v1/tasks', headers: auth_headers
-          
+
           expect(response).to have_http_status(:unauthorized)
           expect(JSON.parse(response.body)['message']).to eq('Invalid token')
         end
@@ -82,11 +82,11 @@ RSpec.describe 'Tasks API', type: :request do
 
       context '権限関連' do
         it '権限が不足している場合、403エラーを返すこと' do
-          # validate_permissions メソッドを直接オーバーライドして権限エラーをシミュレート  
+          # validate_permissions メソッドを直接オーバーライドして権限エラーをシミュレート
           allow_any_instance_of(ApplicationController).to receive(:validate_permissions) do |controller|
             controller.render json: { message: 'Permission denied' }, status: :forbidden
           end
-          
+
           get '/api/v1/tasks', headers: auth_headers
 
           expect(response).to have_http_status(:forbidden)
@@ -225,9 +225,9 @@ RSpec.describe 'Tasks API', type: :request do
           allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
             controller.render json: { message: 'Invalid token' }, status: :unauthorized
           end
-          
+
           post '/api/v1/tasks', params: valid_params, headers: auth_headers
-          
+
           expect(response).to have_http_status(:unauthorized)
           expect(JSON.parse(response.body)['message']).to eq('Invalid token')
         end
