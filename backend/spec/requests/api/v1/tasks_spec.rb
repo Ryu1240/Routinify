@@ -168,7 +168,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.title).to eq('Minimal Task')
         expect(created_task.account_id).to eq(user_id)
@@ -184,7 +184,7 @@ RSpec.describe 'Tasks API', type: :request do
 
           json_response = JSON.parse(response.body)
           expect(json_response['message']).to eq('タスクが正常に作成されました')
-          
+
           created_task = Task.last
           expect(created_task.status).to eq(status)
         end
@@ -252,7 +252,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.title).to eq('a' * 255)
       end
@@ -265,7 +265,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.title).to eq('タスク (重要) - 緊急対応が必要です！')
       end
@@ -278,7 +278,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.due_date).to be_nil
       end

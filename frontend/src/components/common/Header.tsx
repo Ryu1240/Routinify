@@ -45,15 +45,17 @@ const Header: React.FC = () => {
           <Button
             variant="subtle"
             leftSection={<IconLogout size={16} />}
-            onClick={() => logout({
-              logoutParams: {
-                returnTo: window.location.origin
-              },
-              openUrl(url) {
-                // Arcブラウザで新しいタブが開くのを防ぐため、window.location.replaceを使用
-                window.location.replace(url);
-              }
-            })}
+            onClick={() =>
+              logout({
+                logoutParams: {
+                  returnTo: window.location.origin,
+                },
+                openUrl(url) {
+                  // Arcブラウザで新しいタブが開くのを防ぐため、window.location.replaceを使用
+                  window.location.replace(url);
+                },
+              })
+            }
             color="gray"
           >
             ログアウト

@@ -86,7 +86,7 @@ const Login: React.FC<LoginProps> = () => {
                   openUrl(url) {
                     // Arcブラウザで新しいタブが開くのを防ぐため、window.location.replaceを使用
                     window.location.replace(url);
-                  }
+                  },
                 });
               } catch (err) {
                 console.error('Login error:', err);
