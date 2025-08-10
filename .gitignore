@@ -53,3 +53,4 @@ ENV/
 .python-version
 backend/log/development.log
 .pnpm-store/
+.claude/develper-log
