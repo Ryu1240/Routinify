@@ -7,12 +7,7 @@ RSpec.describe 'Tasks API', type: :request do
 
   before do
     # テスト環境でのみ認証をスキップ
-    ApplicationController.skip_auth_for_test = true
     mock_request_authentication(user_id: user_id)
-  end
-
-  after do
-    ApplicationController.skip_auth_for_test = false
   end
 
   describe 'GET /api/v1/tasks' do
@@ -150,19 +145,13 @@ RSpec.describe 'Tasks API', type: :request do
         }.to change(Task, :count).by(1)
       end
 
-      it 'returns the created task in camelCase format' do
+      it 'returns success message' do
         post '/api/v1/tasks', params: valid_params, headers: auth_headers
         json_response = JSON.parse(response.body)
 
         expect(json_response).to include(
-          'id' => be_a(Integer),
-          'accountId' => user_id,
-          'title' => 'New Task',
-          'status' => '未着手',
-          'priority' => 'high',
-          'category' => '仕事'
+          'message' => 'タスクが正常に作成されました'
         )
-        expect(json_response['dueDate']).to eq((Date.current + 1.week).iso8601)
       end
 
       it 'automatically sets account_id to current user' do
@@ -178,8 +167,11 @@ RSpec.describe 'Tasks API', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
-        expect(json_response['title']).to eq('Minimal Task')
-        expect(json_response['accountId']).to eq(user_id)
+        expect(json_response['message']).to eq('タスクが正常に作成されました')
+        
+        created_task = Task.last
+        expect(created_task.title).to eq('Minimal Task')
+        expect(created_task.account_id).to eq(user_id)
       end
 
       it 'handles various status values correctly' do
@@ -191,7 +183,10 @@ RSpec.describe 'Tasks API', type: :request do
           expect(response).to have_http_status(:created)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['status']).to eq(status)
+          expect(json_response['message']).to eq('タスクが正常に作成されました')
+          
+          created_task = Task.last
+          expect(created_task.status).to eq(status)
         end
       end
     end
@@ -256,7 +251,10 @@ RSpec.describe 'Tasks API', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
-        expect(json_response['title']).to eq('a' * 255)
+        expect(json_response['message']).to eq('タスクが正常に作成されました')
+        
+        created_task = Task.last
+        expect(created_task.title).to eq('a' * 255)
       end
 
       it '特殊文字を含むタイトルで正常に作成される' do
@@ -266,7 +264,10 @@ RSpec.describe 'Tasks API', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
-        expect(json_response['title']).to eq('タスク (重要) - 緊急対応が必要です！')
+        expect(json_response['message']).to eq('タスクが正常に作成されました')
+        
+        created_task = Task.last
+        expect(created_task.title).to eq('タスク (重要) - 緊急対応が必要です！')
       end
 
       it 'due_dateがnilでも正常に作成される' do
@@ -276,7 +277,10 @@ RSpec.describe 'Tasks API', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
-        expect(json_response['dueDate']).to be_nil
+        expect(json_response['message']).to eq('タスクが正常に作成されました')
+        
+        created_task = Task.last
+        expect(created_task.due_date).to be_nil
       end
     end
   end

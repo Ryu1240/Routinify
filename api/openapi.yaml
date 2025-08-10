@@ -255,7 +255,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "タスクが正常に作成されました"
+        '422':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
 
   /tasks/{id}:
     parameters:

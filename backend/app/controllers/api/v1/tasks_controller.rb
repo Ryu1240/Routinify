@@ -17,7 +17,7 @@ module Api
           task = Task.new(task_params.merge(account_id: user_id))
 
           if task.save
-            render json: format_task_response(task), status: :created
+            render json: { message: "タスクが正常に作成されました" }, status: :created
           else
             render json: { errors: task.errors.full_messages }, status: :unprocessable_entity
           end
