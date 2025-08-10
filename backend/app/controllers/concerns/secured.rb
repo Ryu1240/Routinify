@@ -34,17 +34,6 @@ render json: { message: error.message }, status: error.status
 
     def validate_permissions(permissions)
       raise 'validate_permissions needs to be called with a block' unless block_given?
-
-      # テスト環境で認証スキップが有効な場合は権限チェックをスキップ
-      if defined?(ApplicationController) && ApplicationController.skip_auth_for_test
-        begin
-          return yield
-        rescue ActiveRecord::StatementInvalid => e
-          render json: { message: 'Internal server error' }, status: :internal_server_error
-          return
-        end
-      end
-
       if @decoded_token.validate_permissions(permissions)
         begin
           return yield
