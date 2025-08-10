@@ -51,7 +51,7 @@ const TaskList: React.FC = () => {
   const handleCreateTask = async (taskData: CreateTaskData) => {
     try {
       await createTask(taskData);
-      // TODO: より良いユーザーフィードバック (toast通知など) を実装
+      setIsCreateModalOpen(false);
     } catch (error) {
       // エラーはuseTasksフック内で処理されるため、ここでは特に何もしない
       console.error('タスク作成に失敗:', error);

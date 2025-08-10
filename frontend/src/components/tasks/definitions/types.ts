@@ -11,6 +11,9 @@ export interface Task {
   updatedAt?: string;
 }
 
+export type TaskStatus   = 'pending' | 'in_progress' | 'completed' | 'cancelled';
+export type TaskPriority = 'low'     | 'medium'      | 'high';  
+
 export interface TaskColumn {
   key: keyof Task;
   label: string;
@@ -31,7 +34,7 @@ export interface TaskTableProps {
 export interface CreateTaskData {
   title: string;
   dueDate?: string | null;
-  status?: string | null;
-  priority?: string | null;
+  status?: TaskStatus | null;
+  priority?: TaskPriority | null;
   category?: string | null;
 }
