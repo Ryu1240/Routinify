@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   TextInput,
   Group,
@@ -14,6 +14,8 @@ import { COLORS } from '../../constants/colors';
 import { useTasks } from '../../hooks/useTasks';
 import { useAuth } from '../../hooks/useAuth';
 import { TaskTable } from './TaskTable';
+import { CreateTaskModal } from './';
+import { CreateTaskData } from './definitions/types';
 
 const TaskList: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -24,9 +26,13 @@ const TaskList: React.FC = () => {
     sortBy,
     reverseSortDirection,
     loading,
+    createLoading,
     error,
     setSorting,
+    createTask,
   } = useTasks();
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleEdit = (taskId: number) => {
     console.log('編集ボタンがクリックされました:', taskId);
@@ -39,8 +45,17 @@ const TaskList: React.FC = () => {
   };
 
   const handleAddTask = () => {
-    console.log('タスク追加ボタンがクリックされました');
-    // TODO: タスク追加機能を実装
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateTask = async (taskData: CreateTaskData) => {
+    try {
+      await createTask(taskData);
+      setIsCreateModalOpen(false);
+    } catch (error) {
+      // エラーはuseTasksフック内で処理されるため、ここでは特に何もしない
+      console.error('タスク作成に失敗:', error);
+    }
   };
 
   if (authLoading || loading) {
@@ -122,6 +137,13 @@ const TaskList: React.FC = () => {
           {filteredTasks.length}件のタスクを表示中
         </Text>
       )}
+
+      <CreateTaskModal
+        opened={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateTask}
+        loading={createLoading}
+      />
     </Container>
   );
 };

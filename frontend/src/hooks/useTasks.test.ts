@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, waitFor, act } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
+import { act } from 'react';
 import { useTasks } from './useTasks';
 import axios from '../config/axios';
 
@@ -13,6 +14,7 @@ vi.mock('./useAuth', () => ({
 vi.mock('../config/axios', () => ({
   default: {
     get: vi.fn(),
+    post: vi.fn(),
   },
 }));
 
@@ -222,5 +224,119 @@ describe('useTasks', () => {
 
     // axiosのモックは呼ばれないことを確認
     expect(mockUseAuth).toHaveBeenCalled();
+  });
+
+  it('creates task successfully', async () => {
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      accessToken: 'mock-token',
+    });
+
+    const mockAxiosGet = vi.mocked(axios.get);
+    const mockAxiosPost = vi.mocked(axios.post);
+
+    const newTask = {
+      id: 3,
+      title: 'New Task',
+      category: 'Work',
+      status: '未着手',
+      priority: '中',
+      dueDate: null,
+      accountId: 'user123',
+      createdAt: '2023-01-01T00:00:00Z',
+    };
+
+    // 初期fetch用のモック
+    mockAxiosGet.mockResolvedValue({
+      data: { data: mockTasks },
+    } as any);
+
+    mockAxiosPost.mockResolvedValue({
+      data: newTask,
+    } as any);
+
+    const { result } = renderHook(() => useTasks());
+
+    await waitFor(() => {
+      expect(result.current.tasks).toEqual(mockTasks);
+    });
+
+    const taskData = {
+      title: 'New Task',
+      category: 'Work',
+      status: '未着手',
+      priority: '中',
+      dueDate: null,
+    };
+
+    // createTask後のfetchTasksで新しいタスクリストを返すようにモックを変更
+    const updatedTasks = [newTask, ...mockTasks];
+    mockAxiosGet.mockResolvedValue({
+      data: { data: updatedTasks },
+    } as any);
+
+    await act(async () => {
+      await result.current.createTask(taskData);
+    });
+
+    expect(mockAxiosPost).toHaveBeenCalledWith('/api/v1/tasks', {
+      task: {
+        title: 'New Task',
+        due_date: null,
+        status: '未着手',
+        priority: '中',
+        category: 'Work',
+      },
+    });
+
+    await waitFor(() => {
+      expect(result.current.tasks).toHaveLength(3);
+      expect(result.current.tasks[0]).toEqual(newTask);
+      expect(result.current.createLoading).toBe(false);
+    });
+  });
+
+  it('handles create task error', async () => {
+    mockUseAuth.mockReturnValue({
+      isAuthenticated: true,
+      accessToken: 'mock-token',
+    });
+
+    const mockAxiosGet = vi.mocked(axios.get);
+    const mockAxiosPost = vi.mocked(axios.post);
+
+    // fetchTasksは成功させる
+    mockAxiosGet.mockResolvedValue({
+      data: { data: [] },
+    } as any);
+
+    const { result } = renderHook(() => useTasks());
+
+    // 初期fetchが完了するまで待機
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    // createTaskでエラーを発生させる
+    const errorMessage = 'Task creation failed';
+    mockAxiosPost.mockRejectedValue(new Error(errorMessage));
+
+    const taskData = {
+      title: 'New Task',
+      category: 'Work',
+      status: '未着手',
+      priority: '中',
+      dueDate: null,
+    };
+
+    // createTaskがエラーをthrowすることを確認
+    await expect(
+      act(async () => {
+        await result.current.createTask(taskData);
+      })
+    ).rejects.toThrow(errorMessage);
+
+    // createLoadingが false になることを確認
+    expect(result.current.createLoading).toBe(false);
   });
 });

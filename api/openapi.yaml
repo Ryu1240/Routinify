@@ -131,11 +131,12 @@ components:
           enum: [未着手, 進行中, 完了]
         priority:
           type: string
+          enum: [low, medium, high]
         category:
           type: string
       required:
         - id
-        - title
+        - title 
 
     # RecurringTask:
     #   type: object

@@ -11,6 +11,9 @@ export interface Task {
   updatedAt?: string;
 }
 
+export type TaskStatus = '未着手' | '進行中' | '完了';
+export type TaskPriority = 'low' | 'medium' | 'high';
+
 export interface TaskColumn {
   key: keyof Task;
   label: string;
@@ -26,4 +29,12 @@ export interface TaskTableProps {
   onSort: (key: string) => void;
   onEdit: (taskId: number) => void;
   onDelete: (taskId: number) => void;
+}
+
+export interface CreateTaskData {
+  title: string;
+  dueDate?: string | null;
+  status?: TaskStatus | null;
+  priority?: TaskPriority | null;
+  category?: string | null;
 }

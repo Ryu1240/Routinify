@@ -34,7 +34,7 @@ render json: { message: error.message }, status: error.status
 
     def validate_permissions(permissions)
       raise 'validate_permissions needs to be called with a block' unless block_given?
-      
+
       if @decoded_token.validate_permissions(permissions)
         begin
           return yield

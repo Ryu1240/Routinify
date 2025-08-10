@@ -67,9 +67,9 @@ RSpec.describe 'Tasks API', type: :request do
           allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
             controller.render json: { message: 'Invalid token' }, status: :unauthorized
           end
-          
+
           get '/api/v1/tasks', headers: auth_headers
-          
+
           expect(response).to have_http_status(:unauthorized)
           expect(JSON.parse(response.body)['message']).to eq('Invalid token')
         end
@@ -77,11 +77,11 @@ RSpec.describe 'Tasks API', type: :request do
 
       context '権限関連' do
         it '権限が不足している場合、403エラーを返すこと' do
-          # validate_permissions メソッドを直接オーバーライドして権限エラーをシミュレート  
+          # validate_permissions メソッドを直接オーバーライドして権限エラーをシミュレート
           allow_any_instance_of(ApplicationController).to receive(:validate_permissions) do |controller|
             controller.render json: { message: 'Permission denied' }, status: :forbidden
           end
-          
+
           get '/api/v1/tasks', headers: auth_headers
 
           expect(response).to have_http_status(:forbidden)
@@ -168,7 +168,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.title).to eq('Minimal Task')
         expect(created_task.account_id).to eq(user_id)
@@ -184,7 +184,7 @@ RSpec.describe 'Tasks API', type: :request do
 
           json_response = JSON.parse(response.body)
           expect(json_response['message']).to eq('タスクが正常に作成されました')
-          
+
           created_task = Task.last
           expect(created_task.status).to eq(status)
         end
@@ -220,9 +220,9 @@ RSpec.describe 'Tasks API', type: :request do
           allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
             controller.render json: { message: 'Invalid token' }, status: :unauthorized
           end
-          
+
           post '/api/v1/tasks', params: valid_params, headers: auth_headers
-          
+
           expect(response).to have_http_status(:unauthorized)
           expect(JSON.parse(response.body)['message']).to eq('Invalid token')
         end
@@ -252,7 +252,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.title).to eq('a' * 255)
       end
@@ -265,7 +265,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.title).to eq('タスク (重要) - 緊急対応が必要です！')
       end
@@ -278,7 +278,7 @@ RSpec.describe 'Tasks API', type: :request do
 
         json_response = JSON.parse(response.body)
         expect(json_response['message']).to eq('タスクが正常に作成されました')
-        
+
         created_task = Task.last
         expect(created_task.due_date).to be_nil
       end
