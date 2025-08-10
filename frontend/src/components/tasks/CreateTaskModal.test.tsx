@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import CreateTaskModal from './CreateTaskModal';
 import { CreateTaskData } from './definitions/types';
+import React from 'react';
 
 // Mantineコンポーネントのモック
 vi.mock('@mantine/core', () => ({
@@ -135,7 +136,7 @@ describe('CreateTaskModal', () => {
         title: 'テストタスク',
         dueDate: null,
         status: '未着手',
-        priority: '中',
+        priority: 'medium',
         category: 'テストカテゴリ',
       });
     });

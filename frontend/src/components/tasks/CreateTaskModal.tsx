@@ -26,9 +26,9 @@ const statusOptions = [
 ];
 
 const priorityOptions = [
-  { value: '低', label: '低' },
-  { value: '中', label: '中' },
-  { value: '高', label: '高' },
+  { value: 'low', label: '低' },
+  { value: 'medium', label: '中' },
+  { value: 'high', label: '高' },
 ];
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
@@ -41,7 +41,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     title: '',
     dueDate: null,
     status: '未着手',
-    priority: '中',
+    priority: 'medium',
     category: '',
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
@@ -75,7 +75,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       title: '',
       dueDate: null,
       status: '未着手',
-      priority: '中',
+      priority: 'medium',
       category: '',
     });
     setErrors({});

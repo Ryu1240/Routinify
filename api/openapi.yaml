@@ -128,7 +128,7 @@ components:
           format: date
         status:
           type: string
-          enum: [pending, in_progress, completed, cancelled]
+          enum: [未着手, 進行中, 完了]
         priority:
           type: string
           enum: [low, medium, high]
