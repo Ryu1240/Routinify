@@ -40,7 +40,7 @@ export const auth0Config: Auth0ProviderOptions = {
   authorizationParams: {
     redirect_uri: `${window.location.origin}/tasks`,
     audience: audience || `https://${domain}/api/v2/`,
-    scope: 'read:tasks',
+    scope: 'openid profile email read:tasks write:tasks delete:tasks',
   },
   cacheLocation: 'localstorage',
   useRefreshTokens: true,
