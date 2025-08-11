@@ -24,6 +24,40 @@ module Api
         end
       end
 
+      def show
+        validate_permissions([ 'read:tasks' ]) do
+          user_id = current_user_id
+          task = Task.find_by(id: params[:id], account_id: user_id)
+
+          if task.nil?
+            render json: { errors: [ 'タスクが見つかりません' ] }, status: :not_found
+            return
+          end
+
+          render json: {
+            data: format_task_response(task)
+          }, status: :ok
+        end
+      end
+
+      def update
+        validate_permissions([ 'write:tasks' ]) do
+          user_id = current_user_id
+          task = Task.find_by(id: params[:id], account_id: user_id)
+
+          if task.nil?
+            render json: { errors: [ 'タスクが見つかりません' ] }, status: :not_found
+            return
+          end
+
+          if task.update(task_params)
+            render json: { message: 'タスクが正常に更新されました' }, status: :ok
+          else
+            render json: { errors: task.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+      end
+
       private
 
       def task_params
