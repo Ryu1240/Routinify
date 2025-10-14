@@ -65,9 +65,17 @@ module Api
       end
 
       def format_task_response(task)
-        task.as_json(
-          only: [ :id, :account_id, :title, :due_date, :status, :priority, :category, :created_at, :updated_at ]
-        ).transform_keys { |k| k.to_s.camelize(:lower) }
+        {
+          id: task.id,
+          accountId: task.account_id,
+          title: task.title,
+          dueDate: task.due_date&.iso8601,
+          status: task.status,
+          priority: task.priority,
+          category: task.category,
+          createdAt: task.created_at.iso8601(3),
+          updatedAt: task.updated_at.iso8601(3)
+        }
       end
     end
   end
