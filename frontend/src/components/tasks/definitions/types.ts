@@ -27,11 +27,22 @@ export interface TaskTableProps {
   sortBy: string | null;
   reverseSortDirection: boolean;
   onSort: (key: string) => void;
+  editingTaskId: number | null;
   onEdit: (taskId: number) => void;
+  onSave: (taskId: number, taskData: UpdateTaskData) => Promise<void>;
+  onCancel: () => void;
   onDelete: (taskId: number) => void;
 }
 
 export interface CreateTaskData {
+  title: string;
+  dueDate?: string | null;
+  status?: TaskStatus | null;
+  priority?: TaskPriority | null;
+  category?: string | null;
+}
+
+export interface UpdateTaskData {
   title: string;
   dueDate?: string | null;
   status?: TaskStatus | null;

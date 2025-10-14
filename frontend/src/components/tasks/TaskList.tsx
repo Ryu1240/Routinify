@@ -15,7 +15,7 @@ import { useTasks } from '../../hooks/useTasks';
 import { useAuth } from '../../hooks/useAuth';
 import { TaskTable } from './TaskTable';
 import { CreateTaskModal } from './';
-import { CreateTaskData } from './definitions/types';
+import { CreateTaskData, UpdateTaskData } from './definitions/types';
 
 const TaskList: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -30,13 +30,27 @@ const TaskList: React.FC = () => {
     error,
     setSorting,
     createTask,
+    updateTask,
   } = useTasks();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
 
   const handleEdit = (taskId: number) => {
-    console.log('編集ボタンがクリックされました:', taskId);
-    // TODO: 編集機能を実装
+    setEditingTaskId(taskId);
+  };
+
+  const handleSave = async (taskId: number, taskData: UpdateTaskData) => {
+    try {
+      await updateTask(taskId, taskData);
+      setEditingTaskId(null);
+    } catch (error) {
+      console.error('タスク更新に失敗:', error);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingTaskId(null);
   };
 
   const handleDelete = (taskId: number) => {
@@ -128,7 +142,10 @@ const TaskList: React.FC = () => {
         sortBy={sortBy}
         reverseSortDirection={reverseSortDirection}
         onSort={(key) => setSorting(key as any)}
+        editingTaskId={editingTaskId}
         onEdit={handleEdit}
+        onSave={handleSave}
+        onCancel={handleCancel}
         onDelete={handleDelete}
       />
 

@@ -1,5 +1,11 @@
 // 型定義
-export type { Task, TaskColumn, TaskTableProps } from './types';
+export type {
+  Task,
+  TaskColumn,
+  TaskTableProps,
+  CreateTaskData,
+  UpdateTaskData,
+} from './types';
 
 // カラム定義
 export { taskColumns } from './columns';
