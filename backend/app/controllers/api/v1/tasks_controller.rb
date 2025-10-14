@@ -24,6 +24,40 @@ module Api
         end
       end
 
+      def show
+        validate_permissions([ 'read:tasks' ]) do
+          user_id = current_user_id
+          task = Task.find_by(id: params[:id], account_id: user_id)
+
+          if task.nil?
+            render json: { errors: [ 'タスクが見つかりません' ] }, status: :not_found
+            return
+          end
+
+          render json: {
+            data: format_task_response(task)
+          }, status: :ok
+        end
+      end
+
+      def update
+        validate_permissions([ 'write:tasks' ]) do
+          user_id = current_user_id
+          task = Task.find_by(id: params[:id], account_id: user_id)
+
+          if task.nil?
+            render json: { errors: [ 'タスクが見つかりません' ] }, status: :not_found
+            return
+          end
+
+          if task.update(task_params)
+            render json: { message: 'タスクが正常に更新されました' }, status: :ok
+          else
+            render json: { errors: task.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+      end
+
       private
 
       def task_params
@@ -31,9 +65,17 @@ module Api
       end
 
       def format_task_response(task)
-        task.as_json(
-          only: [ :id, :account_id, :title, :due_date, :status, :priority, :category, :created_at, :updated_at ]
-        ).transform_keys { |k| k.to_s.camelize(:lower) }
+        {
+          id: task.id,
+          accountId: task.account_id,
+          title: task.title,
+          dueDate: task.due_date&.iso8601,
+          status: task.status,
+          priority: task.priority,
+          category: task.category,
+          createdAt: task.created_at.iso8601(3),
+          updatedAt: task.updated_at.iso8601(3)
+        }
       end
     end
   end
