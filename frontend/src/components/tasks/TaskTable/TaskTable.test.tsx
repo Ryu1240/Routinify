@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { TaskTable } from './TaskTable';
+import { TaskTable } from '../TaskTable';
 
 // DataTableのモック
 vi.mock('../common/DataTable/index', () => {
