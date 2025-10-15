@@ -28,8 +28,8 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   const [formData, setFormData] = useState<UpdateTaskData>({
     title: task.title,
     dueDate: task.dueDate || null,
-    status: (task.status as any) || null,
-    priority: (task.priority as any) || null,
+    status: task.status || null,
+    priority: task.priority || null,
     category: task.category || null,
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
