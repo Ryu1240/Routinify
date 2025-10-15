@@ -30,7 +30,11 @@ export const TaskTable: React.FC<TaskTableProps> = ({
         {tasks.map((task) => (
           <DataTable.Tr key={task.id}>
             {editingTaskId === task.id ? (
-              <TaskEditableRow task={task} onSave={onSave} onCancel={onCancel} />
+              <TaskEditableRow
+                task={task}
+                onSave={onSave}
+                onCancel={onCancel}
+              />
             ) : (
               <TaskTableRow task={task} onEdit={onEdit} onDelete={onDelete} />
             )}

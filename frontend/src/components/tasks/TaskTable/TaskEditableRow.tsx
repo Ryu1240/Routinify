@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { Text, Group, ActionIcon, Tooltip, TextInput, Select } from '@mantine/core';
+import {
+  Text,
+  Group,
+  ActionIcon,
+  Tooltip,
+  TextInput,
+  Select,
+} from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons-react';
 import { COLORS } from '../../../constants/colors';
 import { formatDate } from '../../../utils/taskUtils';
@@ -44,7 +51,10 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
     }
   };
 
-  const handleInputChange = (field: keyof UpdateTaskData, value: string | null) => {
+  const handleInputChange = (
+    field: keyof UpdateTaskData,
+    value: string | null
+  ) => {
     setFormData((prev: UpdateTaskData) => ({ ...prev, [field]: value }));
     if (field === 'title' && errors.title) {
       setErrors((prev: { title?: string }) => ({ ...prev, title: undefined }));
@@ -120,7 +130,9 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
         <TextInput
           type="date"
           value={formData.dueDate || ''}
-          onChange={(e) => handleInputChange('dueDate', e.currentTarget.value || null)}
+          onChange={(e) =>
+            handleInputChange('dueDate', e.currentTarget.value || null)
+          }
           styles={{
             input: {
               borderColor: COLORS.LIGHT,

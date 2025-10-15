@@ -17,7 +17,11 @@ interface TaskTableRowProps {
   onDelete: (taskId: number) => void;
 }
 
-export const TaskTableRow: React.FC<TaskTableRowProps> = ({ task, onEdit, onDelete }) => {
+export const TaskTableRow: React.FC<TaskTableRowProps> = ({
+  task,
+  onEdit,
+  onDelete,
+}) => {
   return (
     <>
       <DataTable.Td>

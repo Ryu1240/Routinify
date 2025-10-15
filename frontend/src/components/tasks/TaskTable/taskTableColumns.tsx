@@ -78,4 +78,6 @@ export const taskColumns: (TableColumn & {
 ];
 
 // テーブルヘッダー用のカラム定義（render関数を除外）
-export const tableColumns: TableColumn[] = taskColumns.map(({ render, ...column }) => column);
+export const tableColumns: TableColumn[] = taskColumns.map(
+  ({ render, ...column }) => column
+);

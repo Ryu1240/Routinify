@@ -11,7 +11,10 @@ export const useCreateTaskForm = () => {
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
 
-  const handleInputChange = (field: keyof CreateTaskData, value: string | null) => {
+  const handleInputChange = (
+    field: keyof CreateTaskData,
+    value: string | null
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === 'title' && errors.title) {
       setErrors((prev) => ({ ...prev, title: undefined }));

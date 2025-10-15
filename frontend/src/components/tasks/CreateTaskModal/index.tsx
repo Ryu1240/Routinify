@@ -27,8 +27,14 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   onSubmit,
   loading = false,
 }) => {
-  const { formData, errors, handleInputChange, validateForm, getSubmitData, resetForm } =
-    useCreateTaskForm();
+  const {
+    formData,
+    errors,
+    handleInputChange,
+    validateForm,
+    getSubmitData,
+    resetForm,
+  } = useCreateTaskForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
