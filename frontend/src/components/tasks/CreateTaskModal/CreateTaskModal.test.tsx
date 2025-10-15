@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import CreateTaskModal from './CreateTaskModal';
-import { CreateTaskData } from './definitions/types';
+import CreateTaskModal from '.';
+import { CreateTaskData } from '../definitions/types';
 import React from 'react';
 
 // Mantineコンポーネントのモック
@@ -135,7 +135,7 @@ describe('CreateTaskModal', () => {
       expect(mockSubmit).toHaveBeenCalledWith({
         title: 'テストタスク',
         dueDate: null,
-        status: '未着手',
+        status: 'pending',
         priority: 'medium',
         category: 'テストカテゴリ',
       });

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Modal,
   TextInput,
@@ -9,8 +9,10 @@ import {
   Title,
   Loader,
 } from '@mantine/core';
-import { COLORS } from '../../constants/colors';
-import { CreateTaskData } from './definitions/types';
+import { COLORS } from '../../../constants/colors';
+import { CreateTaskData } from '../definitions/types';
+import { statusOptions, priorityOptions } from '../constants';
+import { useCreateTaskForm } from './useCreateTaskForm';
 
 interface CreateTaskModalProps {
   opened: boolean;
@@ -19,49 +21,30 @@ interface CreateTaskModalProps {
   loading?: boolean;
 }
 
-const statusOptions = [
-  { value: '未着手', label: '未着手' },
-  { value: '進行中', label: '進行中' },
-  { value: '完了', label: '完了' },
-];
-
-const priorityOptions = [
-  { value: 'low', label: '低' },
-  { value: 'medium', label: '中' },
-  { value: 'high', label: '高' },
-];
-
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   opened,
   onClose,
   onSubmit,
   loading = false,
 }) => {
-  const [formData, setFormData] = useState<CreateTaskData>({
-    title: '',
-    dueDate: null,
-    status: '未着手',
-    priority: 'medium',
-    category: '',
-  });
-  const [errors, setErrors] = useState<{ title?: string }>({});
+  const {
+    formData,
+    errors,
+    handleInputChange,
+    validateForm,
+    getSubmitData,
+    resetForm,
+  } = useCreateTaskForm();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // バリデーション
-    if (!formData.title.trim()) {
-      setErrors({ title: 'タスク名は必須です' });
+    if (!validateForm()) {
       return;
     }
 
     try {
-      const taskData = {
-        ...formData,
-        dueDate: formData.dueDate || null,
-        category: formData.category?.trim() || null,
-      };
-
+      const taskData = getSubmitData();
       await onSubmit(taskData);
       resetForm();
       onClose();
@@ -70,30 +53,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      dueDate: null,
-      status: '未着手',
-      priority: 'medium',
-      category: '',
-    });
-    setErrors({});
-  };
-
   const handleClose = () => {
     resetForm();
     onClose();
-  };
-
-  const handleInputChange = (
-    field: keyof CreateTaskData,
-    value: string | null
-  ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (field === 'title' && errors.title) {
-      setErrors((prev) => ({ ...prev, title: undefined }));
-    }
   };
 
   return (

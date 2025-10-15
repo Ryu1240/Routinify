@@ -1,7 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from '../config/axios';
 import { useAuth } from './useAuth';
-import { Task, CreateTaskData } from '../components/tasks/definitions/types';
+import {
+  Task,
+  CreateTaskData,
+  UpdateTaskData,
+} from '../components/tasks/definitions/types';
 
 export const useTasks = () => {
   const { isAuthenticated, accessToken } = useAuth();
@@ -12,6 +16,7 @@ export const useTasks = () => {
   const [reverseSortDirection, setReverseSortDirection] = useState(false);
   const [loading, setLoading] = useState(true);
   const [createLoading, setCreateLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -108,6 +113,34 @@ export const useTasks = () => {
     }
   };
 
+  const updateTask = async (taskId: number, taskData: UpdateTaskData) => {
+    try {
+      setUpdateLoading(true);
+      setError(null);
+
+      await axios.put(`/api/v1/tasks/${taskId}`, {
+        task: {
+          title: taskData.title,
+          due_date: taskData.dueDate,
+          status: taskData.status,
+          priority: taskData.priority,
+          category: taskData.category,
+        },
+      });
+
+      // 更新後にタスクリストを再取得
+      await fetchTasks();
+    } catch (err) {
+      console.error('タスクの更新に失敗しました:', err);
+      setError(
+        'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+      throw err;
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
   return {
     tasks,
     filteredTasks,
@@ -117,9 +150,11 @@ export const useTasks = () => {
     reverseSortDirection,
     loading,
     createLoading,
+    updateLoading,
     error,
     setSorting,
     refreshTasks,
     createTask,
+    updateTask,
   };
 };

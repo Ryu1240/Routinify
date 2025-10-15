@@ -2,10 +2,10 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import { TaskTable } from './TaskTable';
+import { TaskTable } from './index';
 
 // DataTableのモック
-vi.mock('../common/DataTable/index', () => {
+vi.mock('../../common/DataTable/index', () => {
   const DataTableMock = ({ children, ...props }: any) => (
     <div data-testid="data-table" {...props}>
       {children}
@@ -95,7 +95,7 @@ vi.mock('@tabler/icons-react', () => ({
 }));
 
 // taskUtilsのモック
-vi.mock('../../utils/taskUtils', () => ({
+vi.mock('../../../utils/taskUtils', () => ({
   getPriorityColor: (priority: string | null) => {
     switch (priority?.toLowerCase()) {
       case 'high':
@@ -135,7 +135,7 @@ vi.mock('../../utils/taskUtils', () => ({
 }));
 
 // COLORSのモック
-vi.mock('../../constants/colors', () => ({
+vi.mock('../../../constants/colors', () => ({
   COLORS: {
     PRIMARY: '#1D74AE',
     GRAY: '#929198',
@@ -180,6 +180,8 @@ describe('TaskTable', () => {
   const mockOnEdit = vi.fn();
   const mockOnDelete = vi.fn();
   const mockOnSort = vi.fn();
+  const mockOnSave = vi.fn();
+  const mockOnCancel = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -192,7 +194,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -207,7 +212,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -223,7 +231,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -239,7 +250,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -255,7 +269,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -271,7 +288,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -288,7 +308,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -304,7 +327,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -327,7 +353,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -350,7 +379,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
@@ -377,7 +409,10 @@ describe('TaskTable', () => {
         sortBy={null}
         reverseSortDirection={false}
         onSort={mockOnSort}
+        editingTaskId={null}
         onEdit={mockOnEdit}
+        onSave={mockOnSave}
+        onCancel={mockOnCancel}
         onDelete={mockOnDelete}
       />
     );
