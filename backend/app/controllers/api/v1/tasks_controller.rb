@@ -58,6 +58,21 @@ module Api
         end
       end
 
+      def destroy
+        validate_permissions([ 'delete:tasks' ]) do
+          user_id = current_user_id
+          task = Task.find_by(id: params[:id], account_id: user_id)
+
+          if task.nil?
+            render json: { errors: [ 'タスクが見つかりません' ] }, status: :not_found
+            return
+          end
+
+          task.destroy
+          head :no_content
+        end
+      end
+
       private
 
       def task_params
