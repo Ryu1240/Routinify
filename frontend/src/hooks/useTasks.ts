@@ -138,6 +138,23 @@ export const useTasks = () => {
       throw err;
     } finally {
       setUpdateLoading(false);
+  const deleteTask = async (taskId: number) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      await axios.delete(`/api/v1/tasks/${taskId}`);
+
+      // 削除後にタスクリストを再取得
+      await fetchTasks();
+    } catch (err) {
+      console.error('タスクの削除に失敗しました:', err);
+      setError(
+        'タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -156,5 +173,6 @@ export const useTasks = () => {
     refreshTasks,
     createTask,
     updateTask,
+    deleteTask,
   };
 };

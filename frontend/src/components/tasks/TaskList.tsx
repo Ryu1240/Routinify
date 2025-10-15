@@ -31,6 +31,7 @@ const TaskList: React.FC = () => {
     setSorting,
     createTask,
     updateTask,
+    deleteTask,
   } = useTasks();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -53,9 +54,14 @@ const TaskList: React.FC = () => {
     setEditingTaskId(null);
   };
 
-  const handleDelete = (taskId: number) => {
-    console.log('削除ボタンがクリックされました:', taskId);
-    // TODO: 削除機能を実装
+  const handleDelete = async (taskId: number) => {
+    if (window.confirm('このタスクを削除してもよろしいですか？')) {
+      try {
+        await deleteTask(taskId);
+      } catch (error) {
+        console.error('タスク削除に失敗:', error);
+      }
+    }
   };
 
   const handleAddTask = () => {
