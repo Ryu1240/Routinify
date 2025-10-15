@@ -138,6 +138,9 @@ export const useTasks = () => {
       throw err;
     } finally {
       setUpdateLoading(false);
+    }
+  };
+
   const deleteTask = async (taskId: number) => {
     try {
       setLoading(true);
