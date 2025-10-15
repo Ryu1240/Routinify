@@ -13,8 +13,8 @@ import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../constants/colors';
 import { useTasks } from '../../hooks/useTasks';
 import { useAuth } from '../../hooks/useAuth';
-import { TaskTable } from './TaskTable';
-import { CreateTaskModal } from './';
+import { TaskTable } from './TaskTable/index';
+import CreateTaskModal from './CreateTaskModal/index';
 import { CreateTaskData, UpdateTaskData } from './definitions/types';
 
 const TaskList: React.FC = () => {
