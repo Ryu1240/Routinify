@@ -1,7 +1,7 @@
 export const statusOptions = [
-  { value: '未着手', label: '未着手' },
-  { value: '進行中', label: '進行中' },
-  { value: '完了', label: '完了' },
+  { value: 'pending', label: '未着手' },
+  { value: 'in_progress', label: '進行中' },
+  { value: 'completed', label: '完了' },
 ];
 
 export const priorityOptions = [

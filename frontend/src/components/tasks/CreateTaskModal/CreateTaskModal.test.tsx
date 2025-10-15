@@ -135,7 +135,7 @@ describe('CreateTaskModal', () => {
       expect(mockSubmit).toHaveBeenCalledWith({
         title: 'テストタスク',
         dueDate: null,
-        status: '未着手',
+        status: 'pending',
         priority: 'medium',
         category: 'テストカテゴリ',
       });

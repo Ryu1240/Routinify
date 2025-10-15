@@ -5,7 +5,7 @@ export const useCreateTaskForm = () => {
   const [formData, setFormData] = useState<CreateTaskData>({
     title: '',
     dueDate: null,
-    status: '未着手',
+    status: 'pending',
     priority: 'medium',
     category: '',
   });
@@ -41,7 +41,7 @@ export const useCreateTaskForm = () => {
     setFormData({
       title: '',
       dueDate: null,
-      status: '未着手',
+      status: 'pending',
       priority: 'medium',
       category: '',
     });

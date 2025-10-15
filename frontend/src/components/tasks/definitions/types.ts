@@ -11,7 +11,7 @@ export interface Task {
   updatedAt?: string;
 }
 
-export type TaskStatus = '未着手' | '進行中' | '完了';
+export type TaskStatus = 'pending' | 'in_progress' | 'completed';
 export type TaskPriority = 'low' | 'medium' | 'high';
 
 export interface TaskColumn {
