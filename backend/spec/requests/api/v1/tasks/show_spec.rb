@@ -4,7 +4,8 @@ require_relative 'shared_context'
 RSpec.describe 'GET /api/v1/tasks/:id', type: :request do
   include_context 'tasks request spec setup'
 
-  let!(:task) { create(:task, account_id: user_id, title: 'Test Task', status: '進行中', priority: 'high', category: '仕事') }
+  let(:category) { create(:category, account_id: user_id, name: '仕事') }
+  let!(:task) { create(:task, account_id: user_id, title: 'Test Task', status: '進行中', priority: 'high', category_id: category.id) }
 
   describe 'GET /api/v1/tasks/:id' do
     context '正常系' do
@@ -23,7 +24,7 @@ RSpec.describe 'GET /api/v1/tasks/:id', type: :request do
           'title' => task.title,
           'status' => task.status,
           'priority' => task.priority,
-          'category' => task.category
+          'categoryId' => task.category_id
         )
         expect(json_response['data']['dueDate']).to eq(task.due_date&.iso8601)
         expect(json_response['data']['createdAt']).to eq(task.created_at.iso8601(3))
