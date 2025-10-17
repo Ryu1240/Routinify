@@ -12,6 +12,7 @@ import {
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../constants/colors';
 import { useTasks } from '../../hooks/useTasks';
+import { useCategories } from '../../hooks/useCategories';
 import { useAuth } from '../../hooks/useAuth';
 import { TaskTable } from './TaskTable/index';
 import CreateTaskModal from './CreateTaskModal/index';
@@ -33,6 +34,7 @@ const TaskList: React.FC = () => {
     updateTask,
     deleteTask,
   } = useTasks();
+  const { categories, loading: categoriesLoading } = useCategories();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
@@ -78,13 +80,17 @@ const TaskList: React.FC = () => {
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading || loading || categoriesLoading) {
     return (
       <Container size="xl" py="xl">
         <Group justify="center">
           <Loader size="lg" color={COLORS.PRIMARY} />
           <Text c={COLORS.MEDIUM}>
-            {authLoading ? '認証情報を確認中...' : 'タスクを読み込み中...'}
+            {authLoading
+              ? '認証情報を確認中...'
+              : categoriesLoading
+                ? 'カテゴリを読み込み中...'
+                : 'タスクを読み込み中...'}
           </Text>
         </Group>
       </Container>
@@ -153,6 +159,7 @@ const TaskList: React.FC = () => {
         onSave={handleSave}
         onCancel={handleCancel}
         onDelete={handleDelete}
+        categories={categories}
       />
 
       {filteredTasks.length > 0 && (
@@ -166,6 +173,7 @@ const TaskList: React.FC = () => {
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateTask}
         loading={createLoading}
+        categories={categories}
       />
     </Container>
   );

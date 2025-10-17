@@ -1,11 +1,16 @@
 import React from 'react';
 import { DataTable } from '../../common/DataTable/index';
 import { TaskTableProps } from '../definitions';
+import { Category } from '../../../types/category';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
 import { tableColumns } from './taskTableColumns';
 
-export const TaskTable: React.FC<TaskTableProps> = ({
+interface ExtendedTaskTableProps extends TaskTableProps {
+  categories?: Category[];
+}
+
+export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   tasks,
   sortBy,
   reverseSortDirection,
@@ -15,6 +20,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({
   onSave,
   onCancel,
   onDelete,
+  categories = [],
 }) => {
   return (
     <DataTable>
@@ -34,9 +40,15 @@ export const TaskTable: React.FC<TaskTableProps> = ({
                 task={task}
                 onSave={onSave}
                 onCancel={onCancel}
+                categories={categories}
               />
             ) : (
-              <TaskTableRow task={task} onEdit={onEdit} onDelete={onDelete} />
+              <TaskTableRow
+                task={task}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                categories={categories}
+              />
             )}
           </DataTable.Tr>
         ))}
