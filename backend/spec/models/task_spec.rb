@@ -1,6 +1,25 @@
 require 'rails_helper'
 
 RSpec.describe Task, type: :model do
+  describe 'associations' do
+    it 'belongs to category' do
+      task = Task.reflect_on_association(:category)
+      expect(task.macro).to eq(:belongs_to)
+    end
+
+    it 'category is optional' do
+      task = Task.new(title: 'Test Task', account_id: 'test_user', category_id: nil)
+      expect(task).to be_valid
+    end
+
+    it 'can be associated with a category' do
+      category = Category.create!(name: 'Test Category', account_id: 'test_user')
+      task = Task.new(title: 'Test Task', account_id: 'test_user', category_id: category.id)
+      expect(task).to be_valid
+      expect(task.category).to eq(category)
+    end
+  end
+
   describe 'バリデーション' do
     subject { build(:task) }
 
@@ -80,18 +99,6 @@ RSpec.describe Task, type: :model do
       end
     end
 
-    context 'category' do
-      it 'categoryは任意であること' do
-        subject.category = nil
-        expect(subject).to be_valid
-      end
-
-      it 'categoryが50文字以内であること' do
-        subject.category = 'a' * 51
-        expect(subject).to be_invalid
-        expect(subject.errors[:category]).to include('is too long (maximum is 50 characters)')
-      end
-    end
   end
 
   describe 'スコープ' do
