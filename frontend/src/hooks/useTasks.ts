@@ -49,8 +49,6 @@ export const useTasks = () => {
     let filtered = tasks.filter(
       (task) =>
         task.title.toLowerCase().includes(search.toLowerCase()) ||
-        (task.category &&
-          task.category.toLowerCase().includes(search.toLowerCase())) ||
         (task.status &&
           task.status.toLowerCase().includes(search.toLowerCase()))
     );
@@ -96,7 +94,7 @@ export const useTasks = () => {
           due_date: taskData.dueDate,
           status: taskData.status,
           priority: taskData.priority,
-          category: taskData.category,
+          category_id: taskData.categoryId,
         },
       });
 
@@ -124,7 +122,7 @@ export const useTasks = () => {
           due_date: taskData.dueDate,
           status: taskData.status,
           priority: taskData.priority,
-          category: taskData.category,
+          category_id: taskData.categoryId,
         },
       });
 
