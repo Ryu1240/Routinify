@@ -11,7 +11,24 @@ module Api
         end
       end
 
+      def create
+        validate_permissions(['write:tasks']) do
+          user_id = current_user_id
+          category = Category.new(category_params.merge(account_id: user_id))
+
+          if category.save
+            render json: { message: 'カテゴリが正常に作成されました' }, status: :created
+          else
+            render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+      end
+
       private
+
+      def category_params
+        params.require(:category).permit(:name)
+      end
 
       def format_category_response(category)
         {
