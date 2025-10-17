@@ -3,7 +3,7 @@ export interface Task {
   accountId?: string;
   title: string;
   description?: string;
-  category?: string | null;
+  categoryId?: number | null;
   status?: TaskStatus | null;
   priority?: TaskPriority | null;
   dueDate?: string | null;
@@ -39,7 +39,7 @@ export interface CreateTaskData {
   dueDate?: string | null;
   status?: TaskStatus | null;
   priority?: TaskPriority | null;
-  category?: string | null;
+  categoryId?: number | null;
 }
 
 export interface UpdateTaskData {
@@ -47,5 +47,5 @@ export interface UpdateTaskData {
   dueDate?: string | null;
   status?: TaskStatus | null;
   priority?: TaskPriority | null;
-  category?: string | null;
+  categoryId?: number | null;
 }
