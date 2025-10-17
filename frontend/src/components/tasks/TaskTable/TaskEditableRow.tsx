@@ -12,25 +12,28 @@ import { COLORS } from '../../../constants/colors';
 import { formatDate } from '../../../utils/taskUtils';
 import { DataTable } from '../../common/DataTable/index';
 import { Task, UpdateTaskData } from '../definitions';
+import { Category } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
 
 interface TaskEditableRowProps {
   task: Task;
   onSave: (taskId: number, taskData: UpdateTaskData) => Promise<void>;
   onCancel: () => void;
+  categories?: Category[];
 }
 
 export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   task,
   onSave,
   onCancel,
+  categories = [],
 }) => {
   const [formData, setFormData] = useState<UpdateTaskData>({
     title: task.title,
     dueDate: task.dueDate || null,
     status: task.status || null,
     priority: task.priority || null,
-    category: task.category || null,
+    categoryId: task.categoryId || null,
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
   const [saving, setSaving] = useState(false);
@@ -53,7 +56,7 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
 
   const handleInputChange = (
     field: keyof UpdateTaskData,
-    value: string | null
+    value: string | number | null
   ) => {
     setFormData((prev: UpdateTaskData) => ({ ...prev, [field]: value }));
     if (field === 'title' && errors.title) {
@@ -80,10 +83,18 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
         />
       </DataTable.Td>
       <DataTable.Td>
-        <TextInput
-          value={formData.category || ''}
-          onChange={(e) => handleInputChange('category', e.currentTarget.value)}
+        <Select
+          value={formData.categoryId ? String(formData.categoryId) : null}
+          onChange={(value) =>
+            handleInputChange('categoryId', value ? Number(value) : null)
+          }
+          data={categories.map((cat) => ({
+            value: String(cat.id),
+            label: cat.name,
+          }))}
           placeholder="カテゴリ"
+          clearable
+          searchable
           styles={{
             input: {
               borderColor: COLORS.LIGHT,
