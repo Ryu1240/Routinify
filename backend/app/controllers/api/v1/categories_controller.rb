@@ -42,6 +42,21 @@ module Api
         end
       end
 
+      def destroy
+        validate_permissions(['delete:tasks']) do
+          user_id = current_user_id
+          category = Category.find_by(id: params[:id], account_id: user_id)
+
+          if category.nil?
+            render json: { errors: ['カテゴリが見つかりません'] }, status: :not_found
+            return
+          end
+
+          category.destroy
+          head :no_content
+        end
+      end
+
       private
 
       def category_params
