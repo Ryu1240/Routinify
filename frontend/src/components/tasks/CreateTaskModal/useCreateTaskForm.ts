@@ -7,13 +7,13 @@ export const useCreateTaskForm = () => {
     dueDate: null,
     status: 'pending',
     priority: 'medium',
-    category: '',
+    categoryId: null,
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
 
   const handleInputChange = (
     field: keyof CreateTaskData,
-    value: string | null
+    value: string | number | null
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (field === 'title' && errors.title) {
@@ -33,7 +33,7 @@ export const useCreateTaskForm = () => {
     return {
       ...formData,
       dueDate: formData.dueDate || null,
-      category: formData.category?.trim() || null,
+      categoryId: formData.categoryId || null,
     };
   };
 
@@ -43,7 +43,7 @@ export const useCreateTaskForm = () => {
       dueDate: null,
       status: 'pending',
       priority: 'medium',
-      category: '',
+      categoryId: null,
     });
     setErrors({});
   };

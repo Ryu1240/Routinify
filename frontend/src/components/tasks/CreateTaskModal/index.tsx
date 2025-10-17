@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import { COLORS } from '../../../constants/colors';
 import { CreateTaskData } from '../definitions/types';
+import { Category } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
 import { useCreateTaskForm } from './useCreateTaskForm';
 
@@ -19,6 +20,7 @@ interface CreateTaskModalProps {
   onClose: () => void;
   onSubmit: (taskData: CreateTaskData) => Promise<void>;
   loading?: boolean;
+  categories?: Category[];
 }
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
@@ -26,6 +28,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   onClose,
   onSubmit,
   loading = false,
+  categories = [],
 }) => {
   const {
     formData,
@@ -137,13 +140,19 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             }}
           />
 
-          <TextInput
+          <Select
             label="カテゴリ"
-            placeholder="カテゴリを入力してください"
-            value={formData.category || ''}
-            onChange={(e) =>
-              handleInputChange('category', e.currentTarget.value)
+            placeholder="カテゴリを選択してください"
+            data={categories.map((cat) => ({
+              value: String(cat.id),
+              label: cat.name,
+            }))}
+            value={formData.categoryId ? String(formData.categoryId) : null}
+            onChange={(value) =>
+              handleInputChange('categoryId', value ? Number(value) : null)
             }
+            clearable
+            searchable
             styles={{
               input: {
                 borderColor: COLORS.LIGHT,
