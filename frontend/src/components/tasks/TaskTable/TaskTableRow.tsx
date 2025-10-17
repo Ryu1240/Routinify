@@ -10,26 +10,33 @@ import {
 } from '../../../utils/taskUtils';
 import { DataTable } from '../../common/DataTable/index';
 import { Task } from '../definitions';
+import { Category } from '../../../types/category';
 
 interface TaskTableRowProps {
   task: Task;
   onEdit: (taskId: number) => void;
   onDelete: (taskId: number) => void;
+  categories?: Category[];
 }
 
 export const TaskTableRow: React.FC<TaskTableRowProps> = ({
   task,
   onEdit,
   onDelete,
+  categories = [],
 }) => {
+  const categoryName =
+    task.categoryId
+      ? categories.find((cat) => cat.id === task.categoryId)?.name
+      : null;
   return (
     <>
       <DataTable.Td>
         <Text fw={500}>{task.title}</Text>
       </DataTable.Td>
       <DataTable.Td>
-        <Badge color={getCategoryColor(task.category || null)} variant="light">
-          {task.category || '-'}
+        <Badge color={getCategoryColor(categoryName || null)} variant="light">
+          {categoryName || '-'}
         </Badge>
       </DataTable.Td>
       <DataTable.Td>
