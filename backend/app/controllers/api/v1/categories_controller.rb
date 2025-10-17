@@ -2,7 +2,7 @@ module Api
   module V1
     class CategoriesController < ApplicationController
       def index
-        validate_permissions(['read:tasks']) do
+        validate_permissions([ 'read:tasks' ]) do
           user_id = current_user_id
           categories = Category.for_user(user_id)
           render json: {
@@ -12,7 +12,7 @@ module Api
       end
 
       def create
-        validate_permissions(['write:tasks']) do
+        validate_permissions([ 'write:tasks' ]) do
           user_id = current_user_id
           category = Category.new(category_params.merge(account_id: user_id))
 
@@ -25,12 +25,12 @@ module Api
       end
 
       def update
-        validate_permissions(['write:tasks']) do
+        validate_permissions([ 'write:tasks' ]) do
           user_id = current_user_id
           category = Category.find_by(id: params[:id], account_id: user_id)
 
           if category.nil?
-            render json: { errors: ['カテゴリが見つかりません'] }, status: :not_found
+            render json: { errors: [ 'カテゴリが見つかりません' ] }, status: :not_found
             return
           end
 
@@ -43,12 +43,12 @@ module Api
       end
 
       def destroy
-        validate_permissions(['delete:tasks']) do
+        validate_permissions([ 'delete:tasks' ]) do
           user_id = current_user_id
           category = Category.find_by(id: params[:id], account_id: user_id)
 
           if category.nil?
-            render json: { errors: ['カテゴリが見つかりません'] }, status: :not_found
+            render json: { errors: [ 'カテゴリが見つかりません' ] }, status: :not_found
             return
           end
 

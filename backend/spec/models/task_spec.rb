@@ -98,7 +98,6 @@ RSpec.describe Task, type: :model do
         expect(subject.errors[:priority]).to include('is too long (maximum is 50 characters)')
       end
     end
-
   end
 
   describe 'スコープ' do
