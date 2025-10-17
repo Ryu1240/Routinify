@@ -25,10 +25,9 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
   onDelete,
   categories = [],
 }) => {
-  const categoryName =
-    task.categoryId
-      ? categories.find((cat) => cat.id === task.categoryId)?.name
-      : null;
+  const categoryName = task.categoryId
+    ? categories.find((cat) => cat.id === task.categoryId)?.name
+    : null;
   return (
     <>
       <DataTable.Td>
