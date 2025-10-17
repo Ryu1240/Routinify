@@ -24,6 +24,24 @@ module Api
         end
       end
 
+      def update
+        validate_permissions(['write:tasks']) do
+          user_id = current_user_id
+          category = Category.find_by(id: params[:id], account_id: user_id)
+
+          if category.nil?
+            render json: { errors: ['カテゴリが見つかりません'] }, status: :not_found
+            return
+          end
+
+          if category.update(category_params)
+            render json: { message: 'カテゴリが正常に更新されました' }, status: :ok
+          else
+            render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+          end
+        end
+      end
+
       private
 
       def category_params
