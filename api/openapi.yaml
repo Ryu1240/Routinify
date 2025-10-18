@@ -1026,7 +1026,7 @@ paths:
       summary: カテゴリの削除
       security:
         - Auth0:
-            - delete:tasks
+            - write:tasks
       responses:
         '204':
           description: 削除成功

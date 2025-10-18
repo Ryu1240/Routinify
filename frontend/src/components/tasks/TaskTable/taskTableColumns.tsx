@@ -9,10 +9,20 @@ import {
 } from '../../../utils/taskUtils';
 import { TableColumn } from '../../common/DataTable/index';
 import { Task } from '../definitions';
+import { Category } from '../../../types/category';
 
-export const taskColumns: (TableColumn & {
+// カテゴリ名を取得するヘルパー関数
+const getCategoryName = (task: Task, categories: Category[]): string => {
+  if (!task.categoryId) return '-';
+  const category = categories.find((cat) => cat.id === task.categoryId);
+  return category?.name || '-';
+};
+
+export const createTaskColumns = (
+  categories: Category[] = []
+): (TableColumn & {
   render: (task: Task) => React.ReactNode;
-})[] = [
+})[] => [
   {
     key: 'title',
     label: 'タスク名',
@@ -23,11 +33,14 @@ export const taskColumns: (TableColumn & {
     key: 'categoryId',
     label: 'カテゴリ',
     sortable: true,
-    render: (task) => (
-      <Badge color={getCategoryColor(null)} variant="light">
-        {task.categoryId || '-'}
-      </Badge>
-    ),
+    render: (task) => {
+      const categoryName = getCategoryName(task, categories);
+      return (
+        <Badge color={getCategoryColor(categoryName)} variant="light">
+          {categoryName}
+        </Badge>
+      );
+    },
   },
   {
     key: 'priority',
@@ -77,7 +90,12 @@ export const taskColumns: (TableColumn & {
   },
 ];
 
-// テーブルヘッダー用のカラム定義（render関数を除外）
-export const tableColumns: TableColumn[] = taskColumns.map(
-  ({ render, ...column }) => column
-);
+// テーブルヘッダー用のカラム定義を生成する関数
+export const createTableColumns = (
+  categories: Category[] = []
+): TableColumn[] =>
+  createTaskColumns(categories).map(({ render, ...column }) => column);
+
+// 後方互換性のため、デフォルトエクスポート（カテゴリなし）も提供
+export const taskColumns = createTaskColumns([]);
+export const tableColumns = createTableColumns([]);

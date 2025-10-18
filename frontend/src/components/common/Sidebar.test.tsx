@@ -65,6 +65,7 @@ vi.mock('@mantine/core', () => ({
 vi.mock('@tabler/icons-react', () => ({
   IconChecklist: () => <span data-testid="checklist-icon">Checklist Icon</span>,
   IconPlus: () => <span data-testid="plus-icon">Plus Icon</span>,
+  IconCategory: () => <span data-testid="category-icon">Category Icon</span>,
 }));
 
 const renderWithRouter = (component: React.ReactElement) => {
@@ -90,21 +91,21 @@ describe('Sidebar', () => {
 
     expect(screen.getByTestId('sidebar')).toBeDefined();
     expect(screen.getByText('タスク一覧')).toBeDefined();
-    expect(screen.getByText('タスク作成')).toBeDefined();
+    expect(screen.getByText('カテゴリ管理')).toBeDefined();
   });
 
   it('renders navigation items with descriptions', () => {
     renderWithRouter(<Sidebar />);
 
     expect(screen.getByText('すべてのタスクを表示')).toBeDefined();
-    expect(screen.getByText('新しいタスクを作成')).toBeDefined();
+    expect(screen.getByText('カテゴリの作成・編集')).toBeDefined();
   });
 
   it('renders navigation items with icons', () => {
     renderWithRouter(<Sidebar />);
 
     expect(screen.getByTestId('checklist-icon')).toBeDefined();
-    expect(screen.getByTestId('plus-icon')).toBeDefined();
+    expect(screen.getByTestId('category-icon')).toBeDefined();
   });
 
   it('calls navigate when navigation item is clicked', () => {
@@ -116,13 +117,13 @@ describe('Sidebar', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/tasks');
   });
 
-  it('calls navigate to new task page when create task is clicked', () => {
+  it('calls navigate to categories page when category management is clicked', () => {
     renderWithRouter(<Sidebar />);
 
-    const createTaskLink = screen.getByText('タスク作成');
-    createTaskLink.click();
+    const categoryLink = screen.getByText('カテゴリ管理');
+    categoryLink.click();
 
-    expect(mockNavigate).toHaveBeenCalledWith('/tasks/new');
+    expect(mockNavigate).toHaveBeenCalledWith('/categories');
   });
 
   it('shows active state for current path', () => {

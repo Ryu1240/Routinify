@@ -4,7 +4,7 @@ import { TaskTableProps } from '../definitions';
 import { Category, CreateCategoryData } from '../../../types/category';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
-import { tableColumns } from './taskTableColumns';
+import { createTableColumns } from './taskTableColumns';
 
 interface ExtendedTaskTableProps extends TaskTableProps {
   categories?: Category[];
@@ -26,6 +26,8 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   onCreateCategory,
   createCategoryLoading = false,
 }) => {
+  const tableColumns = createTableColumns(categories);
+
   return (
     <DataTable>
       <DataTable.Thead>
