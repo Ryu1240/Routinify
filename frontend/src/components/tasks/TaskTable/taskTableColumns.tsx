@@ -20,12 +20,12 @@ export const taskColumns: (TableColumn & {
     render: (task) => <Text fw={500}>{task.title}</Text>,
   },
   {
-    key: 'category',
+    key: 'categoryId',
     label: 'カテゴリ',
     sortable: true,
     render: (task) => (
-      <Badge color={getCategoryColor(task.category || null)} variant="light">
-        {task.category || '-'}
+      <Badge color={getCategoryColor(null)} variant="light">
+        {task.categoryId || '-'}
       </Badge>
     ),
   },

@@ -27,13 +27,13 @@ export const taskColumns: TaskColumn[] = [
     ),
   },
   {
-    key: 'category',
+    key: 'categoryId',
     label: 'カテゴリ',
     sortable: true,
     width: 'w-24',
     render: (task) => (
       <Text size="sm" c="gray">
-        {task.category || '-'}
+        {task.categoryId || '-'}
       </Text>
     ),
   },
