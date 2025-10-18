@@ -1,22 +1,21 @@
 # frozen_string_literal: true
 
 module Secured
-
   extend ActiveSupport::Concern
 
   REQUIRES_AUTHENTICATION = { message: 'Requires authentication' }.freeze
   BAD_CREDENTIALS = {
-    message: 'Bad credentials',
+    message: 'Bad credentials'
   }.freeze
   MALFORMED_AUTHORIZATION_HEADER = {
     error: 'invalid_request',
     error_description: 'Authorization header value must follow this format: Bearer access-token',
-    message: 'Bad credentials',
+    message: 'Bad credentials'
   }.freeze
   INSUFFICIENT_PERMISSIONS = {
     error: 'insufficient_permissions',
     error_description: 'The access token does not contain the required permissions',
-    message: 'Permission denied',
+    message: 'Permission denied'
   }.freeze
 
   def authorize
@@ -91,5 +90,4 @@ module Secured
   def valid_bearer_scheme?(scheme)
     scheme.downcase == 'bearer'
   end
-
 end

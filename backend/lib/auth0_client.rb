@@ -5,7 +5,6 @@ require 'net/http'
 
 # Auth0Client class to handle JWT token validation
 class Auth0Client
-
   # Auth0 Client Objects
   Error = Struct.new(:message, :status)
   Response = Struct.new(:decoded_token, :error)
@@ -33,7 +32,7 @@ class Auth0Client
                  verify_iss: true,
                  aud: ENV['AUTH0_AUDIENCE'] || ENV.fetch('REACT_APP_AUTH0_AUDIENCE', nil),
                  verify_aud: true,
-                 jwks: { keys: jwks_hash[:keys] },
+                 jwks: { keys: jwks_hash[:keys] }
                })
   end
 
@@ -60,5 +59,4 @@ class Auth0Client
     error = Error.new('Bad credentials', :unauthorized)
     Response.new(nil, error)
   end
-
 end

@@ -1,5 +1,4 @@
 class TaskService < BaseService
-
   def initialize(user_id)
     @user_id = user_id
     # BaseServiceにはinitializeメソッドがないため、superは不要
@@ -19,5 +18,4 @@ class TaskService < BaseService
 
     ServiceResult.success(message: "#{overdue_tasks.count}件の期限切れタスクに通知を送信しました")
   end
-
 end

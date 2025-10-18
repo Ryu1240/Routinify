@@ -80,7 +80,7 @@ RSpec.describe Task, type: :model do
       end
 
       it '有効なstatus値を受け入れること' do
-        %w(pending in_progress completed on_hold).each do |status|
+        %w[pending in_progress completed on_hold].each do |status|
           subject.status = status
           expect(subject).to be_valid
         end
@@ -100,7 +100,7 @@ RSpec.describe Task, type: :model do
       end
 
       it '有効なpriority値を受け入れること' do
-        %w(low medium high).each do |priority|
+        %w[low medium high].each do |priority|
           subject.priority = priority
           expect(subject).to be_valid
         end

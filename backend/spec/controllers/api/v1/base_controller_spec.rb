@@ -7,7 +7,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
     end
 
     def test_error
-      render_error(errors: ['テストエラー'])
+      render_error(errors: [ 'テストエラー' ])
     end
 
     def test_not_found
@@ -69,7 +69,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
       json_response = JSON.parse(response.body)
       expect(json_response).to include(
         'success' => false,
-        'errors' => ['テストエラー']
+        'errors' => [ 'テストエラー' ]
       )
     end
   end
@@ -82,7 +82,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
       json_response = JSON.parse(response.body)
       expect(json_response).to include(
         'success' => false,
-        'errors' => ['テストリソースが見つかりません']
+        'errors' => [ 'テストリソースが見つかりません' ]
       )
     end
   end

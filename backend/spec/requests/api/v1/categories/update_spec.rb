@@ -8,8 +8,8 @@ RSpec.describe 'PUT /api/v1/categories/:id', type: :request do
   let(:valid_update_params) do
     {
       category: {
-        name: 'Updated Category',
-      },
+        name: 'Updated Category'
+      }
     }
   end
 

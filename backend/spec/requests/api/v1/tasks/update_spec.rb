@@ -14,8 +14,8 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
         status: 'in_progress',
         priority: 'high',
         category_id: new_category.id,
-        due_date: Date.current + 2.weeks,
-      },
+        due_date: Date.current + 2.weeks
+      }
     }
   end
 
@@ -190,7 +190,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
       end
 
       it '各ステータス値で正常に更新される' do
-        %w(pending in_progress completed on_hold).each do |status|
+        %w[pending in_progress completed on_hold].each do |status|
           params = { task: { status: status } }
 
           put "/api/v1/tasks/#{task.id}", params: params, headers: auth_headers

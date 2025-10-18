@@ -1,9 +1,6 @@
 module Api
-
   module V1
-
     class BaseController < ApplicationController
-
       include ErrorHandler
       include ResponseFormatter
 
@@ -15,9 +12,6 @@ module Api
         @page = params[:page]&.to_i || 1
         @per_page = params[:per_page]&.to_i || 20
       end
-
     end
-
   end
-
 end

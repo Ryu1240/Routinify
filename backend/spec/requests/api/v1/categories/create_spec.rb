@@ -7,8 +7,8 @@ RSpec.describe 'POST /api/v1/categories', type: :request do
   let(:valid_params) do
     {
       category: {
-        name: 'New Category',
-      },
+        name: 'New Category'
+      }
     }
   end
 

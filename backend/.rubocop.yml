@@ -1,116 +1,49 @@
-# Routinify Backend RuboCop設定
-# Rails 8.0 + API専用アプリケーション向けの設定
+# Omakase Ruby styling for Rails
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
+# Overwrite or add rules to create your own house style
+#
+# # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
+# Layout/SpaceInsideArrayLiteralBrackets:
+#   Enabled: false
+
+# フォーマッターとしての設定
 AllCops:
-  TargetRubyVersion: 3.3
   NewCops: enable
+  TargetRubyVersion: 3.4
   Exclude:
-    - 'db/schema.rb'
-    - 'db/migrate/*'
-    - 'bin/*'
+    - 'db/**/*'
     - 'config/**/*'
+    - 'script/**/*'
+    - 'bin/**/*'
     - 'vendor/**/*'
     - 'node_modules/**/*'
-    - 'tmp/**/*'
-    - 'log/**/*'
-    - 'storage/**/*'
-    - 'public/**/*'
-    - 'spec/rails_helper.rb'
-    - 'spec/spec_helper.rb'
 
-# 基本的なスタイル設定
+# 自動修正可能なルールを有効化
 Layout/LineLength:
   Max: 120
-  Exclude:
-    - 'spec/**/*'
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
-
-Style/TrailingCommaInArrayLiteral:
-  EnforcedStyleForMultiline: comma
-
-Style/TrailingCommaInHashLiteral:
-  EnforcedStyleForMultiline: comma
-
-Style/Documentation:
-  Enabled: false
+  Exclude:
+    - 'spec/**/*'
 
 Style/FrozenStringLiteralComment:
   Enabled: false
 
-# メトリクス
-Metrics/AbcSize:
-  Max: 20
+Style/Documentation:
+  Enabled: false
 
 Metrics/MethodLength:
   Max: 20
 
+Metrics/AbcSize:
+  Max: 30
+
 Metrics/ClassLength:
   Max: 150
 
-Metrics/ModuleLength:
-  Max: 150
-
-Metrics/BlockLength:
-  Max: 30
-  Exclude:
-    - 'spec/**/*'
-
-# レイアウト
-Layout/EmptyLinesAroundMethodBody:
-  EnforcedStyle: empty_lines
-
-Layout/EmptyLinesAroundClassBody:
-  EnforcedStyle: empty_lines
-
-Layout/EmptyLinesAroundModuleBody:
-  EnforcedStyle: empty_lines
-
-# 命名規則
-Naming/VariableNumber:
-  EnforcedStyle: snake_case
-  Exclude:
-    - 'spec/controllers/api/v1/base_controller_spec.rb' # Railsのルーティング名前空間
-    - 'spec/**/*' # テストファイルでは数字を含む変数名を許可
-
-Naming/AccessorMethodName:
-  Enabled: false
-
-Lint/MissingSuper:
-  Exclude:
-    - 'app/services/task_service.rb' # BaseServiceにはinitializeメソッドがないため
-
-# その他
-Style/IfUnlessModifier:
-  Enabled: false
-
-Style/WhileUntilModifier:
-  Enabled: false
-
-Style/GuardClause:
-  Enabled: false
-
-Style/RedundantReturn:
-  Enabled: false
-
-Style/RedundantSelf:
-  Enabled: false
-
-Style/TrivialAccessors:
-  Enabled: false
-
-Style/WordArray:
-  MinSize: 3
-
-Style/PercentLiteralDelimiters:
-  PreferredDelimiters:
-    '%w': '()'
-    '%W': '()'
-    '%i': '()'
-    '%I': '()'
-    '%r': '()'
-    '%x': '()'
-    '%s': '()'
-    '%q': '()'
-    '%Q': '()'
+# テストファイル用の設定
+inherit_mode:
+  merge:
+    - Exclude

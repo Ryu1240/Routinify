@@ -1,5 +1,4 @@
 module AccountScoped
-
   extend ActiveSupport::Concern
 
   included do
@@ -11,5 +10,4 @@ module AccountScoped
       by_account(user_id)
     end
   end
-
 end

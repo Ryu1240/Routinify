@@ -1,11 +1,8 @@
 module Api
-
   module V1
-
     class TasksController < BaseController
-
       def index
-        validate_permissions(['read:tasks']) do
+        validate_permissions([ 'read:tasks' ]) do
           tasks = Task.for_user(current_user_id).includes(:category)
           tasks = apply_filters(tasks, search_params)
 
@@ -14,7 +11,7 @@ module Api
       end
 
       def create
-        validate_permissions(['write:tasks']) do
+        validate_permissions([ 'write:tasks' ]) do
           task = Task.new(task_params.merge(account_id: current_user_id))
 
           if task.save
@@ -30,7 +27,7 @@ module Api
       end
 
       def show
-        validate_permissions(['read:tasks']) do
+        validate_permissions([ 'read:tasks' ]) do
           task = Task.find_by(id: params[:id], account_id: current_user_id)
 
           if task
@@ -42,7 +39,7 @@ module Api
       end
 
       def update
-        validate_permissions(['write:tasks']) do
+        validate_permissions([ 'write:tasks' ]) do
           task = Task.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('タスク') unless task
 
@@ -58,7 +55,7 @@ module Api
       end
 
       def destroy
-        validate_permissions(['delete:tasks']) do
+        validate_permissions([ 'delete:tasks' ]) do
           task = Task.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('タスク') unless task
 
@@ -87,9 +84,6 @@ module Api
         tasks = tasks.search(filters[:q]) if filters[:q].present?
         tasks
       end
-
     end
-
   end
-
 end

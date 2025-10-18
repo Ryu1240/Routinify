@@ -12,8 +12,8 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         due_date: Date.current + 1.week,
         status: 'pending',
         priority: 'high',
-        category_id: category.id,
-      },
+        category_id: category.id
+      }
     }
   end
 
@@ -62,7 +62,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       end
 
       it 'handles various status values correctly' do
-        %w(pending in_progress completed on_hold).each do |status|
+        %w[pending in_progress completed on_hold].each do |status|
           params = valid_params.dup
           params[:task][:status] = status
 

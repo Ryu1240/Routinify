@@ -1,5 +1,4 @@
 module ErrorHandler
-
   extend ActiveSupport::Concern
 
   included do
@@ -17,28 +16,28 @@ module ErrorHandler
 
     render json: {
       success: false,
-      errors: ['内部サーバーエラーが発生しました'],
+      errors: [ '内部サーバーエラーが発生しました' ]
     }, status: :internal_server_error
   end
 
   def handle_record_not_found(_exception)
     render json: {
       success: false,
-      errors: ['リソースが見つかりません'],
+      errors: [ 'リソースが見つかりません' ]
     }, status: :not_found
   end
 
   def handle_record_invalid(exception)
     render json: {
       success: false,
-      errors: exception.record.errors.full_messages,
+      errors: exception.record.errors.full_messages
     }, status: :unprocessable_entity
   end
 
   def handle_parameter_missing(exception)
     render json: {
       success: false,
-      errors: [exception.message],
+      errors: [ exception.message ]
     }, status: :bad_request
   end
 
@@ -53,5 +52,4 @@ module ErrorHandler
     Rails.logger.error e.backtrace.join("\n")
     raise e
   end
-
 end

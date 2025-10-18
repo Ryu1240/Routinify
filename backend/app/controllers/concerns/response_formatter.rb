@@ -1,5 +1,4 @@
 module ResponseFormatter
-
   extend ActiveSupport::Concern
 
   private
@@ -23,7 +22,7 @@ module ResponseFormatter
 
   def render_not_found(resource_name)
     render_error(
-      errors: [I18n.t('errors.not_found', resource: resource_name, default: "#{resource_name}が見つかりません")],
+      errors: [ I18n.t('errors.not_found', resource: resource_name, default: "#{resource_name}が見つかりません") ],
       status: :not_found
     )
   end
@@ -39,5 +38,4 @@ module ResponseFormatter
   def json_response
     @json_response ||= JSON.parse(response.body)
   end
-
 end
