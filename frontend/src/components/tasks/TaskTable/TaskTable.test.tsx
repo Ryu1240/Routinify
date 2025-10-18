@@ -159,7 +159,7 @@ const mockTasks = [
   {
     id: 1,
     title: 'Test Task 1',
-    category: 'Work',
+    categoryId: 1,
     priority: 'high',
     status: 'pending',
     dueDate: '2024-12-31',
@@ -168,12 +168,17 @@ const mockTasks = [
   {
     id: 2,
     title: 'Test Task 2',
-    category: 'Personal',
+    categoryId: 2,
     priority: 'medium',
     status: 'completed',
     dueDate: null,
     createdAt: '2024-01-02',
   },
+];
+
+const mockCategories = [
+  { id: 1, name: 'Work' },
+  { id: 2, name: 'Personal' },
 ];
 
 describe('TaskTable', () => {
@@ -199,6 +204,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -217,6 +223,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -236,6 +243,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -255,6 +263,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -274,6 +283,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -293,6 +303,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -313,6 +324,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -332,6 +344,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -358,6 +371,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -384,6 +398,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 
@@ -395,7 +410,7 @@ describe('TaskTable', () => {
       {
         id: 1,
         title: 'Test Task',
-        category: null,
+        categoryId: null,
         priority: null,
         status: null,
         dueDate: null,
@@ -414,6 +429,7 @@ describe('TaskTable', () => {
         onSave={mockOnSave}
         onCancel={mockOnCancel}
         onDelete={mockOnDelete}
+        categories={mockCategories}
       />
     );
 

@@ -105,7 +105,7 @@ describe('useTasks', () => {
     });
 
     act(() => {
-      result.current.setSearch('Work');
+      result.current.setSearch('Task 1');
     });
 
     await waitFor(() => {
@@ -263,7 +263,7 @@ describe('useTasks', () => {
 
     const taskData = {
       title: 'New Task',
-      category: 'Work',
+      categoryId: 1,
       status: '未着手',
       priority: '中',
       dueDate: null,
@@ -285,7 +285,7 @@ describe('useTasks', () => {
         due_date: null,
         status: '未着手',
         priority: '中',
-        category: 'Work',
+        category_id: 1,
       },
     });
 
@@ -323,7 +323,7 @@ describe('useTasks', () => {
 
     const taskData = {
       title: 'New Task',
-      category: 'Work',
+      categoryId: 1,
       status: '未着手',
       priority: '中',
       dueDate: null,
