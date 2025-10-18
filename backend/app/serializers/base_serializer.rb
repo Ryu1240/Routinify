@@ -1,4 +1,5 @@
 class BaseSerializer
+
   def initialize(object)
     @object = object
   end
@@ -16,4 +17,5 @@ class BaseSerializer
   def format_date(date)
     date&.iso8601
   end
+
 end

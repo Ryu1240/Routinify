@@ -1,4 +1,5 @@
 class TaskSerializer < BaseSerializer
+
   def as_json
     {
       id: @object.id,
@@ -12,7 +13,8 @@ class TaskSerializer < BaseSerializer
       overdue: @object.overdue?,
       completed: @object.completed?,
       createdAt: format_datetime(@object.created_at),
-      updatedAt: format_datetime(@object.updated_at)
+      updatedAt: format_datetime(@object.updated_at),
     }
   end
+
 end

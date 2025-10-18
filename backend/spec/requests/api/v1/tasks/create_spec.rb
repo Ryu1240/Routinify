@@ -12,8 +12,8 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         due_date: Date.current + 1.week,
         status: 'pending',
         priority: 'high',
-        category_id: category.id
-      }
+        category_id: category.id,
+      },
     }
   end
 
@@ -25,9 +25,9 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       end
 
       it 'creates a new task' do
-        expect {
+        expect do
           post '/api/v1/tasks', params: valid_params, headers: auth_headers
-        }.to change(Task, :count).by(1)
+        end.to change(Task, :count).by(1)
       end
 
       it 'returns success message' do
@@ -62,7 +62,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       end
 
       it 'handles various status values correctly' do
-        %w[pending in_progress completed on_hold].each do |status|
+        %w(pending in_progress completed on_hold).each do |status|
           params = valid_params.dup
           params[:task][:status] = status
 
@@ -88,7 +88,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
 
           json_response = JSON.parse(response.body)
           expect(json_response['success']).to be false
-          expect(json_response['errors']).to include("Title タイトルは必須です")
+          expect(json_response['errors']).to include('Title タイトルは必須です')
         end
 
         it 'returns 422 when title is too long' do

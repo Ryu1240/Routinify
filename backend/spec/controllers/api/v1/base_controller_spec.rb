@@ -22,7 +22,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
         message: 'テスト成功',
         status: 200
       )
-      
+
       handle_service_result(result)
     end
   end
@@ -50,7 +50,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
   describe '#render_success' do
     it '成功レスポンスを返す' do
       get :test_success
-      
+
       expect(response).to have_http_status(:ok)
       json_response = JSON.parse(response.body)
       expect(json_response).to include(
@@ -64,7 +64,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
   describe '#render_error' do
     it 'エラーレスポンスを返す' do
       get :test_error
-      
+
       expect(response).to have_http_status(:unprocessable_entity)
       json_response = JSON.parse(response.body)
       expect(json_response).to include(
@@ -77,7 +77,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
   describe '#render_not_found' do
     it '404レスポンスを返す' do
       get :test_not_found
-      
+
       expect(response).to have_http_status(:not_found)
       json_response = JSON.parse(response.body)
       expect(json_response).to include(
@@ -91,7 +91,7 @@ RSpec.describe Api::V1::BaseController, type: :controller do
     it 'サービス結果を適切に処理する' do
       # テスト用のルートを使用してHTTPリクエストを送信
       get :test_handle_service_result
-      
+
       expect(response).to have_http_status(:ok)
       json_response = JSON.parse(response.body)
       expect(json_response).to include(

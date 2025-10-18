@@ -3,30 +3,30 @@ FactoryBot.define do
     sequence(:account_id) { |n| "user-#{n}" }
     sequence(:title) { |n| "タスク #{n}" }
     due_date { Date.current + 1.week }
-    status { "未着手" }
-    priority { "medium" }
+    status { 'pending' }
+    priority { 'medium' }
     category_id { nil }
 
     # 異なるステータスのタスク
     trait :completed do
-      status { "完了" }
+      status { 'completed' }
     end
 
     trait :in_progress do
-      status { "進行中" }
+      status { 'in_progress' }
     end
 
-    trait :pending do
-      status { "保留" }
+    trait :on_hold do
+      status { 'on_hold' }
     end
 
     # 異なる優先度のタスク
     trait :high_priority do
-      priority { "high" }
+      priority { 'high' }
     end
 
     trait :low_priority do
-      priority { "low" }
+      priority { 'low' }
     end
 
     # カテゴリ関連
@@ -53,12 +53,12 @@ FactoryBot.define do
 
     # 長いタイトル
     trait :long_title do
-      title { "a" * 255 }
+      title { 'a' * 255 }
     end
 
     # 特殊文字を含むタイトル
     trait :special_characters do
-      title { "タスク (重要) - 緊急対応が必要です！" }
+      title { 'タスク (重要) - 緊急対応が必要です！' }
     end
   end
 end

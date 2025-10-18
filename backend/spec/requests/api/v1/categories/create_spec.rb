@@ -7,8 +7,8 @@ RSpec.describe 'POST /api/v1/categories', type: :request do
   let(:valid_params) do
     {
       category: {
-        name: 'New Category'
-      }
+        name: 'New Category',
+      },
     }
   end
 
@@ -20,9 +20,9 @@ RSpec.describe 'POST /api/v1/categories', type: :request do
       end
 
       it 'creates a new category' do
-        expect {
+        expect do
           post '/api/v1/categories', params: valid_params, headers: auth_headers
-        }.to change(Category, :count).by(1)
+        end.to change(Category, :count).by(1)
       end
 
       it 'returns success message' do

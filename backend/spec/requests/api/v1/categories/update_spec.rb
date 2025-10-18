@@ -8,8 +8,8 @@ RSpec.describe 'PUT /api/v1/categories/:id', type: :request do
   let(:valid_update_params) do
     {
       category: {
-        name: 'Updated Category'
-      }
+        name: 'Updated Category',
+      },
     }
   end
 
@@ -40,7 +40,7 @@ RSpec.describe 'PUT /api/v1/categories/:id', type: :request do
     context '異常系' do
       context 'カテゴリが存在しない場合' do
         it 'returns 404 when category does not exist' do
-          put "/api/v1/categories/99999", params: valid_update_params, headers: auth_headers
+          put '/api/v1/categories/99999', params: valid_update_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
           json_response = JSON.parse(response.body)

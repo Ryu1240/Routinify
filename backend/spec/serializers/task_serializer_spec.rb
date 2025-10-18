@@ -6,7 +6,7 @@ RSpec.describe TaskSerializer do
     create(:task,
            title: 'テストタスク',
            due_date: 1.week.from_now,
-           status: '未着手',
+           status: 'pending',
            priority: 'medium',
            category: category)
   end
@@ -20,7 +20,7 @@ RSpec.describe TaskSerializer do
         id: task.id,
         accountId: task.account_id,
         title: 'テストタスク',
-        status: '未着手',
+        status: 'pending',
         priority: 'medium',
         categoryId: category.id,
         categoryName: 'テストカテゴリ'
@@ -52,7 +52,7 @@ RSpec.describe TaskSerializer do
 
     it 'overdueとcompletedの状態が正しく計算される' do
       task.update_column(:due_date, 1.day.ago)
-      task.update_column(:status, '完了')
+      task.update_column(:status, 'completed')
       result = serializer.as_json
 
       expect(result[:overdue]).to be true

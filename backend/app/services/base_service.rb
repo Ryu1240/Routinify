@@ -1,5 +1,7 @@
 class BaseService
+
   class ServiceResult
+
     attr_reader :success, :data, :errors, :message, :status
 
     def initialize(success:, data: nil, errors: [], message: nil, status: :ok)
@@ -25,6 +27,7 @@ class BaseService
     def error?
       !@success
     end
+
   end
 
   private
@@ -34,4 +37,5 @@ class BaseService
     Rails.logger.error "Context: #{context}" if context.any?
     Rails.logger.error error.backtrace.join("\n")
   end
+
 end

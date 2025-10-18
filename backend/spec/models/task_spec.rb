@@ -80,7 +80,7 @@ RSpec.describe Task, type: :model do
       end
 
       it '有効なstatus値を受け入れること' do
-        %w[未着手 進行中 完了 保留].each do |status|
+        %w(pending in_progress completed on_hold).each do |status|
           subject.status = status
           expect(subject).to be_valid
         end
@@ -100,7 +100,7 @@ RSpec.describe Task, type: :model do
       end
 
       it '有効なpriority値を受け入れること' do
-        %w[low medium high].each do |priority|
+        %w(low medium high).each do |priority|
           subject.priority = priority
           expect(subject).to be_valid
         end
@@ -167,10 +167,10 @@ RSpec.describe Task, type: :model do
     end
 
     describe '#overdue?' do
-    it '期限切れのタスクでtrueを返すこと' do
-      task.update_column(:due_date, 1.day.ago)
-      expect(task.overdue?).to be true
-    end
+      it '期限切れのタスクでtrueを返すこと' do
+        task.update_column(:due_date, 1.day.ago)
+        expect(task.overdue?).to be true
+      end
 
       it '期限前のタスクでfalseを返すこと' do
         task.update!(due_date: 1.day.from_now)
@@ -185,36 +185,36 @@ RSpec.describe Task, type: :model do
 
     describe '#completed?' do
       it '完了ステータスでtrueを返すこと' do
-        task.update!(status: '完了')
+        task.update!(status: 'completed')
         expect(task.completed?).to be true
       end
 
       it '未完了ステータスでfalseを返すこと' do
-        task.update!(status: '未着手')
+        task.update!(status: 'pending')
         expect(task.completed?).to be false
       end
     end
 
     describe '#in_progress?' do
       it '進行中ステータスでtrueを返すこと' do
-        task.update!(status: '進行中')
+        task.update!(status: 'in_progress')
         expect(task.in_progress?).to be true
       end
 
       it '進行中以外のステータスでfalseを返すこと' do
-        task.update!(status: '未着手')
+        task.update!(status: 'pending')
         expect(task.in_progress?).to be false
       end
     end
 
     describe '#pending?' do
       it '未着手ステータスでtrueを返すこと' do
-        task.update!(status: '未着手')
+        task.update!(status: 'pending')
         expect(task.pending?).to be true
       end
 
       it '未着手以外のステータスでfalseを返すこと' do
-        task.update!(status: '完了')
+        task.update!(status: 'completed')
         expect(task.pending?).to be false
       end
     end

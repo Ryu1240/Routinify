@@ -14,8 +14,8 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
         status: 'in_progress',
         priority: 'high',
         category_id: new_category.id,
-        due_date: Date.current + 2.weeks
-      }
+        due_date: Date.current + 2.weeks,
+      },
     }
   end
 
@@ -71,7 +71,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
     context '異常系' do
       context 'タスクが存在しない場合' do
         it 'returns 404 when task does not exist' do
-          put "/api/v1/tasks/99999", params: valid_update_params, headers: auth_headers
+          put '/api/v1/tasks/99999', params: valid_update_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
           json_response = JSON.parse(response.body)
@@ -107,7 +107,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include("Title タイトルは必須です")
+          expect(json_response['errors']).to include('Title タイトルは必須です')
         end
 
         it 'returns 422 when title is too long' do
@@ -190,7 +190,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
       end
 
       it '各ステータス値で正常に更新される' do
-        %w[pending in_progress completed on_hold].each do |status|
+        %w(pending in_progress completed on_hold).each do |status|
           params = { task: { status: status } }
 
           put "/api/v1/tasks/#{task.id}", params: params, headers: auth_headers

@@ -1,11 +1,14 @@
 module Api
+
   module V1
+
     class TasksController < BaseController
+
       def index
         validate_permissions(['read:tasks']) do
           tasks = Task.for_user(current_user_id).includes(:category)
           tasks = apply_filters(tasks, search_params)
-          
+
           render_success(data: tasks.map { |task| TaskSerializer.new(task).as_json })
         end
       end
@@ -13,7 +16,7 @@ module Api
       def create
         validate_permissions(['write:tasks']) do
           task = Task.new(task_params.merge(account_id: current_user_id))
-          
+
           if task.save
             render_success(
               data: TaskSerializer.new(task).as_json,
@@ -29,7 +32,7 @@ module Api
       def show
         validate_permissions(['read:tasks']) do
           task = Task.find_by(id: params[:id], account_id: current_user_id)
-          
+
           if task
             render_success(data: TaskSerializer.new(task).as_json)
           else
@@ -67,7 +70,6 @@ module Api
         end
       end
 
-
       private
 
       def task_params
@@ -78,7 +80,6 @@ module Api
         params.permit(:status, :overdue, :due_today, :q, :page, :per_page)
       end
 
-
       def apply_filters(tasks, filters)
         tasks = tasks.by_status(filters[:status]) if filters[:status].present?
         tasks = tasks.overdue if filters[:overdue] == 'true'
@@ -88,5 +89,7 @@ module Api
       end
 
     end
+
   end
+
 end

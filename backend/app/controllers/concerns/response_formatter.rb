@@ -1,4 +1,5 @@
 module ResponseFormatter
+
   extend ActiveSupport::Concern
 
   private
@@ -8,7 +9,7 @@ module ResponseFormatter
     response[:data] = data if data
     response[:message] = message if message
     render json: response, status: status
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "Error in render_success: #{e.message}"
     Rails.logger.error e.backtrace.join("\n")
     raise e
@@ -38,4 +39,5 @@ module ResponseFormatter
   def json_response
     @json_response ||= JSON.parse(response.body)
   end
+
 end

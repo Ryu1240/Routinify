@@ -30,7 +30,7 @@ RSpec.describe Category, type: :model do
     end
 
     it 'validates uniqueness of name scoped to account_id' do
-      existing_category = Category.create!(name: 'Test Category', account_id: 'user1')
+      Category.create!(name: 'Test Category', account_id: 'user1')
       duplicate_category = Category.new(name: 'Test Category', account_id: 'user1')
 
       expect(duplicate_category).not_to be_valid

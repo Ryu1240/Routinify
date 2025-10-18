@@ -1,4 +1,5 @@
 class Category < ApplicationRecord
+
   has_many :tasks, dependent: :nullify
 
   validates :name, presence: true, length: { maximum: 255 }
@@ -12,4 +13,5 @@ class Category < ApplicationRecord
   def self.for_user(user_id)
     by_account(user_id)
   end
+
 end

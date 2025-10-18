@@ -5,7 +5,7 @@ RSpec.describe 'GET /api/v1/tasks/:id', type: :request do
   include_context 'tasks request spec setup'
 
   let(:category) { create(:category, account_id: user_id, name: '仕事') }
-  let!(:task) { create(:task, account_id: user_id, title: 'Test Task', status: '進行中', priority: 'high', category_id: category.id) }
+  let!(:task) { create(:task, account_id: user_id, title: 'Test Task', status: 'in_progress', priority: 'high', category_id: category.id) }
 
   describe 'GET /api/v1/tasks/:id' do
     context '正常系' do
@@ -45,7 +45,7 @@ RSpec.describe 'GET /api/v1/tasks/:id', type: :request do
     context '異常系' do
       context 'タスクが存在しない場合' do
         it 'returns 404 when task does not exist' do
-          get "/api/v1/tasks/99999", headers: auth_headers
+          get '/api/v1/tasks/99999', headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
           json_response = JSON.parse(response.body)

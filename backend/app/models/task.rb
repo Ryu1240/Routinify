@@ -1,12 +1,13 @@
 class Task < ApplicationRecord
+
   include AccountScoped
 
   belongs_to :category, optional: true
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
-  validates :status, inclusion: { in: %w[pending in_progress completed on_hold] }, allow_nil: true
-  validates :priority, inclusion: { in: %w[low medium high] }, allow_nil: true
+  validates :status, inclusion: { in: %w(pending in_progress completed on_hold) }, allow_nil: true
+  validates :priority, inclusion: { in: %w(low medium high) }, allow_nil: true
   validates :due_date, future_date: { allow_past_in_test: true }, allow_nil: true
 
   scope :by_account, ->(account_id) { where(account_id: account_id) }
@@ -43,4 +44,5 @@ class Task < ApplicationRecord
   def set_default_status
     self.status ||= 'pending'
   end
+
 end

@@ -1,7 +1,7 @@
 # Ridgepole Schemafile
 # ここにテーブル定義を記述してください
 
-require_relative './schemas/tasks'
-require_relative './schemas/categories'
-require_relative './schemas/milestones'
-require_relative './schemas/milestone_tasks'
+require_relative 'schemas/tasks'
+require_relative 'schemas/categories'
+require_relative 'schemas/milestones'
+require_relative 'schemas/milestone_tasks'
