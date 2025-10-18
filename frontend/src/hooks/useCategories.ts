@@ -1,5 +1,5 @@
-import { useFetchCategories } from '../features/categories/hooks/useFetchCategories';
-import { useCategoryMutations } from '../features/categories/hooks/useCategoryMutations';
+import { useFetchCategories } from '@/features/categories/hooks/useFetchCategories';
+import { useCategoryMutations } from '@/features/categories/hooks/useCategoryMutations';
 
 /**
  * Composer hook that combines all category-related hooks

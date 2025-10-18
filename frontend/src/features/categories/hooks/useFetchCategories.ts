@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
-import { Category } from '../../../types/category';
+import { useAuth } from '@/hooks/useAuth';
+import { Category } from '@/types/category';
 import { categoriesApi } from '../api/categoriesApi';
 
 export const useFetchCategories = () => {

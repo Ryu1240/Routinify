@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CreateCategoryDto, UpdateCategoryDto } from '../../../types/category';
+import { CreateCategoryDto, UpdateCategoryDto } from '@/types/category';
 import { categoriesApi } from '../api/categoriesApi';
 
 export const useCategoryMutations = (onRefresh: () => void) => {
