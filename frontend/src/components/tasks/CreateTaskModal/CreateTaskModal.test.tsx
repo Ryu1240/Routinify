@@ -120,8 +120,8 @@ describe('CreateTaskModal', () => {
     ];
 
     renderComponent(
-      <CreateTaskModal 
-        {...defaultProps} 
+      <CreateTaskModal
+        {...defaultProps}
         onSubmit={mockSubmit}
         categories={mockCategories}
       />

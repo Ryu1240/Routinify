@@ -202,7 +202,7 @@ describe('TaskList', () => {
     };
 
     const mergedMocks = { ...defaultMocks, ...overrides };
-    
+
     mockUseAuth.mockReturnValue(mergedMocks.useAuth);
     mockUseTasks.mockReturnValue(mergedMocks.useTasks);
     mockUseCategories.mockReturnValue(mergedMocks.useCategories);
