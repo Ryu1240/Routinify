@@ -4,7 +4,9 @@ import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { COLORS } from '../../../constants/colors';
 import {
   getPriorityColor,
+  getPriorityLabel,
   getStatusColor,
+  getStatusLabel,
   getCategoryColor,
   formatDate,
 } from '../../../utils/taskUtils';
@@ -39,13 +41,13 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
         </Badge>
       </DataTable.Td>
       <DataTable.Td>
-        <Badge color={getPriorityColor(task.priority || null)} variant="light">
-          {task.priority || '-'}
+        <Badge color={getPriorityColor(task.priority)} variant="light">
+          {getPriorityLabel(task.priority)}
         </Badge>
       </DataTable.Td>
       <DataTable.Td>
-        <Badge color={getStatusColor(task.status || null)} variant="light">
-          {task.status || '-'}
+        <Badge color={getStatusColor(task.status)} variant="light">
+          {getStatusLabel(task.status)}
         </Badge>
       </DataTable.Td>
       <DataTable.Td>

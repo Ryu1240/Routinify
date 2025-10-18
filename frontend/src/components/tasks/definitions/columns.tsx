@@ -1,6 +1,7 @@
 import React from 'react';
 import { Task, TaskColumn } from './types';
 import { Text } from '@mantine/core';
+import { getStatusLabel } from '../../../utils/taskUtils';
 
 // 日付フォーマット関数
 const formatDate = (dateString: string | null) => {
@@ -44,7 +45,7 @@ export const taskColumns: TaskColumn[] = [
     width: 'w-24',
     render: (task) => (
       <Text size="sm" c="gray">
-        {task.status || '-'}
+        {getStatusLabel(task.status)}
       </Text>
     ),
   },

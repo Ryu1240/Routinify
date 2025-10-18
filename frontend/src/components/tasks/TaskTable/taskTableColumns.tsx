@@ -3,7 +3,9 @@ import { Text, Badge } from '@mantine/core';
 import { COLORS } from '../../../constants/colors';
 import {
   getPriorityColor,
+  getPriorityLabel,
   getStatusColor,
+  getStatusLabel,
   getCategoryColor,
   formatDate,
 } from '../../../utils/taskUtils';
@@ -47,8 +49,8 @@ export const createTaskColumns = (
     label: '優先度',
     sortable: true,
     render: (task) => (
-      <Badge color={getPriorityColor(task.priority || null)} variant="light">
-        {task.priority || '-'}
+      <Badge color={getPriorityColor(task.priority)} variant="light">
+        {getPriorityLabel(task.priority)}
       </Badge>
     ),
   },
@@ -57,8 +59,8 @@ export const createTaskColumns = (
     label: 'ステータス',
     sortable: true,
     render: (task) => (
-      <Badge color={getStatusColor(task.status || null)} variant="light">
-        {task.status || '-'}
+      <Badge color={getStatusColor(task.status)} variant="light">
+        {getStatusLabel(task.status)}
       </Badge>
     ),
   },
