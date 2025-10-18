@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { CreateTaskData } from '../definitions/types';
+import { CreateTaskDto } from '../../../types';
 
 export const useCreateTaskForm = () => {
-  const [formData, setFormData] = useState<CreateTaskData>({
+  const [formData, setFormData] = useState<CreateTaskDto>({
     title: '',
     dueDate: null,
     status: 'pending',
@@ -12,7 +12,7 @@ export const useCreateTaskForm = () => {
   const [errors, setErrors] = useState<{ title?: string }>({});
 
   const handleInputChange = (
-    field: keyof CreateTaskData,
+    field: keyof CreateTaskDto,
     value: string | number | null
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -29,7 +29,7 @@ export const useCreateTaskForm = () => {
     return true;
   };
 
-  const getSubmitData = (): CreateTaskData => {
+  const getSubmitData = (): CreateTaskDto => {
     return {
       ...formData,
       dueDate: formData.dueDate || null,

@@ -1,11 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from '../config/axios';
 import { useAuth } from './useAuth';
-import {
-  Task,
-  CreateTaskData,
-  UpdateTaskData,
-} from '../components/tasks/definitions/types';
+import { Task, CreateTaskDto, UpdateTaskDto } from '../types';
+import { tasksApi } from '../features/tasks/api/tasksApi';
 
 export const useTasks = () => {
   const { isAuthenticated, accessToken } = useAuth();
@@ -32,8 +28,8 @@ export const useTasks = () => {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/tasks');
-      setTasks(response.data.data);
+      const data = await tasksApi.fetchAll();
+      setTasks(data);
       setError(null);
     } catch (err) {
       console.error('タスクの取得に失敗しました:', err);
@@ -83,20 +79,12 @@ export const useTasks = () => {
     fetchTasks();
   };
 
-  const createTask = async (taskData: CreateTaskData) => {
+  const createTask = async (taskData: CreateTaskDto) => {
     try {
       setCreateLoading(true);
       setError(null);
 
-      await axios.post('/api/v1/tasks', {
-        task: {
-          title: taskData.title,
-          due_date: taskData.dueDate,
-          status: taskData.status,
-          priority: taskData.priority,
-          category_id: taskData.categoryId,
-        },
-      });
+      await tasksApi.create(taskData);
 
       // 作成後にタスクリストを再取得
       await fetchTasks();
@@ -111,20 +99,12 @@ export const useTasks = () => {
     }
   };
 
-  const updateTask = async (taskId: number, taskData: UpdateTaskData) => {
+  const updateTask = async (taskId: number, taskData: UpdateTaskDto) => {
     try {
       setUpdateLoading(true);
       setError(null);
 
-      await axios.put(`/api/v1/tasks/${taskId}`, {
-        task: {
-          title: taskData.title,
-          due_date: taskData.dueDate,
-          status: taskData.status,
-          priority: taskData.priority,
-          category_id: taskData.categoryId,
-        },
-      });
+      await tasksApi.update(taskId, taskData);
 
       // 更新後にタスクリストを再取得
       await fetchTasks();
@@ -144,7 +124,7 @@ export const useTasks = () => {
       setLoading(true);
       setError(null);
 
-      await axios.delete(`/api/v1/tasks/${taskId}`);
+      await tasksApi.delete(taskId);
 
       // 削除後にタスクリストを再取得
       await fetchTasks();

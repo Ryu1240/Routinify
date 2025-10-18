@@ -1,9 +1,9 @@
 export type Category = {
-  id: number;
-  accountId: string;
+  readonly id: number;
+  readonly accountId: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 };
 
 export type CreateCategoryDto = {

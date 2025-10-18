@@ -12,4 +12,9 @@ export type {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from './category';
-export type { ApiResponse, ApiError, PaginatedResponse } from './api';
+export type {
+  ApiResponse,
+  ApiError,
+  PaginatedResponse,
+  LoadingState,
+} from './api';

@@ -11,12 +11,12 @@ import {
 import { COLORS } from '../../constants/colors';
 import { CreateCategoryDto } from '../../types/category';
 
-interface CreateCategoryModalProps {
+type CreateCategoryModalProps = {
   opened: boolean;
   onClose: () => void;
   onSubmit: (categoryData: CreateCategoryDto) => Promise<void>;
   loading?: boolean;
-}
+};
 
 const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
   opened,

@@ -11,7 +11,7 @@ import {
 import { COLORS } from '../../constants/colors';
 import { Category, UpdateCategoryDto } from '../../types/category';
 
-interface EditCategoryModalProps {
+type EditCategoryModalProps = {
   opened: boolean;
   onClose: () => void;
   onSubmit: (
@@ -20,7 +20,7 @@ interface EditCategoryModalProps {
   ) => Promise<void>;
   category: Category | null;
   loading?: boolean;
-}
+};
 
 const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   opened,
