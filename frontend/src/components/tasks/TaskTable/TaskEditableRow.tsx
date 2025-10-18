@@ -7,19 +7,22 @@ import {
   TextInput,
   Select,
 } from '@mantine/core';
-import { IconCheck, IconX } from '@tabler/icons-react';
+import { IconCheck, IconX, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../../constants/colors';
 import { formatDate } from '../../../utils/taskUtils';
 import { DataTable } from '../../common/DataTable/index';
 import { Task, UpdateTaskData } from '../definitions';
-import { Category } from '../../../types/category';
+import { Category, CreateCategoryData } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
+import CreateCategoryModal from '../../categories/CreateCategoryModal';
 
 interface TaskEditableRowProps {
   task: Task;
   onSave: (taskId: number, taskData: UpdateTaskData) => Promise<void>;
   onCancel: () => void;
   categories?: Category[];
+  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  createCategoryLoading?: boolean;
 }
 
 export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
@@ -27,6 +30,8 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   onSave,
   onCancel,
   categories = [],
+  onCreateCategory,
+  createCategoryLoading = false,
 }) => {
   const [formData, setFormData] = useState<UpdateTaskData>({
     title: task.title,
@@ -37,6 +42,7 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
   const [saving, setSaving] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const handleSave = async () => {
     if (!formData.title.trim()) {
@@ -64,6 +70,13 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
     }
   };
 
+  const handleCreateCategory = async (categoryData: CreateCategoryData) => {
+    if (onCreateCategory) {
+      await onCreateCategory(categoryData);
+      setIsCategoryModalOpen(false);
+    }
+  };
+
   return (
     <>
       <DataTable.Td>
@@ -83,27 +96,42 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
         />
       </DataTable.Td>
       <DataTable.Td>
-        <Select
-          value={formData.categoryId ? String(formData.categoryId) : null}
-          onChange={(value) =>
-            handleInputChange('categoryId', value ? Number(value) : null)
-          }
-          data={categories.map((cat) => ({
-            value: String(cat.id),
-            label: cat.name,
-          }))}
-          placeholder="カテゴリ"
-          clearable
-          searchable
-          styles={{
-            input: {
-              borderColor: COLORS.LIGHT,
-              '&:focus': {
-                borderColor: COLORS.PRIMARY,
+        <Group gap="xs" align="center">
+          <Select
+            value={formData.categoryId ? String(formData.categoryId) : null}
+            onChange={(value) =>
+              handleInputChange('categoryId', value ? Number(value) : null)
+            }
+            data={categories.map((cat) => ({
+              value: String(cat.id),
+              label: cat.name,
+            }))}
+            placeholder="カテゴリ"
+            clearable
+            searchable
+            styles={{
+              root: { flex: 1 },
+              input: {
+                borderColor: COLORS.LIGHT,
+                '&:focus': {
+                  borderColor: COLORS.PRIMARY,
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
+          {onCreateCategory && (
+            <Tooltip label="新しいカテゴリを作成">
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                color={COLORS.PRIMARY}
+                onClick={() => setIsCategoryModalOpen(true)}
+              >
+                <IconPlus size={14} />
+              </ActionIcon>
+            </Tooltip>
+          )}
+        </Group>
       </DataTable.Td>
       <DataTable.Td>
         <Select
@@ -186,6 +214,13 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
           </Tooltip>
         </Group>
       </DataTable.Td>
+
+      <CreateCategoryModal
+        opened={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onSubmit={handleCreateCategory}
+        loading={createCategoryLoading}
+      />
     </>
   );
 };
