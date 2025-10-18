@@ -1,15 +1,15 @@
-export interface Category {
-  id: number;
-  accountId: string;
+export type Category = {
+  readonly id: number;
+  readonly accountId: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
-}
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
 
-export interface CreateCategoryData {
+export type CreateCategoryDto = {
   name: string;
-}
+};
 
-export interface UpdateCategoryData {
+export type UpdateCategoryDto = {
   name: string;
-}
+};
