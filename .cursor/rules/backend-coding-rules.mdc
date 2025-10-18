@@ -1,0 +1,347 @@
+---
+globs: backend
+alwaysApply: false
+---
+
+# Routinify Backend コーディング規約
+
+## プロジェクト概要
+Rails 8.0ベースのAPI専用アプリケーション。タスク管理機能を提供するRESTful APIサーバー。
+
+## 技術スタック
+- Ruby 3.3+, Rails 8.0+
+- PostgreSQL 15+, Redis 7+
+- Auth0認証, JWT
+- RSpec, FactoryBot, RuboCop
+
+## コーディング規約
+
+### 基本原則
+- DRY (Don't Repeat Yourself)
+- SOLID原則
+- RESTful API設計
+- セキュリティファースト
+- テストファースト
+
+### 命名規則
+- クラス・モジュール: PascalCase (`TaskService`, `Api::V1`)
+- メソッド・変数: snake_case (`create_task`, `user_id`)
+- 定数: SCREAMING_SNAKE_CASE (`MAX_TASK_TITLE_LENGTH`)
+- データベース: snake_case, 複数形 (`tasks`, `due_date`)
+
+### コーディングスタイル
+- 2スペースインデント
+- メソッドは20行以内
+- クラスは150行以内
+- 単一責任の原則に従う
+- コメントは「なぜ」を説明
+
+## アーキテクチャ
+
+### レイヤー構成
+1. **Controller Layer**: HTTPリクエスト処理、認証・認可、レスポンス整形
+2. **Service Layer**: ビジネスロジック、複雑な処理の調整
+3. **Model Layer**: データ検証、データベース操作、ビジネスルール
+4. **Serializer Layer**: レスポンスデータの整形、API形式の統一
+
+### ディレクトリ構造
+```
+backend/
+├── app/
+│   ├── controllers/api/v1/     # API v1コントローラー
+│   ├── models/                 # モデル層
+│   ├── services/               # サービス層
+│   ├── serializers/            # シリアライザー層
+│   ├── validators/             # カスタムバリデーター
+│   └── concerns/               # 共通機能
+├── spec/                       # テスト
+├── config/                     # 設定
+└── db/                         # データベース
+```
+
+## コントローラー規約
+
+### 基本構造
+```ruby
+module Api
+  module V1
+    class TasksController < BaseController
+      def index
+        validate_permissions(['read:tasks']) do
+          result = TaskService.new(current_user_id).list
+          handle_service_result(result)
+        end
+      end
+
+      private
+
+      def task_params
+        params.require(:task).permit(:title, :due_date, :status, :priority, :category_id)
+      end
+    end
+  end
+end
+```
+
+### レスポンス形式
+```ruby
+# 成功レスポンス
+{
+  "success": true,
+  "data": { ... },
+  "message": "タスクが正常に作成されました"
+}
+
+# エラーレスポンス
+{
+  "success": false,
+  "errors": ["タイトルは必須です"]
+}
+```
+
+## モデル規約
+
+### 基本構造
+```ruby
+class Task < ApplicationRecord
+  belongs_to :category, optional: true
+
+  validates :title, presence: true, length: { maximum: 255 }
+  validates :status, inclusion: { in: %w[未着手 進行中 完了 保留] }, allow_nil: true
+
+  scope :by_status, ->(status) { where(status: status) }
+  scope :overdue, -> { where('due_date < ?', Time.current) }
+
+  def self.for_user(user_id)
+    by_account(user_id)
+  end
+
+  def overdue?
+    due_date.present? && due_date < Time.current
+  end
+end
+```
+
+## サービス層規約
+
+### Service Object パターン
+```ruby
+class TaskService < BaseService
+  def initialize(user_id)
+    @user_id = user_id
+  end
+
+  def create(params)
+    task = Task.new(params.merge(account_id: @user_id))
+    
+    if task.save
+      ServiceResult.success(data: task, message: 'タスクが正常に作成されました')
+    else
+      ServiceResult.error(errors: task.errors.full_messages)
+    end
+  end
+end
+```
+
+## テスト規約
+
+### 基本構造
+```ruby
+RSpec.describe Api::V1::TasksController, type: :request do
+  let(:user_id) { 'test-user-id' }
+  let(:task) { create(:task, account_id: user_id) }
+
+  before do
+    mock_request_authentication(user_id: user_id)
+  end
+
+  describe 'GET /api/v1/tasks' do
+    it 'タスク一覧を取得できる' do
+      task
+      get '/api/v1/tasks'
+      
+      expect(response).to have_http_status(:ok)
+      expect(json_response['data']).to be_an(Array)
+    end
+  end
+end
+```
+
+### ファクトリー
+```ruby
+FactoryBot.define do
+  factory :task do
+    sequence(:account_id) { |n| "user-#{n}" }
+    sequence(:title) { |n| "タスク #{n}" }
+    due_date { 1.week.from_now }
+    status { '未着手' }
+    priority { 'medium' }
+
+    trait :completed do
+      status { '完了' }
+    end
+
+    trait :overdue do
+      due_date { 1.day.ago }
+    end
+  end
+end
+```
+
+## API設計規約
+
+### RESTful設計
+- GET /api/v1/tasks - タスク一覧取得
+- POST /api/v1/tasks - タスク作成
+- GET /api/v1/tasks/:id - タスク詳細取得
+- PUT /api/v1/tasks/:id - タスク更新
+- DELETE /api/v1/tasks/:id - タスク削除
+
+### HTTPステータスコード
+- 200 OK - 成功
+- 201 Created - 作成成功
+- 204 No Content - 削除成功
+- 400 Bad Request - リクエストエラー
+- 401 Unauthorized - 認証エラー
+- 403 Forbidden - 認可エラー
+- 404 Not Found - リソース未発見
+- 422 Unprocessable Entity - バリデーションエラー
+- 500 Internal Server Error - サーバーエラー
+
+## セキュリティ規約
+
+### 認証・認可
+```ruby
+def create
+  validate_permissions(['write:tasks']) do
+    # 処理
+  end
+end
+
+# リソースの所有者チェック
+def show
+  task = Task.find_by(id: params[:id], account_id: current_user_id)
+  return render_not_found('タスク') unless task
+end
+```
+
+### パラメータ処理
+```ruby
+def task_params
+  params.require(:task).permit(:title, :due_date, :status, :priority, :category_id)
+end
+```
+
+## パフォーマンス規約
+
+### N+1問題の回避
+```ruby
+# ✅ 良い例
+tasks = Task.for_user(current_user_id).includes(:category)
+
+# ❌ 悪い例
+tasks = Task.for_user(current_user_id)
+tasks.each { |task| puts task.category.name } # N+1問題
+```
+
+### インデックスの活用
+```ruby
+add_index :tasks, :account_id
+add_index :tasks, [:account_id, :status]
+add_index :tasks, [:account_id, :due_date]
+```
+
+## エラーハンドリング規約
+
+### 統一されたエラーレスポンス
+```ruby
+def render_success(data: nil, message: nil, status: :ok)
+  response = { success: true }
+  response[:data] = data if data
+  response[:message] = message if message
+  render json: response, status: status
+end
+
+def render_error(errors:, status: :unprocessable_entity)
+  render json: { success: false, errors: errors }, status: status
+end
+```
+
+## 国際化（i18n）規約
+
+### エラーメッセージ
+```ruby
+# config/locales/ja.yml
+ja:
+  activerecord:
+    errors:
+      models:
+        task:
+          attributes:
+            title:
+              blank: "タイトルは必須です"
+
+# モデル
+validates :title, presence: true
+```
+
+## 禁止事項
+
+- コントローラーにビジネスロジックを記述
+- 長すぎるメソッド（20行超）
+- ハードコーディング
+- 適切でない例外処理
+- テストなしのコード
+- N+1問題の発生
+- セキュリティホールの放置
+
+## 推奨事項
+
+- Service Objectパターンの使用
+- 統一されたエラーハンドリング
+- 適切なログ出力
+- ドキュメントの更新
+- コードレビューの実施
+- 段階的なリファクタリング
+- パフォーマンス監視
+
+## 開発フロー
+
+### ブランチ戦略
+- main: 本番環境
+- develop: 開発環境
+- feature/*: 機能開発
+- fix/*: バグ修正
+- refactor/*: リファクタリング
+
+### コミット規約
+```
+<type>(<scope>): <description>
+
+例:
+feat(auth): JWT認証の実装を追加
+fix(api): タスク一覧APIのN+1問題を修正
+docs(readme): セットアップ手順を更新
+```
+
+### 静的解析
+```bash
+# RuboCopの実行
+bundle exec rubocop
+
+# 自動修正
+bundle exec rubocop -a
+
+# セキュリティチェック
+bundle exec brakeman
+```
+
+## 重要なファイル
+
+- コーディング規約: `CODING_STANDARDS.md`
+- アーキテクチャガイド: `ARCHITECTURE_GUIDE.md`
+- 開発ガイド: `DEVELOPMENT_GUIDE.md`
+- RuboCop設定: `.rubocop.yml`
+- README: `README.md`
+
+この規約に従って、保守性・拡張性・品質の高いコードを書いてください。
