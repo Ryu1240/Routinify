@@ -1,11 +1,11 @@
 import React from 'react';
-import { CategoryList as CategoryListComponent } from '../../components/categories';
+import { CategoryListContainer } from '../../features/categories/components/CategoryList';
 import { Layout } from '../../components/common';
 
 const CategoryList: React.FC = () => {
   return (
     <Layout>
-      <CategoryListComponent />
+      <CategoryListContainer />
     </Layout>
   );
 };
