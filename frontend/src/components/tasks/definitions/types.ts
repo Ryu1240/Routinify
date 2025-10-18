@@ -11,7 +11,7 @@ export interface Task {
   updatedAt?: string;
 }
 
-export type TaskStatus = 'pending' | 'in_progress' | 'completed';
+export type TaskStatus = 'pending' | 'in_progress' | 'completed' | 'on_hold';
 export type TaskPriority = 'low' | 'medium' | 'high';
 
 export interface TaskColumn {
