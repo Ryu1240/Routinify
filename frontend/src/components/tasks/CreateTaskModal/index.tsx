@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Modal,
   TextInput,
@@ -8,12 +8,16 @@ import {
   Stack,
   Title,
   Loader,
+  ActionIcon,
+  Tooltip,
 } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../../constants/colors';
 import { CreateTaskData } from '../definitions/types';
-import { Category } from '../../../types/category';
+import { Category, CreateCategoryData } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
 import { useCreateTaskForm } from './useCreateTaskForm';
+import CreateCategoryModal from '../../categories/CreateCategoryModal';
 
 interface CreateTaskModalProps {
   opened: boolean;
@@ -21,6 +25,8 @@ interface CreateTaskModalProps {
   onSubmit: (taskData: CreateTaskData) => Promise<void>;
   loading?: boolean;
   categories?: Category[];
+  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  createCategoryLoading?: boolean;
 }
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
@@ -29,6 +35,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   onSubmit,
   loading = false,
   categories = [],
+  onCreateCategory,
+  createCategoryLoading = false,
 }) => {
   const {
     formData,
@@ -38,6 +46,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     getSubmitData,
     resetForm,
   } = useCreateTaskForm();
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,6 +68,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const handleClose = () => {
     resetForm();
     onClose();
+  };
+
+  const handleCreateCategory = async (categoryData: CreateCategoryData) => {
+    if (onCreateCategory) {
+      await onCreateCategory(categoryData);
+      setIsCategoryModalOpen(false);
+    }
   };
 
   return (
@@ -140,28 +156,43 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
             }}
           />
 
-          <Select
-            label="カテゴリ"
-            placeholder="カテゴリを選択してください"
-            data={categories.map((cat) => ({
-              value: String(cat.id),
-              label: cat.name,
-            }))}
-            value={formData.categoryId ? String(formData.categoryId) : null}
-            onChange={(value) =>
-              handleInputChange('categoryId', value ? Number(value) : null)
-            }
-            clearable
-            searchable
-            styles={{
-              input: {
-                borderColor: COLORS.LIGHT,
-                '&:focus': {
-                  borderColor: COLORS.PRIMARY,
+          <Group align="flex-end" gap="xs">
+            <Select
+              label="カテゴリ"
+              placeholder="カテゴリを選択してください"
+              data={categories.map((cat) => ({
+                value: String(cat.id),
+                label: cat.name,
+              }))}
+              value={formData.categoryId ? String(formData.categoryId) : null}
+              onChange={(value) =>
+                handleInputChange('categoryId', value ? Number(value) : null)
+              }
+              clearable
+              searchable
+              styles={{
+                root: { flex: 1 },
+                input: {
+                  borderColor: COLORS.LIGHT,
+                  '&:focus': {
+                    borderColor: COLORS.PRIMARY,
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
+            {onCreateCategory && (
+              <Tooltip label="新しいカテゴリを作成">
+                <ActionIcon
+                  size="lg"
+                  variant="light"
+                  color={COLORS.PRIMARY}
+                  onClick={() => setIsCategoryModalOpen(true)}
+                >
+                  <IconPlus size={18} />
+                </ActionIcon>
+              </Tooltip>
+            )}
+          </Group>
 
           <Group justify="flex-end" mt="md">
             <Button
@@ -183,6 +214,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           </Group>
         </Stack>
       </form>
+
+      <CreateCategoryModal
+        opened={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        onSubmit={handleCreateCategory}
+        loading={createCategoryLoading}
+      />
     </Modal>
   );
 };
