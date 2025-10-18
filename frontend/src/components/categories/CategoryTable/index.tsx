@@ -1,6 +1,6 @@
 import React from 'react';
-import { DataTable } from '../../common/DataTable/index';
-import { Category } from '../../../types/category';
+import { DataTable } from '@/shared/components/DataTable/index';
+import { Category } from '@/types/category';
 import { CategoryTableRow } from './CategoryTableRow';
 
 const categoryColumns = [

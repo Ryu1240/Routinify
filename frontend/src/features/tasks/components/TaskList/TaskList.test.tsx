@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
-import TaskList from './TaskList';
+import { TaskList } from './TaskList';
 import React from 'react';
 
 // useAuthのモック

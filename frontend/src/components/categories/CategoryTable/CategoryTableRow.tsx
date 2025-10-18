@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, Group, ActionIcon, Tooltip } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
-import { COLORS } from '../../../constants/colors';
-import { DataTable } from '../../common/DataTable/index';
-import { Category } from '../../../types/category';
+import { COLORS } from '@/shared/constants/colors';
+import { DataTable } from '@/shared/components/DataTable/index';
+import { Category } from '@/types/category';
 
 interface CategoryTableRowProps {
   category: Category;

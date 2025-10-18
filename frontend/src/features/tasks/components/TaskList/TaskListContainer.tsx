@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTasks } from '@/hooks/useTasks';
-import { useCategories } from '@/hooks/useCategories';
-import { useAuth } from '@/hooks/useAuth';
+import { useTasks } from '@/shared/hooks/useTasks';
+import { useCategories } from '@/shared/hooks/useCategories';
+import { useAuth } from '@/shared/hooks/useAuth';
 import { UpdateTaskDto, CreateTaskDto, Task } from '@/types';
 import { CreateCategoryDto } from '@/types/category';
 import { TaskList } from './TaskList';

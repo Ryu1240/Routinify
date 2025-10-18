@@ -8,8 +8,8 @@ import {
   Title,
   Loader,
 } from '@mantine/core';
-import { COLORS } from '../../constants/colors';
-import { CreateCategoryDto } from '../../types/category';
+import { COLORS } from '@/shared/constants/colors';
+import { CreateCategoryDto } from '@/types/category';
 
 type CreateCategoryModalProps = {
   opened: boolean;

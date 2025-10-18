@@ -1,16 +1,16 @@
 import React from 'react';
 import { Text, Badge, Group, ActionIcon, Tooltip } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
-import { COLORS } from '../../../constants/colors';
+import { COLORS } from '@/shared/constants/colors';
 import {
   getPriorityColor,
   getStatusColor,
   getCategoryColor,
   formatDate,
-} from '../../../utils/taskUtils';
-import { DataTable } from '../../common/DataTable/index';
-import { Task } from '../definitions';
-import { Category } from '../../../types/category';
+} from '@/shared/utils/taskUtils';
+import { DataTable } from '@/shared/components/DataTable/index';
+import { Task } from '@/types/task';
+import { Category } from '@/types/category';
 
 interface TaskTableRowProps {
   task: Task;

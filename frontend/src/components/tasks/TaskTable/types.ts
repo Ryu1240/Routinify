@@ -1,4 +1,4 @@
-import { Task, UpdateTaskDto } from '../../../types';
+import { Task, UpdateTaskDto } from '@/types/task';
 
 export type TaskColumn = {
   key: keyof Task;

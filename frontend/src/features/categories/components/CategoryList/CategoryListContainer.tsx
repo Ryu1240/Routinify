@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useCategories } from '@/hooks/useCategories';
-import { useAuth } from '@/hooks/useAuth';
+import { useCategories } from '@/shared/hooks/useCategories';
+import { useAuth } from '@/shared/hooks/useAuth';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,

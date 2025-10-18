@@ -9,7 +9,7 @@ import {
   Text,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import { COLORS } from '@/constants/colors';
+import { COLORS } from '@/shared/constants/colors';
 import { Category } from '@/types/category';
 import { CategoryTable } from '@/components/categories/CategoryTable/index';
 

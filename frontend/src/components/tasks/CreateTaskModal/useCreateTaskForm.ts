@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CreateTaskDto } from '../../../types';
+import { CreateTaskDto } from '@/types';
 
 export const useCreateTaskForm = () => {
   const [formData, setFormData] = useState<CreateTaskDto>({

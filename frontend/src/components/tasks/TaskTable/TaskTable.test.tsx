@@ -3,9 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { TaskTable } from './index';
+import { Category } from '@/types/category';
 
 // DataTableのモック
-vi.mock('../../common/DataTable/index', () => {
+vi.mock('@/shared/components/DataTable/index', () => {
   const DataTableMock = ({ children, ...props }: any) => (
     <div data-testid="data-table" {...props}>
       {children}
@@ -24,8 +25,8 @@ vi.mock('../../common/DataTable/index', () => {
   }: any) => (
     <div data-testid="tbody" {...props}>
       {children || <div data-testid="empty-message">{emptyMessage}</div>}
-    </div>
-  );
+      </div>
+    );
   DataTableMock.HeaderRow = ({
     columns,
     sortBy,
@@ -95,7 +96,7 @@ vi.mock('@tabler/icons-react', () => ({
 }));
 
 // taskUtilsのモック
-vi.mock('../../../utils/taskUtils', () => ({
+vi.mock('@/shared/utils/taskUtils', () => ({
   getPriorityColor: (priority: string | null) => {
     switch (priority?.toLowerCase()) {
       case 'high':
@@ -135,7 +136,7 @@ vi.mock('../../../utils/taskUtils', () => ({
 }));
 
 // COLORSのモック
-vi.mock('../../../constants/colors', () => ({
+vi.mock('@/shared/constants/colors', () => ({
   COLORS: {
     PRIMARY: '#1D74AE',
     GRAY: '#929198',
@@ -175,10 +176,9 @@ const mockTasks = [
     createdAt: '2024-01-02',
   },
 ];
-
-const mockCategories = [
-  { id: 1, name: 'Work' },
-  { id: 2, name: 'Personal' },
+const mockCategories : Category[] = [
+  { id: 1, name: 'Work', accountId: '1', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+  { id: 2, name: 'Personal', accountId: '1', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
 ];
 
 describe('TaskTable', () => {
