@@ -4,24 +4,14 @@ module AuthorizationHelper
     # 認証をスキップ
     allow_any_instance_of(ApplicationController).to receive(:authorize).and_return(true)
 
-    # ダミーのトークンを作成
-    decoded_token = double('decoded_token')
-    allow(decoded_token).to receive(:user_id).and_return(user_id)
-    allow(decoded_token).to receive(:sub).and_return(user_id)
-    allow(decoded_token).to receive(:validate_permissions).and_return(true)
-    allow(decoded_token).to receive(:token).and_return([{ 'sub' => user_id }])
-
-    # @decoded_tokenを設定
+    # ダミーのトークンを作成して設定
+    decoded_token = create_mock_token(user_id)
     controller.instance_variable_set(:@decoded_token, decoded_token)
   end
 
   def mock_request_authentication(user_id: 'test-user-id')
     # ダミーのトークンを作成
-    decoded_token = double('decoded_token')
-    allow(decoded_token).to receive(:user_id).and_return(user_id)
-    allow(decoded_token).to receive(:sub).and_return(user_id)
-    allow(decoded_token).to receive(:validate_permissions).and_return(true)
-    allow(decoded_token).to receive(:token).and_return([{ 'sub' => user_id }])
+    decoded_token = create_mock_token(user_id)
 
     # authorize メソッドを上書きして@decoded_tokenを設定
     allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
@@ -30,6 +20,17 @@ module AuthorizationHelper
 
     # current_user_idメソッドが確実にuser_idを返すようにモック
     allow_any_instance_of(ApplicationController).to receive(:current_user_id).and_return(user_id)
+  end
+
+  private
+
+  def create_mock_token(user_id)
+    decoded_token = double('decoded_token')
+    allow(decoded_token).to receive(:user_id).and_return(user_id)
+    allow(decoded_token).to receive(:sub).and_return(user_id)
+    allow(decoded_token).to receive(:validate_permissions).and_return(true)
+    allow(decoded_token).to receive(:token).and_return([{ 'sub' => user_id }])
+    decoded_token
   end
 
 end

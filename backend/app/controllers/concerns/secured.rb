@@ -59,18 +59,37 @@ module Secured
   def token_from_request
     authorization_header_elements = request.headers['Authorization']&.split
 
-    render json: REQUIRES_AUTHENTICATION, status: :unauthorized and return unless authorization_header_elements
-
-    unless authorization_header_elements.length == 2
-      render json: MALFORMED_AUTHORIZATION_HEADER,
-             status: :unauthorized and return
-    end
+    return handle_missing_authorization unless authorization_header_elements
+    return handle_malformed_authorization unless valid_authorization_format?(authorization_header_elements)
 
     scheme, token = authorization_header_elements
 
-    render json: BAD_CREDENTIALS, status: :unauthorized and return unless scheme.downcase == 'bearer'
+    return handle_invalid_scheme unless valid_bearer_scheme?(scheme)
 
     token
+  end
+
+  def handle_missing_authorization
+    render json: REQUIRES_AUTHENTICATION, status: :unauthorized
+    nil
+  end
+
+  def handle_malformed_authorization
+    render json: MALFORMED_AUTHORIZATION_HEADER, status: :unauthorized
+    nil
+  end
+
+  def handle_invalid_scheme
+    render json: BAD_CREDENTIALS, status: :unauthorized
+    nil
+  end
+
+  def valid_authorization_format?(elements)
+    elements.length == 2
+  end
+
+  def valid_bearer_scheme?(scheme)
+    scheme.downcase == 'bearer'
   end
 
 end

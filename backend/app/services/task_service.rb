@@ -2,6 +2,7 @@ class TaskService < BaseService
 
   def initialize(user_id)
     @user_id = user_id
+    # BaseServiceにはinitializeメソッドがないため、superは不要
   end
 
   # 複雑なビジネスロジックのみをサービス層に配置

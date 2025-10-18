@@ -70,14 +70,16 @@ Layout/EmptyLinesAroundModuleBody:
 # 命名規則
 Naming/VariableNumber:
   EnforcedStyle: snake_case
+  Exclude:
+    - 'spec/controllers/api/v1/base_controller_spec.rb' # Railsのルーティング名前空間
+    - 'spec/**/*' # テストファイルでは数字を含む変数名を許可
 
 Naming/AccessorMethodName:
-  AllowedNames:
-    - 'id'
-    - 'to_s'
-    - 'to_i'
-    - 'to_a'
-    - 'to_h'
+  Enabled: false
+
+Lint/MissingSuper:
+  Exclude:
+    - 'app/services/task_service.rb' # BaseServiceにはinitializeメソッドがないため
 
 # その他
 Style/IfUnlessModifier:
