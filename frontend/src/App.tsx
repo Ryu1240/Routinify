@@ -10,6 +10,7 @@ import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
 import { Login } from './components/auth';
 import { TaskList } from './pages/tasks';
+import { CategoryList } from './pages/categories';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -59,6 +60,14 @@ const AppContent: React.FC = () => {
         element={
           <ProtectedRoute>
             <TaskList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/categories"
+        element={
+          <ProtectedRoute>
+            <CategoryList />
           </ProtectedRoute>
         }
       />

@@ -1,11 +1,18 @@
 import React from 'react';
 import { DataTable } from '../../common/DataTable/index';
 import { TaskTableProps } from '../definitions';
+import { Category, CreateCategoryData } from '../../../types/category';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
-import { tableColumns } from './taskTableColumns';
+import { createTableColumns } from './taskTableColumns';
 
-export const TaskTable: React.FC<TaskTableProps> = ({
+interface ExtendedTaskTableProps extends TaskTableProps {
+  categories?: Category[];
+  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  createCategoryLoading?: boolean;
+}
+
+export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   tasks,
   sortBy,
   reverseSortDirection,
@@ -15,7 +22,12 @@ export const TaskTable: React.FC<TaskTableProps> = ({
   onSave,
   onCancel,
   onDelete,
+  categories = [],
+  onCreateCategory,
+  createCategoryLoading = false,
 }) => {
+  const tableColumns = createTableColumns(categories);
+
   return (
     <DataTable>
       <DataTable.Thead>
@@ -34,9 +46,17 @@ export const TaskTable: React.FC<TaskTableProps> = ({
                 task={task}
                 onSave={onSave}
                 onCancel={onCancel}
+                categories={categories}
+                onCreateCategory={onCreateCategory}
+                createCategoryLoading={createCategoryLoading}
               />
             ) : (
-              <TaskTableRow task={task} onEdit={onEdit} onDelete={onDelete} />
+              <TaskTableRow
+                task={task}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                categories={categories}
+              />
             )}
           </DataTable.Tr>
         ))}

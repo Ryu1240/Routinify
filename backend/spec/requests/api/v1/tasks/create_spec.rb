@@ -4,6 +4,7 @@ require_relative 'shared_context'
 RSpec.describe 'POST /api/v1/tasks', type: :request do
   include_context 'tasks request spec setup'
 
+  let(:category) { create(:category, account_id: user_id) }
   let(:valid_params) do
     {
       task: {
@@ -11,7 +12,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         due_date: Date.current + 1.week,
         status: '未着手',
         priority: 'high',
-        category: '仕事'
+        category_id: category.id
       }
     }
   end

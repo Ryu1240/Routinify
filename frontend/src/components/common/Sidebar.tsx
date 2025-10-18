@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, NavLink, rem, useMantineTheme } from '@mantine/core';
-import { IconChecklist, IconPlus } from '@tabler/icons-react';
+import { IconChecklist, IconPlus, IconCategory } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '../../constants/layout';
 
@@ -17,10 +17,10 @@ const Sidebar: React.FC = () => {
       description: 'すべてのタスクを表示',
     },
     {
-      label: 'タスク作成',
-      icon: <IconPlus size={16} />,
-      path: '/tasks/new',
-      description: '新しいタスクを作成',
+      label: 'カテゴリ管理',
+      icon: <IconCategory size={16} />,
+      path: '/categories',
+      description: 'カテゴリの作成・編集',
     },
   ];
 

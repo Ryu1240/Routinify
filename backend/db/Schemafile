@@ -3,6 +3,5 @@
 
 require_relative './schemas/tasks'
 require_relative './schemas/categories'
-require_relative './schemas/task_categories'
 require_relative './schemas/milestones'
 require_relative './schemas/milestone_tasks'

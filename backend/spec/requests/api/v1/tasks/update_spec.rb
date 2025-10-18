@@ -4,14 +4,16 @@ require_relative 'shared_context'
 RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
   include_context 'tasks request spec setup'
 
-  let!(:task) { create(:task, account_id: user_id, title: 'Original Task', status: '未着手', priority: 'medium', category: '仕事') }
+  let(:category) { create(:category, account_id: user_id, name: '仕事') }
+  let(:new_category) { create(:category, account_id: user_id, name: 'プライベート') }
+  let!(:task) { create(:task, account_id: user_id, title: 'Original Task', status: '未着手', priority: 'medium', category_id: category.id) }
   let(:valid_update_params) do
     {
       task: {
         title: 'Updated Task',
         status: '進行中',
         priority: 'high',
-        category: 'プライベート',
+        category_id: new_category.id,
         due_date: Date.current + 2.weeks
       }
     }
@@ -31,7 +33,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
         expect(task.title).to eq('Updated Task')
         expect(task.status).to eq('進行中')
         expect(task.priority).to eq('high')
-        expect(task.category).to eq('プライベート')
+        expect(task.category_id).to eq(new_category.id)
         expect(task.due_date).to eq(Date.current + 2.weeks)
       end
 

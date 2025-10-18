@@ -4,7 +4,8 @@ require_relative 'shared_context'
 RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
   include_context 'tasks request spec setup'
 
-  let!(:task) { create(:task, account_id: user_id, title: 'Task to Delete', status: '未着手', priority: 'medium', category: '仕事') }
+  let(:category) { create(:category, account_id: user_id, name: '仕事') }
+  let!(:task) { create(:task, account_id: user_id, title: 'Task to Delete', status: '未着手', priority: 'medium', category_id: category.id) }
 
   describe 'DELETE /api/v1/tasks/:id' do
     context '正常系' do

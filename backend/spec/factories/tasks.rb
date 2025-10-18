@@ -5,7 +5,7 @@ FactoryBot.define do
     due_date { Date.current + 1.week }
     status { "未着手" }
     priority { "medium" }
-    category { "一般" }
+    category_id { nil }
 
     # 異なるステータスのタスク
     trait :completed do
@@ -29,17 +29,9 @@ FactoryBot.define do
       priority { "low" }
     end
 
-    # 異なるカテゴリのタスク
-    trait :work do
-      category { "仕事" }
-    end
-
-    trait :personal do
-      category { "個人" }
-    end
-
-    trait :urgent do
-      category { "緊急" }
+    # カテゴリ関連
+    trait :with_category do
+      association :category
     end
 
     # 期限関連

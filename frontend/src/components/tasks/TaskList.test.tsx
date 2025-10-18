@@ -16,6 +16,12 @@ vi.mock('../../hooks/useTasks', () => ({
   useTasks: () => mockUseTasks(),
 }));
 
+// useCategoriesのモック
+const mockUseCategories = vi.fn();
+vi.mock('../../hooks/useCategories', () => ({
+  useCategories: () => mockUseCategories(),
+}));
+
 // TaskTableのモック
 vi.mock('./TaskTable', () => ({
   TaskTable: ({ tasks, onEdit, onDelete, ...props }: any) => (
@@ -169,28 +175,46 @@ const mockTasks = [
 ];
 
 describe('TaskList', () => {
+  const setupMocks = (overrides = {}) => {
+    const defaultMocks = {
+      useAuth: {
+        isAuthenticated: true,
+        isLoading: false,
+      },
+      useTasks: {
+        filteredTasks: mockTasks,
+        search: '',
+        setSearch: vi.fn(),
+        sortBy: null,
+        reverseSortDirection: false,
+        loading: false,
+        createLoading: false,
+        error: null,
+        setSorting: vi.fn(),
+        createTask: vi.fn(),
+      },
+      useCategories: {
+        categories: [],
+        loading: false,
+        createCategory: vi.fn(),
+        createLoading: false,
+      },
+    };
+
+    const mergedMocks = { ...defaultMocks, ...overrides };
+
+    mockUseAuth.mockReturnValue(mergedMocks.useAuth);
+    mockUseTasks.mockReturnValue(mergedMocks.useTasks);
+    mockUseCategories.mockReturnValue(mergedMocks.useCategories);
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
     const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   it('renders task list title', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: mockTasks,
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
-    });
+    setupMocks();
 
     renderWithRouter(<TaskList />);
 
@@ -198,22 +222,7 @@ describe('TaskList', () => {
   });
 
   it('renders search input', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: mockTasks,
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
-    });
+    setupMocks();
 
     renderWithRouter(<TaskList />);
 
@@ -224,22 +233,7 @@ describe('TaskList', () => {
   });
 
   it('renders add task button', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: mockTasks,
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
-    });
+    setupMocks();
 
     renderWithRouter(<TaskList />);
 
@@ -247,21 +241,11 @@ describe('TaskList', () => {
   });
 
   it('shows loading state when auth is loading', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: false,
-      isLoading: true,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: [],
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
+    setupMocks({
+      useAuth: {
+        isAuthenticated: false,
+        isLoading: true,
+      },
     });
 
     renderWithRouter(<TaskList />);
@@ -270,21 +254,19 @@ describe('TaskList', () => {
   });
 
   it('shows loading state when tasks are loading', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: [],
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: true,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
+    setupMocks({
+      useTasks: {
+        filteredTasks: [],
+        search: '',
+        setSearch: vi.fn(),
+        sortBy: null,
+        reverseSortDirection: false,
+        loading: true,
+        createLoading: false,
+        error: null,
+        setSorting: vi.fn(),
+        createTask: vi.fn(),
+      },
     });
 
     renderWithRouter(<TaskList />);
@@ -293,21 +275,11 @@ describe('TaskList', () => {
   });
 
   it('shows authentication required alert when not authenticated', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: false,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: [],
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
+    setupMocks({
+      useAuth: {
+        isAuthenticated: false,
+        isLoading: false,
+      },
     });
 
     renderWithRouter(<TaskList />);
@@ -319,21 +291,19 @@ describe('TaskList', () => {
   });
 
   it('shows error alert when there is an error', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: [],
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: 'タスクの取得に失敗しました',
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
+    setupMocks({
+      useTasks: {
+        filteredTasks: [],
+        search: '',
+        setSearch: vi.fn(),
+        sortBy: null,
+        reverseSortDirection: false,
+        loading: false,
+        createLoading: false,
+        error: 'タスクの取得に失敗しました',
+        setSorting: vi.fn(),
+        createTask: vi.fn(),
+      },
     });
 
     renderWithRouter(<TaskList />);
@@ -343,22 +313,7 @@ describe('TaskList', () => {
   });
 
   it('renders task table with tasks', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: mockTasks,
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
-    });
+    setupMocks();
 
     renderWithRouter(<TaskList />);
 
@@ -366,22 +321,7 @@ describe('TaskList', () => {
   });
 
   it('shows task count when tasks exist', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: mockTasks,
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
-    });
+    setupMocks();
 
     renderWithRouter(<TaskList />);
 
@@ -389,22 +329,7 @@ describe('TaskList', () => {
   });
 
   it('opens create modal when add task button is clicked', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      isLoading: false,
-    });
-    mockUseTasks.mockReturnValue({
-      filteredTasks: mockTasks,
-      search: '',
-      setSearch: vi.fn(),
-      sortBy: null,
-      reverseSortDirection: false,
-      loading: false,
-      createLoading: false,
-      error: null,
-      setSorting: vi.fn(),
-      createTask: vi.fn(),
-    });
+    setupMocks();
 
     renderWithRouter(<TaskList />);
 

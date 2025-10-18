@@ -4,7 +4,7 @@ module Api
       def index
         validate_permissions([ 'read:tasks' ]) do
           user_id = current_user_id
-          tasks = Task.for_user(user_id)
+          tasks = Task.for_user(user_id).includes(:category)
           render json: {
             data: tasks.map { |task| format_task_response(task) }
           }, status: :ok
@@ -76,7 +76,7 @@ module Api
       private
 
       def task_params
-        params.require(:task).permit(:title, :due_date, :status, :priority, :category)
+        params.require(:task).permit(:title, :due_date, :status, :priority, :category_id)
       end
 
       def format_task_response(task)
@@ -87,7 +87,7 @@ module Api
           dueDate: task.due_date&.iso8601,
           status: task.status,
           priority: task.priority,
-          category: task.category,
+          categoryId: task.category_id,
           createdAt: task.created_at.iso8601(3),
           updatedAt: task.updated_at.iso8601(3)
         }

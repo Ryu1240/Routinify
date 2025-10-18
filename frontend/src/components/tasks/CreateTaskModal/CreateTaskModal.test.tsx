@@ -114,18 +114,26 @@ describe('CreateTaskModal', () => {
 
   it('正しいデータでフォームが送信される', async () => {
     const mockSubmit = vi.fn().mockResolvedValue(undefined);
+    const mockCategories = [
+      { id: 1, name: 'テストカテゴリ' },
+      { id: 2, name: 'その他のカテゴリ' },
+    ];
 
     renderComponent(
-      <CreateTaskModal {...defaultProps} onSubmit={mockSubmit} />
+      <CreateTaskModal
+        {...defaultProps}
+        onSubmit={mockSubmit}
+        categories={mockCategories}
+      />
     );
 
     // タスク名を入力
     const titleInput = screen.getByLabelText('タスク名');
     fireEvent.change(titleInput, { target: { value: 'テストタスク' } });
 
-    // カテゴリを入力
-    const categoryInput = screen.getByLabelText('カテゴリ');
-    fireEvent.change(categoryInput, { target: { value: 'テストカテゴリ' } });
+    // カテゴリを選択
+    const categorySelect = screen.getByLabelText('カテゴリ');
+    fireEvent.change(categorySelect, { target: { value: '1' } });
 
     // フォームを送信
     const submitButton = screen.getByTestId('button-作成');
@@ -137,7 +145,7 @@ describe('CreateTaskModal', () => {
         dueDate: null,
         status: 'pending',
         priority: 'medium',
-        category: 'テストカテゴリ',
+        categoryId: 1,
       });
     });
   });
