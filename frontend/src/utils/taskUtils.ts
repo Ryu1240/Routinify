@@ -1,6 +1,8 @@
 import { COLORS } from '../constants/colors';
 
-export const getPriorityColor = (priority: string | null | undefined): string => {
+export const getPriorityColor = (
+  priority: string | null | undefined
+): string => {
   switch (priority?.toLowerCase()) {
     case 'high':
       return COLORS.PRIMARY;
@@ -45,7 +47,9 @@ export const getStatusLabel = (status: string | null | undefined): string => {
   }
 };
 
-export const getPriorityLabel = (priority: string | null | undefined): string => {
+export const getPriorityLabel = (
+  priority: string | null | undefined
+): string => {
   switch (priority?.toLowerCase()) {
     case 'low':
       return '低';
