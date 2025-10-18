@@ -34,7 +34,12 @@ const TaskList: React.FC = () => {
     updateTask,
     deleteTask,
   } = useTasks();
-  const { categories, loading: categoriesLoading } = useCategories();
+  const {
+    categories,
+    loading: categoriesLoading,
+    createCategory,
+    createLoading: categoryCreateLoading,
+  } = useCategories();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
@@ -160,6 +165,8 @@ const TaskList: React.FC = () => {
         onCancel={handleCancel}
         onDelete={handleDelete}
         categories={categories}
+        onCreateCategory={createCategory}
+        createCategoryLoading={categoryCreateLoading}
       />
 
       {filteredTasks.length > 0 && (
@@ -174,6 +181,8 @@ const TaskList: React.FC = () => {
         onSubmit={handleCreateTask}
         loading={createLoading}
         categories={categories}
+        onCreateCategory={createCategory}
+        createCategoryLoading={categoryCreateLoading}
       />
     </Container>
   );
