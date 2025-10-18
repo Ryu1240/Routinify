@@ -1,13 +1,15 @@
 import React from 'react';
 import { DataTable } from '../../common/DataTable/index';
 import { TaskTableProps } from '../definitions';
-import { Category } from '../../../types/category';
+import { Category, CreateCategoryData } from '../../../types/category';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
 import { tableColumns } from './taskTableColumns';
 
 interface ExtendedTaskTableProps extends TaskTableProps {
   categories?: Category[];
+  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  createCategoryLoading?: boolean;
 }
 
 export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
@@ -21,6 +23,8 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   onCancel,
   onDelete,
   categories = [],
+  onCreateCategory,
+  createCategoryLoading = false,
 }) => {
   return (
     <DataTable>
@@ -41,6 +45,8 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
                 onSave={onSave}
                 onCancel={onCancel}
                 categories={categories}
+                onCreateCategory={onCreateCategory}
+                createCategoryLoading={createCategoryLoading}
               />
             ) : (
               <TaskTableRow
