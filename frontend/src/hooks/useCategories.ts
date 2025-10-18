@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import axios from '../config/axios';
 import { useAuth } from './useAuth';
 import {
   Category,
-  CreateCategoryData,
-  UpdateCategoryData,
+  CreateCategoryDto,
+  UpdateCategoryDto,
 } from '../types/category';
+import { categoriesApi } from '../features/categories/api/categoriesApi';
 
 export const useCategories = () => {
   const { isAuthenticated, accessToken } = useAuth();
@@ -29,8 +29,8 @@ export const useCategories = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/v1/categories');
-      setCategories(response.data.data);
+      const data = await categoriesApi.fetchAll();
+      setCategories(data);
       setError(null);
     } catch (err) {
       console.error('カテゴリの取得に失敗しました:', err);
@@ -46,16 +46,12 @@ export const useCategories = () => {
     fetchCategories();
   };
 
-  const createCategory = async (categoryData: CreateCategoryData) => {
+  const createCategory = async (categoryData: CreateCategoryDto) => {
     try {
       setCreateLoading(true);
       setError(null);
 
-      await axios.post('/api/v1/categories', {
-        category: {
-          name: categoryData.name,
-        },
-      });
+      await categoriesApi.create(categoryData);
 
       // 作成後にカテゴリリストを再取得
       await fetchCategories();
@@ -72,17 +68,13 @@ export const useCategories = () => {
 
   const updateCategory = async (
     categoryId: number,
-    categoryData: UpdateCategoryData
+    categoryData: UpdateCategoryDto
   ) => {
     try {
       setUpdateLoading(true);
       setError(null);
 
-      await axios.put(`/api/v1/categories/${categoryId}`, {
-        category: {
-          name: categoryData.name,
-        },
-      });
+      await categoriesApi.update(categoryId, categoryData);
 
       // 更新後にカテゴリリストを再取得
       await fetchCategories();
@@ -102,7 +94,7 @@ export const useCategories = () => {
       setDeleteLoading(true);
       setError(null);
 
-      await axios.delete(`/api/v1/categories/${categoryId}`);
+      await categoriesApi.delete(categoryId);
 
       // 削除後にカテゴリリストを再取得
       await fetchCategories();

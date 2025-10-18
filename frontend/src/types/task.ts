@@ -2,7 +2,7 @@
 
 export type Task = {
   readonly id: number;
-  accountId: string;
+  readonly accountId: string;
   title: string;
   description?: string;
   categoryId: number | null;
@@ -17,12 +17,18 @@ export type TaskStatus = 'pending' | 'in_progress' | 'completed';
 export type TaskPriority = 'low' | 'medium' | 'high';
 
 // DTO型（Data Transfer Object）
-export type CreateTaskDto = Omit<Task, 'id' | 'accountId' | 'createdAt' | 'updatedAt'>;
+export type CreateTaskDto = Omit<
+  Task,
+  'id' | 'accountId' | 'createdAt' | 'updatedAt'
+>;
 export type UpdateTaskDto = Partial<CreateTaskDto>;
 
 // ユーティリティ型
 export type TaskKeys = keyof Task;
-export type TaskSortKey = Extract<TaskKeys, 'createdAt' | 'dueDate' | 'priority'>;
+export type TaskSortKey = Extract<
+  TaskKeys,
+  'createdAt' | 'dueDate' | 'priority'
+>;
 
 // 定数
 export const TASK_STATUS = {

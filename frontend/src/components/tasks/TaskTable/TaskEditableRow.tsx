@@ -11,19 +11,19 @@ import { IconCheck, IconX, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../../constants/colors';
 import { formatDate } from '../../../utils/taskUtils';
 import { DataTable } from '../../common/DataTable/index';
-import { Task, UpdateTaskData } from '../definitions';
-import { Category, CreateCategoryData } from '../../../types/category';
+import { Task, UpdateTaskDto } from '../../../types';
+import { Category, CreateCategoryDto } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
 import CreateCategoryModal from '../../categories/CreateCategoryModal';
 
-interface TaskEditableRowProps {
+type TaskEditableRowProps = {
   task: Task;
-  onSave: (taskId: number, taskData: UpdateTaskData) => Promise<void>;
+  onSave: (taskId: number, taskData: UpdateTaskDto) => Promise<void>;
   onCancel: () => void;
   categories?: Category[];
-  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
   createCategoryLoading?: boolean;
-}
+};
 
 export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   task,
@@ -33,7 +33,7 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   onCreateCategory,
   createCategoryLoading = false,
 }) => {
-  const [formData, setFormData] = useState<UpdateTaskData>({
+  const [formData, setFormData] = useState<UpdateTaskDto>({
     title: task.title,
     dueDate: task.dueDate || null,
     status: task.status || null,
@@ -45,7 +45,7 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const handleSave = async () => {
-    if (!formData.title.trim()) {
+    if (!formData.title || !formData.title.trim()) {
       setErrors({ title: 'タスク名は必須です' });
       return;
     }
@@ -61,16 +61,16 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
   };
 
   const handleInputChange = (
-    field: keyof UpdateTaskData,
+    field: keyof UpdateTaskDto,
     value: string | number | null
   ) => {
-    setFormData((prev: UpdateTaskData) => ({ ...prev, [field]: value }));
+    setFormData((prev: UpdateTaskDto) => ({ ...prev, [field]: value }));
     if (field === 'title' && errors.title) {
       setErrors((prev: { title?: string }) => ({ ...prev, title: undefined }));
     }
   };
 
-  const handleCreateCategory = async (categoryData: CreateCategoryData) => {
+  const handleCreateCategory = async (categoryData: CreateCategoryDto) => {
     if (onCreateCategory) {
       await onCreateCategory(categoryData);
       setIsCategoryModalOpen(false);

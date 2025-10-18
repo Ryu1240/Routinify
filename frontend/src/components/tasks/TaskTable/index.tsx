@@ -1,16 +1,16 @@
 import React from 'react';
 import { DataTable } from '../../common/DataTable/index';
-import { TaskTableProps } from '../definitions';
-import { Category, CreateCategoryData } from '../../../types/category';
+import { TaskTableProps } from './types';
+import { Category, CreateCategoryDto } from '../../../types/category';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
 import { createTableColumns } from './taskTableColumns';
 
-interface ExtendedTaskTableProps extends TaskTableProps {
+type ExtendedTaskTableProps = TaskTableProps & {
   categories?: Category[];
-  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
   createCategoryLoading?: boolean;
-}
+};
 
 export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   tasks,

@@ -9,18 +9,18 @@ import {
   Loader,
 } from '@mantine/core';
 import { COLORS } from '../../constants/colors';
-import { Category, UpdateCategoryData } from '../../types/category';
+import { Category, UpdateCategoryDto } from '../../types/category';
 
-interface EditCategoryModalProps {
+type EditCategoryModalProps = {
   opened: boolean;
   onClose: () => void;
   onSubmit: (
     categoryId: number,
-    categoryData: UpdateCategoryData
+    categoryData: UpdateCategoryDto
   ) => Promise<void>;
   category: Category | null;
   loading?: boolean;
-}
+};
 
 const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   opened,

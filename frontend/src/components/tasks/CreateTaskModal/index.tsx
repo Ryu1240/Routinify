@@ -13,21 +13,21 @@ import {
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '../../../constants/colors';
-import { CreateTaskData } from '../definitions/types';
-import { Category, CreateCategoryData } from '../../../types/category';
+import { CreateTaskDto } from '../../../types';
+import { Category, CreateCategoryDto } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
 import { useCreateTaskForm } from './useCreateTaskForm';
 import CreateCategoryModal from '../../categories/CreateCategoryModal';
 
-interface CreateTaskModalProps {
+type CreateTaskModalProps = {
   opened: boolean;
   onClose: () => void;
-  onSubmit: (taskData: CreateTaskData) => Promise<void>;
+  onSubmit: (taskData: CreateTaskDto) => Promise<void>;
   loading?: boolean;
   categories?: Category[];
-  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
   createCategoryLoading?: boolean;
-}
+};
 
 const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   opened,
@@ -70,7 +70,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     onClose();
   };
 
-  const handleCreateCategory = async (categoryData: CreateCategoryData) => {
+  const handleCreateCategory = async (categoryData: CreateCategoryDto) => {
     if (onCreateCategory) {
       await onCreateCategory(categoryData);
       setIsCategoryModalOpen(false);

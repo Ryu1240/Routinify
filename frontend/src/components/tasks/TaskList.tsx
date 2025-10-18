@@ -16,7 +16,7 @@ import { useCategories } from '../../hooks/useCategories';
 import { useAuth } from '../../hooks/useAuth';
 import { TaskTable } from './TaskTable/index';
 import CreateTaskModal from './CreateTaskModal/index';
-import { CreateTaskData, UpdateTaskData } from './definitions/types';
+import { CreateTaskDto, UpdateTaskDto } from '../../types';
 
 const TaskList: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -48,7 +48,7 @@ const TaskList: React.FC = () => {
     setEditingTaskId(taskId);
   };
 
-  const handleSave = async (taskId: number, taskData: UpdateTaskData) => {
+  const handleSave = async (taskId: number, taskData: UpdateTaskDto) => {
     try {
       await updateTask(taskId, taskData);
       setEditingTaskId(null);
@@ -75,7 +75,7 @@ const TaskList: React.FC = () => {
     setIsCreateModalOpen(true);
   };
 
-  const handleCreateTask = async (taskData: CreateTaskData) => {
+  const handleCreateTask = async (taskData: CreateTaskDto) => {
     try {
       await createTask(taskData);
       setIsCreateModalOpen(false);
