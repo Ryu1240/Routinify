@@ -8,13 +8,13 @@ import {
   Select,
 } from '@mantine/core';
 import { IconCheck, IconX, IconPlus } from '@tabler/icons-react';
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 import { formatDate } from '@/shared/utils/taskUtils';
 import { DataTable } from '@/shared/components/DataTable/index';
 import { Task, UpdateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
-import { statusOptions, priorityOptions } from '../constants';
-import CreateCategoryModal from '@/components/categories/CreateCategoryModal';
+import { statusOptions, priorityOptions } from '@/features/tasks/constants';
+import { CreateCategoryModal } from '@/features/categories/components/CreateCategoryModal/CreateCategoryModal';
 
 type TaskEditableRowProps = {
   task: Task;

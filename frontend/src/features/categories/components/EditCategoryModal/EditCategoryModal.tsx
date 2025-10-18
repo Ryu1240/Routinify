@@ -8,7 +8,7 @@ import {
   Title,
   Loader,
 } from '@mantine/core';
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 import { Category, UpdateCategoryDto } from '@/types/category';
 
 type EditCategoryModalProps = {
@@ -22,7 +22,7 @@ type EditCategoryModalProps = {
   loading?: boolean;
 };
 
-const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
+export const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   opened,
   onClose,
   onSubmit,
@@ -123,5 +123,3 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     </Modal>
   );
 };
-
-export default EditCategoryModal;

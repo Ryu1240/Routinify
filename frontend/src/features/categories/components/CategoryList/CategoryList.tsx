@@ -9,9 +9,9 @@ import {
   Text,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 import { Category } from '@/types/category';
-import { CategoryTable } from '@/components/categories/CategoryTable/index';
+import { CategoryTable } from '@/features/categories/components/CategoryTable';
 
 type CategoryListProps = {
   isAuthenticated: boolean;
