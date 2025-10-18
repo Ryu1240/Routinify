@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table as MantineTable, Text } from '@mantine/core';
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 
 interface TableBodyProps {
   children: React.ReactNode;

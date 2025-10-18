@@ -1,4 +1,4 @@
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 
 export const getPriorityColor = (priority: string | null) => {
   switch (priority?.toLowerCase()) {

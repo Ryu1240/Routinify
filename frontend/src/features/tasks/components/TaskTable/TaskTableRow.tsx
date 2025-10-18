@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, Badge, Group, ActionIcon, Tooltip } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 import {
   getPriorityColor,
   getStatusColor,

@@ -12,10 +12,10 @@ import {
   Tooltip,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
-import { COLORS } from '@/shared/constants/colors';
+import { COLORS } from '@/constants/colors';
 import { CreateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
-import { statusOptions, priorityOptions } from '@/features/tasks/components/TaskList/constants';
+import { statusOptions, priorityOptions } from '@/features/tasks/constants';
 import { useCreateTaskForm } from '@/features/tasks/components/CreateTaskModal/useCreateTaskForm';
 import { CreateCategoryModal } from '@/features/categories/components/CreateCategoryModal/CreateCategoryModal';
 

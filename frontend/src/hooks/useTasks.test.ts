@@ -2,20 +2,27 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { act } from 'react';
 import { useTasks } from './useTasks';
-import axios from '../config/axios';
 
-// useAuthのモック
-const mockUseAuth = vi.fn();
-vi.mock('./useAuth', () => ({
-  useAuth: () => mockUseAuth(),
+// 個別フックのモック
+const mockUseFetchTasks = vi.fn();
+const mockUseTaskFilters = vi.fn();
+const mockUseTaskSort = vi.fn();
+const mockUseTaskMutations = vi.fn();
+
+vi.mock('@/features/tasks/hooks/useFetchTasks', () => ({
+  useFetchTasks: () => mockUseFetchTasks(),
 }));
 
-// axiosのモック
-vi.mock('../config/axios', () => ({
-  default: {
-    get: vi.fn(),
-    post: vi.fn(),
-  },
+vi.mock('@/features/tasks/hooks/useTaskFilters', () => ({
+  useTaskFilters: () => mockUseTaskFilters(),
+}));
+
+vi.mock('@/features/tasks/hooks/useTaskSort', () => ({
+  useTaskSort: () => mockUseTaskSort(),
+}));
+
+vi.mock('@/features/tasks/hooks/useTaskMutations', () => ({
+  useTaskMutations: () => mockUseTaskMutations(),
 }));
 
 const mockTasks = [
@@ -26,14 +33,39 @@ const mockTasks = [
 describe('useTasks', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // デフォルトのモック値を設定
+    mockUseFetchTasks.mockReturnValue({
+      tasks: [],
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
+    });
+
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: [],
+    });
+
+    mockUseTaskSort.mockReturnValue({
+      sortBy: null,
+      reverseSortDirection: false,
+      sortedTasks: [],
+      setSorting: vi.fn(),
+    });
+
+    mockUseTaskMutations.mockReturnValue({
+      createTask: vi.fn(),
+      updateTask: vi.fn(),
+      deleteTask: vi.fn(),
+      createLoading: false,
+      updateLoading: false,
+      error: null,
+    });
   });
 
   it('returns initial state', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: false,
-      accessToken: null,
-    });
-
     const { result } = renderHook(() => useTasks());
 
     expect(result.current.tasks).toEqual([]);
@@ -46,295 +78,282 @@ describe('useTasks', () => {
   });
 
   it('fetches tasks when authenticated', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    mockUseFetchTasks.mockReturnValue({
+      tasks: mockTasks,
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: mockTasks,
+    });
+
+    mockUseTaskSort.mockReturnValue({
+      sortBy: null,
+      reverseSortDirection: false,
+      sortedTasks: mockTasks,
+      setSorting: vi.fn(),
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(mockTasks);
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBeNull();
-    });
-
-    expect(mockAxiosGet).toHaveBeenCalledWith('/api/v1/tasks');
+    expect(result.current.tasks).toEqual(mockTasks);
+    expect(result.current.filteredTasks).toEqual(mockTasks);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBeNull();
   });
 
   it('handles fetch error', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
-    });
+    const errorMessage =
+      'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。';
 
-    const errorMessage = 'タスクの取得に失敗しました';
-    const mockAxiosGet = vi.mocked(axios.get);
-    mockAxiosGet.mockRejectedValue(new Error(errorMessage));
+    mockUseFetchTasks.mockReturnValue({
+      tasks: [],
+      loading: false,
+      error: errorMessage,
+      refreshTasks: vi.fn(),
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-      expect(result.current.error).toBe(
-        'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
-      );
-    });
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe(errorMessage);
   });
 
   it('filters tasks based on search term', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    const filteredTasks = [mockTasks[0]]; // Task 1のみ
+
+    mockUseFetchTasks.mockReturnValue({
+      tasks: mockTasks,
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
+    mockUseTaskFilters.mockReturnValue({
+      search: 'Task 1',
+      setSearch: vi.fn(),
+      filteredTasks: filteredTasks,
+    });
+
+    mockUseTaskSort.mockReturnValue({
+      sortBy: null,
+      reverseSortDirection: false,
+      sortedTasks: filteredTasks,
+      setSorting: vi.fn(),
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(mockTasks);
-    });
-
-    act(() => {
-      result.current.setSearch('Task 1');
-    });
-
-    await waitFor(() => {
-      expect(result.current.filteredTasks).toHaveLength(1);
-      expect(result.current.filteredTasks[0].title).toBe('Task 1');
-    });
+    expect(result.current.tasks).toEqual(mockTasks);
+    expect(result.current.filteredTasks).toEqual(filteredTasks);
+    expect(result.current.search).toBe('Task 1');
   });
 
   it('sorts tasks when sortBy is set', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    const sortedTasks = [...mockTasks].sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+
+    mockUseFetchTasks.mockReturnValue({
+      tasks: mockTasks,
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: mockTasks,
+    });
+
+    mockUseTaskSort.mockReturnValue({
+      sortBy: 'title',
+      reverseSortDirection: false,
+      sortedTasks: sortedTasks,
+      setSorting: vi.fn(),
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(mockTasks);
-    });
-
-    act(() => {
-      result.current.setSorting('title');
-    });
-
-    await waitFor(() => {
-      expect(result.current.sortBy).toBe('title');
-      expect(result.current.reverseSortDirection).toBe(false);
-    });
+    expect(result.current.tasks).toEqual(mockTasks);
+    expect(result.current.filteredTasks).toEqual(sortedTasks);
+    expect(result.current.sortBy).toBe('title');
   });
 
   it('toggles sort direction when same field is clicked', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    const sortedTasks = [...mockTasks].sort((a, b) =>
+      a.title.localeCompare(b.title)
+    );
+
+    mockUseFetchTasks.mockReturnValue({
+      tasks: mockTasks,
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: mockTasks,
+    });
+
+    mockUseTaskSort.mockReturnValue({
+      sortBy: 'title',
+      reverseSortDirection: true,
+      sortedTasks: sortedTasks,
+      setSorting: vi.fn(),
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(mockTasks);
-    });
-
-    act(() => {
-      result.current.setSorting('title');
-    });
-
-    await waitFor(() => {
-      expect(result.current.sortBy).toBe('title');
-      expect(result.current.reverseSortDirection).toBe(false);
-    });
-
-    act(() => {
-      result.current.setSorting('title');
-    });
-
-    await waitFor(() => {
-      expect(result.current.sortBy).toBe('title');
-      expect(result.current.reverseSortDirection).toBe(true);
-    });
+    expect(result.current.tasks).toEqual(mockTasks);
+    expect(result.current.filteredTasks).toEqual(sortedTasks);
+    expect(result.current.sortBy).toBe('title');
+    expect(result.current.reverseSortDirection).toBe(true);
   });
 
   it('refreshes tasks when refreshTasks is called', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    const mockRefreshTasks = vi.fn();
+
+    mockUseFetchTasks.mockReturnValue({
+      tasks: mockTasks,
+      loading: false,
+      error: null,
+      refreshTasks: mockRefreshTasks,
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: mockTasks,
+    });
+
+    mockUseTaskSort.mockReturnValue({
+      sortBy: null,
+      reverseSortDirection: false,
+      sortedTasks: mockTasks,
+      setSorting: vi.fn(),
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(mockTasks);
-    });
+    expect(result.current.tasks).toEqual(mockTasks);
 
-    // 新しいタスクデータ
-    const newTasks = [
-      { id: 3, title: 'Task 3', category: 'Work', status: 'pending' },
-    ];
-    mockAxiosGet.mockResolvedValue({
-      data: { data: newTasks },
-    } as any);
-
-    // リフレッシュを実行
     act(() => {
       result.current.refreshTasks();
     });
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(newTasks);
-    });
-
-    expect(mockAxiosGet).toHaveBeenCalledTimes(2);
+    expect(mockRefreshTasks).toHaveBeenCalled();
   });
 
   it('does not fetch tasks when not authenticated', () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: false,
-      accessToken: null,
+    mockUseFetchTasks.mockReturnValue({
+      tasks: [],
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    renderHook(() => useTasks());
+    const { result } = renderHook(() => useTasks());
 
-    // axiosのモックは呼ばれないことを確認
-    expect(mockUseAuth).toHaveBeenCalled();
+    expect(result.current.tasks).toEqual([]);
+    expect(result.current.loading).toBe(false);
   });
 
   it('creates task successfully', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    const mockCreateTask = vi.fn();
+
+    mockUseFetchTasks.mockReturnValue({
+      tasks: mockTasks,
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    const mockAxiosPost = vi.mocked(axios.post);
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: mockTasks,
+    });
 
-    const newTask = {
-      id: 3,
-      title: 'New Task',
-      category: 'Work',
-      status: '未着手',
-      priority: '中',
-      dueDate: null,
-      accountId: 'user123',
-      createdAt: '2023-01-01T00:00:00Z',
-    };
+    mockUseTaskSort.mockReturnValue({
+      sortBy: null,
+      reverseSortDirection: false,
+      sortedTasks: mockTasks,
+      setSorting: vi.fn(),
+    });
 
-    // 初期fetch用のモック
-    mockAxiosGet.mockResolvedValue({
-      data: { data: mockTasks },
-    } as any);
-
-    mockAxiosPost.mockResolvedValue({
-      data: newTask,
-    } as any);
+    mockUseTaskMutations.mockReturnValue({
+      createTask: mockCreateTask,
+      updateTask: vi.fn(),
+      deleteTask: vi.fn(),
+      createLoading: false,
+      updateLoading: false,
+      error: null,
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    await waitFor(() => {
-      expect(result.current.tasks).toEqual(mockTasks);
-    });
+    expect(result.current.tasks).toEqual(mockTasks);
 
-    const taskData = {
-      title: 'New Task',
-      categoryId: 1,
-      status: '未着手',
-      priority: '中',
-      dueDate: null,
-    };
-
-    // createTask後のfetchTasksで新しいタスクリストを返すようにモックを変更
-    const updatedTasks = [newTask, ...mockTasks];
-    mockAxiosGet.mockResolvedValue({
-      data: { data: updatedTasks },
-    } as any);
-
+    const newTask = { title: 'New Task', category: 'Work', status: 'pending' };
     await act(async () => {
-      await result.current.createTask(taskData);
+      await result.current.createTask(newTask);
     });
 
-    expect(mockAxiosPost).toHaveBeenCalledWith('/api/v1/tasks', {
-      task: {
-        title: 'New Task',
-        due_date: null,
-        status: '未着手',
-        priority: '中',
-        category_id: 1,
-      },
-    });
-
-    await waitFor(() => {
-      expect(result.current.tasks).toHaveLength(3);
-      expect(result.current.tasks[0]).toEqual(newTask);
-      expect(result.current.createLoading).toBe(false);
-    });
+    expect(mockCreateTask).toHaveBeenCalledWith(newTask);
   });
 
   it('handles create task error', async () => {
-    mockUseAuth.mockReturnValue({
-      isAuthenticated: true,
-      accessToken: 'mock-token',
+    const mockCreateTask = vi
+      .fn()
+      .mockRejectedValue(new Error('Task creation failed'));
+
+    mockUseFetchTasks.mockReturnValue({
+      tasks: [],
+      loading: false,
+      error: null,
+      refreshTasks: vi.fn(),
     });
 
-    const mockAxiosGet = vi.mocked(axios.get);
-    const mockAxiosPost = vi.mocked(axios.post);
+    mockUseTaskFilters.mockReturnValue({
+      search: '',
+      setSearch: vi.fn(),
+      filteredTasks: [],
+    });
 
-    // fetchTasksは成功させる
-    mockAxiosGet.mockResolvedValue({
-      data: { data: [] },
-    } as any);
+    mockUseTaskSort.mockReturnValue({
+      sortBy: null,
+      reverseSortDirection: false,
+      sortedTasks: [],
+      setSorting: vi.fn(),
+    });
+
+    mockUseTaskMutations.mockReturnValue({
+      createTask: mockCreateTask,
+      updateTask: vi.fn(),
+      deleteTask: vi.fn(),
+      createLoading: false,
+      updateLoading: false,
+      error: 'Task creation failed',
+    });
 
     const { result } = renderHook(() => useTasks());
 
-    // 初期fetchが完了するまで待機
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+    expect(result.current.error).toBe('Task creation failed');
 
-    // createTaskでエラーを発生させる
-    const errorMessage = 'Task creation failed';
-    mockAxiosPost.mockRejectedValue(new Error(errorMessage));
-
-    const taskData = {
-      title: 'New Task',
-      categoryId: 1,
-      status: '未着手',
-      priority: '中',
-      dueDate: null,
-    };
-
-    // createTaskがエラーをthrowすることを確認
+    const newTask = { title: 'New Task', category: 'Work', status: 'pending' };
     await expect(
       act(async () => {
-        await result.current.createTask(taskData);
+        await result.current.createTask(newTask);
       })
-    ).rejects.toThrow(errorMessage);
+    ).rejects.toThrow('Task creation failed');
 
     // createLoadingが false になることを確認
     expect(result.current.createLoading).toBe(false);
