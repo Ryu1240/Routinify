@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useTasks } from '../../../../hooks/useTasks';
-import { useCategories } from '../../../../hooks/useCategories';
-import { useAuth } from '../../../../hooks/useAuth';
-import { UpdateTaskDto, CreateTaskDto } from '../../../../types';
-import { CreateCategoryDto } from '../../../../types/category';
+import { useTasks } from '@/hooks/useTasks';
+import { useCategories } from '@/hooks/useCategories';
+import { useAuth } from '@/hooks/useAuth';
+import { UpdateTaskDto, CreateTaskDto } from '@/types';
+import { CreateCategoryDto } from '@/types/category';
 import { TaskList } from './TaskList';
-import CreateTaskModal from '../../../../components/tasks/CreateTaskModal/index';
+import CreateTaskModal from '@/components/tasks/CreateTaskModal/index';
 
 export const TaskListContainer: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();

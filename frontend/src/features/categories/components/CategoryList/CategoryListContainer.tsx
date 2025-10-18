@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useCategories } from '../../../../hooks/useCategories';
-import { useAuth } from '../../../../hooks/useAuth';
+import { useCategories } from '@/hooks/useCategories';
+import { useAuth } from '@/hooks/useAuth';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
   Category,
-} from '../../../../types/category';
+} from '@/types/category';
 import { CategoryList } from './CategoryList';
-import CreateCategoryModal from '../../../../components/categories/CreateCategoryModal';
-import EditCategoryModal from '../../../../components/categories/EditCategoryModal';
+import CreateCategoryModal from '@/components/categories/CreateCategoryModal';
+import EditCategoryModal from '@/components/categories/EditCategoryModal';
 
 export const CategoryListContainer: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();

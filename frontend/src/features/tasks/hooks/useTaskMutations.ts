@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CreateTaskDto, UpdateTaskDto } from '../../../types';
+import { CreateTaskDto, UpdateTaskDto } from '@/types';
 import { tasksApi } from '../api/tasksApi';
 
 export const useTaskMutations = (onRefresh: () => void) => {

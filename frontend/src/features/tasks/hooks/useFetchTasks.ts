@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../../hooks/useAuth';
-import { Task } from '../../../types';
+import { useAuth } from '@/hooks/useAuth';
+import { Task } from '@/types';
 import { tasksApi } from '../api/tasksApi';
 
 export const useFetchTasks = () => {

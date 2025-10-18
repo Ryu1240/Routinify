@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Task } from '../../../types';
+import { Task } from '@/types';
 
 export const useTaskFilters = (tasks: Task[]) => {
   const [search, setSearch] = useState('');

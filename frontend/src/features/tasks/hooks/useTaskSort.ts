@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Task } from '../../../types';
+import { Task } from '@/types';
 
 export const useTaskSort = (tasks: Task[]) => {
   const [sortBy, setSortBy] = useState<keyof Task | null>(null);

@@ -10,10 +10,10 @@ import {
   Title,
 } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
-import { COLORS } from '../../../../constants/colors';
-import { Task, UpdateTaskDto } from '../../../../types';
-import { Category, CreateCategoryDto } from '../../../../types/category';
-import { TaskTable } from '../../../../components/tasks/TaskTable/index';
+import { COLORS } from '@/constants/colors';
+import { Task, UpdateTaskDto } from '@/types';
+import { Category, CreateCategoryDto } from '@/types/category';
+import { TaskTable } from '@/components/tasks/TaskTable/index';
 
 type TaskListProps = {
   isAuthenticated: boolean;

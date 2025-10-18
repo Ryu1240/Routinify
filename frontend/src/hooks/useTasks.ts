@@ -1,7 +1,7 @@
-import { useFetchTasks } from '../features/tasks/hooks/useFetchTasks';
-import { useTaskFilters } from '../features/tasks/hooks/useTaskFilters';
-import { useTaskSort } from '../features/tasks/hooks/useTaskSort';
-import { useTaskMutations } from '../features/tasks/hooks/useTaskMutations';
+import { useFetchTasks } from '@/features/tasks/hooks/useFetchTasks';
+import { useTaskFilters } from '@/features/tasks/hooks/useTaskFilters';
+import { useTaskSort } from '@/features/tasks/hooks/useTaskSort';
+import { useTaskMutations } from '@/features/tasks/hooks/useTaskMutations';
 
 /**
  * Composer hook that combines all task-related hooks

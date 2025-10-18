@@ -1,5 +1,5 @@
-import axios from '../../../config/axios';
-import { Task, CreateTaskDto, UpdateTaskDto } from '../../../types';
+import axios from '@/config/axios';
+import { Task, CreateTaskDto, UpdateTaskDto } from '@/types';
 
 type TaskResponse = {
   data: Task[];
