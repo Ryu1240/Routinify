@@ -1,5 +1,9 @@
 import axios from '@/config/axios';
-import { Category, CreateCategoryDto, UpdateCategoryDto } from '@/types/category';
+import {
+  Category,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from '@/types/category';
 
 type CategoryResponse = {
   data: Category[];
