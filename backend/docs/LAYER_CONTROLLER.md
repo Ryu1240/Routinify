@@ -216,6 +216,87 @@ tasks.each { |task| puts task.category.name } # N+1問題
 - `422 Unprocessable Entity` - バリデーションエラー
 - `500 Internal Server Error` - サーバーエラー
 
+## 💻 実装例
+
+### **基本的なCRUD操作（コントローラー層で処理）**
+```ruby
+class TasksController < BaseController
+  def create
+    validate_permissions(['write:tasks']) do
+      task = Task.new(task_params.merge(account_id: current_user_id))
+      
+      if task.save
+        render_success(
+          data: TaskSerializer.new(task).as_json,
+          message: I18n.t('messages.task.created', default: 'タスクが正常に作成されました'),
+          status: :created
+        )
+      else
+        render_error(errors: task.errors.full_messages)
+      end
+    end
+  end
+
+  def update
+    validate_permissions(['write:tasks']) do
+      task = Task.find_by(id: params[:id], account_id: current_user_id)
+      return render_not_found('タスク') unless task
+
+      if task.update(task_params)
+        render_success(
+          data: TaskSerializer.new(task).as_json,
+          message: I18n.t('messages.task.updated', default: 'タスクが正常に更新されました')
+        )
+      else
+        render_error(errors: task.errors.full_messages)
+      end
+    end
+  end
+
+  private
+
+  def task_params
+    params.require(:task).permit(:title, :due_date, :status, :priority, :category_id)
+  end
+end
+```
+
+### **複雑な処理（サービス層に委譲）**
+```ruby
+class TasksController < BaseController
+  # サンプル：バッチ作成（複雑な処理の例）
+  def bulk_create
+    validate_permissions(['write:tasks']) do
+      result = TaskService.new(current_user_id).bulk_create(tasks_params)
+      handle_service_result(result)
+    end
+  end
+
+  # サンプル：検索と分析（複雑な処理の例）
+  def search_with_analytics
+    validate_permissions(['read:tasks']) do
+      result = TaskService.new(current_user_id).search_with_analytics(
+        params[:q], 
+        search_params
+      )
+      handle_service_result(result)
+    end
+  end
+
+  private
+
+  def tasks_params
+    tasks = params.require(:tasks)
+    return [] if tasks.empty?
+    tasks.map { |task| task.is_a?(ActionController::Parameters) ? task.permit(:title, :due_date, :status, :priority, :category_id) : task }
+  end
+
+  def search_params
+    params.permit(:status, :overdue, :due_today, :q, :page, :per_page)
+  end
+end
+```
+
 ## 🚫 避けるべきパターン
 
 ### **Fat Controller（太ったコントローラー）**

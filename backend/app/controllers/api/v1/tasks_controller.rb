@@ -67,24 +67,6 @@ module Api
         end
       end
 
-      # 複雑な処理の例：バッチ作成（サービス層を使用）
-      def bulk_create
-        validate_permissions(['write:tasks']) do
-          result = TaskService.new(current_user_id).bulk_create(tasks_params)
-          handle_service_result(result)
-        end
-      end
-
-      # 複雑な処理の例：検索と分析（サービス層を使用）
-      def search_with_analytics
-        validate_permissions(['read:tasks']) do
-          result = TaskService.new(current_user_id).search_with_analytics(
-            params[:q], 
-            search_params
-          )
-          handle_service_result(result)
-        end
-      end
 
       private
 
@@ -96,11 +78,6 @@ module Api
         params.permit(:status, :overdue, :due_today, :q, :page, :per_page)
       end
 
-      def tasks_params
-        tasks = params.require(:tasks)
-        return [] if tasks.empty?
-        tasks.map { |task| task.is_a?(ActionController::Parameters) ? task.permit(:title, :due_date, :status, :priority, :category_id) : task }
-      end
 
       def apply_filters(tasks, filters)
         tasks = tasks.by_status(filters[:status]) if filters[:status].present?
