@@ -9,53 +9,53 @@
 #   end
 
 # タスクのサンプルデータを作成
-puts "Creating sample tasks..."
+puts 'Creating sample tasks...'
 
 # テストユーザーID
-test_user_id = "google-oauth2|114430600905307477148"
+test_user_id = 'google-oauth2|114430600905307477148'
 
 # サンプルタスクデータ
 sample_tasks = [
   {
     accountId: test_user_id,
-    title: "朝の運動",
+    title: '朝の運動',
     due_date: Date.current,
-    status: "未着手",
-    priority: "high",
-    category: "健康"
+    status: '未着手',
+    priority: 'high',
+    category: '健康',
   },
   {
     accountId: test_user_id,
-    title: "プロジェクト計画書の作成",
+    title: 'プロジェクト計画書の作成',
     due_date: Date.current + 3.days,
-    status: "進行中",
-    priority: "high",
-    category: "仕事"
+    status: '進行中',
+    priority: 'high',
+    category: '仕事',
   },
   {
     accountId: test_user_id,
-    title: "買い物リストの作成",
+    title: '買い物リストの作成',
     due_date: Date.current + 1.day,
-    status: "未着手",
-    priority: "medium",
-    category: "個人"
+    status: '未着手',
+    priority: 'medium',
+    category: '個人',
   },
   {
     accountId: test_user_id,
-    title: "読書（技術書）",
+    title: '読書（技術書）',
     due_date: Date.current + 1.week,
-    status: "未着手",
-    priority: "low",
-    category: "学習"
+    status: '未着手',
+    priority: 'low',
+    category: '学習',
   },
   {
     accountId: test_user_id,
-    title: "部屋の掃除",
+    title: '部屋の掃除',
     due_date: Date.current - 1.day,
-    status: "完了",
-    priority: "medium",
-    category: "家事"
-  }
+    status: '完了',
+    priority: 'medium',
+    category: '家事',
+  },
 ]
 
 # タスクを作成（重複を避けるためfind_or_create_byを使用）
@@ -77,4 +77,4 @@ sample_tasks.each do |task_attrs|
   end
 end
 
-puts "Sample tasks creation completed!"
+puts 'Sample tasks creation completed!'

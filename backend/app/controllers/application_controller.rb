@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-    include Secured
+  include Secured
 
-    before_action :authorize
+  before_action :authorize
 end

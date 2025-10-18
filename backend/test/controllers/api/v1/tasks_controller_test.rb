@@ -1,8 +1,12 @@
 require 'test_helper'
 
-class Api::V1::TasksControllerTest < ActionDispatch::IntegrationTest
-  test 'should get index' do
-    get api_v1_tasks_index_url
-    assert_response :success
+module Api
+  module V1
+    class TasksControllerTest < ActionDispatch::IntegrationTest
+      test 'should get index' do
+        get api_v1_tasks_index_url
+        assert_response :success
+      end
+    end
   end
 end

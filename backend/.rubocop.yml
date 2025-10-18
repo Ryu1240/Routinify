@@ -22,8 +22,6 @@ AllCops:
 # 自動修正可能なルールを有効化
 Layout/LineLength:
   Max: 120
-  Exclude:
-    - 'spec/**/*'
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
@@ -43,9 +41,6 @@ Metrics/AbcSize:
   Max: 30
 
 Metrics/ClassLength:
-  Max: 150
-
-Metrics/ModuleLength:
   Max: 150
 
 # テストファイル用の設定

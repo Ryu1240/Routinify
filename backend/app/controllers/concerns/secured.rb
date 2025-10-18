@@ -1,73 +1,93 @@
 # frozen_string_literal: true
 
 module Secured
-    extend ActiveSupport::Concern
+  extend ActiveSupport::Concern
 
-    REQUIRES_AUTHENTICATION = { message: 'Requires authentication' }.freeze
-    BAD_CREDENTIALS = {
-message: 'Bad credentials'
-    }.freeze
-    MALFORMED_AUTHORIZATION_HEADER = {
-error: 'invalid_request',
-error_description: 'Authorization header value must follow this format: Bearer access-token',
-message: 'Bad credentials'
-    }.freeze
-    INSUFFICIENT_PERMISSIONS = {
-error: 'insufficient_permissions',
-error_description: 'The access token does not contain the required permissions',
-message: 'Permission denied'
-    }.freeze
+  REQUIRES_AUTHENTICATION = { message: 'Requires authentication' }.freeze
+  BAD_CREDENTIALS = {
+    message: 'Bad credentials'
+  }.freeze
+  MALFORMED_AUTHORIZATION_HEADER = {
+    error: 'invalid_request',
+    error_description: 'Authorization header value must follow this format: Bearer access-token',
+    message: 'Bad credentials'
+  }.freeze
+  INSUFFICIENT_PERMISSIONS = {
+    error: 'insufficient_permissions',
+    error_description: 'The access token does not contain the required permissions',
+    message: 'Permission denied'
+  }.freeze
 
-    def authorize
-token = token_from_request
+  def authorize
+    token = token_from_request
 
-return if performed?
+    return if performed?
 
-validation_response = Auth0Client.validate_token(token)
+    validation_response = Auth0Client.validate_token(token)
 
-@decoded_token = validation_response.decoded_token
+    @decoded_token = validation_response.decoded_token
 
-return unless (error = validation_response.error)
+    return unless (error = validation_response.error)
 
-render json: { message: error.message }, status: error.status
-    end
+    render json: { message: error.message }, status: error.status
+  end
 
-    def validate_permissions(permissions)
-      raise 'validate_permissions needs to be called with a block' unless block_given?
+  def validate_permissions(permissions)
+    raise 'validate_permissions needs to be called with a block' unless block_given?
 
-      if @decoded_token.validate_permissions(permissions)
-        begin
-          return yield
-        rescue ActiveRecord::StatementInvalid => e
-          render json: { message: 'Internal server error' }, status: :internal_server_error
-          return
-        end
+    if @decoded_token.validate_permissions(permissions)
+      begin
+        return yield
+      rescue ActiveRecord::StatementInvalid
+        render json: { message: 'Internal server error' }, status: :internal_server_error
+        return
       end
-
-      render json: INSUFFICIENT_PERMISSIONS, status: :forbidden
     end
 
-    def current_user_id
-      return nil unless @decoded_token
-      @decoded_token.token[0]['sub']
-    end
+    render json: INSUFFICIENT_PERMISSIONS, status: :forbidden
+  end
 
-    private
+  def current_user_id
+    return nil unless @decoded_token
 
-    def token_from_request
-authorization_header_elements = request.headers['Authorization']&.split
+    @decoded_token.token[0]['sub']
+  end
 
-render json: REQUIRES_AUTHENTICATION, status: :unauthorized and return unless authorization_header_elements
+  private
 
-unless authorization_header_elements.length == 2
-render json: MALFORMED_AUTHORIZATION_HEADER,
-       status: :unauthorized and return
-end
+  def token_from_request
+    authorization_header_elements = request.headers['Authorization']&.split
 
-scheme, token = authorization_header_elements
+    return handle_missing_authorization unless authorization_header_elements
+    return handle_malformed_authorization unless valid_authorization_format?(authorization_header_elements)
 
-render json: BAD_CREDENTIALS, status: :unauthorized and return unless scheme.downcase == 'bearer'
+    scheme, token = authorization_header_elements
 
-token
-    end
+    return handle_invalid_scheme unless valid_bearer_scheme?(scheme)
+
+    token
+  end
+
+  def handle_missing_authorization
+    render json: REQUIRES_AUTHENTICATION, status: :unauthorized
+    nil
+  end
+
+  def handle_malformed_authorization
+    render json: MALFORMED_AUTHORIZATION_HEADER, status: :unauthorized
+    nil
+  end
+
+  def handle_invalid_scheme
+    render json: BAD_CREDENTIALS, status: :unauthorized
+    nil
+  end
+
+  def valid_authorization_format?(elements)
+    elements.length == 2
+  end
+
+  def valid_bearer_scheme?(scheme)
+    scheme.downcase == 'bearer'
+  end
 end

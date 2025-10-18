@@ -130,3 +130,27 @@ type-check:
 format-backend: lint-backend-fix
 format-frontend: lint-frontend-fix
 format-all: format-backend format-frontend
+
+# CI/CD compatible commands (same as GitHub Actions)
+ci-backend-test:
+	docker-compose exec backend bundle exec rspec --format progress --format documentation
+
+ci-backend-lint:
+	docker-compose exec backend bundle exec rubocop --autocorrect --format progress
+	docker-compose exec backend bundle exec rubocop --format progress --format offenses
+
+ci-backend-security:
+	docker-compose exec backend bundle exec brakeman --no-progress --format json
+
+ci-frontend-test:
+	docker-compose exec frontend pnpm test:run
+
+ci-frontend-type-check:
+	docker-compose exec frontend pnpm tsc --noEmit
+
+ci-frontend-format:
+	docker-compose exec frontend pnpm format:check
+	docker-compose exec frontend pnpm format
+
+# Run all CI checks
+ci-all: ci-backend-test ci-backend-lint ci-backend-security ci-frontend-test ci-frontend-type-check ci-frontend-format

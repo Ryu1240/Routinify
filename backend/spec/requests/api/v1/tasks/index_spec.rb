@@ -49,8 +49,8 @@ RSpec.describe 'GET /api/v1/tasks', type: :request do
           'categoryId' => task.category_id
         )
         expect(returned_task['dueDate']).to eq(task.due_date&.iso8601)
-        expect(returned_task['createdAt']).to eq(task.created_at.iso8601(3))
-        expect(returned_task['updatedAt']).to eq(task.updated_at.iso8601(3))
+        expect(returned_task['createdAt']).to eq(task.created_at.iso8601)
+        expect(returned_task['updatedAt']).to eq(task.updated_at.iso8601)
       end
     end
 

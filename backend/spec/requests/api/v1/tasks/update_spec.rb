@@ -6,12 +6,12 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
 
   let(:category) { create(:category, account_id: user_id, name: '仕事') }
   let(:new_category) { create(:category, account_id: user_id, name: 'プライベート') }
-  let!(:task) { create(:task, account_id: user_id, title: 'Original Task', status: '未着手', priority: 'medium', category_id: category.id) }
+  let!(:task) { create(:task, account_id: user_id, title: 'Original Task', status: 'pending', priority: 'medium', category_id: category.id) }
   let(:valid_update_params) do
     {
       task: {
         title: 'Updated Task',
-        status: '進行中',
+        status: 'in_progress',
         priority: 'high',
         category_id: new_category.id,
         due_date: Date.current + 2.weeks
@@ -31,7 +31,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
 
         task.reload
         expect(task.title).to eq('Updated Task')
-        expect(task.status).to eq('進行中')
+        expect(task.status).to eq('in_progress')
         expect(task.priority).to eq('high')
         expect(task.category_id).to eq(new_category.id)
         expect(task.due_date).to eq(Date.current + 2.weeks)
@@ -53,7 +53,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
 
         task.reload
         expect(task.title).to eq('Partially Updated Task')
-        expect(task.status).to eq('未着手') # 元のまま
+        expect(task.status).to eq('pending') # 元のまま
         expect(task.priority).to eq('medium') # 元のまま
       end
 
@@ -71,7 +71,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
     context '異常系' do
       context 'タスクが存在しない場合' do
         it 'returns 404 when task does not exist' do
-          put "/api/v1/tasks/99999", params: valid_update_params, headers: auth_headers
+          put '/api/v1/tasks/99999', params: valid_update_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
           json_response = JSON.parse(response.body)
@@ -80,7 +80,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
       end
 
       context '他のユーザーのタスクを更新しようとした場合' do
-        let!(:other_user_task) { create(:task, account_id: 'other-user', title: 'Other User Task') }
+        let!(:other_user_task) { create(:task, account_id: 'other-user', title: 'Other User Task', status: 'pending') }
 
         it 'returns 404 when trying to update another users task' do
           put "/api/v1/tasks/#{other_user_task.id}", params: valid_update_params, headers: auth_headers
@@ -107,7 +107,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include("Title can't be blank")
+          expect(json_response['errors']).to include('Title タイトルは必須です')
         end
 
         it 'returns 422 when title is too long' do
@@ -117,7 +117,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include('Title is too long (maximum is 255 characters)')
+          expect(json_response['errors']).to include('Title タイトルは255文字以内で入力してください')
         end
 
         it 'does not update task when validation fails' do
@@ -190,7 +190,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
       end
 
       it '各ステータス値で正常に更新される' do
-        %w[未着手 進行中 完了].each do |status|
+        %w[pending in_progress completed on_hold].each do |status|
           params = { task: { status: status } }
 
           put "/api/v1/tasks/#{task.id}", params: params, headers: auth_headers

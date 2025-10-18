@@ -20,9 +20,9 @@ RSpec.describe 'POST /api/v1/categories', type: :request do
       end
 
       it 'creates a new category' do
-        expect {
+        expect do
           post '/api/v1/categories', params: valid_params, headers: auth_headers
-        }.to change(Category, :count).by(1)
+        end.to change(Category, :count).by(1)
       end
 
       it 'returns success message' do
@@ -50,7 +50,7 @@ RSpec.describe 'POST /api/v1/categories', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include("Name can't be blank")
+          expect(json_response['errors']).to include('Name は必須です')
         end
 
         it 'returns 422 when name is too long' do
@@ -60,7 +60,7 @@ RSpec.describe 'POST /api/v1/categories', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include('Name is too long (maximum is 255 characters)')
+          expect(json_response['errors']).to include('Name は255文字以内で入力してください')
         end
 
         it 'returns 422 when name already exists for the same user' do

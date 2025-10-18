@@ -31,19 +31,19 @@ RSpec.describe Task, type: :model do
       it 'titleが必須であること' do
         subject.title = nil
         expect(subject).to be_invalid
-        expect(subject.errors[:title]).to include("can't be blank")
+        expect(subject.errors[:title]).to include('タイトルは必須です')
       end
 
       it 'titleが空文字列の場合、無効であること' do
         subject.title = ''
         expect(subject).to be_invalid
-        expect(subject.errors[:title]).to include("can't be blank")
+        expect(subject.errors[:title]).to include('タイトルは必須です')
       end
 
       it 'titleが255文字以内であること' do
         subject.title = 'a' * 256
         expect(subject).to be_invalid
-        expect(subject.errors[:title]).to include('is too long (maximum is 255 characters)')
+        expect(subject.errors[:title]).to include('タイトルは255文字以内で入力してください')
       end
     end
 
@@ -51,13 +51,13 @@ RSpec.describe Task, type: :model do
       it 'account_idが必須であること' do
         subject.account_id = nil
         expect(subject).to be_invalid
-        expect(subject.errors[:account_id]).to include("can't be blank")
+        expect(subject.errors[:account_id]).to include('アカウントIDは必須です')
       end
 
       it 'account_idが空文字列の場合、無効であること' do
         subject.account_id = ''
         expect(subject).to be_invalid
-        expect(subject.errors[:account_id]).to include("can't be blank")
+        expect(subject.errors[:account_id]).to include('アカウントIDは必須です')
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Task, type: :model do
       end
 
       it '有効な日付形式を受け入れること' do
-        subject.due_date = Date.current
+        subject.due_date = 1.week.from_now
         expect(subject).to be_valid
       end
     end
@@ -79,10 +79,17 @@ RSpec.describe Task, type: :model do
         expect(subject).to be_valid
       end
 
-      it 'statusが50文字以内であること' do
-        subject.status = 'a' * 51
+      it '有効なstatus値を受け入れること' do
+        %w[pending in_progress completed on_hold].each do |status|
+          subject.status = status
+          expect(subject).to be_valid
+        end
+      end
+
+      it '無効なstatus値でエラーになること' do
+        subject.status = '無効なステータス'
         expect(subject).to be_invalid
-        expect(subject.errors[:status]).to include('is too long (maximum is 50 characters)')
+        expect(subject.errors[:status]).to include('は一覧にありません')
       end
     end
 
@@ -92,10 +99,31 @@ RSpec.describe Task, type: :model do
         expect(subject).to be_valid
       end
 
-      it 'priorityが50文字以内であること' do
-        subject.priority = 'a' * 51
+      it '有効なpriority値を受け入れること' do
+        %w[low medium high].each do |priority|
+          subject.priority = priority
+          expect(subject).to be_valid
+        end
+      end
+
+      it '無効なpriority値でエラーになること' do
+        subject.priority = '無効な優先度'
         expect(subject).to be_invalid
-        expect(subject.errors[:priority]).to include('is too long (maximum is 50 characters)')
+        expect(subject.errors[:priority]).to include('は一覧にありません')
+      end
+    end
+
+    context 'due_date' do
+      it '未来の日付を受け入れること' do
+        subject.due_date = 1.day.from_now
+        expect(subject).to be_valid
+      end
+
+      it '過去の日付でエラーになること' do
+        # テスト環境ではallow_past_in_test: trueのため、直接バリデーターをテスト
+        validator = FutureDateValidator.new(attributes: :due_date, allow_past_in_test: false)
+        validator.validate_each(subject, :due_date, 1.day.ago)
+        expect(subject.errors[:due_date]).to include('は未来の日付である必要があります')
       end
     end
   end
@@ -137,6 +165,87 @@ RSpec.describe Task, type: :model do
 
     it 'updated_atが自動設定されること' do
       expect(task.updated_at).to be_present
+    end
+
+    describe '#overdue?' do
+      it '期限切れのタスクでtrueを返すこと' do
+        task.update_column(:due_date, 1.day.ago)
+        expect(task.overdue?).to be true
+      end
+
+      it '期限前のタスクでfalseを返すこと' do
+        task.update!(due_date: 1.day.from_now)
+        expect(task.overdue?).to be false
+      end
+
+      it '期限がないタスクでfalseを返すこと' do
+        task.update!(due_date: nil)
+        expect(task.overdue?).to be false
+      end
+    end
+
+    describe '#completed?' do
+      it '完了ステータスでtrueを返すこと' do
+        task.update!(status: 'completed')
+        expect(task.completed?).to be true
+      end
+
+      it '未完了ステータスでfalseを返すこと' do
+        task.update!(status: 'pending')
+        expect(task.completed?).to be false
+      end
+    end
+
+    describe '#in_progress?' do
+      it '進行中ステータスでtrueを返すこと' do
+        task.update!(status: 'in_progress')
+        expect(task.in_progress?).to be true
+      end
+
+      it '進行中以外のステータスでfalseを返すこと' do
+        task.update!(status: 'pending')
+        expect(task.in_progress?).to be false
+      end
+    end
+
+    describe '#pending?' do
+      it '未着手ステータスでtrueを返すこと' do
+        task.update!(status: 'pending')
+        expect(task.pending?).to be true
+      end
+
+      it '未着手以外のステータスでfalseを返すこと' do
+        task.update!(status: 'completed')
+        expect(task.pending?).to be false
+      end
+    end
+  end
+
+  describe 'クラスメソッド' do
+    describe '.search' do
+      let!(:task1) { create(:task, title: 'テストタスク1') }
+      let!(:task2) { create(:task, title: 'サンプルタスク2') }
+      let!(:task3) { create(:task, title: 'テスト用タスク3') }
+
+      it 'タイトルで検索できること' do
+        results = Task.search('テスト')
+        expect(results).to contain_exactly(task1, task3)
+      end
+
+      it '部分一致で検索できること' do
+        results = Task.search('サンプル')
+        expect(results).to contain_exactly(task2)
+      end
+
+      it '大文字小文字を区別しないこと' do
+        results = Task.search('テスト')
+        expect(results).to contain_exactly(task1, task3)
+      end
+
+      it '該当するタスクがない場合は空の結果を返すこと' do
+        results = Task.search('存在しない')
+        expect(results).to be_empty
+      end
     end
   end
 end

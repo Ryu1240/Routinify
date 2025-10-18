@@ -4,15 +4,15 @@ FactoryBot.define do
     sequence(:name) { |n| "カテゴリ #{n}" }
 
     trait :work do
-      name { "仕事" }
+      name { '仕事' }
     end
 
     trait :personal do
-      name { "個人" }
+      name { '個人' }
     end
 
     trait :urgent do
-      name { "緊急" }
+      name { '緊急' }
     end
   end
 end
