@@ -94,7 +94,7 @@ export const createTaskColumns = (
 export const createTableColumns = (
   categories: Category[] = []
 ): TableColumn[] =>
-  createTaskColumns(categories).map(({ render, ...column }) => column);
+  createTaskColumns(categories).map(({ render: _render, ...column }) => column);
 
 // 後方互換性のため、デフォルトエクスポート（カテゴリなし）も提供
 export const taskColumns = createTaskColumns([]);

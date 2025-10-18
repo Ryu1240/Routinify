@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTasks } from '@/hooks/useTasks';
 import { useCategories } from '@/hooks/useCategories';
 import { useAuth } from '@/hooks/useAuth';
-import { UpdateTaskDto, CreateTaskDto } from '@/types';
+import { UpdateTaskDto, CreateTaskDto, Task } from '@/types';
 import { CreateCategoryDto } from '@/types/category';
 import { TaskList } from './TaskList';
 import CreateTaskModal from '@/components/tasks/CreateTaskModal/index';
@@ -87,7 +87,7 @@ export const TaskListContainer: React.FC = () => {
         onSearchChange={setSearch}
         sortBy={sortBy}
         reverseSortDirection={reverseSortDirection}
-        onSort={(key) => setSorting(key as any)}
+        onSort={(key) => setSorting(key as keyof Task)}
         loading={loading}
         error={error}
         editingTaskId={editingTaskId}
