@@ -26,7 +26,7 @@
   },
   "include": [
     "src"
-  ],
+, "src/features/tasks/components/CreateTaskModal/.tsx"  ],
   "exclude": [
     "src/**/*.test.ts",
     "src/**/*.test.tsx",

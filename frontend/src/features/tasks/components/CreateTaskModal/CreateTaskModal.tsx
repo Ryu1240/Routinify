@@ -15,9 +15,9 @@ import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { CreateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
-import { statusOptions, priorityOptions } from '../constants';
-import { useCreateTaskForm } from './useCreateTaskForm';
-import CreateCategoryModal from '@/components/categories/CreateCategoryModal';
+import { statusOptions, priorityOptions } from '@/features/tasks/components/TaskList/constants';
+import { useCreateTaskForm } from '@/features/tasks/components/CreateTaskModal/useCreateTaskForm';
+import { CreateCategoryModal } from '@/features/categories/components/CreateCategoryModal/CreateCategoryModal';
 
 type CreateTaskModalProps = {
   opened: boolean;
@@ -29,7 +29,7 @@ type CreateTaskModalProps = {
   createCategoryLoading?: boolean;
 };
 
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
+export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   opened,
   onClose,
   onSubmit,
@@ -224,5 +224,3 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
     </Modal>
   );
 };
-
-export default CreateTaskModal;
