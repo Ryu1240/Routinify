@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
-import CreateTaskModal from '.';
-import { CreateTaskData } from '../definitions/types';
+import { CreateTaskModal } from './CreateTaskModal';
+import { CreateTaskDto } from '@/types/task';
 import React from 'react';
 
 // Mantineコンポーネントのモック

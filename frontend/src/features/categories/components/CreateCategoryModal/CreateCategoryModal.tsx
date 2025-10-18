@@ -18,7 +18,7 @@ type CreateCategoryModalProps = {
   loading?: boolean;
 };
 
-const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
+export const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
   opened,
   onClose,
   onSubmit,
@@ -108,5 +108,3 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
     </Modal>
   );
 };
-
-export default CreateCategoryModal;
