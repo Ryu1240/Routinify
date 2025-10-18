@@ -1,4 +1,4 @@
-import axios from '@/config/axios';
+import axios from '@/lib/axios';
 import { Task, CreateTaskDto, UpdateTaskDto } from '@/types';
 
 type TaskResponse = {

@@ -1,7 +1,7 @@
 import React from 'react';
-import { DataTable } from '../../common/DataTable/index';
+import { DataTable } from '@/shared/components/DataTable/index';
 import { TaskTableProps } from './types';
-import { Category, CreateCategoryDto } from '../../../types/category';
+import { Category, CreateCategoryDto } from '@/types/category';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
 import { createTableColumns } from './taskTableColumns';

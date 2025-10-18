@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, Badge } from '@mantine/core';
-import { COLORS } from '../../../constants/colors';
+import { COLORS } from '@/shared/constants/colors';
 import {
   getPriorityColor,
   getPriorityLabel,
@@ -8,10 +8,10 @@ import {
   getStatusLabel,
   getCategoryColor,
   formatDate,
-} from '../../../utils/taskUtils';
-import { TableColumn } from '../../common/DataTable/index';
-import { Task } from '../definitions';
-import { Category } from '../../../types/category';
+} from '@/shared/utils/taskUtils';
+import { TableColumn } from '@/shared/components/DataTable/index';
+import { Task } from '@/types/task';
+import { Category } from '@/types/category';
 
 // カテゴリ名を取得するヘルパー関数
 const getCategoryName = (task: Task, categories: Category[]): string => {

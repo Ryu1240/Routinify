@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, NavLink, rem, useMantineTheme } from '@mantine/core';
 import { IconChecklist, IconCategory } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { LAYOUT_CONSTANTS } from '../../constants/layout';
+import { LAYOUT_CONSTANTS } from '@/shared/constants';
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();

@@ -10,7 +10,7 @@ import {
   Text,
   Image,
 } from '@mantine/core';
-import { COLORS } from '../../constants/colors';
+import { COLORS } from '@/shared/constants/colors';
 import styles from './Login.module.css';
 
 interface LoginProps {}

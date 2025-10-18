@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Group, Button, Text, Container, rem, Image } from '@mantine/core';
 import { IconLogout } from '@tabler/icons-react';
-import { LAYOUT_CONSTANTS } from '../../constants/layout';
+import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
 
 const Header: React.FC = () => {
   const { logout } = useAuth0();

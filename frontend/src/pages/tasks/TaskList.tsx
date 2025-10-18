@@ -1,6 +1,6 @@
 import React from 'react';
-import { TaskListContainer } from '../../features/tasks/components/TaskList';
-import { Layout } from '../../components/common';
+import { TaskListContainer } from '@/features/tasks/components/TaskList';
+import { Layout } from '@/shared/components';
 
 const TaskList: React.FC = () => {
   return (
