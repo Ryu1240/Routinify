@@ -61,15 +61,44 @@ backend/
 
 ## コントローラー規約
 
+### 抽象化レベルの判断基準
+
+#### **シンプルな処理（コントローラーに直接記述）**
+- **行数**: 5-20行程度
+- **条件**: 基本的なCRUD操作、単一モデル操作、シンプルなフィルタリング
+
+#### **複雑な処理（サービス層に分離）**
+- **行数**: 21行以上
+- **条件**: 複数モデル跨ぎ、外部API連携、バッチ処理、複雑なビジネスロジック
+
 ### 基本構造
 ```ruby
+# ✅ 良い例：シンプルな処理はコントローラーに直接記述
 module Api
   module V1
     class TasksController < BaseController
       def index
         validate_permissions(['read:tasks']) do
-          result = TaskService.new(current_user_id).list
-          handle_service_result(result)
+          tasks = Task.for_user(current_user_id).includes(:category)
+          tasks = apply_filters(tasks, search_params)
+          
+          render_success(data: tasks.map { |task| TaskSerializer.new(task).as_json })
+        end
+      end
+
+      def create
+        validate_permissions(['write:tasks']) do
+          task = Task.new(task_params.merge(account_id: current_user_id))
+          
+          if task.save
+            render_success(
+              data: TaskSerializer.new(task).as_json,
+              message: I18n.t('messages.task.created'),
+              status: :created
+            )
+          else
+            render_error(errors: task.errors.full_messages)
+          end
         end
       end
 

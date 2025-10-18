@@ -14,19 +14,19 @@ RSpec.describe Category, type: :model do
     it 'validates presence of name' do
       category = Category.new(account_id: 'test_user')
       expect(category).not_to be_valid
-      expect(category.errors[:name]).to include("can't be blank")
+      expect(category.errors[:name]).to include('は必須です')
     end
 
     it 'validates presence of account_id' do
       category = Category.new(name: 'Test Category')
       expect(category).not_to be_valid
-      expect(category.errors[:account_id]).to include("can't be blank")
+      expect(category.errors[:account_id]).to include('は必須です')
     end
 
     it 'validates length of name' do
       category = Category.new(name: 'a' * 256, account_id: 'test_user')
       expect(category).not_to be_valid
-      expect(category.errors[:name]).to include('is too long (maximum is 255 characters)')
+      expect(category.errors[:name]).to include('は255文字以内で入力してください')
     end
 
     it 'validates uniqueness of name scoped to account_id' do

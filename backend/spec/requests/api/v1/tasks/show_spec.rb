@@ -27,8 +27,8 @@ RSpec.describe 'GET /api/v1/tasks/:id', type: :request do
           'categoryId' => task.category_id
         )
         expect(json_response['data']['dueDate']).to eq(task.due_date&.iso8601)
-        expect(json_response['data']['createdAt']).to eq(task.created_at.iso8601(3))
-        expect(json_response['data']['updatedAt']).to eq(task.updated_at.iso8601(3))
+        expect(json_response['data']['createdAt']).to eq(task.created_at.iso8601)
+        expect(json_response['data']['updatedAt']).to eq(task.updated_at.iso8601)
       end
 
       it 'returns correct JSON structure' do

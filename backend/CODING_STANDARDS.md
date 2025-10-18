@@ -340,24 +340,79 @@ POST   /api/v1/deleteTask/:id
 
 ## コントローラー規約
 
+### 抽象化レベルの判断基準
+
+#### **シンプルな処理（コントローラーに直接記述）**
+- **行数**: 5-20行程度
+- **条件**: 以下のいずれかに該当
+  - 基本的なCRUD操作
+  - 単一のモデル操作
+  - シンプルなフィルタリング
+  - 基本的なバリデーション
+  - 単純なレスポンス生成
+
+#### **複雑な処理（サービス層に分離）**
+- **行数**: 21行以上
+- **条件**: 以下のいずれかに該当
+  - 複数のモデルを跨ぐ処理
+  - 外部API連携
+  - バッチ処理
+  - 複雑なビジネスロジック
+  - トランザクション管理
+  - 複雑な検索・分析
+  - 通知送信
+  - 再利用が必要な処理
+
+#### **判断フローチャート**
+```
+処理の複雑さを評価
+├─ シンプル（5-20行）
+│  ├─ 基本的なCRUD？
+│  │  ├─ Yes → コントローラー
+│  │  └─ No → サービス層
+│  └─ 単一モデル操作？
+│      ├─ Yes → コントローラー
+│      └─ No → サービス層
+├─ 中程度（21-50行）
+│  ├─ 複数モデルを跨ぐ？
+│  │  ├─ Yes → サービス層
+│  │  └─ No → コントローラー
+│  └─ 再利用が必要？
+│      ├─ Yes → サービス層
+│      └─ No → コントローラー
+└─ 複雑（51行以上）
+    └─ サービス層に分離
+```
+
 ### 基本構造
 
 ```ruby
-# ✅ 良い例
+# ✅ 良い例：シンプルな処理はコントローラーに直接記述
 module Api
   module V1
     class TasksController < BaseController
       def index
         validate_permissions(['read:tasks']) do
-          result = TaskService.new(current_user_id).list
-          handle_service_result(result)
+          tasks = Task.for_user(current_user_id).includes(:category)
+          tasks = apply_filters(tasks, search_params)
+          
+          render_success(data: tasks.map { |task| TaskSerializer.new(task).as_json })
         end
       end
 
       def create
         validate_permissions(['write:tasks']) do
-          result = TaskService.new(current_user_id).create(task_params)
-          handle_service_result(result)
+          task = Task.new(task_params.merge(account_id: current_user_id))
+          
+          if task.save
+            render_success(
+              data: TaskSerializer.new(task).as_json,
+              message: I18n.t('messages.task.created'),
+              status: :created
+            )
+          else
+            render_error(errors: task.errors.full_messages)
+          end
         end
       end
 
@@ -508,39 +563,90 @@ scope :complex_query, -> { joins(:category).where('categories.name = ?', 'Work')
 
 ## サービス層規約
 
+### 抽象化レベルの判断基準
+
+#### **サービス層に記述すべき処理**
+- **行数**: 21行以上
+- **条件**: 以下のいずれかに該当
+  - 複数のモデルを跨ぐ処理
+  - 外部API連携
+  - バッチ処理
+  - 複雑なビジネスロジック
+  - トランザクション管理
+  - 複雑な検索・分析
+  - 通知送信
+  - 再利用が必要な処理
+
+#### **サービス層に記述すべきでない処理**
+- **行数**: 5-20行程度
+- **条件**: 以下のいずれかに該当
+  - 基本的なCRUD操作
+  - 単一のモデル操作
+  - シンプルなフィルタリング
+  - 基本的なバリデーション
+  - 単純なレスポンス生成
+
 ### 基本構造
 
 ```ruby
-# ✅ 良い例
+# ✅ 良い例：複雑なビジネスロジックのみをサービス層に配置
 class TaskService < BaseService
   def initialize(user_id)
     @user_id = user_id
   end
 
-  def create(params)
-    task = Task.new(params.merge(account_id: @user_id))
-    
-    if task.save
-      ServiceResult.success(data: task, message: 'タスクが正常に作成されました')
+  # 複雑な処理：バッチ作成
+  def bulk_create(tasks_params)
+    results = []
+    errors = []
+
+    tasks_params.each_with_index do |params, index|
+      task = Task.new(params.merge(account_id: @user_id))
+      
+      if task.save
+        results << TaskSerializer.new(task).as_json
+      else
+        errors << { index: index, errors: task.errors.full_messages }
+      end
+    end
+
+    if errors.empty?
+      ServiceResult.success(data: results, message: "#{results.count}件のタスクを作成しました")
     else
-      ServiceResult.error(errors: task.errors.full_messages)
+      ServiceResult.error(errors: errors, message: "一部のタスクの作成に失敗しました")
     end
   end
 
-  def find(id)
-    task = Task.find_by(id: id, account_id: @user_id)
+  # 複雑な処理：検索と分析
+  def search_with_analytics(query, filters = {})
+    tasks = Task.for_user(@user_id)
+    tasks = apply_advanced_filters(tasks, filters)
+    tasks = tasks.search(query) if query.present?
     
-    if task
-      ServiceResult.success(data: task)
-    else
-      ServiceResult.error(errors: ['タスクが見つかりません'], status: :not_found)
-    end
+    analytics = {
+      total_count: tasks.count,
+      by_status: tasks.group(:status).count,
+      by_priority: tasks.group(:priority).count,
+      overdue_count: tasks.overdue.count
+    }
+    
+    ServiceResult.success(
+      data: {
+        tasks: tasks.map { |task| TaskSerializer.new(task).as_json },
+        analytics: analytics
+      }
+    )
   end
 
   private
 
-  def validate_task_ownership(task)
-    task.account_id == @user_id
+  def apply_advanced_filters(tasks, filters)
+    tasks = tasks.by_status(filters[:status]) if filters[:status].present?
+    tasks = tasks.overdue if filters[:overdue] == 'true'
+    tasks = tasks.due_today if filters[:due_today] == 'true'
+    tasks = tasks.where('created_at >= ?', filters[:created_after]) if filters[:created_after].present?
+    tasks = tasks.where('created_at <= ?', filters[:created_before]) if filters[:created_before].present?
+    tasks
   end
 end
 ```

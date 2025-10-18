@@ -107,7 +107,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include("Title can't be blank")
+          expect(json_response['errors']).to include("Title タイトルは必須です")
         end
 
         it 'returns 422 when title is too long' do
@@ -117,7 +117,7 @@ RSpec.describe 'PUT /api/v1/tasks/:id', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include('Title is too long (maximum is 255 characters)')
+          expect(json_response['errors']).to include('Title タイトルは255文字以内で入力してください')
         end
 
         it 'does not update task when validation fails' do
