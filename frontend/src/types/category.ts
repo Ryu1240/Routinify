@@ -4,12 +4,12 @@ export type Category = {
   name: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 export type CreateCategoryDto = {
   name: string;
-}
+};
 
 export type UpdateCategoryDto = {
   name: string;
-}
+};
