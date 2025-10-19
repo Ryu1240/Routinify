@@ -1,1 +1,1 @@
-export { EditCategoryModal } from './EditCategoryModal';
+export * from './EditCategoryModal';
