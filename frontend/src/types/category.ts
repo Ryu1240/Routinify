@@ -1,4 +1,4 @@
-export interface Category {
+export type Category = {
   id: number;
   accountId: string;
   name: string;
@@ -6,10 +6,10 @@ export interface Category {
   updatedAt: string;
 }
 
-export interface CreateCategoryData {
+export type CreateCategoryDto = {
   name: string;
 }
 
-export interface UpdateCategoryData {
+export type UpdateCategoryDto = {
   name: string;
 }
