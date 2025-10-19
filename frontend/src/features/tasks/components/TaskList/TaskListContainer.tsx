@@ -5,7 +5,7 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { UpdateTaskDto, CreateTaskDto, Task } from '@/types';
 import { CreateCategoryDto } from '@/types/category';
 import { TaskList } from './TaskList';
-import { CreateTaskModal } from '@/features/tasks/components/CreateTaskModal/CreateTaskModal';
+import { CreateTaskModal } from '@/features/tasks/components/CreateTaskModal';
 
 export const TaskListContainer: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();

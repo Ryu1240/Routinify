@@ -10,7 +10,7 @@ import {
   Title,
 } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
-import { COLORS } from '@/constants/colors';
+import { COLORS } from '@/shared/constants/colors';
 import { Task, UpdateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
 import { TaskTable } from '@/features/tasks/components/TaskTable';

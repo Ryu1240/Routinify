@@ -7,8 +7,8 @@ import {
   Category,
 } from '@/types/category';
 import { CategoryList } from './CategoryList';
-import { CreateCategoryModal } from '@/features/categories/components/CreateCategoryModal/CreateCategoryModal';
-import { EditCategoryModal } from '@/features/categories/components/EditCategoryModal/EditCategoryModal';
+import { CreateCategoryModal } from '@/features/categories/components/CreateCategoryModal';
+import { EditCategoryModal } from '@/features/categories/components/EditCategoryModal';
 
 export const CategoryListContainer: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
