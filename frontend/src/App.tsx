@@ -82,6 +82,7 @@ const App: React.FC = () => {
       {...auth0Config}
       onRedirectCallback={(appState) => {
         // リダイレクト後の処理をカスタマイズ
+        // eslint-disable-next-line no-console
         console.log('Redirect callback:', appState);
         // ユーザーを意図したページにリダイレクト
         window.history.replaceState(
