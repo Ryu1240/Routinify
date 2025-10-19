@@ -61,7 +61,6 @@ module Api
 
           task.destroy
           render_success(
-            message: I18n.t('messages.task.deleted', default: 'タスクが正常に削除されました'),
             status: :no_content
           )
         end
