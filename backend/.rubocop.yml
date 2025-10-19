@@ -23,7 +23,7 @@ AllCops:
 Layout/LineLength:
   Max: 120
   Exclude:
-    - 'spec/**/*'
+    - 'spec/**/*'  # テストファイルは記述的なため除外
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes
@@ -43,9 +43,6 @@ Metrics/AbcSize:
   Max: 30
 
 Metrics/ClassLength:
-  Max: 150
-
-Metrics/ModuleLength:
   Max: 150
 
 # テストファイル用の設定

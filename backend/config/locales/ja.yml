@@ -1,0 +1,33 @@
+ja:
+  activerecord:
+    errors:
+      models:
+        task:
+          attributes:
+            title:
+              blank: "タイトルは必須です"
+              too_long: "タイトルは%{count}文字以内で入力してください"
+            account_id:
+              blank: "アカウントIDは必須です"
+            due_date:
+              future_date: "は未来の日付である必要があります"
+            status:
+              inclusion: "は一覧にありません"
+            priority:
+              inclusion: "は一覧にありません"
+      messages:
+        record_invalid: "バリデーションに失敗しました: %{errors}"
+
+  messages:
+    task:
+      created: "タスクが正常に作成されました"
+      updated: "タスクが正常に更新されました"
+      deleted: "タスクが正常に削除されました"
+
+  errors:
+    messages:
+      blank: "は必須です"
+      too_long: "は%{count}文字以内で入力してください"
+      inclusion: "は一覧にありません"
+    task:
+      not_found: "タスクが見つかりません"

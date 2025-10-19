@@ -19,9 +19,9 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
       end
 
       it 'deletes the category from database' do
-        expect {
+        expect do
           delete "/api/v1/categories/#{category.id}", headers: auth_headers
-        }.to change(Category, :count).by(-1)
+        end.to change(Category, :count).by(-1)
       end
 
       it 'category can no longer be found' do
@@ -33,7 +33,7 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
     context '異常系' do
       context 'カテゴリが存在しない場合' do
         it 'returns 404 when category does not exist' do
-          delete "/api/v1/categories/99999", headers: auth_headers
+          delete '/api/v1/categories/99999', headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
           json_response = JSON.parse(response.body)
@@ -41,9 +41,9 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
         end
 
         it 'does not delete any categories' do
-          expect {
-            delete "/api/v1/categories/99999", headers: auth_headers
-          }.not_to change(Category, :count)
+          expect do
+            delete '/api/v1/categories/99999', headers: auth_headers
+          end.not_to change(Category, :count)
         end
       end
 
@@ -59,9 +59,9 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
         end
 
         it 'does not delete the other users category' do
-          expect {
+          expect do
             delete "/api/v1/categories/#{other_user_category.id}", headers: auth_headers
-          }.not_to change(Category, :count)
+          end.not_to change(Category, :count)
 
           # カテゴリがまだ存在することを確認
           expect(Category.find_by(id: other_user_category.id)).not_to be_nil
@@ -85,9 +85,9 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
             controller.render json: { message: 'Invalid token' }, status: :unauthorized
           end
 
-          expect {
+          expect do
             delete "/api/v1/categories/#{category.id}", headers: auth_headers
-          }.not_to change(Category, :count)
+          end.not_to change(Category, :count)
         end
       end
 
@@ -108,9 +108,9 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
             controller.render json: { message: 'Permission denied' }, status: :forbidden
           end
 
-          expect {
+          expect do
             delete "/api/v1/categories/#{category.id}", headers: auth_headers
-          }.not_to change(Category, :count)
+          end.not_to change(Category, :count)
         end
       end
     end
@@ -129,9 +129,9 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
       it '異なるユーザーのカテゴリが混在している場合、自分のカテゴリのみ削除できる' do
         other_user_category = create(:category, account_id: 'other-user', name: 'Other Category')
 
-        expect {
+        expect do
           delete "/api/v1/categories/#{category.id}", headers: auth_headers
-        }.to change(Category, :count).by(-1)
+        end.to change(Category, :count).by(-1)
 
         # 他ユーザーのカテゴリは残っている
         expect(Category.find_by(id: other_user_category.id)).not_to be_nil

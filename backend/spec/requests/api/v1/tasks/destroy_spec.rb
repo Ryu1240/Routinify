@@ -5,7 +5,7 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
   include_context 'tasks request spec setup'
 
   let(:category) { create(:category, account_id: user_id, name: '仕事') }
-  let!(:task) { create(:task, account_id: user_id, title: 'Task to Delete', status: '未着手', priority: 'medium', category_id: category.id) }
+  let!(:task) { create(:task, account_id: user_id, title: 'Task to Delete', status: 'pending', priority: 'medium', category_id: category.id) }
 
   describe 'DELETE /api/v1/tasks/:id' do
     context '正常系' do
@@ -20,9 +20,9 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
       end
 
       it 'deletes the task from database' do
-        expect {
+        expect do
           delete "/api/v1/tasks/#{task.id}", headers: auth_headers
-        }.to change(Task, :count).by(-1)
+        end.to change(Task, :count).by(-1)
       end
 
       it 'task can no longer be found' do
@@ -34,7 +34,7 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
     context '異常系' do
       context 'タスクが存在しない場合' do
         it 'returns 404 when task does not exist' do
-          delete "/api/v1/tasks/99999", headers: auth_headers
+          delete '/api/v1/tasks/99999', headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
           json_response = JSON.parse(response.body)
@@ -42,9 +42,9 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
         end
 
         it 'does not delete any tasks' do
-          expect {
-            delete "/api/v1/tasks/99999", headers: auth_headers
-          }.not_to change(Task, :count)
+          expect do
+            delete '/api/v1/tasks/99999', headers: auth_headers
+          end.not_to change(Task, :count)
         end
       end
 
@@ -60,9 +60,9 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
         end
 
         it 'does not delete the other users task' do
-          expect {
+          expect do
             delete "/api/v1/tasks/#{other_user_task.id}", headers: auth_headers
-          }.not_to change(Task, :count)
+          end.not_to change(Task, :count)
 
           # タスクがまだ存在することを確認
           expect(Task.find_by(id: other_user_task.id)).not_to be_nil
@@ -86,9 +86,9 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
             controller.render json: { message: 'Invalid token' }, status: :unauthorized
           end
 
-          expect {
+          expect do
             delete "/api/v1/tasks/#{task.id}", headers: auth_headers
-          }.not_to change(Task, :count)
+          end.not_to change(Task, :count)
         end
       end
 
@@ -109,9 +109,9 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
             controller.render json: { message: 'Permission denied' }, status: :forbidden
           end
 
-          expect {
+          expect do
             delete "/api/v1/tasks/#{task.id}", headers: auth_headers
-          }.not_to change(Task, :count)
+          end.not_to change(Task, :count)
         end
       end
     end
@@ -130,9 +130,9 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
       it '異なるユーザーのタスクが混在している場合、自分のタスクのみ削除できる' do
         other_user_task = create(:task, account_id: 'other-user', title: 'Other Task')
 
-        expect {
+        expect do
           delete "/api/v1/tasks/#{task.id}", headers: auth_headers
-        }.to change(Task, :count).by(-1)
+        end.to change(Task, :count).by(-1)
 
         # 他ユーザーのタスクは残っている
         expect(Task.find_by(id: other_user_task.id)).not_to be_nil

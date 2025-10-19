@@ -10,7 +10,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       task: {
         title: 'New Task',
         due_date: Date.current + 1.week,
-        status: '未着手',
+        status: 'pending',
         priority: 'high',
         category_id: category.id
       }
@@ -25,9 +25,9 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       end
 
       it 'creates a new task' do
-        expect {
+        expect do
           post '/api/v1/tasks', params: valid_params, headers: auth_headers
-        }.to change(Task, :count).by(1)
+        end.to change(Task, :count).by(1)
       end
 
       it 'returns success message' do
@@ -35,6 +35,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         json_response = JSON.parse(response.body)
 
         expect(json_response).to include(
+          'success' => true,
           'message' => 'タスクが正常に作成されました'
         )
       end
@@ -52,6 +53,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
         created_task = Task.last
@@ -60,7 +62,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       end
 
       it 'handles various status values correctly' do
-        %w[未着手 進行中 完了].each do |status|
+        %w[pending in_progress completed on_hold].each do |status|
           params = valid_params.dup
           params[:task][:status] = status
 
@@ -85,7 +87,8 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include("Title can't be blank")
+          expect(json_response['success']).to be false
+          expect(json_response['errors']).to include('Title タイトルは必須です')
         end
 
         it 'returns 422 when title is too long' do
@@ -95,7 +98,8 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
           expect(response).to have_http_status(:unprocessable_entity)
 
           json_response = JSON.parse(response.body)
-          expect(json_response['errors']).to include('Title is too long (maximum is 255 characters)')
+          expect(json_response['success']).to be false
+          expect(json_response['errors']).to include('Title タイトルは255文字以内で入力してください')
         end
       end
 
@@ -136,6 +140,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
         created_task = Task.last
@@ -149,6 +154,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
         created_task = Task.last
@@ -162,6 +168,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(response).to have_http_status(:created)
 
         json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
         created_task = Task.last
