@@ -1,6 +1,8 @@
 import { COLORS } from '../constants/colors';
 
-export const getPriorityColor = (priority: string | null) => {
+export const getPriorityColor = (
+  priority: string | null | undefined
+): string => {
   switch (priority?.toLowerCase()) {
     case 'high':
       return COLORS.PRIMARY;
@@ -13,7 +15,7 @@ export const getPriorityColor = (priority: string | null) => {
   }
 };
 
-export const getStatusColor = (status: string | null) => {
+export const getStatusColor = (status: string | null | undefined): string => {
   switch (status?.toLowerCase()) {
     case 'completed':
       return COLORS.PRIMARY;
@@ -21,10 +23,42 @@ export const getStatusColor = (status: string | null) => {
       return COLORS.MEDIUM;
     case 'pending':
       return COLORS.LIGHT;
+    case 'on_hold':
+      return COLORS.GRAY;
     case 'cancelled':
       return COLORS.GRAY;
     default:
       return COLORS.GRAY;
+  }
+};
+
+export const getStatusLabel = (status: string | null | undefined): string => {
+  switch (status?.toLowerCase()) {
+    case 'pending':
+      return '未着手';
+    case 'in_progress':
+      return '進行中';
+    case 'completed':
+      return '完了';
+    case 'on_hold':
+      return '保留';
+    default:
+      return status || '-';
+  }
+};
+
+export const getPriorityLabel = (
+  priority: string | null | undefined
+): string => {
+  switch (priority?.toLowerCase()) {
+    case 'low':
+      return '低';
+    case 'medium':
+      return '中';
+    case 'high':
+      return '高';
+    default:
+      return priority || '-';
   }
 };
 

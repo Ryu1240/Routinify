@@ -108,6 +108,18 @@ vi.mock('../../../utils/taskUtils', () => ({
         return '#929198';
     }
   },
+  getPriorityLabel: (priority: string | null) => {
+    switch (priority?.toLowerCase()) {
+      case 'high':
+        return '高';
+      case 'medium':
+        return '中';
+      case 'low':
+        return '低';
+      default:
+        return '-';
+    }
+  },
   getStatusColor: (status: string | null) => {
     switch (status?.toLowerCase()) {
       case 'completed':
@@ -116,10 +128,28 @@ vi.mock('../../../utils/taskUtils', () => ({
         return '#335471';
       case 'pending':
         return '#5B819B';
+      case 'on_hold':
+        return '#F59E0B';
       case 'cancelled':
         return '#929198';
       default:
         return '#929198';
+    }
+  },
+  getStatusLabel: (status: string | null) => {
+    switch (status?.toLowerCase()) {
+      case 'completed':
+        return '完了';
+      case 'in_progress':
+        return '進行中';
+      case 'pending':
+        return '未着手';
+      case 'on_hold':
+        return '保留';
+      case 'cancelled':
+        return 'キャンセル';
+      default:
+        return '-';
     }
   },
   getCategoryColor: (category: string | null) => {
@@ -173,6 +203,15 @@ const mockTasks = [
     status: 'completed',
     dueDate: null,
     createdAt: '2024-01-02',
+  },
+  {
+    id: 3,
+    title: 'Test Task 3',
+    categoryId: 1,
+    priority: 'low',
+    status: 'on_hold',
+    dueDate: '2024-12-25',
+    createdAt: '2024-01-03',
   },
 ];
 
@@ -247,7 +286,7 @@ describe('TaskTable', () => {
       />
     );
 
-    expect(screen.getByText('Work')).toBeDefined();
+    expect(screen.getAllByText('Work')).toHaveLength(2);
     expect(screen.getByText('Personal')).toBeDefined();
   });
 
@@ -267,8 +306,8 @@ describe('TaskTable', () => {
       />
     );
 
-    expect(screen.getByText('high')).toBeDefined();
-    expect(screen.getByText('medium')).toBeDefined();
+    expect(screen.getByText('高')).toBeDefined();
+    expect(screen.getByText('中')).toBeDefined();
   });
 
   it('renders status badges', () => {
@@ -287,8 +326,8 @@ describe('TaskTable', () => {
       />
     );
 
-    expect(screen.getByText('pending')).toBeDefined();
-    expect(screen.getByText('completed')).toBeDefined();
+    expect(screen.getByText('未着手')).toBeDefined();
+    expect(screen.getByText('完了')).toBeDefined();
   });
 
   it('renders formatted dates', () => {

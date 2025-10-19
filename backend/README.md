@@ -81,7 +81,7 @@ cp .env.example .env
 
 ```bash
 rails db:create
-rails db:migrate
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
 rails db:seed
 ```
 
@@ -102,10 +102,61 @@ docker-compose logs -f backend
 
 # コンテナ内でコマンド実行
 docker-compose exec backend rails console
-docker-compose exec backend rails db:migrate
+docker-compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
 ```
 
 ## 開発
+
+### Ridgepoleによるスキーマ管理
+
+このプロジェクトでは、Rails標準のマイグレーションではなく、Ridgepoleを使用してデータベーススキーマを管理しています。
+
+#### Ridgepoleとは
+
+- Schemafileベースでデータベーススキーマを宣言的に定義
+- スキーマの差分を自動検出・適用
+- `db/schemas/` ディレクトリにテーブルごとのスキーマファイルを配置
+
+#### 基本コマンド
+
+```bash
+# スキーマの適用
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+
+# または Make コマンド（推奨）
+make ridgepole-apply  # または make ra
+
+# スキーマ変更のドライラン（実際には適用しない）
+make ridgepole-dry-run  # または make rr
+```
+
+#### スキーマファイルの編集
+
+1. `db/schemas/` ディレクトリ内の該当ファイルを編集
+   - 例: `db/schemas/tasks.rb`, `db/schemas/categories.rb`
+2. `db/Schemafile` に新しいスキーマファイルをrequire（新規テーブルの場合）
+3. `make ridgepole-dry-run` で変更内容を確認
+4. `make ridgepole-apply` で変更を適用
+
+#### 新規テーブルの追加例
+
+```ruby
+# db/schemas/new_table.rb
+create_table 'new_table', force: :cascade do |t|
+  t.string 'name', limit: 255
+  t.timestamps
+end
+
+# インデックスの追加
+add_index 'new_table', ['name'], name: 'index_new_table_on_name'
+```
+
+#### 注意事項
+
+- Rails標準の `rails db:migrate` は使用しません
+- スキーマ変更は必ずRidgepoleを通して実行
+- 本番環境へのデプロイ前は必ず `ridgepole-dry-run` で確認
+- チーム全体でRidgepoleを使用することで、スキーマの一貫性を保ちます
 
 ### 開発フロー
 
@@ -184,9 +235,9 @@ bundle exec rspec --parallel
    bundle exec brakeman
    ```
 
-2. **データベースマイグレーション**
+2. **データベーススキーマの適用**
    ```bash
-   rails db:migrate
+   bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
    ```
 
 3. **アセットのプリコンパイル**
@@ -220,9 +271,11 @@ bundle exec rspec --parallel
 
 ### データベース設計
 
-- **スキーマ**: `db/schema.rb`
-- **マイグレーション**: `db/migrate/`
+- **スキーマ管理**: Ridgepole（`db/Schemafile`）
+- **スキーマ定義**: `db/schemas/` ディレクトリ内のテーブル定義ファイル
 - **シードデータ**: `db/seeds.rb`
+
+**注意**: このプロジェクトではRails標準のマイグレーション（`db/migrate/`）は使用していません。
 
 ## コントリビューション
 
