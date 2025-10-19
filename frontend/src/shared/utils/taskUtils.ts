@@ -13,6 +13,19 @@ export const getPriorityColor = (priority: string | null) => {
   }
 };
 
+export const getPriorityLabel = (priority: string | null) => {
+  switch (priority?.toLowerCase()) {
+    case 'high':
+      return '高';
+    case 'medium':
+      return '中';
+    case 'low':
+      return '低';
+    default:
+      return '-';
+  }
+};
+
 export const getStatusColor = (status: string | null) => {
   switch (status?.toLowerCase()) {
     case 'completed':
@@ -25,6 +38,21 @@ export const getStatusColor = (status: string | null) => {
       return COLORS.GRAY;
     default:
       return COLORS.GRAY;
+  }
+};
+
+export const getStatusLabel = (status: string | null) => {
+  switch (status?.toLowerCase()) {
+    case 'completed':
+      return '完了';
+    case 'in_progress':
+      return '進行中';
+    case 'pending':
+      return '保留';
+    case 'cancelled':
+      return 'キャンセル';
+    default:
+      return '-';
   }
 };
 
