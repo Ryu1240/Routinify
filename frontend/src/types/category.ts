@@ -1,15 +1,15 @@
-export interface Category {
+export type Category = {
   id: number;
   accountId: string;
   name: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface CreateCategoryData {
+export type CreateCategoryDto = {
   name: string;
-}
+};
 
-export interface UpdateCategoryData {
+export type UpdateCategoryDto = {
   name: string;
-}
+};

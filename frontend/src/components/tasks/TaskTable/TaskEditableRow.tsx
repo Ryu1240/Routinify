@@ -12,7 +12,7 @@ import { COLORS } from '../../../constants/colors';
 import { formatDate } from '../../../utils/taskUtils';
 import { DataTable } from '../../common/DataTable/index';
 import { Task, UpdateTaskData } from '../definitions';
-import { Category, CreateCategoryData } from '../../../types/category';
+import { Category, CreateCategoryDto } from '../../../types/category';
 import { statusOptions, priorityOptions } from '../constants';
 import CreateCategoryModal from '../../categories/CreateCategoryModal';
 
@@ -21,7 +21,7 @@ interface TaskEditableRowProps {
   onSave: (taskId: number, taskData: UpdateTaskData) => Promise<void>;
   onCancel: () => void;
   categories?: Category[];
-  onCreateCategory?: (categoryData: CreateCategoryData) => Promise<void>;
+  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
   createCategoryLoading?: boolean;
 }
 
@@ -70,7 +70,7 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
     }
   };
 
-  const handleCreateCategory = async (categoryData: CreateCategoryData) => {
+  const handleCreateCategory = async (categoryData: CreateCategoryDto) => {
     if (onCreateCategory) {
       await onCreateCategory(categoryData);
       setIsCategoryModalOpen(false);

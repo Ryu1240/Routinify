@@ -3,8 +3,8 @@ import axios from '../config/axios';
 import { useAuth } from './useAuth';
 import {
   Category,
-  CreateCategoryData,
-  UpdateCategoryData,
+  CreateCategoryDto,
+  UpdateCategoryDto,
 } from '../types/category';
 
 export const useCategories = () => {
@@ -46,7 +46,7 @@ export const useCategories = () => {
     fetchCategories();
   };
 
-  const createCategory = async (categoryData: CreateCategoryData) => {
+  const createCategory = async (categoryData: CreateCategoryDto) => {
     try {
       setCreateLoading(true);
       setError(null);
@@ -72,7 +72,7 @@ export const useCategories = () => {
 
   const updateCategory = async (
     categoryId: number,
-    categoryData: UpdateCategoryData
+    categoryData: UpdateCategoryDto
   ) => {
     try {
       setUpdateLoading(true);

@@ -9,12 +9,12 @@ import {
   Loader,
 } from '@mantine/core';
 import { COLORS } from '../../constants/colors';
-import { CreateCategoryData } from '../../types/category';
+import { CreateCategoryDto } from '../../types/category';
 
 interface CreateCategoryModalProps {
   opened: boolean;
   onClose: () => void;
-  onSubmit: (categoryData: CreateCategoryData) => Promise<void>;
+  onSubmit: (categoryData: CreateCategoryDto) => Promise<void>;
   loading?: boolean;
 }
 

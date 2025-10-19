@@ -16,8 +16,8 @@ import { CategoryTable } from './CategoryTable/index';
 import CreateCategoryModal from './CreateCategoryModal';
 import EditCategoryModal from './EditCategoryModal';
 import {
-  CreateCategoryData,
-  UpdateCategoryData,
+  CreateCategoryDto,
+  UpdateCategoryDto,
   Category,
 } from '../../types/category';
 
@@ -39,7 +39,7 @@ const CategoryList: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
-  const handleCreate = async (categoryData: CreateCategoryData) => {
+  const handleCreate = async (categoryData: CreateCategoryDto) => {
     try {
       await createCategory(categoryData);
       setIsCreateModalOpen(false);
@@ -58,7 +58,7 @@ const CategoryList: React.FC = () => {
 
   const handleUpdate = async (
     categoryId: number,
-    categoryData: UpdateCategoryData
+    categoryData: UpdateCategoryDto
   ) => {
     try {
       await updateCategory(categoryId, categoryData);
