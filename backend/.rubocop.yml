@@ -22,6 +22,8 @@ AllCops:
 # 自動修正可能なルールを有効化
 Layout/LineLength:
   Max: 120
+  Exclude:
+    - 'spec/**/*'  # テストファイルは記述的なため除外
 
 Style/StringLiterals:
   EnforcedStyle: single_quotes

@@ -2,6 +2,17 @@
 
 習慣化を支援するタスク管理システム
 
+## ドキュメント
+
+### バックエンド開発ガイド
+バックエンド開発に関する詳細なドキュメントは、`backend/` ディレクトリ内にあります：
+
+- **[コーディング規約](backend/CODING_STANDARDS.md)** - コードの書き方と規約
+- **[アーキテクチャガイド](backend/ARCHITECTURE_GUIDE.md)** - システム設計とアーキテクチャ
+- **[開発ガイド](backend/DEVELOPMENT_GUIDE.md)** - 開発フロー、ツール、ベストプラクティス
+
+これらのドキュメントは、Routinifyバックエンドの開発における標準的な手法とパターンを定義しています。
+
 ## セットアップ
 
 ### 1. 環境変数の設定
@@ -14,15 +25,19 @@ chmod +x setup-env.sh
 ./setup-env.sh
 ```
 
-または、手動で`frontend/.env`ファイルを作成：
+または、手動で環境変数ファイルを作成：
 
 ```bash
-# frontend/.env
-REACT_APP_AUTH0_DOMAIN=dev-x7dol3ce1bkdedsn.jp.auth0.com
-REACT_APP_AUTH0_CLIENT_ID=your-client-id
-REACT_APP_AUTH0_AUDIENCE=https://Routinify-auth-api.com
-REACT_APP_API_URL=http://localhost:3000
+# フロントエンド環境変数の設定
+cp frontend/.env.example frontend/.env
+# frontend/.envを編集してAuth0のクライアントIDなどを設定
+
+# バックエンド環境変数の設定（必要に応じて）
+cp backend/.env.example backend/.env
+# backend/.envを編集して必要な設定を変更
 ```
+
+環境変数の詳細については、各 `.env.example` ファイルを参照してください。
 
 ### 2. アプリケーションの起動
 
