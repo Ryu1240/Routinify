@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, Badge } from '@mantine/core';
-import { COLORS } from '@/constants/colors';
+import { COLORS } from '@/shared/constants/colors';
 import {
   getPriorityColor,
   getPriorityLabel,
