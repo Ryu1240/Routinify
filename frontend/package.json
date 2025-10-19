@@ -22,8 +22,8 @@
     "test": "vitest --config vitest.config.ts",
     "test:ui": "vitest --ui --config vitest.config.ts",
     "test:run": "vitest run --config vitest.config.ts",
-    "format": "prettier --write src/**/*.{ts,tsx,js,jsx}",
-    "format:check": "prettier --check src/**/*.{ts,tsx,js,jsx}",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
