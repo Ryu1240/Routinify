@@ -35,7 +35,7 @@ bundle install
 
 # 3. データベースのセットアップ
 rails db:create
-rails db:migrate
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
 rails db:seed
 
 # 4. 環境変数の設定
@@ -57,7 +57,7 @@ docker-compose logs -f backend
 
 # コンテナ内でコマンド実行
 docker-compose exec backend rails console
-docker-compose exec backend rails db:migrate
+docker-compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
 ```
 
 ---
@@ -205,6 +205,229 @@ REQUIRES_AUTHENTICATION = { message: 'Requires authentication' }.freeze
 create_table :tasks
 add_column :tasks, :due_date, :datetime
 ```
+
+---
+
+## Ridgepoleによるデータベーススキーマ管理
+
+### 概要
+
+Routinifyプロジェクトでは、Rails標準のマイグレーションではなく、**Ridgepole**を使用してデータベーススキーマを管理しています。
+
+### Ridgepoleとは
+
+Ridgepoleは、Schemafileと呼ばれる宣言的な定義ファイルを使用してデータベーススキーマを管理するツールです。
+
+**特徴**:
+- **宣言的**: あるべきスキーマの最終形を記述
+- **差分検出**: 現在のDBとSchemafileの差分を自動検出
+- **安全性**: ドライランモードで変更内容を事前確認可能
+- **再現性**: スキーマファイルから環境を再構築可能
+
+### ディレクトリ構造
+
+```
+backend/
+├── db/
+│   ├── Schemafile           # メインのスキーマファイル（requireのみ）
+│   └── schemas/             # テーブル定義ファイル
+│       ├── tasks.rb
+│       ├── categories.rb
+│       ├── milestones.rb
+│       └── milestone_tasks.rb
+```
+
+### 基本コマンド
+
+```bash
+# 1. スキーマの適用
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+
+# 2. ドライラン（変更内容の確認のみ）
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --dry-run
+
+# 3. Makeコマンド（推奨）
+make ridgepole-apply    # または make ra
+make ridgepole-dry-run  # または make rr
+```
+
+### スキーマファイルの記述方法
+
+#### 新規テーブルの作成
+
+```ruby
+# db/schemas/tasks.rb
+create_table 'tasks', force: :cascade do |t|
+  t.string   'account_id',  limit: 255, null: false
+  t.string   'title',       limit: 255, null: false
+  t.date     'due_date'
+  t.string   'status',      limit: 50
+  t.string   'priority',    limit: 50
+  t.integer  'category_id'
+  t.datetime 'created_at'
+  t.datetime 'updated_at'
+end
+
+# インデックスの追加
+add_index 'tasks', ['account_id'], name: 'index_tasks_on_account_id'
+add_index 'tasks', ['category_id'], name: 'index_tasks_on_category_id'
+
+# 外部キー制約
+add_foreign_key 'tasks', 'categories', on_delete: :nullify
+```
+
+#### カラムの追加・変更
+
+```ruby
+# カラムの追加
+create_table 'tasks', force: :cascade do |t|
+  # 既存のカラム
+  t.string 'title', limit: 255
+
+  # 新しいカラムを追加
+  t.text 'description'
+  t.boolean 'is_important', default: false
+end
+```
+
+#### インデックスの管理
+
+```ruby
+# 単一カラムインデックス
+add_index 'tasks', ['account_id'], name: 'index_tasks_on_account_id'
+
+# 複合インデックス
+add_index 'tasks', ['account_id', 'status'], name: 'index_tasks_on_account_id_and_status'
+
+# ユニークインデックス
+add_index 'tasks', ['account_id', 'title'], name: 'index_tasks_on_account_id_and_title', unique: true
+```
+
+### 開発ワークフロー
+
+#### 1. 新規テーブルの追加
+
+```bash
+# 1. schemas/ディレクトリに新しいファイルを作成
+touch db/schemas/new_table.rb
+
+# 2. スキーマ定義を記述
+# db/schemas/new_table.rb
+create_table 'new_table', force: :cascade do |t|
+  t.string 'name', limit: 255
+  t.timestamps
+end
+
+# 3. Schemafileにrequireを追加
+# db/Schemafile
+require_relative 'schemas/tasks'
+require_relative 'schemas/categories'
+require_relative 'schemas/new_table'  # 追加
+
+# 4. ドライランで確認
+make ridgepole-dry-run
+
+# 5. 適用
+make ridgepole-apply
+```
+
+#### 2. 既存テーブルの変更
+
+```bash
+# 1. schemas/内の該当ファイルを編集
+# db/schemas/tasks.rb を編集
+
+# 2. ドライランで変更内容を確認
+make ridgepole-dry-run
+
+# 出力例:
+# add_column("tasks", "description", :text, {:after=>"title"})
+
+# 3. 問題なければ適用
+make ridgepole-apply
+```
+
+#### 3. カラムの削除
+
+```ruby
+# カラムを削除する場合は、Schemafileから該当行を削除
+create_table 'tasks', force: :cascade do |t|
+  t.string 'title', limit: 255
+  # t.text 'description'  # この行を削除
+  t.timestamps
+end
+```
+
+### 注意事項
+
+#### ⚠️ データ損失に注意
+
+```bash
+# 必ず本番環境では以下の順で実行
+1. make ridgepole-dry-run  # 変更内容を確認
+2. バックアップの取得
+3. make ridgepole-apply    # 適用
+```
+
+#### ⚠️ Rails標準のマイグレーションは使用しない
+
+```bash
+# ❌ 使用禁止
+rails generate migration AddColumnToTasks
+rails db:migrate
+
+# ✅ 正しい方法
+# db/schemas/tasks.rb を直接編集
+make ridgepole-apply
+```
+
+#### ⚠️ force: :cascade の意味
+
+```ruby
+# force: :cascade を指定すると、既存のテーブルを削除して再作成
+# 開発環境では便利だが、本番環境では注意が必要
+create_table 'tasks', force: :cascade do |t|
+  # ...
+end
+```
+
+### トラブルシューティング
+
+#### 問題: スキーマの差分が検出されない
+
+```bash
+# スキーマファイルの構文エラーを確認
+bundle exec ruby -c db/schemas/tasks.rb
+
+# Ridgepoleを強制的に再適用
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --force
+```
+
+#### 問題: 外部キー制約のエラー
+
+```bash
+# 外部キー制約を一時的に無効化（開発環境のみ）
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --skip-drop-table
+```
+
+### ベストプラクティス
+
+1. **変更前は必ずドライラン**
+   ```bash
+   make ridgepole-dry-run
+   ```
+
+2. **テーブルごとにファイルを分割**
+   - `db/schemas/tasks.rb`
+   - `db/schemas/categories.rb`
+
+3. **コミット前にスキーマを確認**
+   ```bash
+   git diff db/schemas/
+   ```
+
+4. **チーム全体でRidgepoleを使用**
+   - マイグレーションとRidgepoleを混在させない
 
 ---
 
@@ -532,9 +755,9 @@ bundle exec rspec
 bundle exec rubocop
 bundle exec brakeman
 
-# データベースマイグレーション
-rails db:migrate:status
-rails db:migrate
+# データベーススキーマの適用
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --dry-run
+bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
 
 # アセットのプリコンパイル
 rails assets:precompile

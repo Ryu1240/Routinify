@@ -127,7 +127,9 @@ type-check:
 	docker-compose exec frontend pnpm tsc --noEmit
 
 # Code formatting
-format-backend: lint-backend-fix
+format-backend:
+	docker-compose exec backend bundle exec rubocop --autocorrect-all
+
 format-frontend: lint-frontend-fix
 format-all: format-backend format-frontend
 
@@ -136,11 +138,10 @@ ci-backend-test:
 	docker-compose exec backend bundle exec rspec --format progress --format documentation
 
 ci-backend-lint:
-	docker-compose exec backend bundle exec rubocop --autocorrect --format progress
 	docker-compose exec backend bundle exec rubocop --format progress --format offenses
 
 ci-backend-security:
-	docker-compose exec backend bundle exec brakeman --no-progress --format json
+	docker-compose exec backend bundle exec brakeman --no-progress --format text --format json -o backend/brakeman-report.json
 
 ci-frontend-test:
 	docker-compose exec frontend pnpm test:run
