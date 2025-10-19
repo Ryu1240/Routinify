@@ -6,7 +6,7 @@ class TaskService < BaseService
 
   # 複雑なビジネスロジックのみをサービス層に配置
   # 例：バッチ処理、複雑な検索、外部API連携など
-
+  # 習慣化タスクのバッチ作成時活用予定（現時点では使用されていない）
   def send_notifications_for_overdue_tasks
     overdue_tasks = Task.for_user(@user_id).overdue.includes(:category)
 
