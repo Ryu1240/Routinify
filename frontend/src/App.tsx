@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
-import { Login } from './components/auth';
+import { Login } from '@/shared/components/auth';
 import { TaskList } from './pages/tasks';
 import { CategoryList } from './pages/categories';
 
@@ -82,6 +82,7 @@ const App: React.FC = () => {
       {...auth0Config}
       onRedirectCallback={(appState) => {
         // リダイレクト後の処理をカスタマイズ
+        // eslint-disable-next-line no-console
         console.log('Redirect callback:', appState);
         // ユーザーを意図したページにリダイレクト
         window.history.replaceState(

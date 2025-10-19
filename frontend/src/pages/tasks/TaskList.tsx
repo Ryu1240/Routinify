@@ -1,11 +1,11 @@
 import React from 'react';
-import { TaskList as TaskListComponent } from '../../components/tasks';
-import { Layout } from '../../components/common';
+import { TaskListContainer } from '@/features/tasks/components/TaskList';
+import { Layout } from '@/shared/components';
 
 const TaskList: React.FC = () => {
   return (
     <Layout>
-      <TaskListComponent />
+      <TaskListContainer />
     </Layout>
   );
 };

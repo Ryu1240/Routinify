@@ -17,13 +17,13 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "WDS_SOCKET_PORT=0 react-scripts start",
-    "build": "react-scripts build",
+    "start": "WDS_SOCKET_PORT=0 craco start",
+    "build": "craco build",
     "test": "vitest --config vitest.config.ts",
     "test:ui": "vitest --ui --config vitest.config.ts",
     "test:run": "vitest run --config vitest.config.ts",
-    "format": "prettier --write src/**/*.{ts,tsx,js,jsx}",
-    "format:check": "prettier --check src/**/*.{ts,tsx,js,jsx}",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -44,6 +44,7 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -53,8 +54,9 @@
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.6.0",
     "@vitest/ui": "^3.2.4",
-    "prettier": "^3.2.5",
+    "eslint-plugin-react": "^7.37.5",
     "jsdom": "^26.1.0",
+    "prettier": "^3.2.5",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   }

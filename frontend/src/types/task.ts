@@ -2,7 +2,7 @@
 
 export type Task = {
   readonly id: number;
-  accountId: string;
+  readonly accountId: string;
   title: string;
   description?: string;
   categoryId: number | null;
