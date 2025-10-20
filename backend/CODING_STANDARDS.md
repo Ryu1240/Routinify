@@ -170,7 +170,7 @@ backend/
 │   └── schemas/                # テーブルごとのスキーマ定義
 │       ├── tasks.rb
 │       ├── categories.rb
-│       └── recurring_tasks.rb
+│       └── routine_tasks.rb
 ```
 
 #### 外部キー制約のオプション
