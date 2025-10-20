@@ -22,7 +22,7 @@
 |-----------|------|---------|
 | tasks | タスク情報を管理 | ✅ 実装済み |
 | categories | タスクのカテゴリを管理 | ✅ 実装済み |
-| recurring_tasks | 習慣化タスクのテンプレートを管理 | ✅ 実装済み |
+| routine_tasks | 習慣化タスクのテンプレートを管理 | ✅ 実装済み |
 | milestones | マイルストーン情報を管理 | ⚠️ スキーマのみ |
 | milestone_tasks | タスクとマイルストーンの関連付け | ⚠️ スキーマのみ |
 
@@ -32,7 +32,7 @@
 
 ```
 ┌──────────────────────┐
-│  recurring_tasks     │ (習慣化タスクテンプレート)
+│   routine_tasks      │ (習慣化タスクテンプレート)
 ├──────────────────────┤
 │ id (PK)              │
 │ account_id           │
@@ -61,7 +61,7 @@
 │ status           │              │ updated_at  │
 │ priority         │              └─────────────┘
 │ category_id (FK) │──────────────────┘
-│ recurring_task_id│
+│ routine_task_id  │
 │ generated_at     │
 │ created_at       │
 │ updated_at       │
@@ -87,7 +87,7 @@
 | status | string(50) | YES | pending, in_progress, completed, on_hold |
 | priority | string(50) | YES | low, medium, high |
 | category_id | integer | YES | カテゴリID（外部キー） |
-| **recurring_task_id** | **integer** | **YES** | **習慣タスクID（NULL=通常タスク）** |
+| **routine_task_id** | **integer** | **YES** | **習慣タスクID（NULL=通常タスク）** |
 | **generated_at** | **datetime** | **YES** | **習慣タスクから生成された日時** |
 | created_at | datetime | YES | レコード作成日時 |
 | updated_at | datetime | YES | 更新日時 |
@@ -102,14 +102,14 @@
 
 ```ruby
 add_index 'tasks', ['category_id']
-add_index 'tasks', ['recurring_task_id', 'status', 'generated_at']
+add_index 'tasks', ['routine_task_id', 'status', 'generated_at']
 ```
 
 #### 外部キー
 
 ```ruby
 add_foreign_key 'tasks', 'categories', on_delete: :nullify
-add_foreign_key 'tasks', 'recurring_tasks', on_delete: :nullify
+add_foreign_key 'tasks', 'routine_tasks', on_delete: :nullify
 ```
 
 #### モデル
@@ -117,7 +117,7 @@ add_foreign_key 'tasks', 'recurring_tasks', on_delete: :nullify
 ```ruby
 class Task < ApplicationRecord
   belongs_to :category, optional: true
-  belongs_to :recurring_task, optional: true
+  belongs_to :routine_task, optional: true
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
@@ -147,7 +147,7 @@ end
 ```ruby
 class Category < ApplicationRecord
   has_many :tasks, dependent: :nullify
-  has_many :recurring_tasks, dependent: :nullify
+  has_many :routine_tasks, dependent: :nullify
 
   validates :name, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
@@ -157,7 +157,7 @@ end
 
 ---
 
-### recurring_tasks
+### routine_tasks
 
 **説明**: 定期的にタスクを生成するためのテンプレートを管理。
 
@@ -191,21 +191,21 @@ end
 #### インデックス
 
 ```ruby
-add_index 'recurring_tasks', ['account_id', 'is_active']
-add_index 'recurring_tasks', ['next_generation_at']
-add_index 'recurring_tasks', ['category_id']
+add_index 'routine_tasks', ['account_id', 'is_active']
+add_index 'routine_tasks', ['next_generation_at']
+add_index 'routine_tasks', ['category_id']
 ```
 
 #### 外部キー
 
 ```ruby
-add_foreign_key 'recurring_tasks', 'categories', on_delete: :nullify
+add_foreign_key 'routine_tasks', 'categories', on_delete: :nullify
 ```
 
 #### モデル
 
 ```ruby
-class RecurringTask < ApplicationRecord
+class RoutineTask < ApplicationRecord
   has_many :tasks, dependent: :nullify
   belongs_to :category, optional: true
 
@@ -274,13 +274,13 @@ add_foreign_key 'milestone_tasks', 'tasks'
 
 ```
 Category (1) ──< has_many >── (N) Task
-Category (1) ──< has_many >── (N) RecurringTask
-RecurringTask (1) ──< has_many >── (N) Task
+Category (1) ──< has_many >── (N) RoutineTask
+RoutineTask (1) ──< has_many >── (N) Task
 ```
 
 **削除時の動作**:
 - カテゴリ削除 → タスク・習慣タスクの `category_id` が NULL
-- 習慣タスク削除 → タスクの `recurring_task_id` が NULL（生成済みタスクは残る）
+- 習慣タスク削除 → タスクの `routine_task_id` が NULL（生成済みタスクは残る）
 
 ### 未実装
 
@@ -294,7 +294,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 ### 設計方針
 
-- **MTI（Multi-Table Inheritance）**: テンプレート（recurring_tasks）とインスタンス（tasks）を分離
+- **MTI（Multi-Table Inheritance）**: テンプレート（routine_tasks）とインスタンス（tasks）を分離
 - **生成履歴テーブルなし**: シンプルな構成
 - **generated_at と created_at の分離**: 遅延検知とデバッグ性向上
 
@@ -302,7 +302,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 ```
 1. ユーザーが習慣タスクを作成
-   → recurring_tasks テーブルに保存
+   → routine_tasks テーブルに保存
 
 2. 非同期ジョブが定期実行
    → next_generation_at が現在時刻を過ぎた習慣タスクを検索
@@ -339,7 +339,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
-| 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。recurring_tasksテーブル新規追加、tasksテーブルにrecurring_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
+| 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。routine_tasksテーブル新規追加、tasksテーブルにroutine_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
 | 2025-10-19 | 1.0.0 | 初版作成。既存4テーブル（tasks, categories, milestones, milestone_tasks）の定義を記載。 |
 
 ---

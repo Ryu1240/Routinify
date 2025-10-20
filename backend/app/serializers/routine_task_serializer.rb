@@ -1,4 +1,4 @@
-class RecurringTaskSerializer < BaseSerializer
+class RoutineTaskSerializer < BaseSerializer
   def as_json
     {
       id: @object.id,

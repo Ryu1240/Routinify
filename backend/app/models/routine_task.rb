@@ -1,4 +1,4 @@
-class RecurringTask < ApplicationRecord
+class RoutineTask < ApplicationRecord
   has_many :tasks, dependent: :nullify
   belongs_to :category, optional: true
 

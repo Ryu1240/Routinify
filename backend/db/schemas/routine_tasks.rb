@@ -1,4 +1,4 @@
-create_table 'recurring_tasks', force: :cascade do |t|
+create_table 'routine_tasks', force: :cascade do |t|
   t.string   'account_id',         limit: 255, null: false
   t.string   'title',              limit: 255, null: false
   t.string   'frequency',          limit: 50,  null: false
@@ -13,8 +13,8 @@ create_table 'recurring_tasks', force: :cascade do |t|
   t.datetime 'updated_at',                     null: false
 end
 
-add_index 'recurring_tasks', ['account_id', 'is_active'], name: 'index_recurring_tasks_on_account_id_and_is_active'
-add_index 'recurring_tasks', ['next_generation_at'], name: 'index_recurring_tasks_on_next_generation_at'
-add_index 'recurring_tasks', ['category_id'], name: 'index_recurring_tasks_on_category_id'
+add_index 'routine_tasks', ['account_id', 'is_active'], name: 'index_routine_tasks_on_account_id_and_is_active'
+add_index 'routine_tasks', ['next_generation_at'], name: 'index_routine_tasks_on_next_generation_at'
+add_index 'routine_tasks', ['category_id'], name: 'index_routine_tasks_on_category_id'
 
-add_foreign_key 'recurring_tasks', 'categories', on_delete: :nullify
+add_foreign_key 'routine_tasks', 'categories', on_delete: :nullify

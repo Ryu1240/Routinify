@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :recurring_task do
+  factory :routine_task do
     sequence(:account_id) { |n| "user-#{n}" }
     sequence(:title) { |n| "習慣タスク #{n}" }
     frequency { 'daily' }
@@ -76,10 +76,10 @@ FactoryBot.define do
 
     # 生成済みタスク付き
     trait :with_generated_tasks do
-      after(:create) do |recurring_task|
+      after(:create) do |routine_task|
         create_list(:task, 2,
-                    account_id: recurring_task.account_id,
-                    recurring_task: recurring_task,
+                    account_id: routine_task.account_id,
+                    routine_task: routine_task,
                     generated_at: 1.day.ago,
                     status: 'pending')
       end
@@ -87,10 +87,10 @@ FactoryBot.define do
 
     # アクティブなタスクが上限に達している
     trait :at_max_capacity do
-      after(:create) do |recurring_task|
-        create_list(:task, recurring_task.max_active_tasks,
-                    account_id: recurring_task.account_id,
-                    recurring_task: recurring_task,
+      after(:create) do |routine_task|
+        create_list(:task, routine_task.max_active_tasks,
+                    account_id: routine_task.account_id,
+                    routine_task: routine_task,
                     generated_at: Time.current,
                     status: 'pending')
       end

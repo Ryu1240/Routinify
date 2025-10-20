@@ -40,9 +40,9 @@ components:
             read:tasks: タスクの読み取り
             write:tasks: タスクの作成・更新
             delete:tasks: タスクの削除
-            read:recurring-tasks: 習慣化タスクの読み取り
-            write:recurring-tasks: 習慣化タスクの作成・更新
-            delete:recurring-tasks: 習慣化タスクの削除
+            read:routine-tasks: 習慣化タスクの読み取り
+            write:routine-tasks: 習慣化タスクの作成・更新
+            delete:routine-tasks: 習慣化タスクの削除
 
   responses:
     Unauthorized:
@@ -200,7 +200,7 @@ components:
       required:
         - name
 
-    RecurringTask:
+    RoutineTask:
       type: object
       properties:
         id:
@@ -273,7 +273,7 @@ components:
         - createdAt
         - updatedAt
 
-    RecurringTaskCreate:
+    RoutineTaskCreate:
       type: object
       properties:
         title:
@@ -316,7 +316,7 @@ components:
         - frequency
         - nextGenerationAt
 
-    RecurringTaskUpdate:
+    RoutineTaskUpdate:
       type: object
       properties:
         title:
@@ -648,14 +648,14 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /recurring-tasks:
+  /routine-tasks:
     get:
       tags:
         - 習慣化タスク
       summary: 習慣化タスク一覧の取得
       security:
         - Auth0:
-            - read:recurring-tasks
+            - read:routine-tasks
       responses:
         '200':
           description: 習慣化タスク一覧の取得に成功
@@ -667,7 +667,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/RecurringTask'
+                      $ref: '#/components/schemas/RoutineTask'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -680,7 +680,7 @@ paths:
       summary: 新しい習慣化タスクの登録
       security:
         - Auth0:
-            - write:recurring-tasks
+            - write:routine-tasks
       requestBody:
         required: true
         content:
@@ -688,8 +688,8 @@ paths:
             schema:
               type: object
               properties:
-                recurringTask:
-                  $ref: '#/components/schemas/RecurringTaskCreate'
+                routineTask:
+                  $ref: '#/components/schemas/RoutineTaskCreate'
       responses:
         '201':
           description: 作成成功
@@ -710,7 +710,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /recurring-tasks/{id}:
+  /routine-tasks/{id}:
     parameters:
       - name: id
         in: path
@@ -723,7 +723,7 @@ paths:
       summary: 特定の習慣化タスクの詳細表示
       security:
         - Auth0:
-            - read:recurring-tasks
+            - read:routine-tasks
       responses:
         '200':
           description: 成功
@@ -733,7 +733,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/RecurringTask'
+                    $ref: '#/components/schemas/RoutineTask'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -758,7 +758,7 @@ paths:
       summary: 習慣化タスクの編集
       security:
         - Auth0:
-            - write:recurring-tasks
+            - write:routine-tasks
       requestBody:
         required: true
         content:
@@ -766,8 +766,8 @@ paths:
             schema:
               type: object
               properties:
-                recurringTask:
-                  $ref: '#/components/schemas/RecurringTaskUpdate'
+                routineTask:
+                  $ref: '#/components/schemas/RoutineTaskUpdate'
       responses:
         '200':
           description: 更新成功
@@ -805,7 +805,7 @@ paths:
       summary: 習慣化タスクの削除
       security:
         - Auth0:
-            - delete:recurring-tasks
+            - delete:routine-tasks
       responses:
         '204':
           description: 削除成功
