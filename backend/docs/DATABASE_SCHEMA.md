@@ -109,7 +109,7 @@ add_index 'tasks', ['recurring_task_id', 'status', 'generated_at']
 
 ```ruby
 add_foreign_key 'tasks', 'categories', on_delete: :nullify
-add_foreign_key 'tasks', 'recurring_tasks', on_delete: :set_null
+add_foreign_key 'tasks', 'recurring_tasks', on_delete: :nullify
 ```
 
 #### モデル
