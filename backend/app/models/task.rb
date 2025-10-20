@@ -2,6 +2,7 @@ class Task < ApplicationRecord
   include AccountScoped
 
   belongs_to :category, optional: true
+  belongs_to :recurring_task, optional: true
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
