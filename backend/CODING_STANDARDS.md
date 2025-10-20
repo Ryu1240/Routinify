@@ -156,6 +156,111 @@ create_table :Tasks do |t|
 end
 ```
 
+### Ridgepoleスキーマ定義規約
+
+このプロジェクトでは、Rails標準のマイグレーションではなく、**Ridgepole**を使用してデータベーススキーマを管理しています。
+
+#### スキーマファイルの配置
+
+```ruby
+# ✅ 良い例
+backend/
+├── db/
+│   ├── Schemafile              # メインのスキーマファイル（各テーブル定義を require）
+│   └── schemas/                # テーブルごとのスキーマ定義
+│       ├── tasks.rb
+│       ├── categories.rb
+│       └── routine_tasks.rb
+```
+
+#### 外部キー制約のオプション
+
+```ruby
+# ✅ 良い例（Ridgepoleでサポートされている値）
+add_foreign_key 'tasks', 'categories', on_delete: :nullify   # 参照先削除時にNULLを設定
+add_foreign_key 'tasks', 'users', on_delete: :cascade        # 参照先削除時に一緒に削除
+add_foreign_key 'tasks', 'projects', on_delete: :restrict    # 参照先に依存レコードがある場合削除を拒否
+
+# ❌ 悪い例（Ridgepoleでサポートされていない値）
+add_foreign_key 'tasks', 'categories', on_delete: :set_null  # ❌ :nullify を使用すること
+add_foreign_key 'tasks', 'users', on_delete: :delete         # ❌ :cascade を使用すること
+add_foreign_key 'tasks', 'projects', on_delete: :no_action   # ❌ :restrict を使用すること
+```
+
+**重要**: Ridgepoleでサポートされている `on_delete` / `on_update` オプション：
+- `:nullify` - 外部キーをNULLに設定（PostgreSQLのSET NULL相当）
+- `:cascade` - 関連レコードも削除（PostgreSQLのCASCADE相当）
+- `:restrict` - 関連レコードがある場合削除を拒否（PostgreSQLのRESTRICT相当）
+
+PostgreSQLのSQL構文では `SET NULL` が有効ですが、RailsのRidgepoleでは **`:nullify`** を使用してください。
+
+#### スキーマ変更のワークフロー
+
+```bash
+# 1. スキーマファイルを編集
+# db/schemas/tasks.rb を編集
+
+# 2. ドライランで変更内容を確認
+make ridgepole-dry-run  # または make rr
+
+# 3. 問題がなければ適用
+make ridgepole-apply    # または make ra
+
+# 4. ドキュメントを更新
+# docs/DATABASE_SCHEMA.md を更新
+```
+
+#### スキーマ定義の記述スタイル
+
+```ruby
+# ✅ 良い例（Ridgepole形式）
+create_table 'tasks', force: :cascade do |t|
+  t.string   'account_id',         limit: 255, null: false
+  t.string   'title',              limit: 255, null: false
+  t.date     'due_date'
+  t.string   'status',             limit: 50
+  t.integer  'category_id'
+  t.datetime 'created_at',         null: false
+  t.datetime 'updated_at',         null: false
+end
+
+# インデックス定義
+add_index 'tasks', ['account_id'], name: 'index_tasks_on_account_id'
+add_index 'tasks', ['category_id'], name: 'index_tasks_on_category_id'
+
+# 外部キー定義
+add_foreign_key 'tasks', 'categories', on_delete: :nullify
+
+# ❌ 悪い例（Rails標準のマイグレーション形式）
+class CreateTasks < ActiveRecord::Migration[8.0]
+  def change
+    create_table :tasks do |t|
+      t.string :account_id, null: false
+      t.string :title, null: false
+      t.timestamps
+    end
+  end
+end
+```
+
+#### 注意事項
+
+1. **マイグレーションファイルは使用しない**
+   - `rails db:migrate` は使用しません
+   - `db/migrate/` ディレクトリにファイルを作成しないでください
+
+2. **スキーマ変更は必ずRidgepoleを通して実行**
+   - 直接SQLを実行してスキーマを変更しないでください
+   - 必ず `ridgepole --apply` コマンドを使用してください
+
+3. **本番環境へのデプロイ前は必ずドライラン**
+   - `make ridgepole-dry-run` で変更内容を確認してください
+   - 予期しないデータ損失を防ぐため、慎重に確認してください
+
+4. **ドキュメントとの同期**
+   - スキーマ変更後は必ず `docs/DATABASE_SCHEMA.md` を更新してください
+   - 最終更新日とバージョンを更新してください
+
 ---
 
 ## コーディングスタイル
