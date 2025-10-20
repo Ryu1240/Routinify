@@ -14,4 +14,4 @@ add_index 'tasks', ['category_id'], name: 'index_tasks_on_category_id'
 add_index 'tasks', ['recurring_task_id', 'status', 'generated_at'],
           name: 'index_tasks_on_recurring_and_status_and_generated'
 add_foreign_key 'tasks', 'categories', on_delete: :nullify
-add_foreign_key 'tasks', 'recurring_tasks', on_delete: :set_null
+add_foreign_key 'tasks', 'recurring_tasks', on_delete: :nullify
