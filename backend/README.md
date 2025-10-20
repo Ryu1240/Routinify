@@ -274,6 +274,7 @@ bundle exec rspec --parallel
 - **スキーマ管理**: Ridgepole（`db/Schemafile`）
 - **スキーマ定義**: `db/schemas/` ディレクトリ内のテーブル定義ファイル
 - **シードデータ**: `db/seeds.rb`
+- **スキーマ設計書**: [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md) - テーブル構造とリレーションの詳細
 
 **注意**: このプロジェクトではRails標準のマイグレーション（`db/migrate/`）は使用していません。
 
