@@ -31,41 +31,41 @@
 ## ER図
 
 ```
-┌─────────────────┐
-│recurring_tasks  │ (習慣化タスクテンプレート)
-├─────────────────┤
-│ id (PK)         │
-│ account_id      │
-│ title           │
-│ frequency       │
-│ interval_value  │
-│ last_generated  │
-│ next_generation │
-│ max_active_tasks│
-│ category_id (FK)│──┐
-│ priority        │  │
-│ is_active       │  │
-│ created_at      │  │
-│ updated_at      │  │
-└─────────────────┘  │
-         │           │
-         │ 1:N       │
-         ▼           │
-┌─────────────┐      │       ┌─────────────┐
-│    tasks    │      │       │ categories  │
-├─────────────┤      │       ├─────────────┤
-│ id (PK)     │      │       │ id (PK)     │
-│ account_id  │      └──────►│ account_id  │
-│ title       │              │ name        │
-│ due_date    │              │ created_at  │
-│ status      │              │ updated_at  │
-│ priority    │              └─────────────┘
-│ category_id │──────────────────┘
-│recurring_id │
-│ generated_at│
-│ created_at  │
-│ updated_at  │
-└─────────────┘
+┌──────────────────────┐
+│  recurring_tasks     │ (習慣化タスクテンプレート)
+├──────────────────────┤
+│ id (PK)              │
+│ account_id           │
+│ title                │
+│ frequency            │
+│ interval_value       │
+│ last_generated_at    │
+│ next_generation_at   │
+│ max_active_tasks     │
+│ category_id (FK)     │──┐
+│ priority             │  │
+│ is_active            │  │
+│ created_at           │  │
+│ updated_at           │  │
+└──────────────────────┘  │
+         │                │
+         │ 1:N            │
+         ▼                │
+┌──────────────────┐      │       ┌─────────────┐
+│      tasks       │      │       │ categories  │
+├──────────────────┤      │       ├─────────────┤
+│ id (PK)          │      │       │ id (PK)     │
+│ account_id       │      └──────►│ account_id  │
+│ title            │              │ name        │
+│ due_date         │              │ created_at  │
+│ status           │              │ updated_at  │
+│ priority         │              └─────────────┘
+│ category_id (FK) │──────────────────┘
+│ recurring_task_id│
+│ generated_at     │
+│ created_at       │
+│ updated_at       │
+└──────────────────┘
 ```
 
 ---
