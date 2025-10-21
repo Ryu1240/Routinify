@@ -8,6 +8,18 @@ module Api
         end
       end
 
+      def show
+        validate_permissions(['read:routine-tasks']) do
+          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+
+          if routine_task
+            render_success(data: RoutineTaskSerializer.new(routine_task).as_json)
+          else
+            render_not_found('習慣化タスク')
+          end
+        end
+      end
+      
       def create
         validate_permissions(['write:routine-tasks']) do
           routine_task = RoutineTask.new(routine_task_params.merge(account_id: current_user_id))
@@ -20,18 +32,6 @@ module Api
             )
           else
             render_error(errors: routine_task.errors.full_messages)
-          end
-        end
-      end
-
-      def show
-        validate_permissions(['read:routine-tasks']) do
-          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
-
-          if routine_task
-            render_success(data: RoutineTaskSerializer.new(routine_task).as_json)
-          else
-            render_not_found('習慣化タスク')
           end
         end
       end
