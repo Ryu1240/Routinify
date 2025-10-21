@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:account_id) { |n| "user-#{n}" }
     sequence(:title) { |n| "習慣タスク #{n}" }
     frequency { 'daily' }
-    interval_value { 1 }
+    interval_value { nil }
     last_generated_at { nil }
     next_generation_at { 1.day.from_now }
     max_active_tasks { 3 }
@@ -14,19 +14,19 @@ FactoryBot.define do
     # 異なる頻度の習慣タスク
     trait :daily do
       frequency { 'daily' }
-      interval_value { 1 }
+      interval_value { nil }
       next_generation_at { 1.day.from_now }
     end
 
     trait :weekly do
       frequency { 'weekly' }
-      interval_value { 1 }
+      interval_value { nil }
       next_generation_at { 1.week.from_now }
     end
 
     trait :monthly do
       frequency { 'monthly' }
-      interval_value { 1 }
+      interval_value { nil }
       next_generation_at { 1.month.from_now }
     end
 

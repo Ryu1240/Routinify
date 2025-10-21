@@ -2,7 +2,7 @@ create_table 'routine_tasks', force: :cascade do |t|
   t.string   'account_id',         limit: 255, null: false
   t.string   'title',              limit: 255, null: false
   t.string   'frequency',          limit: 50,  null: false
-  t.integer  'interval_value',     default: 1, null: false
+  t.integer  'interval_value'
   t.datetime 'last_generated_at'
   t.datetime 'next_generation_at',             null: false
   t.integer  'max_active_tasks',   default: 3, null: false

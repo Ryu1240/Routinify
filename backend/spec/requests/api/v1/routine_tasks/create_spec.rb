@@ -10,7 +10,6 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
       routine_task: {
         title: 'New Routine Task',
         frequency: 'daily',
-        interval_value: 1,
         next_generation_at: 1.day.from_now,
         max_active_tasks: 3,
         priority: 'high',
@@ -68,16 +67,15 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
         created_routine_task = RoutineTask.last
         expect(created_routine_task.title).to eq('Minimal Routine Task')
         expect(created_routine_task.account_id).to eq(user_id)
-        expect(created_routine_task.interval_value).to eq(1) # デフォルト値
+        expect(created_routine_task.interval_value).to be_nil # daily/weekly/monthlyはNULL
         expect(created_routine_task.max_active_tasks).to eq(3) # デフォルト値
         expect(created_routine_task.is_active).to be true # デフォルト値
       end
 
       it 'handles various frequency values correctly' do
-        %w[daily weekly monthly custom].each do |frequency|
+        %w[daily weekly monthly].each do |frequency|
           params = valid_params.dup
           params[:routine_task][:frequency] = frequency
-          params[:routine_task][:interval_value] = 3 if frequency == 'custom'
 
           post '/api/v1/routine_tasks', params: params, headers: auth_headers
           expect(response).to have_http_status(:created)
@@ -87,7 +85,20 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
 
           created_routine_task = RoutineTask.last
           expect(created_routine_task.frequency).to eq(frequency)
+          expect(created_routine_task.interval_value).to be_nil
         end
+
+        # customは別途interval_valueが必要
+        custom_params = valid_params.dup
+        custom_params[:routine_task][:frequency] = 'custom'
+        custom_params[:routine_task][:interval_value] = 3
+
+        post '/api/v1/routine_tasks', params: custom_params, headers: auth_headers
+        expect(response).to have_http_status(:created)
+
+        created_routine_task = RoutineTask.last
+        expect(created_routine_task.frequency).to eq('custom')
+        expect(created_routine_task.interval_value).to eq(3)
       end
 
       it 'creates with default values when not specified' do
@@ -103,9 +114,26 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
         expect(response).to have_http_status(:created)
 
         created_routine_task = RoutineTask.last
-        expect(created_routine_task.interval_value).to eq(1)
+        expect(created_routine_task.interval_value).to be_nil # weeklyなのでNULL
         expect(created_routine_task.max_active_tasks).to eq(3)
         expect(created_routine_task.is_active).to be true
+      end
+
+      it 'custom frequencyではinterval_valueが必須' do
+        custom_without_interval = {
+          routine_task: {
+            title: 'Custom without interval',
+            frequency: 'custom',
+            next_generation_at: 3.days.from_now
+          }
+        }
+
+        post '/api/v1/routine_tasks', params: custom_without_interval, headers: auth_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['errors']).to include('Interval value はカスタム頻度の場合必須です')
       end
     end
 

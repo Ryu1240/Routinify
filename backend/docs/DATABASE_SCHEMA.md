@@ -1,7 +1,7 @@
 # データベーススキーマ設計書
 
-**最終更新日**: 2025-10-20
-**バージョン**: 2.0.0
+**最終更新日**: 2025-10-21
+**バージョン**: 2.1.0
 
 ## 概要
 
@@ -169,7 +169,7 @@ end
 | account_id | string(255) | NO | - | Auth0のユーザーID |
 | title | string(255) | NO | - | 習慣タスク名 |
 | **frequency** | **string(50)** | **NO** | - | **daily, weekly, monthly, custom** |
-| **interval_value** | **integer** | **NO** | **1** | **customの場合の日数** |
+| **interval_value** | **integer** | **YES** | **NULL** | **customの場合の日数（custom以外はNULL）** |
 | **last_generated_at** | **datetime** | **YES** | **NULL** | **最終生成日時** |
 | **next_generation_at** | **datetime** | **NO** | - | **次回生成日時** |
 | **max_active_tasks** | **integer** | **NO** | **3** | **未完了タスクの上限** |
@@ -183,10 +183,10 @@ end
 
 | 値 | 説明 | interval_value |
 |----|------|---------------|
-| daily | 毎日 | 無視 |
-| weekly | 毎週 | 無視 |
-| monthly | 毎月 | 無視 |
-| custom | カスタム間隔 | 日数で指定 |
+| daily | 毎日 | NULL（使用しない） |
+| weekly | 毎週 | NULL（使用しない） |
+| monthly | 毎月 | NULL（使用しない） |
+| custom | カスタム間隔 | 必須（1以上の整数、日数で指定） |
 
 #### インデックス
 
@@ -212,9 +212,12 @@ class RoutineTask < ApplicationRecord
   validates :account_id, presence: true
   validates :title, presence: true, length: { maximum: 255 }
   validates :frequency, inclusion: { in: %w[daily weekly monthly custom] }
-  validates :interval_value, numericality: { greater_than_or_equal_to: 1 }
   validates :next_generation_at, presence: true
   validates :max_active_tasks, numericality: { greater_than_or_equal_to: 1 }
+  validate :validate_interval_value_based_on_frequency
+
+  # frequencyがcustomの場合のみinterval_valueが必須
+  # daily/weekly/monthlyの場合はinterval_valueはNULL
 end
 ```
 
@@ -339,6 +342,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
+| 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
 | 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。routine_tasksテーブル新規追加、tasksテーブルにroutine_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
 | 2025-10-19 | 1.0.0 | 初版作成。既存4テーブル（tasks, categories, milestones, milestone_tasks）の定義を記載。 |
 

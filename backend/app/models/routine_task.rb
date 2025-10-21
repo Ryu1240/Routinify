@@ -8,11 +8,10 @@ class RoutineTask < ApplicationRecord
   validates :account_id, presence: true
   validates :title, presence: true, length: { maximum: 255 }
   validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
-  validates :interval_value, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validates :next_generation_at, presence: true
   validates :max_active_tasks, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validates :priority, inclusion: { in: PRIORITIES }, allow_nil: true
-  validate :interval_value_required_for_custom_frequency
+  validate :validate_interval_value_based_on_frequency
 
   scope :by_account, ->(account_id) { where(account_id: account_id) }
 
@@ -23,9 +22,16 @@ class RoutineTask < ApplicationRecord
 
   private
 
-  def interval_value_required_for_custom_frequency
-    return unless frequency == 'custom' && interval_value.to_i < 1
-
-    errors.add(:interval_value, 'は custom frequency の場合、1以上である必要があります')
+  def validate_interval_value_based_on_frequency
+    if frequency == 'custom'
+      if interval_value.blank?
+        errors.add(:interval_value, 'はカスタム頻度の場合必須です')
+      elsif interval_value.to_i < 1
+        errors.add(:interval_value, 'は1以上である必要があります')
+      end
+    else
+      # daily/weekly/monthlyの場合はinterval_valueはNULLであるべき
+      # 値が設定されていてもバリデーションエラーにはしない（無視される）
+    end
   end
 end
