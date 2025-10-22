@@ -52,6 +52,19 @@ module Api
         end
       end
 
+      def destroy
+        validate_permissions(['delete:routine-tasks']) do
+          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+          return render_not_found('習慣化タスク') unless routine_task
+
+          if routine_task.destroy
+            head :no_content
+          else
+            render_error(errors: routine_task.errors.full_messages, status: :unprocessable_entity)
+          end
+        end
+      end
+
       private
 
       def routine_task_params
