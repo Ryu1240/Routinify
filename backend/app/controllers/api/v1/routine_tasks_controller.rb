@@ -57,8 +57,11 @@ module Api
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('習慣化タスク') unless routine_task
 
-          routine_task.destroy
-          render_success(status: :no_content)
+          if routine_task.destroy
+            head :no_content
+          else
+            render_error(errors: routine_task.errors.full_messages, status: :unprocessable_entity)
+          end
         end
       end
 
