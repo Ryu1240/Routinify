@@ -165,7 +165,13 @@ export const RoutineTaskForm: React.FC = () => {
               label="次回生成日時"
               placeholder="次回生成日時を選択"
               value={nextGenerationAt}
-              onChange={(value: Date | null) => value && setNextGenerationAt(value)}
+              onChange={(value) => {
+                if (value) {
+                  // Mantine v8では文字列、v7ではDateオブジェクトを受け取る
+                  const date = typeof value === 'string' ? new Date(value) : value;
+                  setNextGenerationAt(date);
+                }
+              }}
               required
             />
 
