@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, NavLink, rem, useMantineTheme } from '@mantine/core';
-import { IconChecklist, IconCategory } from '@tabler/icons-react';
+import { IconChecklist, IconCategory, IconRepeat } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
 
@@ -15,6 +15,12 @@ const Sidebar: React.FC = () => {
       icon: <IconChecklist size={16} />,
       path: '/tasks',
       description: 'すべてのタスクを表示',
+    },
+    {
+      label: '習慣化タスク',
+      icon: <IconRepeat size={16} />,
+      path: '/routine-tasks',
+      description: '習慣化タスクの管理',
     },
     {
       label: 'カテゴリ管理',
@@ -51,7 +57,7 @@ const Sidebar: React.FC = () => {
           label={item.label}
           description={item.description}
           leftSection={item.icon}
-          active={location.pathname === item.path}
+          active={location.pathname.startsWith(item.path)}
           onClick={() => navigate(item.path)}
           variant="filled"
           style={{

@@ -13,6 +13,14 @@ export type {
   UpdateCategoryDto,
 } from './category';
 export type {
+  RoutineTask,
+  RoutineTaskFrequency,
+  RoutineTaskPriority,
+  CreateRoutineTaskDto,
+  UpdateRoutineTaskDto,
+  RoutineTaskKeys,
+} from './routineTask';
+export type {
   ApiResponse,
   ApiError,
   PaginatedResponse,
