@@ -26,6 +26,19 @@ type RoutineTaskRequestBody = {
   };
 };
 
+type UpdateRoutineTaskRequestBody = {
+  routine_task: {
+    title?: string;
+    frequency?: string;
+    interval_value?: number | null;
+    next_generation_at?: string;
+    max_active_tasks?: number;
+    category_id?: number | null;
+    priority?: string | null;
+    is_active?: boolean;
+  };
+};
+
 export const routineTasksApi = {
   fetchAll: async (): Promise<RoutineTask[]> => {
     const response = await axios.get<RoutineTaskResponse>(
@@ -67,16 +80,16 @@ export const routineTasksApi = {
     id: number,
     routineTaskData: UpdateRoutineTaskDto
   ): Promise<RoutineTask> => {
-    const body: Partial<RoutineTaskRequestBody> = {
+    const body: UpdateRoutineTaskRequestBody = {
       routine_task: {
-        ...(routineTaskData.title && { title: routineTaskData.title }),
-        ...(routineTaskData.frequency && {
+        ...(routineTaskData.title !== undefined && { title: routineTaskData.title }),
+        ...(routineTaskData.frequency !== undefined && {
           frequency: routineTaskData.frequency,
         }),
         ...(routineTaskData.intervalValue !== undefined && {
           interval_value: routineTaskData.intervalValue,
         }),
-        ...(routineTaskData.nextGenerationAt && {
+        ...(routineTaskData.nextGenerationAt !== undefined && {
           next_generation_at: routineTaskData.nextGenerationAt,
         }),
         ...(routineTaskData.maxActiveTasks !== undefined && {

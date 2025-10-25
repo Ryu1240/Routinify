@@ -165,7 +165,7 @@ export const RoutineTaskForm: React.FC = () => {
               label="次回生成日時"
               placeholder="次回生成日時を選択"
               value={nextGenerationAt}
-              onChange={(value) => value && setNextGenerationAt(value)}
+              onChange={(value: Date | null) => value && setNextGenerationAt(value)}
               required
             />
 
