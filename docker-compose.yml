@@ -15,6 +15,18 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -29,9 +41,12 @@ services:
       - DATABASE_HOST=db
       - DATABASE_USERNAME=postgres
       - DATABASE_PASSWORD=password
+      - REDIS_URL=redis://redis:6379/0
       - RAILS_ENV=development
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   frontend:
@@ -64,5 +79,6 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
   bundle_cache:
   frontend_node_modules: 
