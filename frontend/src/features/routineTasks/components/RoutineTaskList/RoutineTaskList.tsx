@@ -1,5 +1,14 @@
 import React from 'react';
-import { Box, Button, Title, Text, Card, Group, Badge, Stack } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Title,
+  Text,
+  Card,
+  Group,
+  Badge,
+  Stack,
+} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';

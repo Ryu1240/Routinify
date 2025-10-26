@@ -82,7 +82,9 @@ export const routineTasksApi = {
   ): Promise<RoutineTask> => {
     const body: UpdateRoutineTaskRequestBody = {
       routine_task: {
-        ...(routineTaskData.title !== undefined && { title: routineTaskData.title }),
+        ...(routineTaskData.title !== undefined && {
+          title: routineTaskData.title,
+        }),
         ...(routineTaskData.frequency !== undefined && {
           frequency: routineTaskData.frequency,
         }),

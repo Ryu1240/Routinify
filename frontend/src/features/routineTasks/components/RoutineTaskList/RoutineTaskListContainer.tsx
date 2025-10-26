@@ -3,8 +3,7 @@ import { useRoutineTasks } from '@/shared/hooks';
 import { RoutineTaskList } from './RoutineTaskList';
 
 export const RoutineTaskListContainer: React.FC = () => {
-  const { routineTasks, loading, error, deleteRoutineTask } =
-    useRoutineTasks();
+  const { routineTasks, loading, error, deleteRoutineTask } = useRoutineTasks();
 
   const handleDelete = async (id: number) => {
     try {

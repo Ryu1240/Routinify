@@ -73,8 +73,7 @@ export const RoutineTaskForm: React.FC = () => {
     const routineTaskData: CreateRoutineTaskDto = {
       title,
       frequency,
-      intervalValue:
-        frequency === 'custom' ? Number(intervalValue) : null,
+      intervalValue: frequency === 'custom' ? Number(intervalValue) : null,
       nextGenerationAt: nextGenerationAt.toISOString(),
       maxActiveTasks: Number(maxActiveTasks),
       categoryId: categoryId ? Number(categoryId) : null,
@@ -84,7 +83,10 @@ export const RoutineTaskForm: React.FC = () => {
 
     try {
       if (isEditMode && id) {
-        await updateRoutineTask(Number(id), routineTaskData as UpdateRoutineTaskDto);
+        await updateRoutineTask(
+          Number(id),
+          routineTaskData as UpdateRoutineTaskDto
+        );
       } else {
         await createRoutineTask(routineTaskData);
       }
@@ -144,9 +146,7 @@ export const RoutineTaskForm: React.FC = () => {
               placeholder="頻度を選択"
               data={frequencyOptions}
               value={frequency}
-              onChange={(value) =>
-                setFrequency(value as RoutineTaskFrequency)
-              }
+              onChange={(value) => setFrequency(value as RoutineTaskFrequency)}
               required
             />
 
@@ -168,13 +168,18 @@ export const RoutineTaskForm: React.FC = () => {
               onChange={(value) => {
                 if (value) {
                   // Mantine v8では文字列、v7ではDateオブジェクトを受け取る
-                  const date = typeof value === 'string' ? new Date(value) : value;
+                  const date =
+                    typeof value === 'string' ? new Date(value) : value;
                   setNextGenerationAt(date);
                 }
               }}
               required
               disabled={isEditMode}
-              description={isEditMode ? '編集時は変更できません（システムが自動管理）' : undefined}
+              description={
+                isEditMode
+                  ? '編集時は変更できません（システムが自動管理）'
+                  : undefined
+              }
             />
 
             <NumberInput
@@ -217,10 +222,7 @@ export const RoutineTaskForm: React.FC = () => {
               >
                 キャンセル
               </Button>
-              <Button
-                type="submit"
-                loading={createLoading || updateLoading}
-              >
+              <Button type="submit" loading={createLoading || updateLoading}>
                 {isEditMode ? '更新' : '作成'}
               </Button>
             </Group>
