@@ -1,1 +1,1 @@
-export { routineTasksApi } from './routineTasksApi';
+export * from './routineTasksApi';

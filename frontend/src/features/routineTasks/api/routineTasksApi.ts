@@ -50,6 +50,36 @@ export const routineTasksApi = {
   fetchById: async (id: number): Promise<RoutineTask> => {
     const response = await axios.get<SingleRoutineTaskResponse>(
       `/api/v1/routine_tasks/${id}`
+
+export type TaskGenerationJob = {
+  jobId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  completed: boolean;
+  generatedTasksCount?: number;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+};
+
+type GenerateResponse = {
+  success: boolean;
+  data: TaskGenerationJob;
+};
+
+type GenerationStatusResponse = {
+  success: boolean;
+  data: TaskGenerationJob;
+};
+
+export const routineTasksApi = {
+  /**
+   * タスク生成ジョブを開始する
+   * @param routineTaskId - 習慣化タスクID
+   * @returns ジョブ情報（jobId, status等）
+   */
+  generate: async (routineTaskId: number): Promise<TaskGenerationJob> => {
+    const response = await axios.post<GenerateResponse>(
+      `/api/v1/routine_tasks/${routineTaskId}/generate`
     );
     return response.data.data;
   },
@@ -117,5 +147,23 @@ export const routineTasksApi = {
 
   delete: async (id: number): Promise<void> => {
     await axios.delete(`/api/v1/routine_tasks/${id}`);
+  },
+  /**
+   * タスク生成ジョブのステータスを取得する
+   * @param routineTaskId - 習慣化タスクID
+   * @param jobId - ジョブID
+   * @returns ジョブステータス情報
+   */
+  getGenerationStatus: async (
+    routineTaskId: number,
+    jobId: string
+  ): Promise<TaskGenerationJob> => {
+    const response = await axios.get<GenerationStatusResponse>(
+      `/api/v1/routine_tasks/${routineTaskId}/generation_status`,
+      {
+        params: { job_id: jobId },
+      }
+    );
+    return response.data.data;
   },
 };
