@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, Button, Title, Text, Card, Group, Badge } from '@mantine/core';
+import { Box, Button, Title, Text, Card, Group, Badge, Stack } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import { RoutineTask } from '@/types';
 
 interface RoutineTaskListProps {
@@ -39,6 +40,11 @@ const getPriorityColor = (
     default:
       return 'gray';
   }
+};
+
+const formatDateTime = (dateStr: string | null): string => {
+  if (!dateStr) return '未生成';
+  return dayjs(dateStr).format('YYYY-MM-DD HH:mm');
 };
 
 export const RoutineTaskList: React.FC<RoutineTaskListProps> = ({
@@ -90,7 +96,7 @@ export const RoutineTaskList: React.FC<RoutineTaskListProps> = ({
               style={{ cursor: 'pointer' }}
               onClick={() => navigate(`/routine-tasks/${task.id}`)}
             >
-              <Group justify="space-between">
+              <Group justify="space-between" align="flex-start">
                 <Box style={{ flex: 1 }}>
                   <Group gap="xs" mb="xs">
                     <Text fw={500}>{task.title}</Text>
@@ -101,17 +107,28 @@ export const RoutineTaskList: React.FC<RoutineTaskListProps> = ({
                       </Badge>
                     )}
                   </Group>
-                  <Text size="sm" c="dimmed">
-                    頻度: {getFrequencyLabel(task.frequency)}
-                    {task.frequency === 'custom' &&
-                      task.intervalValue &&
-                      ` (${task.intervalValue}日ごと)`}
-                  </Text>
-                  {task.categoryName && (
+                  <Stack gap="xs">
                     <Text size="sm" c="dimmed">
-                      カテゴリ: {task.categoryName}
+                      頻度: {getFrequencyLabel(task.frequency)}
+                      {task.frequency === 'custom' &&
+                        task.intervalValue &&
+                        ` (${task.intervalValue}日ごと)`}
                     </Text>
-                  )}
+                    {task.categoryName && (
+                      <Text size="sm" c="dimmed">
+                        カテゴリ: {task.categoryName}
+                      </Text>
+                    )}
+                    <Text size="sm" c="dimmed">
+                      最終生成: {formatDateTime(task.lastGeneratedAt)}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      次回生成: {formatDateTime(task.nextGenerationAt)}
+                    </Text>
+                    <Text size="sm" c="dimmed">
+                      上限数: {task.maxActiveTasks}個
+                    </Text>
+                  </Stack>
                 </Box>
                 <Button
                   color="red"

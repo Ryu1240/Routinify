@@ -173,6 +173,8 @@ export const RoutineTaskForm: React.FC = () => {
                 }
               }}
               required
+              disabled={isEditMode}
+              description={isEditMode ? '編集時は変更できません（システムが自動管理）' : undefined}
             />
 
             <NumberInput
