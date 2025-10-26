@@ -20,6 +20,47 @@ class RoutineTask < ApplicationRecord
     by_account(user_id)
   end
 
+  # 未完了タスクの数をカウント
+  def active_tasks_count
+    tasks.where.not(status: 'completed').count
+  end
+
+  # 頻度に応じた間隔日数を返す
+  def interval_days
+    case frequency
+    when 'daily'
+      1
+    when 'weekly'
+      7
+    when 'monthly'
+      30
+    when 'custom'
+      interval_value || 1
+    else
+      1
+    end
+  end
+
+  # 現在時刻に基づいて生成すべきタスク数を計算
+  def tasks_to_generate_count(current_time = Time.current)
+    # 次回生成日時がまだ到来していない場合は0
+    return 0 if next_generation_at > current_time
+
+    # 前回生成日時が未設定の場合は1つだけ生成
+    return 1 if last_generated_at.nil?
+
+    # 前回生成日時から現在までの経過日数を計算
+    days_elapsed = ((current_time - last_generated_at) / 1.day).floor
+
+    # 頻度に応じて生成すべきタスク数を計算
+    (days_elapsed.to_f / interval_days).floor.clamp(0, max_active_tasks)
+  end
+
+  # 次回生成日時を計算
+  def calculate_next_generation_at(base_time = Time.current)
+    base_time + interval_days.days
+  end
+
   private
 
   def validate_interval_value_based_on_frequency
