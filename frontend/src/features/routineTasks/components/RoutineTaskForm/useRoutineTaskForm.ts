@@ -58,10 +58,7 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
 
   // フォームの入力変更ハンドラー
   const handleInputChange = useCallback(
-    (
-      field: keyof FormData,
-      value: string | number | Date | boolean | null
-    ) => {
+    (field: keyof FormData, value: string | number | Date | boolean | null) => {
       setFormData((prev) => ({
         ...prev,
         [field]: value,

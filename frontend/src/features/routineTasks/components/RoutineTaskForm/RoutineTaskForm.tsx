@@ -107,7 +107,8 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
             onChange={(value) => {
               if (value) {
                 // Mantine v8では文字列、v7ではDateオブジェクトを受け取る
-                const date = typeof value === 'string' ? new Date(value) : value;
+                const date =
+                  typeof value === 'string' ? new Date(value) : value;
                 onInputChange('nextGenerationAt', date);
               }
             }}
