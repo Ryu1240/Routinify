@@ -5,9 +5,9 @@
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
     "@emotion/react": "^11.11.4",
-    "@mantine/core": "^7.6.1",
+    "@mantine/core": "^8.3.5",
     "@mantine/dates": "^8.3.5",
-    "@mantine/hooks": "^7.6.1",
+    "@mantine/hooks": "^8.3.5",
     "@tabler/icons-react": "^3.34.0",
     "@types/jest": "^27.5.2",
     "axios": "^1.6.7",
