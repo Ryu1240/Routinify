@@ -28,9 +28,7 @@ RSpec.describe 'POST /api/v1/routine_tasks/:id/generate', type: :request do
         json_response = JSON.parse(response.body)
         expect(json_response['success']).to be true
         expect(json_response['data']).to have_key('jobId')
-        expect(json_response['data']['status']).to eq('pending')
-        expect(json_response['data']['completed']).to be false
-        expect(json_response['data']).to have_key('createdAt')
+        expect(json_response['data'].keys).to eq([ 'jobId' ])
       end
 
       it 'Redisにジョブステータスを保存すること' do
@@ -57,6 +55,7 @@ RSpec.describe 'POST /api/v1/routine_tasks/:id/generate', type: :request do
         job_status_json = redis.get("job_status:#{job_id}")
         job_status = JSON.parse(job_status_json, symbolize_names: true)
 
+        # Redisには完全な情報が保存される
         expect(job_status[:status]).to eq('pending')
         expect(job_status[:completed]).to be false
       end

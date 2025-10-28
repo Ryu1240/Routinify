@@ -11,17 +11,14 @@ describe('routineTasksApi', () => {
 
   describe('generate', () => {
     it('POST /api/v1/routine_tasks/:id/generate を呼び出すこと', async () => {
-      const mockJob: TaskGenerationJob = {
+      const mockJobResponse = {
         jobId: 'test-job-id',
-        status: 'pending',
-        completed: false,
-        createdAt: '2025-10-26T00:00:00Z',
       };
 
       (axios.post as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: {
           success: true,
-          data: mockJob,
+          data: mockJobResponse,
         },
       });
 
@@ -30,7 +27,7 @@ describe('routineTasksApi', () => {
       expect(axios.post).toHaveBeenCalledWith(
         '/api/v1/routine_tasks/123/generate'
       );
-      expect(result).toEqual(mockJob);
+      expect(result).toEqual(mockJobResponse);
     });
 
     it('エラーが発生した場合、エラーをスローすること', async () => {

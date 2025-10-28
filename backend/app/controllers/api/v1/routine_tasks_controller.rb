@@ -2,14 +2,14 @@ module Api
   module V1
     class RoutineTasksController < BaseController
       def index
-        validate_permissions(['read:routine-tasks']) do
+        validate_permissions([ 'read:routine-tasks' ]) do
           routine_tasks = RoutineTask.for_user(current_user_id).includes(:category)
           render_success(data: routine_tasks.map { |task| RoutineTaskSerializer.new(task).as_json })
         end
       end
 
       def show
-        validate_permissions(['read:routine-tasks']) do
+        validate_permissions([ 'read:routine-tasks' ]) do
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
 
           if routine_task
@@ -19,9 +19,9 @@ module Api
           end
         end
       end
-      
+
       def create
-        validate_permissions(['write:routine-tasks']) do
+        validate_permissions([ 'write:routine-tasks' ]) do
           routine_task = RoutineTask.new(routine_task_params.merge(account_id: current_user_id))
 
           if routine_task.save
@@ -37,7 +37,7 @@ module Api
       end
 
       def update
-        validate_permissions(['write:routine-tasks']) do
+        validate_permissions([ 'write:routine-tasks' ]) do
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('習慣化タスク') unless routine_task
 
@@ -53,7 +53,7 @@ module Api
       end
 
       def destroy
-        validate_permissions(['delete:routine-tasks']) do
+        validate_permissions([ 'delete:routine-tasks' ]) do
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('習慣化タスク') unless routine_task
 
@@ -66,7 +66,7 @@ module Api
       end
 
       def generate
-        validate_permissions(['write:routine-tasks']) do
+        validate_permissions([ 'write:routine-tasks' ]) do
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('習慣化タスク') unless routine_task
 
@@ -90,18 +90,18 @@ module Api
           # 202 Acceptedとジョブ情報を返却
           render json: {
             success: true,
-            data: initial_status
+            data: { jobId: job_id }
           }, status: :accepted
         end
       end
 
       def generation_status
-        validate_permissions(['read:routine-tasks']) do
+        validate_permissions([ 'read:routine-tasks' ]) do
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('習慣化タスク') unless routine_task
 
           job_id = params[:job_id]
-          return render_error(errors: ['job_idパラメータが必要です'], status: :bad_request) if job_id.blank?
+          return render_error(errors: [ 'job_idパラメータが必要です' ], status: :bad_request) if job_id.blank?
 
           # Redisからジョブステータスを取得
           redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0'))
@@ -109,7 +109,7 @@ module Api
           redis.close
 
           if job_status_json.nil?
-            return render_error(errors: ['指定されたジョブが見つかりません'], status: :not_found)
+            return render_error(errors: [ '指定されたジョブが見つかりません' ], status: :not_found)
           end
 
           job_status = JSON.parse(job_status_json, symbolize_names: true)

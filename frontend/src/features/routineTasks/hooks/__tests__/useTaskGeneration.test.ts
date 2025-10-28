@@ -24,21 +24,20 @@ describe('useTaskGeneration', () => {
   });
 
   it('generateTasksを呼び出すと状態がgeneratingになること', async () => {
-    const mockJob: TaskGenerationJob = {
+    const mockJobResponse = {
       jobId: 'test-job-id',
-      status: 'pending',
-      completed: false,
-      createdAt: '2025-10-26T00:00:00Z',
     };
 
     (routineTasksApi.generate as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockJob
+      mockJobResponse
     );
     (
       routineTasksApi.getGenerationStatus as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
-      ...mockJob,
+      jobId: 'test-job-id',
       status: 'running',
+      completed: false,
+      createdAt: '2025-10-26T00:00:00Z',
     });
 
     const { result } = renderHook(() => useTaskGeneration());
@@ -52,23 +51,21 @@ describe('useTaskGeneration', () => {
   });
 
   it('ポーリングでcompletedを検知すると状態がcompletedになること', async () => {
-    const mockJob: TaskGenerationJob = {
+    const mockJobResponse = {
       jobId: 'test-job-id',
-      status: 'pending',
-      completed: false,
-      createdAt: '2025-10-26T00:00:00Z',
     };
 
     const completedJob: TaskGenerationJob = {
-      ...mockJob,
+      jobId: 'test-job-id',
       status: 'completed',
       completed: true,
       generatedTasksCount: 5,
+      createdAt: '2025-10-26T00:00:00Z',
       completedAt: '2025-10-26T00:05:00Z',
     };
 
     (routineTasksApi.generate as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockJob
+      mockJobResponse
     );
     (
       routineTasksApi.getGenerationStatus as ReturnType<typeof vi.fn>
@@ -93,22 +90,20 @@ describe('useTaskGeneration', () => {
   });
 
   it('ポーリングでfailedを検知すると状態がfailedになること', async () => {
-    const mockJob: TaskGenerationJob = {
+    const mockJobResponse = {
       jobId: 'test-job-id',
-      status: 'pending',
-      completed: false,
-      createdAt: '2025-10-26T00:00:00Z',
     };
 
     const failedJob: TaskGenerationJob = {
-      ...mockJob,
+      jobId: 'test-job-id',
       status: 'failed',
       completed: true,
       error: 'タスク生成エラー',
+      createdAt: '2025-10-26T00:00:00Z',
     };
 
     (routineTasksApi.generate as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockJob
+      mockJobResponse
     );
     (
       routineTasksApi.getGenerationStatus as ReturnType<typeof vi.fn>
@@ -133,21 +128,20 @@ describe('useTaskGeneration', () => {
   });
 
   it('タイムアウト（3分）で状態がfailedになること', async () => {
-    const mockJob: TaskGenerationJob = {
+    const mockJobResponse = {
       jobId: 'test-job-id',
-      status: 'pending',
-      completed: false,
-      createdAt: '2025-10-26T00:00:00Z',
     };
 
     (routineTasksApi.generate as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockJob
+      mockJobResponse
     );
     (
       routineTasksApi.getGenerationStatus as ReturnType<typeof vi.fn>
     ).mockResolvedValue({
-      ...mockJob,
+      jobId: 'test-job-id',
       status: 'running',
+      completed: false,
+      createdAt: '2025-10-26T00:00:00Z',
     });
 
     const { result } = renderHook(() => useTaskGeneration());
@@ -169,16 +163,12 @@ describe('useTaskGeneration', () => {
   });
 
   it('reset()で状態がリセットされること', async () => {
-    const mockJob: TaskGenerationJob = {
+    const mockJobResponse = {
       jobId: 'test-job-id',
-      status: 'completed',
-      completed: true,
-      generatedTasksCount: 3,
-      createdAt: '2025-10-26T00:00:00Z',
     };
 
     (routineTasksApi.generate as ReturnType<typeof vi.fn>).mockResolvedValue(
-      mockJob
+      mockJobResponse
     );
 
     const { result } = renderHook(() => useTaskGeneration());

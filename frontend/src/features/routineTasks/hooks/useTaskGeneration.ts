@@ -94,8 +94,7 @@ export const useTaskGeneration = (): UseTaskGenerationReturn => {
         setGeneratedTasksCount(null);
 
         // タスク生成ジョブを開始
-        const job: TaskGenerationJob =
-          await routineTasksApi.generate(routineTaskId);
+        const job = await routineTasksApi.generate(routineTaskId);
 
         // ポーリング開始
         startPolling(routineTaskId, job.jobId);

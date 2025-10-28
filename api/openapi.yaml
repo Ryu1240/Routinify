@@ -890,14 +890,16 @@ paths:
               schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-                    example: "タスク生成をキューに追加しました"
+                  success:
+                    type: boolean
+                    example: true
                   data:
                     type: object
                     properties:
                       jobId:
                         type: string
+                        format: uuid
+                        description: ジョブID
                         example: "550e8400-e29b-41d4-a716-446655440000"
         '401':
           $ref: '#/components/responses/Unauthorized'
