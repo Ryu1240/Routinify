@@ -11,6 +11,8 @@ import { auth0Config } from './auth0-config';
 import { Login } from '@/shared/components/auth';
 import { TaskList } from './pages/tasks';
 import { CategoryList } from './pages/categories';
+import { RoutineTaskList } from './pages/routineTasks';
+import { RoutineTaskForm } from './pages/routineTasks/RoutineTaskForm';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -68,6 +70,22 @@ const AppContent: React.FC = () => {
         element={
           <ProtectedRoute>
             <CategoryList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/routine-tasks"
+        element={
+          <ProtectedRoute>
+            <RoutineTaskList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/routine-tasks/:id"
+        element={
+          <ProtectedRoute>
+            <RoutineTaskForm />
           </ProtectedRoute>
         }
       />
