@@ -85,6 +85,48 @@ bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --ap
 rails db:seed
 ```
 
+#### シードデータの管理
+
+シードデータには以下のオプションがあります：
+
+**通常のシード実行（既存データは保持）**
+```bash
+# Docker環境
+make seed
+# または
+docker compose exec backend bundle exec rails db:seed
+
+# ローカル環境
+rails db:seed
+```
+
+**既存データを削除してからシード実行（クリーンな状態から開始）**
+```bash
+# Docker環境（推奨）
+make seed-reset
+# または
+docker compose exec backend bundle exec rails db:seed:reset
+
+# ローカル環境
+rails db:seed:reset
+
+# 環境変数を使用する方法
+RESET_SEED=true rails db:seed
+```
+
+**シードデータの削除のみ**
+```bash
+# Docker環境
+make seed-cleanup
+# または
+docker compose exec backend bundle exec rails db:seed:cleanup
+
+# ローカル環境
+rails db:seed:cleanup
+```
+
+**注意**: `seed-reset`と`seed-cleanup`は開発環境とテスト環境でのみ実行可能です。本番環境では実行できません。
+
 ### 5. サーバーの起動
 
 ```bash

@@ -16,8 +16,19 @@ type TaskRequestBody = {
 };
 
 export const tasksApi = {
-  fetchAll: async (): Promise<Task[]> => {
-    const response = await axios.get<TaskResponse>('/api/v1/tasks');
+  fetchAll: async (skipCache = false): Promise<Task[]> => {
+    const config = skipCache
+      ? {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+          },
+          params: {
+            _t: Date.now(), // キャッシュ回避のためのタイムスタンプ
+          },
+        }
+      : undefined;
+    const response = await axios.get<TaskResponse>('/api/v1/tasks', config);
     return response.data.data;
   },
 
