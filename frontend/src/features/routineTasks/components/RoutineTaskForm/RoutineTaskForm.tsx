@@ -43,6 +43,20 @@ type RoutineTaskFormProps = {
   isGenerated?: boolean;
 };
 
+// Mantine 8系ではDateTimePickerのonChangeが文字列を返すため、
+// Dateオブジェクトに変換する関数
+const toDate = (value: unknown): Date | null => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  // Mantine 8系では文字列が返される可能性があるため、文字列をDateオブジェクトに変換
+  const date = new Date(value as string | number);
+  return isNaN(date.getTime()) ? null : date;
+};
+
 export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
   isEditMode,
   formData,
@@ -110,8 +124,11 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
             placeholder="次回生成日時を選択"
             value={formData.nextGenerationAt}
             onChange={(value) => {
-              if (value) {
-                onInputChange('nextGenerationAt', value);
+              // Mantine 8系ではonChangeが文字列を返すため、Dateオブジェクトに変換
+              // 必須フィールドのためnullは受け入れない
+              const dateValue = toDate(value);
+              if (dateValue) {
+                onInputChange('nextGenerationAt', dateValue);
               }
             }}
             required
@@ -193,7 +210,10 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
             placeholder="開始期限を選択"
             value={formData.startGenerationAt}
             onChange={(value) => {
-              onInputChange('startGenerationAt', value);
+              // Mantine 8系ではonChangeが文字列を返すため、Dateオブジェクトに変換
+              // nullも受け入れる
+              const dateValue = toDate(value);
+              onInputChange('startGenerationAt', dateValue);
             }}
             required
             disabled={isEditMode && isGenerated}

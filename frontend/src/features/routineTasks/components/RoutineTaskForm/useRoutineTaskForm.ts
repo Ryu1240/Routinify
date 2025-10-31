@@ -83,12 +83,37 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
     if (!formData.startGenerationAt) {
       throw new Error('開始期限は必須です');
     }
+    
+    // startGenerationAtをDateオブジェクトに変換
+    let startDate: Date;
+    if (formData.startGenerationAt instanceof Date) {
+      startDate = formData.startGenerationAt;
+    } else {
+      // Dateオブジェクトでない場合、変換を試みる
+      startDate = new Date(formData.startGenerationAt as string | number);
+      if (isNaN(startDate.getTime())) {
+        throw new Error('開始期限が無効な形式です');
+      }
+    }
+    
+    // nextGenerationAtをDateオブジェクトに変換
+    let nextDate: Date;
+    if (formData.nextGenerationAt instanceof Date) {
+      nextDate = formData.nextGenerationAt;
+    } else {
+      // Dateオブジェクトでない場合、変換を試みる
+      nextDate = new Date(formData.nextGenerationAt as string | number);
+      if (isNaN(nextDate.getTime())) {
+        throw new Error('次回生成日時が無効な形式です');
+      }
+    }
+    
     return {
       title: formData.title,
       frequency: formData.frequency,
       intervalValue:
         formData.frequency === 'custom' ? Number(formData.intervalValue) : null,
-      nextGenerationAt: formData.nextGenerationAt.toISOString(),
+      nextGenerationAt: nextDate.toISOString(),
       maxActiveTasks: Number(formData.maxActiveTasks),
       categoryId: formData.categoryId ? Number(formData.categoryId) : null,
       priority: formData.priority,
@@ -101,7 +126,7 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
         formData.dueDateOffsetHour !== null && formData.dueDateOffsetHour !== ''
           ? Number(formData.dueDateOffsetHour)
           : null,
-      startGenerationAt: formData.startGenerationAt.toISOString(),
+      startGenerationAt: startDate.toISOString(),
     };
   }, [formData]);
 
