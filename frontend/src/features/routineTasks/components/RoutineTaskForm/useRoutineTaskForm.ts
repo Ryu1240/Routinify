@@ -15,6 +15,9 @@ type FormData = {
   categoryId: string | null;
   priority: RoutineTaskPriority | null;
   isActive: boolean;
+  dueDateOffsetDays: number | string | null;
+  dueDateOffsetHour: number | string | null;
+  startGenerationAt: Date | null;
 };
 
 type UseRoutineTaskFormReturn = {
@@ -37,6 +40,9 @@ const getInitialFormData = (): FormData => ({
   categoryId: null,
   priority: null,
   isActive: true,
+  dueDateOffsetDays: null,
+  dueDateOffsetHour: null,
+  startGenerationAt: null, // ユーザーが必須で入力する
 });
 
 export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
@@ -53,6 +59,11 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
       categoryId: task.categoryId?.toString() ?? null,
       priority: task.priority,
       isActive: task.isActive,
+      dueDateOffsetDays: task.dueDateOffsetDays ?? null,
+      dueDateOffsetHour: task.dueDateOffsetHour ?? null,
+      startGenerationAt: task.startGenerationAt
+        ? new Date(task.startGenerationAt)
+        : null, // 編集時も値がない場合はnull（通常は存在するはず）
     });
   }, []);
 
@@ -69,16 +80,53 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
 
   // フォームデータをDTOに変換
   const getSubmitData = useCallback((): CreateRoutineTaskDto => {
+    if (!formData.startGenerationAt) {
+      throw new Error('開始期限は必須です');
+    }
+
+    // startGenerationAtをDateオブジェクトに変換
+    let startDate: Date;
+    if (formData.startGenerationAt instanceof Date) {
+      startDate = formData.startGenerationAt;
+    } else {
+      // Dateオブジェクトでない場合、変換を試みる
+      startDate = new Date(formData.startGenerationAt as string | number);
+      if (isNaN(startDate.getTime())) {
+        throw new Error('開始期限が無効な形式です');
+      }
+    }
+
+    // nextGenerationAtをDateオブジェクトに変換
+    let nextDate: Date;
+    if (formData.nextGenerationAt instanceof Date) {
+      nextDate = formData.nextGenerationAt;
+    } else {
+      // Dateオブジェクトでない場合、変換を試みる
+      nextDate = new Date(formData.nextGenerationAt as string | number);
+      if (isNaN(nextDate.getTime())) {
+        throw new Error('次回生成日時が無効な形式です');
+      }
+    }
+
     return {
       title: formData.title,
       frequency: formData.frequency,
       intervalValue:
         formData.frequency === 'custom' ? Number(formData.intervalValue) : null,
-      nextGenerationAt: formData.nextGenerationAt.toISOString(),
+      nextGenerationAt: nextDate.toISOString(),
       maxActiveTasks: Number(formData.maxActiveTasks),
       categoryId: formData.categoryId ? Number(formData.categoryId) : null,
       priority: formData.priority,
       isActive: formData.isActive,
+      dueDateOffsetDays:
+        formData.dueDateOffsetDays !== null && formData.dueDateOffsetDays !== ''
+          ? Number(formData.dueDateOffsetDays)
+          : null,
+      dueDateOffsetHour:
+        formData.dueDateOffsetHour !== null && formData.dueDateOffsetHour !== ''
+          ? Number(formData.dueDateOffsetHour)
+          : null,
+      startGenerationAt: startDate.toISOString(),
     };
   }, [formData]);
 

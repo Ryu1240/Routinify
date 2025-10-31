@@ -9,6 +9,9 @@ create_table 'routine_tasks', force: :cascade do |t|
   t.integer  'category_id'
   t.string   'priority',           limit: 50
   t.boolean  'is_active',          default: true, null: false
+  t.integer  'due_date_offset_days'
+  t.integer  'due_date_offset_hour'
+  t.datetime 'start_generation_at',             null: false
   t.datetime 'created_at',                     null: false
   t.datetime 'updated_at',                     null: false
 end

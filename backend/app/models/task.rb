@@ -8,7 +8,7 @@ class Task < ApplicationRecord
   validates :account_id, presence: true
   validates :status, inclusion: { in: %w[pending in_progress completed on_hold] }, allow_nil: true
   validates :priority, inclusion: { in: %w[low medium high] }, allow_nil: true
-  validates :due_date, future_date: { allow_past_in_test: true }, allow_nil: true
+  validates :due_date, future_date: { allow_past: true }, allow_nil: true
 
   scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }

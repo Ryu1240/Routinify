@@ -13,6 +13,9 @@ class RoutineTaskSerializer < BaseSerializer
       categoryName: @object.category&.name,
       priority: @object.priority,
       isActive: @object.is_active,
+      dueDateOffsetDays: @object.due_date_offset_days,
+      dueDateOffsetHour: @object.due_date_offset_hour,
+      startGenerationAt: format_datetime(@object.start_generation_at),
       createdAt: format_datetime(@object.created_at),
       updatedAt: format_datetime(@object.updated_at)
     }

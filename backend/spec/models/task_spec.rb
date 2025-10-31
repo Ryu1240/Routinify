@@ -119,11 +119,14 @@ RSpec.describe Task, type: :model do
         expect(subject).to be_valid
       end
 
-      it '過去の日付でエラーになること' do
-        # テスト環境ではallow_past_in_test: trueのため、直接バリデーターをテスト
-        validator = FutureDateValidator.new(attributes: :due_date, allow_past_in_test: false)
-        validator.validate_each(subject, :due_date, 1.day.ago)
-        expect(subject.errors[:due_date]).to include('は未来の日付である必要があります')
+      it '過去の日付も受け入れること' do
+        subject.due_date = 1.day.ago
+        expect(subject).to be_valid
+      end
+
+      it '現在の日付も受け入れること' do
+        subject.due_date = Time.current
+        expect(subject).to be_valid
       end
     end
   end
