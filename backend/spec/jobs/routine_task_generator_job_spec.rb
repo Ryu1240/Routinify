@@ -247,24 +247,24 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
     context '期限オフセットが設定されている場合' do
       it '2回目以降の生成では生成日時を基準に期限を計算すること' do
-        # 生成を実行するためにnext_generation_atを過去にするが、期限が未来になるようにオフセットを大きくする
+        # 生成を実行するためにnext_generation_atを過去にする
         routine_task = create(:routine_task, :daily,
                               last_generated_at: 1.day.ago,
                               start_generation_at: 2.days.ago,
                               next_generation_at: 1.hour.ago, # 過去にして生成を実行
-                              due_date_offset_days: 2, # 期限が未来になるように
+                              due_date_offset_days: 2,
                               due_date_offset_hour: nil)
 
         described_class.perform_now(routine_task.id, job_id)
 
         generated_task = Task.where(routine_task_id: routine_task.id).last
         expect(generated_task.due_date).to be_present
-        # due_dateはdate型なので、日付のみ比較（オフセット分未来の日付になることを確認）
+        # due_dateはdate型なので、日付のみ比較（オフセット分加算された日付になることを確認）
         expect(generated_task.due_date.to_date).to eq((generated_task.generated_at.to_date + 2.days))
       end
 
       it '最初のタスク生成時は開始日を基準に期限を計算すること（start_generation_atが設定されている場合）' do
-        start_time = 2.days.ago # 未来の日付になるように調整
+        start_time = 2.days.ago
         routine_task = create(:routine_task, :daily,
                               last_generated_at: nil,
                               next_generation_at: 1.hour.ago,
@@ -276,7 +276,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         generated_task = Task.where(routine_task_id: routine_task.id).last
         expect(generated_task.due_date).to be_present
-        # 開始日を基準に期限を計算（未来の日付になるように調整）
+        # 開始日を基準に期限を計算（過去の日付も許可されるため、オフセット後の日付が過去でも問題ない）
         # calculate_due_dateはTimeオブジェクトを返すが、due_dateはdate型なので日付のみ比較
         expected_due_date = (start_time.to_date + 3.days)
         expect(generated_task.due_date).to eq(expected_due_date)
@@ -284,12 +284,12 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
 
       it '時のみ設定されている場合、日は0になること' do
-        # 生成を実行するためにnext_generation_atを過去にするが、期限が未来になるようにオフセットを設定
+        # 生成を実行するためにnext_generation_atを過去にする
         routine_task = create(:routine_task, :daily,
                               last_generated_at: 1.day.ago,
                               start_generation_at: 2.days.ago,
                               next_generation_at: 1.hour.ago, # 過去にして生成を実行
-                              due_date_offset_days: 1, # 期限が未来になるように
+                              due_date_offset_days: 1,
                               due_date_offset_hour: nil) # 時刻オフセットなし（日付のみで比較）
 
         described_class.perform_now(routine_task.id, job_id)
@@ -297,7 +297,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         generated_task = Task.where(routine_task_id: routine_task.id).last
         expect(generated_task).to be_present
         expect(generated_task.due_date).to be_present
-        # due_dateはdate型なので、日付のみ比較（オフセット分未来の日付になることを確認）
+        # due_dateはdate型なので、日付のみ比較（オフセット分加算された日付になることを確認）
         expect(generated_task.due_date.to_date).to eq((generated_task.generated_at.to_date + 1.day))
       end
     end
@@ -318,12 +318,12 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
       end
 
       it '開始期限に達している場合はタスクを生成すること' do
-        # 未来の日付になるように期限を調整（start_generation_atを過去にして、期限が未来になるようにオフセットを大きく設定）
+        # 過去の日付も許可されるため、start_generation_atを過去に設定可能
         routine_task = create(:routine_task, :daily,
                               start_generation_at: 2.days.ago,
                               last_generated_at: nil,
                               next_generation_at: 1.hour.ago,
-                              due_date_offset_days: 3) # 期限が未来になるように
+                              due_date_offset_days: 3)
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
@@ -331,12 +331,12 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
       end
 
       it '開始期限が設定されている場合、start_generation_atを基準にタスクを生成すること' do
-        start_time = 2.days.ago # 未来の日付になるように調整
+        start_time = 2.days.ago
         routine_task = create(:routine_task, :daily,
                               start_generation_at: start_time,
                               last_generated_at: nil,
                               next_generation_at: 1.hour.ago,
-                              due_date_offset_days: 3) # 期限が未来になるように
+                              due_date_offset_days: 3)
 
         described_class.perform_now(routine_task.id, job_id)
 

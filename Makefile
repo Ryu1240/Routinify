@@ -76,6 +76,9 @@ ridgepole-apply ra: ## データベーススキーマを適用
 ridgepole-dry-run rr: ## データベーススキーマの変更を確認
 	docker compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --dry-run
 
+seed: ## シードデータを生成
+	docker compose exec backend bundle exec rails db:seed
+
 # ヘルプ表示
 help: ## このヘルプを表示
 	@echo "使用可能なコマンド:"

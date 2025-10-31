@@ -1,6 +1,7 @@
 class FutureDateValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
     return if value.blank?
+    return if options[:allow_past] # allow_pastオプションがtrueの場合は過去の日付を許可
     return if Rails.env.test? && options[:allow_past_in_test] # テスト環境では過去の日付を許可
 
     if value <= Time.current
