@@ -59,15 +59,18 @@ export const useFetchTasks = () => {
       // silentフラグが設定されている場合は、ローディング状態を表示しない
       if (customEvent.detail?.silent) {
         // 静かに更新（ローディング状態を変更しない）
-        tasksApi.fetchAll(true).then((data) => {
-          setTasks(data);
-          setError(null);
-        }).catch((err) => {
-          console.error('タスクの取得に失敗しました:', err);
-          setError(
-            'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
-          );
-        });
+        tasksApi
+          .fetchAll(true)
+          .then((data) => {
+            setTasks(data);
+            setError(null);
+          })
+          .catch((err) => {
+            console.error('タスクの取得に失敗しました:', err);
+            setError(
+              'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
+            );
+          });
       } else {
         refreshTasks();
       }

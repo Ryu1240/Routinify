@@ -1,6 +1,14 @@
 import React, { useRef, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Group, Button, Text, Container, rem, Image, Loader } from '@mantine/core';
+import {
+  Group,
+  Button,
+  Text,
+  Container,
+  rem,
+  Image,
+  Loader,
+} from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconLogout, IconRefresh, IconCheck } from '@tabler/icons-react';
 import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
@@ -50,7 +58,7 @@ const Header: React.FC = () => {
 
   const handleBatchGenerate = async () => {
     hasShownCompletionNotificationRef.current = false;
-    
+
     await generateAllActiveTasks(
       // 全てのタスク生成完了時のコールバック
       () => {
@@ -66,12 +74,14 @@ const Header: React.FC = () => {
           });
           hasShownCompletionNotificationRef.current = true;
         }
-        
+
         // データベース反映の時間を考慮して少し遅延してからカスタムイベントを発火
         // これにより、全てのタスクリストコンポーネントが最新データを取得できる
         // 完了後のリフレッシュなので、静かに実行される（UIのチラつきを防ぐ）
         setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('tasks-refresh', { detail: { silent: true } }));
+          window.dispatchEvent(
+            new CustomEvent('tasks-refresh', { detail: { silent: true } })
+          );
         }, 1000);
       }
     );
@@ -123,11 +133,7 @@ const Header: React.FC = () => {
             <Button
               variant="subtle"
               leftSection={
-                isGenerating ? (
-                  <Loader size={16} />
-                ) : (
-                  <IconRefresh size={16} />
-                )
+                isGenerating ? <Loader size={16} /> : <IconRefresh size={16} />
               }
               onClick={handleBatchGenerate}
               disabled={isGenerating}

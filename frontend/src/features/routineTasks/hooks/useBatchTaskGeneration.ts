@@ -109,10 +109,7 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
                 job.completed = true;
               }
             } catch (err) {
-              console.error(
-                `ジョブ ${job.jobId} のステータス取得に失敗:`,
-                err
-              );
+              console.error(`ジョブ ${job.jobId} のステータス取得に失敗:`, err);
               // エラーが発生しても他のジョブの確認は続ける
             }
           });
@@ -171,7 +168,7 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
         const activeTasks = routineTasks.filter((task) => task.isActive);
 
         const totalCountValue = activeTasks.length;
-        
+
         if (totalCountValue === 0) {
           setState('completed');
           setTotalCount(0);
@@ -195,10 +192,7 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
               title: task.title,
             });
           } catch (err) {
-            console.error(
-              `習慣化タスク ${task.id} のジョブ開始に失敗:`,
-              err
-            );
+            console.error(`習慣化タスク ${task.id} のジョブ開始に失敗:`, err);
             // エラーが発生しても他のタスクの処理は続ける
             jobStatusesRef.current.push({
               routineTaskId: task.id,
@@ -224,9 +218,7 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
       } catch (err) {
         setState('failed');
         setError(
-          err instanceof Error
-            ? err.message
-            : 'バッチ処理の開始に失敗しました'
+          err instanceof Error ? err.message : 'バッチ処理の開始に失敗しました'
         );
         cleanup();
       }

@@ -21,7 +21,7 @@ export const tasksApi = {
       ? {
           headers: {
             'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
+            Pragma: 'no-cache',
           },
           params: {
             _t: Date.now(), // キャッシュ回避のためのタイムスタンプ

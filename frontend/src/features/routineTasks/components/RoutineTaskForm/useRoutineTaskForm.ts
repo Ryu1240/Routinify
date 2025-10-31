@@ -83,7 +83,7 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
     if (!formData.startGenerationAt) {
       throw new Error('開始期限は必須です');
     }
-    
+
     // startGenerationAtをDateオブジェクトに変換
     let startDate: Date;
     if (formData.startGenerationAt instanceof Date) {
@@ -95,7 +95,7 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
         throw new Error('開始期限が無効な形式です');
       }
     }
-    
+
     // nextGenerationAtをDateオブジェクトに変換
     let nextDate: Date;
     if (formData.nextGenerationAt instanceof Date) {
@@ -107,7 +107,7 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
         throw new Error('次回生成日時が無効な形式です');
       }
     }
-    
+
     return {
       title: formData.title,
       frequency: formData.frequency,
