@@ -16,6 +16,15 @@
 Routinify Backendは、Rails 8.0をベースとしたAPI専用アプリケーションです。
 レイヤー分離と単一責任の原則に基づき、保守性と拡張性を重視した設計となっています。
 
+### 主要機能
+
+- **タスク管理**: 通常タスクのCRUD操作
+- **カテゴリ管理**: タスクの分類機能
+- **習慣化タスク管理**: 定期的にタスクを自動生成する習慣化機能
+  - 頻度設定（daily, weekly, monthly, custom）
+  - 自動生成ジョブによるタスク生成
+  - 期限日のオフセット設定
+
 ### アーキテクチャ図
 
 ```
@@ -129,7 +138,8 @@ backend/
 │   │   │   └── v1/                    # API v1
 │   │   │       ├── base_controller.rb # 共通コントローラー
 │   │   │       ├── tasks_controller.rb
-│   │   │       └── categories_controller.rb
+│   │   │       ├── categories_controller.rb
+│   │   │       └── routine_tasks_controller.rb
 │   │   ├── concerns/                   # 共通機能
 │   │   │   ├── secured.rb             # 認証・認可
 │   │   │   ├── error_handler.rb       # エラーハンドリング
@@ -142,6 +152,7 @@ backend/
 │   │   │   └── timestamped.rb         # タイムスタンプ
 │   │   ├── task.rb
 │   │   ├── category.rb
+│   │   ├── routine_task.rb
 │   │   └── application_record.rb
 │   │
 │   ├── services/                       # サービス層
@@ -153,7 +164,8 @@ backend/
 │   ├── serializers/                    # シリアライザー層
 │   │   ├── base_serializer.rb         # 基底シリアライザー
 │   │   ├── task_serializer.rb
-│   │   └── category_serializer.rb
+│   │   ├── category_serializer.rb
+│   │   └── routine_task_serializer.rb
 │   │
 │   ├── validators/                     # カスタムバリデーター
 │   │   ├── future_date_validator.rb
@@ -161,8 +173,8 @@ backend/
 │   │
 │   ├── jobs/                          # バックグラウンドジョブ
 │   │   ├── application_job.rb
-│   │   ├── task_notification_job.rb
-│   │   └── cleanup_job.rb
+│   │   ├── routine_task_generator_job.rb  # 習慣化タスクの自動生成ジョブ
+│   │   └── task_notification_job.rb
 │   │
 │   └── mailers/                       # メーラー
 │       ├── application_mailer.rb

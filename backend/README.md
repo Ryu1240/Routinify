@@ -21,6 +21,7 @@ Routinify Backendは、以下の機能を提供するRails APIアプリケーシ
 - **認証・認可**: Auth0を使用したJWT認証
 - **タスク管理**: タスクのCRUD操作、ステータス管理
 - **カテゴリ管理**: タスクの分類機能
+- **習慣化タスク管理**: 定期的にタスクを自動生成する習慣化機能
 - **RESTful API**: 標準的なREST API設計
 - **セキュリティ**: 包括的なセキュリティ対策
 
@@ -304,6 +305,14 @@ bundle exec rspec --parallel
 
 - **OpenAPI仕様**: `api/openapi.yaml`
 - **APIドキュメント**: [API Documentation](https://api.routinify.com/docs)
+
+### 主要なAPIエンドポイント
+
+- **タスク管理**: `/api/v1/tasks`
+- **カテゴリ管理**: `/api/v1/categories`
+- **習慣化タスク管理**: `/api/v1/routine_tasks`
+  - `POST /api/v1/routine_tasks/:id/generate` - 手動でタスクを生成
+  - `GET /api/v1/routine_tasks/:id/generation_status` - 生成状態を取得
 
 ### 開発ドキュメント
 

@@ -431,6 +431,77 @@ bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --ap
 
 ---
 
+## 習慣化タスク機能（Routine Tasks）
+
+### 概要
+
+習慣化タスク機能は、定期的にタスクを自動生成する機能です。ユーザーが習慣タスクのテンプレートを作成すると、設定された頻度に従って自動的にタスクが生成されます。
+
+### 主要な機能
+
+- **頻度設定**: daily（毎日）、weekly（毎週）、monthly（毎月）、custom（カスタム間隔）
+- **自動生成**: バックグラウンドジョブ（`RoutineTaskGeneratorJob`）が定期実行され、タスクを自動生成
+- **期限日オフセット**: 生成されたタスクの期限日を、生成日時から指定日数・時間だけオフセットして設定可能
+- **最大タスク数制限**: 未完了タスクの上限を設定可能（デフォルト: 3）
+
+### データモデル
+
+#### RoutineTaskモデル
+
+```ruby
+class RoutineTask < ApplicationRecord
+  # 主要な属性
+  # - frequency: 'daily', 'weekly', 'monthly', 'custom'
+  # - interval_value: custom頻度の場合の日数
+  # - start_generation_at: 生成開始日時（変更不可）
+  # - next_generation_at: 次回生成日時
+  # - max_active_tasks: 未完了タスクの上限
+  # - due_date_offset_days: 期限日のオフセット（日数）
+  # - due_date_offset_hour: 期限日のオフセット（時間）
+
+  # 主要なメソッド
+  # - interval_days: 頻度に応じた間隔日数を返す
+  # - tasks_to_generate_count: 生成すべきタスク数を計算
+  # - calculate_next_generation_at: 次回生成日時を計算
+  # - calculate_due_date: 期限日を計算
+end
+```
+
+### APIエンドポイント
+
+```ruby
+# 習慣化タスクのCRUD
+GET    /api/v1/routine_tasks           # 一覧取得
+POST   /api/v1/routine_tasks           # 作成
+GET    /api/v1/routine_tasks/:id       # 詳細取得
+PUT    /api/v1/routine_tasks/:id       # 更新
+DELETE /api/v1/routine_tasks/:id       # 削除
+
+# 追加エンドポイント
+POST   /api/v1/routine_tasks/:id/generate        # 手動でタスクを生成
+GET    /api/v1/routine_tasks/:id/generation_status  # 生成状態を取得
+```
+
+### バックグラウンドジョブ
+
+`RoutineTaskGeneratorJob`が定期実行され、以下の処理を行います：
+
+1. `next_generation_at`が現在時刻を過ぎた習慣タスクを検索
+2. 各習慣タスクについて、生成すべきタスク数を計算
+3. タスクを生成し、`last_generated_at`を更新
+4. `next_generation_at`を次回生成日時に更新
+5. 未完了タスク数が上限を超える場合、古いタスクから削除
+
+### 開発時の注意事項
+
+- `start_generation_at`は一度でも生成が行われると変更不可
+- `frequency`が`custom`の場合のみ`interval_value`が必須
+- 期限日の計算は`calculate_due_date`メソッドを使用（基準日 + オフセット）
+
+詳細: [DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md#routine_tasks)
+
+---
+
 ## テスト戦略
 
 ### 1. テストの種類

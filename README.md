@@ -56,10 +56,17 @@ make up
 ### コマンド一覧
 
 ```bash
-make help  # 利用可能なコマンドを表示
-make up    # アプリケーションを起動
-make down  # アプリケーションを停止
-make logs  # ログを表示
+make help          # 利用可能なコマンドを表示
+make up            # アプリケーションを起動
+make down          # アプリケーションを停止
+make logs          # ログを表示
+make ridgepole-apply  # データベーススキーマを適用
+make ridgepole-dry-run  # データベーススキーマの変更を確認
+make seed          # シードデータを生成
+make test-backend  # バックエンドのテストを実行
+make test-frontend # フロントエンドのテストを実行
+make lint-backend  # バックエンドのコードチェック
+make lint-frontend # フロントエンドのコードチェック
 ```
 
 ### コード品質管理

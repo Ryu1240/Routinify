@@ -1,7 +1,7 @@
 # データベーススキーマ設計書
 
-**最終更新日**: 2025-10-21
-**バージョン**: 2.1.0
+**最終更新日**: 2025-01-21
+**バージョン**: 2.2.0
 
 ## 概要
 
@@ -172,7 +172,10 @@ end
 | **interval_value** | **integer** | **YES** | **NULL** | **customの場合の日数（custom以外はNULL）** |
 | **last_generated_at** | **datetime** | **YES** | **NULL** | **最終生成日時** |
 | **next_generation_at** | **datetime** | **NO** | - | **次回生成日時** |
+| **start_generation_at** | **datetime** | **NO** | - | **生成開始日時（変更不可）** |
 | **max_active_tasks** | **integer** | **NO** | **3** | **未完了タスクの上限** |
+| **due_date_offset_days** | **integer** | **YES** | **NULL** | **期限日のオフセット（日数）** |
+| **due_date_offset_hour** | **integer** | **YES** | **NULL** | **期限日のオフセット（時間、0-23）** |
 | category_id | integer | YES | NULL | カテゴリID（外部キー） |
 | priority | string(50) | YES | NULL | low, medium, high |
 | is_active | boolean | NO | true | 有効/無効フラグ |
@@ -213,11 +216,16 @@ class RoutineTask < ApplicationRecord
   validates :title, presence: true, length: { maximum: 255 }
   validates :frequency, inclusion: { in: %w[daily weekly monthly custom] }
   validates :next_generation_at, presence: true
+  validates :start_generation_at, presence: true
   validates :max_active_tasks, numericality: { greater_than_or_equal_to: 1 }
+  validates :due_date_offset_days, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :due_date_offset_hour, numericality: { greater_than_or_equal_to: 0, less_than: 24 }, allow_nil: true
   validate :validate_interval_value_based_on_frequency
+  validate :validate_start_generation_at_immutable
 
   # frequencyがcustomの場合のみinterval_valueが必須
   # daily/weekly/monthlyの場合はinterval_valueはNULL
+  # start_generation_atは一度でも生成が行われると変更不可
 end
 ```
 
@@ -306,10 +314,13 @@ Milestone (N) ──< has_many through >── (N) Task
 ```
 1. ユーザーが習慣タスクを作成
    → routine_tasks テーブルに保存
+   → start_generation_at（生成開始日時）を設定（変更不可）
+   → due_date_offset_days/due_date_offset_hour（期限日オフセット）を設定
 
 2. 非同期ジョブが定期実行
    → next_generation_at が現在時刻を過ぎた習慣タスクを検索
    → tasks テーブルに新しいタスクを生成
+   → 期限日は calculate_due_date メソッドで計算（基準日 + オフセット）
    → last_generated_at を更新
 
 3. タスク数が上限（max_active_tasks）を超える場合
@@ -342,6 +353,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
+| 2025-01-21 | 2.2.0 | routine_tasksテーブルにstart_generation_at（生成開始日時）、due_date_offset_days（期限日オフセット日数）、due_date_offset_hour（期限日オフセット時間）を追加。start_generation_atは一度でも生成が行われると変更不可の制約を追加。 |
 | 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
 | 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。routine_tasksテーブル新規追加、tasksテーブルにroutine_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
 | 2025-10-19 | 1.0.0 | 初版作成。既存4テーブル（tasks, categories, milestones, milestone_tasks）の定義を記載。 |

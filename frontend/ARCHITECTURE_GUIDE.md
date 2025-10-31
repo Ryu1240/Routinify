@@ -16,6 +16,12 @@
 Routinify Frontendは、React + TypeScriptをベースとしたSPA（Single Page Application）です。
 機能単位のディレクトリ構成（Feature-based Architecture）と、UI/ロジック分離を重視した設計となっています。
 
+### 主要機能
+
+- **タスク管理**: 通常タスクのCRUD操作、フィルタリング、ソート
+- **カテゴリ管理**: タスクの分類機能
+- **習慣化タスク管理**: 定期的にタスクを自動生成する習慣化機能の管理
+
 ### アーキテクチャ図
 
 ```
@@ -360,6 +366,12 @@ src/
 │   │
 │   ├── categories/
 │   │   └── ...（同様の構造）
+│   │
+│   ├── routineTasks/                    # 習慣化タスク機能
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── api/
+│   │   └── types.ts
 │   │
 │   └── auth/
 │       └── ...（同様の構造）
