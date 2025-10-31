@@ -46,22 +46,29 @@ backend/
 │   │   │   └── v1/
 │   │   │       ├── base_controller.rb          # API共通コントローラー
 │   │   │       ├── tasks_controller.rb
-│   │   │       └── categories_controller.rb
+│   │   │       ├── categories_controller.rb
+│   │   │       └── routine_tasks_controller.rb
 │   │   ├── concerns/                           # 共通機能
 │   │   │   └── secured.rb
 │   │   └── application_controller.rb
 │   ├── models/
 │   │   ├── concerns/                           # モデル共通機能
 │   │   ├── task.rb
-│   │   └── category.rb
+│   │   ├── category.rb
+│   │   └── routine_task.rb
 │   ├── services/                               # ビジネスロジック
 │   │   ├── base_service.rb
 │   │   ├── task_service.rb
-│   │   └── category_service.rb
+│   │   ├── category_service.rb
+│   │   └── routine_task_service.rb
 │   ├── serializers/                            # レスポンス整形
 │   │   ├── base_serializer.rb
 │   │   ├── task_serializer.rb
-│   │   └── category_serializer.rb
+│   │   ├── category_serializer.rb
+│   │   └── routine_task_serializer.rb
+│   ├── jobs/                                   # バックグラウンドジョブ
+│   │   ├── application_job.rb
+│   │   └── routine_task_generator_job.rb
 │   └── validators/                             # カスタムバリデーター
 ├── config/
 │   ├── initializers/

@@ -1,7 +1,7 @@
 # データベーススキーマ設計書
 
-**最終更新日**: 2025-10-21
-**バージョン**: 2.1.0
+**最終更新日**: 2025-11-01
+**バージョン**: 2.2.0
 
 ## 概要
 
@@ -116,13 +116,37 @@ add_foreign_key 'tasks', 'routine_tasks', on_delete: :nullify
 
 ```ruby
 class Task < ApplicationRecord
+  include AccountScoped
+
   belongs_to :category, optional: true
   belongs_to :routine_task, optional: true
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
-  validates :status, inclusion: { in: %w[pending in_progress completed on_hold] }
-  validates :priority, inclusion: { in: %w[low medium high] }
+  validates :status, inclusion: { in: %w[pending in_progress completed on_hold] }, allow_nil: true
+  validates :priority, inclusion: { in: %w[low medium high] }, allow_nil: true
+  validates :due_date, future_date: { allow_past: true }, allow_nil: true
+
+  scope :by_account, ->(account_id) { where(account_id: account_id) }
+  scope :by_status, ->(status) { where(status: status) }
+  scope :overdue, -> { where('due_date < ?', Time.current) }
+  scope :due_today, -> { where(due_date: Date.current.beginning_of_day..Date.current.end_of_day) }
+
+  def self.for_user(user_id)
+    by_account(user_id)
+  end
+
+  def self.search(query)
+    where('title ILIKE ?', "%#{query}%")
+  end
+
+  def overdue?
+    due_date.present? && due_date < Time.current
+  end
+
+  def completed?
+    status == 'completed'
+  end
 end
 ```
 
@@ -151,7 +175,13 @@ class Category < ApplicationRecord
 
   validates :name, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
-  validates :name, uniqueness: { scope: :account_id }
+  validates :name, uniqueness: { scope: :account_id, message: '同じカテゴリ名が既に存在します' }
+
+  scope :by_account, ->(account_id) { where(account_id: account_id) }
+
+  def self.for_user(user_id)
+    by_account(user_id)
+  end
 end
 ```
 
@@ -176,6 +206,9 @@ end
 | category_id | integer | YES | NULL | カテゴリID（外部キー） |
 | priority | string(50) | YES | NULL | low, medium, high |
 | is_active | boolean | NO | true | 有効/無効フラグ |
+| **due_date_offset_days** | **integer** | **YES** | **NULL** | **期限日の日数オフセット（0以上）** |
+| **due_date_offset_hour** | **integer** | **YES** | **NULL** | **期限日の時オフセット（0-23）** |
+| **start_generation_at** | **datetime** | **NO** | - | **開始期限（この日からタスクの生成が始まります。一度でも生成が行われると変更できません）** |
 | created_at | datetime | NO | - | 作成日時 |
 | updated_at | datetime | NO | - | 更新日時 |
 
@@ -209,15 +242,70 @@ class RoutineTask < ApplicationRecord
   has_many :tasks, dependent: :nullify
   belongs_to :category, optional: true
 
+  FREQUENCIES = %w[daily weekly monthly custom].freeze
+  PRIORITIES = %w[low medium high].freeze
+
   validates :account_id, presence: true
   validates :title, presence: true, length: { maximum: 255 }
-  validates :frequency, inclusion: { in: %w[daily weekly monthly custom] }
+  validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
   validates :next_generation_at, presence: true
-  validates :max_active_tasks, numericality: { greater_than_or_equal_to: 1 }
+  validates :start_generation_at, presence: true
+  validates :max_active_tasks, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
+  validates :priority, inclusion: { in: PRIORITIES }, allow_nil: true
+  validates :due_date_offset_days, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :due_date_offset_hour, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 24 }, allow_nil: true
   validate :validate_interval_value_based_on_frequency
+  validate :validate_start_generation_at_immutable
 
-  # frequencyがcustomの場合のみinterval_valueが必須
-  # daily/weekly/monthlyの場合はinterval_valueはNULL
+  scope :by_account, ->(account_id) { where(account_id: account_id) }
+
+  def self.for_user(user_id)
+    by_account(user_id)
+  end
+
+  def active_tasks_count
+    tasks.where.not(status: 'completed').count
+  end
+
+  def interval_days
+    case frequency
+    when 'daily' then 1
+    when 'weekly' then 7
+    when 'monthly' then 30
+    when 'custom' then interval_value || 1
+    else 1
+    end
+  end
+
+  def generated?
+    last_generated_at.present?
+  end
+
+  def calculate_due_date(base_date)
+    return nil unless base_date
+    due_date = base_date.to_date.beginning_of_day
+    due_date += due_date_offset_days.days if due_date_offset_days.present?
+    due_date += due_date_offset_hour.hours if due_date_offset_hour.present?
+    due_date
+  end
+
+  private
+
+  def validate_interval_value_based_on_frequency
+    if frequency == 'custom'
+      if interval_value.blank?
+        errors.add(:interval_value, 'はカスタム頻度の場合必須です')
+      elsif interval_value.to_i < 1
+        errors.add(:interval_value, 'は1以上である必要があります')
+      end
+    end
+  end
+
+  def validate_start_generation_at_immutable
+    if generated? && start_generation_at_changed? && persisted?
+      errors.add(:start_generation_at, 'は一度でも生成が行われると変更できません')
+    end
+  end
 end
 ```
 
@@ -342,6 +430,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
+| 2025-11-01 | 2.2.0 | routine_tasksテーブルのカラム情報を完全化。due_date_offset_days、due_date_offset_hour、start_generation_atカラムの説明を追加。モデルコードを最新の実装に合わせて更新。 |
 | 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
 | 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。routine_tasksテーブル新規追加、tasksテーブルにroutine_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
 | 2025-10-19 | 1.0.0 | 初版作成。既存4テーブル（tasks, categories, milestones, milestone_tasks）の定義を記載。 |

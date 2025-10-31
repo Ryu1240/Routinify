@@ -2,6 +2,34 @@
 
 習慣化を支援するタスク管理システム
 
+## 概要
+
+Routinifyは、習慣化を支援するタスク管理システムです。以下の主要機能を提供します：
+
+- **タスク管理**: タスクのCRUD操作、ステータス管理、優先度設定
+- **カテゴリ管理**: タスクの分類機能
+- **習慣化タスク**: 繰り返しタスクの自動生成機能（日次・週次・月次・カスタム頻度）
+- **認証**: Auth0を使用したセキュアな認証
+
+## 技術スタック
+
+### バックエンド
+- **Ruby**: 3.3+
+- **Rails**: 8.0+
+- **PostgreSQL**: 15+
+- **Redis**: 7+
+- **Ridgepole**: スキーマ管理
+
+### フロントエンド
+- **React**: 18.2+
+- **TypeScript**: 5.8+
+- **Mantine UI**: 8.3+
+- **Auth0**: 認証
+
+### インフラ
+- **Docker & Docker Compose**: コンテナ化
+- **Swagger UI**: APIドキュメント
+
 ## ドキュメント
 
 ### バックエンド開発ガイド
@@ -11,7 +39,14 @@
 - **[アーキテクチャガイド](backend/ARCHITECTURE_GUIDE.md)** - システム設計とアーキテクチャ
 - **[開発ガイド](backend/DEVELOPMENT_GUIDE.md)** - 開発フロー、ツール、ベストプラクティス
 
-これらのドキュメントは、Routinifyバックエンドの開発における標準的な手法とパターンを定義しています。
+### フロントエンド開発ガイド
+フロントエンド開発に関する詳細なドキュメントは、`frontend/` ディレクトリ内にあります：
+
+- **[コーディング規約](frontend/CODING_STANDARDS.md)** - コードの書き方と規約
+- **[アーキテクチャガイド](frontend/ARCHITECTURE_GUIDE.md)** - システム設計とアーキテクチャ
+- **[開発ガイド](frontend/DEVELOPMENT_GUIDE.md)** - 開発フロー、ツール、ベストプラクティス
+
+これらのドキュメントは、Routinifyの開発における標準的な手法とパターンを定義しています。
 
 ## セットアップ
 
@@ -60,6 +95,23 @@ make help  # 利用可能なコマンドを表示
 make up    # アプリケーションを起動
 make down  # アプリケーションを停止
 make logs  # ログを表示
+```
+
+### テスト実行
+
+```bash
+make test-backend   # バックエンドテスト（RSpec）
+make test-frontend  # フロントエンドテスト（Vitest）
+make test-all       # 全テスト実行
+```
+
+### データベース操作
+
+```bash
+make ridgepole-apply    # スキーマ変更を適用
+make ridgepole-dry-run  # スキーマ変更を確認（ドライラン）
+make seed              # シードデータを生成
+make seed-reset        # 既存データを削除してからシード実行
 ```
 
 ### コード品質管理

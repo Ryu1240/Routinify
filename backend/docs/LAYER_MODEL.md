@@ -99,6 +99,83 @@ class Task < ApplicationRecord
 end
 ```
 
+### 習慣化タスクモデルの例
+
+```ruby
+class RoutineTask < ApplicationRecord
+  include AccountScoped
+
+  has_many :tasks, dependent: :nullify
+  belongs_to :category, optional: true
+
+  FREQUENCIES = %w[daily weekly monthly custom].freeze
+  PRIORITIES = %w[low medium high].freeze
+
+  validates :account_id, presence: true
+  validates :title, presence: true, length: { maximum: 255 }
+  validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
+  validates :next_generation_at, presence: true
+  validates :start_generation_at, presence: true
+  validates :max_active_tasks, presence: true, numericality: { greater_than_or_equal_to: 1 }
+  validates :priority, inclusion: { in: PRIORITIES }, allow_nil: true
+  validates :due_date_offset_days, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :due_date_offset_hour, numericality: { greater_than_or_equal_to: 0, less_than: 24 }, allow_nil: true
+  validate :validate_interval_value_based_on_frequency
+  validate :validate_start_generation_at_immutable
+
+  scope :by_account, ->(account_id) { where(account_id: account_id) }
+  scope :active, -> { where(is_active: true) }
+
+  def self.for_user(user_id)
+    by_account(user_id)
+  end
+
+  def interval_days
+    case frequency
+    when 'daily' then 1
+    when 'weekly' then 7
+    when 'monthly' then 30
+    when 'custom' then interval_value || 1
+    else 1
+    end
+  end
+
+  def active_tasks_count
+    tasks.where.not(status: 'completed').count
+  end
+
+  def generated?
+    last_generated_at.present?
+  end
+
+  def calculate_due_date(base_date)
+    return nil unless base_date
+    due_date = base_date.to_date.beginning_of_day
+    due_date += due_date_offset_days.days if due_date_offset_days.present?
+    due_date += due_date_offset_hour.hours if due_date_offset_hour.present?
+    due_date
+  end
+
+  private
+
+  def validate_interval_value_based_on_frequency
+    if frequency == 'custom'
+      if interval_value.blank?
+        errors.add(:interval_value, 'はカスタム頻度の場合必須です')
+      elsif interval_value.to_i < 1
+        errors.add(:interval_value, 'は1以上である必要があります')
+      end
+    end
+  end
+
+  def validate_start_generation_at_immutable
+    if generated? && start_generation_at_changed? && persisted?
+      errors.add(:start_generation_at, 'は一度でも生成が行われると変更できません')
+    end
+  end
+end
+```
+
 ### カスタムバリデーター
 
 ```ruby

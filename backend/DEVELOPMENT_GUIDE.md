@@ -233,6 +233,7 @@ backend/
 │   └── schemas/             # テーブル定義ファイル
 │       ├── tasks.rb
 │       ├── categories.rb
+│       ├── routine_tasks.rb
 │       ├── milestones.rb
 │       └── milestone_tasks.rb
 ```
@@ -322,6 +323,7 @@ end
 # db/Schemafile
 require_relative 'schemas/tasks'
 require_relative 'schemas/categories'
+require_relative 'schemas/routine_tasks'
 require_relative 'schemas/new_table'  # 追加
 
 # 4. ドライランで確認

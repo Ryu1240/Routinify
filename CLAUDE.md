@@ -10,6 +10,14 @@ Routinify is a task management system designed to support habit formation. The c
 - **Frontend**: React/TypeScript with Auth0 authentication
 - **Infrastructure**: Docker Compose with Swagger API documentation
 
+### Key Features
+- **Task Management**: CRUD operations, status management, priority settings
+- **Category Management**: Task categorization
+- **Routine Tasks**: Automatic task generation with customizable frequencies (daily, weekly, monthly, custom)
+  - Asynchronous task generation jobs
+  - Active task limit management
+  - Due date calculation
+
 ## Development Commands
 
 ### Core Operations
@@ -61,17 +69,29 @@ make exec-db         # Shell into PostgreSQL container
 ├── backend/           # Rails API (Port 3000)
 │   ├── app/
 │   │   ├── controllers/api/v1/  # API endpoints
-│   │   └── models/              # ActiveRecord models
+│   │   │   ├── tasks_controller.rb
+│   │   │   ├── categories_controller.rb
+│   │   │   └── routine_tasks_controller.rb
+│   │   ├── models/              # ActiveRecord models
+│   │   │   ├── task.rb
+│   │   │   ├── category.rb
+│   │   │   └── routine_task.rb
+│   │   ├── jobs/                # Background jobs
+│   │   │   └── routine_task_generator_job.rb
+│   │   └── serializers/         # Response serializers
 │   ├── db/
 │   │   ├── Schemafile          # Ridgepole schema definition
 │   │   └── schemas/            # Table definitions
 │   └── spec/                   # RSpec tests
 ├── frontend/          # React App (Port 3001)
 │   └── src/
-│       ├── components/         # React components
-│       ├── hooks/             # Custom React hooks
-│       ├── auth/              # Auth0 integration
-│       └── pages/             # Route components
+│       ├── features/           # Feature modules
+│       │   ├── tasks/          # Task management
+│       │   ├── categories/     # Category management
+│       │   └── routineTasks/   # Routine task management
+│       ├── shared/             # Shared components and hooks
+│       ├── lib/                # External library wrappers
+│       └── pages/              # Route components
 ├── api/
 │   └── openapi.yaml           # API documentation
 └── docker-compose.yml         # Service orchestration
@@ -92,6 +112,13 @@ make exec-db         # Shell into PostgreSQL container
 - Uses Ridgepole instead of Rails migrations
 - Schema definitions in `db/schemas/` directory
 - Apply changes with `make ridgepole-apply`
+
+### Key Models
+- **Task**: Individual tasks (both regular and generated from routine tasks)
+- **Category**: Task categorization
+- **RoutineTask**: Template for recurring tasks with frequency settings
+  - Supports daily, weekly, monthly, and custom intervals
+  - Manages active task limits and generation schedules
 
 ## Environment Setup
 

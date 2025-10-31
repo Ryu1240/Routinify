@@ -21,15 +21,18 @@ src/
 │   ├── index.ts              # 全型の再エクスポート
 │   ├── task.ts               # Task関連
 │   ├── category.ts           # Category関連
+│   ├── routineTask.ts         # RoutineTask関連
 │   ├── user.ts               # User関連
 │   └── api.ts                # API共通型
 │
 └── features/
-    └── tasks/
-        ├── types.ts          # タスク機能固有の型
-        └── components/
-            └── TaskList/
-                └── TaskList.tsx  # Props型は同ファイル内
+    ├── tasks/
+    │   ├── types.ts          # タスク機能固有の型
+    │   └── components/
+    │       └── TaskList/
+    │           └── TaskList.tsx  # Props型は同ファイル内
+    └── routineTasks/
+        └── types.ts          # 習慣化タスク機能固有の型
 ```
 
 ## 💻 実装例
@@ -136,12 +139,56 @@ export const TaskList = (props: TaskListProps) => {
 };
 ```
 
-### **5. 型の再エクスポート**
+### **5. 習慣化タスクの型定義**
+
+```typescript
+// types/routineTask.ts
+export type RoutineTask = {
+  readonly id: number;
+  accountId: string;
+  title: string;
+  frequency: RoutineTaskFrequency;
+  intervalValue: number | null;
+  lastGeneratedAt: string | null;
+  nextGenerationAt: string;
+  maxActiveTasks: number;
+  categoryId: number | null;
+  priority: TaskPriority | null;
+  isActive: boolean;
+  dueDateOffsetDays: number | null;
+  dueDateOffsetHour: number | null;
+  startGenerationAt: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
+export type RoutineTaskFrequency = 'daily' | 'weekly' | 'monthly' | 'custom';
+
+export type CreateRoutineTaskDto = Omit<
+  RoutineTask,
+  'id' | 'accountId' | 'lastGeneratedAt' | 'createdAt' | 'updatedAt'
+>;
+
+export type UpdateRoutineTaskDto = Partial<CreateRoutineTaskDto>;
+
+export type TaskGenerationJob = {
+  jobId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  completed: boolean;
+  generatedTasksCount: number | null;
+  error: string | null;
+  createdAt: string;
+  completedAt: string | null;
+};
+```
+
+### **6. 型の再エクスポート**
 
 ```typescript
 // types/index.ts
 export type { Task, TaskStatus, TaskPriority, CreateTaskDto, UpdateTaskDto } from './task';
 export type { Category, CreateCategoryDto, UpdateCategoryDto } from './category';
+export type { RoutineTask, RoutineTaskFrequency, CreateRoutineTaskDto, UpdateRoutineTaskDto, TaskGenerationJob } from './routineTask';
 export type { User, Account } from './user';
 export type { ApiResponse, ApiError, PaginatedResponse } from './api';
 ```

@@ -26,9 +26,10 @@ Rails APIアプリケーションにおいて、クライアントとアプリ�
 app/controllers/
 ├── api/
 │   └── v1/
-│       ├── base_controller.rb      # 共通コントローラー
-│       ├── tasks_controller.rb     # タスクコントローラー
-│       └── categories_controller.rb # カテゴリコントローラー
+│       ├── base_controller.rb         # 共通コントローラー
+│       ├── tasks_controller.rb        # タスクコントローラー
+│       ├── categories_controller.rb   # カテゴリコントローラー
+│       └── routine_tasks_controller.rb # 習慣化タスクコントローラー
 ├── concerns/
 │   ├── error_handler.rb            # エラーハンドリング
 │   └── response_formatter.rb       # レスポンス整形
@@ -257,6 +258,77 @@ class TasksController < BaseController
 
   def task_params
     params.require(:task).permit(:title, :due_date, :status, :priority, :category_id)
+  end
+end
+```
+
+### **習慣化タスクコントローラーの例（非同期ジョブを含む）**
+```ruby
+module Api
+  module V1
+    class RoutineTasksController < BaseController
+      def generate
+        validate_permissions(['write:routine-tasks']) do
+          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+          return render_not_found('習慣化タスク') unless routine_task
+
+          # ジョブIDを生成
+          job_id = SecureRandom.uuid
+
+          # ジョブ初期ステータスをRedisに保存
+          redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0'))
+          initial_status = {
+            jobId: job_id,
+            status: 'pending',
+            completed: false,
+            createdAt: Time.current.iso8601
+          }
+          redis.setex("job_status:#{job_id}", 24.hours.to_i, initial_status.to_json)
+          redis.close
+
+          # ジョブをキューに投入
+          RoutineTaskGeneratorJob.perform_later(routine_task.id, job_id)
+
+          # 202 Acceptedとジョブ情報を返却
+          render json: {
+            success: true,
+            data: { jobId: job_id }
+          }, status: :accepted
+        end
+      end
+
+      def generation_status
+        validate_permissions(['read:routine-tasks']) do
+          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+          return render_not_found('習慣化タスク') unless routine_task
+
+          job_id = params[:job_id]
+          return render_error(errors: ['job_idパラメータが必要です'], status: :bad_request) if job_id.blank?
+
+          # Redisからジョブステータスを取得
+          redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0'))
+          job_status_json = redis.get("job_status:#{job_id}")
+          redis.close
+
+          if job_status_json.nil?
+            return render_error(errors: ['指定されたジョブが見つかりません'], status: :not_found)
+          end
+
+          job_status = JSON.parse(job_status_json, symbolize_names: true)
+          render_success(data: job_status)
+        end
+      end
+
+      private
+
+      def routine_task_params
+        params.require(:routine_task).permit(
+          :title, :frequency, :interval_value, :next_generation_at,
+          :max_active_tasks, :category_id, :priority, :is_active,
+          :due_date_offset_days, :due_date_offset_hour, :start_generation_at
+        )
+      end
+    end
   end
 end
 ```

@@ -19,8 +19,13 @@ Rails 8.0をベースとしたRESTful APIを提供し、認証・認可、タス
 Routinify Backendは、以下の機能を提供するRails APIアプリケーションです：
 
 - **認証・認可**: Auth0を使用したJWT認証
-- **タスク管理**: タスクのCRUD操作、ステータス管理
+- **タスク管理**: タスクのCRUD操作、ステータス管理、優先度設定
 - **カテゴリ管理**: タスクの分類機能
+- **習慣化タスク**: 繰り返しタスクの自動生成機能
+  - 日次・週次・月次・カスタム頻度の設定
+  - 未完了タスク数の上限管理
+  - 非同期タスク生成ジョブ
+  - 期限日の自動計算
 - **RESTful API**: 標準的なREST API設計
 - **セキュリティ**: 包括的なセキュリティ対策
 
@@ -302,8 +307,35 @@ bundle exec rspec --parallel
 
 ### API仕様
 
-- **OpenAPI仕様**: `api/openapi.yaml`
-- **APIドキュメント**: [API Documentation](https://api.routinify.com/docs)
+- **OpenAPI仕様**: `../api/openapi.yaml`（ルートディレクトリからの相対パス）
+- **Swagger UI**: http://localhost:8080（開発環境）
+
+#### 主要なAPIエンドポイント
+
+**タスク管理**
+- `GET /api/v1/tasks` - タスク一覧取得
+- `POST /api/v1/tasks` - タスク作成
+- `GET /api/v1/tasks/:id` - タスク詳細取得
+- `PUT /api/v1/tasks/:id` - タスク更新
+- `DELETE /api/v1/tasks/:id` - タスク削除
+
+**カテゴリ管理**
+- `GET /api/v1/categories` - カテゴリ一覧取得
+- `POST /api/v1/categories` - カテゴリ作成
+- `PUT /api/v1/categories/:id` - カテゴリ更新
+- `DELETE /api/v1/categories/:id` - カテゴリ削除
+
+**習慣化タスク**
+- `GET /api/v1/routine_tasks` - 習慣化タスク一覧取得
+- `POST /api/v1/routine_tasks` - 習慣化タスク作成
+- `GET /api/v1/routine_tasks/:id` - 習慣化タスク詳細取得
+- `PUT /api/v1/routine_tasks/:id` - 習慣化タスク更新
+- `DELETE /api/v1/routine_tasks/:id` - 習慣化タスク削除
+- `POST /api/v1/routine_tasks/:id/generate` - タスク生成ジョブの開始
+- `GET /api/v1/routine_tasks/:id/generation_status?job_id=:job_id` - タスク生成ジョブのステータス確認
+
+**ヘルスチェック**
+- `GET /up` - アプリケーションの稼働状況確認
 
 ### 開発ドキュメント
 

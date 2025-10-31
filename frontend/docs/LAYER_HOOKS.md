@@ -30,6 +30,13 @@ features/tasks/hooks/
 ├── useTaskForm.ts         # フォーム管理
 ├── useTaskMutations.ts    # CRUD操作
 └── index.ts
+
+features/routineTasks/hooks/
+├── useFetchRoutineTasks.ts    # データ取得
+├── useRoutineTaskMutations.ts  # CRUD操作
+├── useTaskGeneration.ts       # タスク生成
+├── useBatchTaskGeneration.ts  # 一括タスク生成
+└── index.ts
 ```
 
 ## 💻 実装パターン
@@ -238,6 +245,36 @@ export const useTaskMutations = () => {
   }, []);
 
   return { createTask, updateTask, deleteTask };
+};
+```
+
+### **6. タスク生成フック（習慣化タスク用）**
+
+```typescript
+// features/routineTasks/hooks/useTaskGeneration.ts
+import { useState, useCallback } from 'react';
+import { routineTasksApi } from '../api/routineTasksApi';
+
+export const useTaskGeneration = () => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const generateTasks = useCallback(async (routineTaskId: number) => {
+    try {
+      setIsGenerating(true);
+      setError(null);
+      const response = await routineTasksApi.generateTasks(routineTaskId);
+      setJobId(response.data.jobId);
+    } catch (e) {
+      setError('タスクの生成に失敗しました');
+      console.error(e);
+    } finally {
+      setIsGenerating(false);
+    }
+  }, []);
+
+  return { generateTasks, isGenerating, jobId, error };
 };
 ```
 

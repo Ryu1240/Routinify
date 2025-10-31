@@ -20,6 +20,11 @@ Routinify Frontendは、以下の機能を提供するReact SPAです：
 
 - **タスク管理**: タスクのCRUD操作、ステータス管理、優先度設定
 - **カテゴリ管理**: タスクの分類機能
+- **習慣化タスク**: 繰り返しタスクの管理と自動生成
+  - 習慣化タスクの作成・編集・削除
+  - タスクの一括生成機能
+  - 非同期ジョブのステータス監視
+  - 頻度設定（日次・週次・月次・カスタム）
 - **認証**: Auth0を使用したセキュアな認証
 - **レスポンシブデザイン**: モバイル・タブレット・デスクトップ対応
 - **リアルタイム更新**: 最新のタスク状態を即座に反映
@@ -33,7 +38,7 @@ Routinify Frontendは、以下の機能を提供するReact SPAです：
 - **Axios**: 1.6+ - HTTPクライアント
 
 ### UI/スタイリング
-- **Mantine UI**: 7.6+ - コンポーネントライブラリ
+- **Mantine UI**: 8.3+ - コンポーネントライブラリ
 - **Emotion**: 11.11+ - CSS-in-JS
 - **Tabler Icons**: 3.34+ - アイコンセット
 
@@ -177,6 +182,15 @@ frontend/
 │   │   │   ├── types.ts      # タスク機能固有の型
 │   │   │   └── index.ts      # 公開API
 │   │   ├── categories/
+│   │   │   ├── components/   # カテゴリ専用コンポーネント
+│   │   │   ├── hooks/        # useCategories, useCategoryMutations
+│   │   │   ├── api/          # categoriesApi
+│   │   │   └── index.ts      # 公開API
+│   │   ├── routineTasks/
+│   │   │   ├── components/   # 習慣化タスク専用コンポーネント
+│   │   │   ├── hooks/        # useRoutineTasks, useTaskGeneration
+│   │   │   ├── api/          # routineTasksApi
+│   │   │   └── index.ts      # 公開API
 │   │   └── auth/
 │   ├── shared/               # 共通モジュール
 │   │   ├── components/       # Button, Modal等
@@ -187,10 +201,14 @@ frontend/
 │   │   ├── axios.ts
 │   │   └── mantine.ts
 │   ├── pages/                # ルートコンポーネント
+│   │   ├── tasks/
+│   │   ├── categories/
+│   │   └── routineTasks/
 │   ├── types/                # グローバル型定義
 │   │   ├── index.ts
 │   │   ├── task.ts
-│   │   └── category.ts
+│   │   ├── category.ts
+│   │   └── routineTask.ts
 │   ├── App.tsx
 │   └── index.tsx
 ├── .env                      # 環境変数
@@ -304,8 +322,10 @@ pnpm build
 
 ### API仕様
 
-- **OpenAPI仕様**: `../api/openapi.yaml`
-- **APIドキュメント**: [API Documentation](http://localhost:8080)
+- **OpenAPI仕様**: `../api/openapi.yaml`（ルートディレクトリからの相対パス）
+- **Swagger UI**: http://localhost:8080（開発環境）
+
+詳細なAPI仕様については、バックエンドの[README](../backend/README.md#api仕様)を参照してください。
 
 ## コントリビューション
 

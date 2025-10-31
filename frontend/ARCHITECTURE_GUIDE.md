@@ -361,6 +361,20 @@ src/
 │   ├── categories/
 │   │   └── ...（同様の構造）
 │   │
+│   ├── routineTasks/
+│   │   ├── components/
+│   │   │   ├── RoutineTaskList/
+│   │   │   ├── RoutineTaskForm/
+│   │   │   └── index.ts
+│   │   ├── hooks/
+│   │   │   ├── useFetchRoutineTasks.ts
+│   │   │   ├── useRoutineTaskMutations.ts
+│   │   │   ├── useTaskGeneration.ts
+│   │   │   └── useBatchTaskGeneration.ts
+│   │   ├── api/
+│   │   │   └── routineTasksApi.ts
+│   │   └── index.ts
+│   │
 │   └── auth/
 │       └── ...（同様の構造）
 │
@@ -758,6 +772,93 @@ export const TasksPage = () => {
       <TaskListContainer />
     </Layout>
   );
+};
+```
+
+---
+
+---
+
+### 習慣化タスク管理機能の完全実装
+
+#### **1. APIクライアント**
+
+```typescript
+// features/routineTasks/api/routineTasksApi.ts
+import { apiClient } from '@/lib/axios';
+import type { RoutineTask, CreateRoutineTaskDto, UpdateRoutineTaskDto, TaskGenerationJob } from '@/types';
+
+export const routineTasksApi = {
+  getAll: async (): Promise<{ data: RoutineTask[] }> => {
+    const response = await apiClient.get('/api/v1/routine_tasks');
+    return response.data;
+  },
+
+  create: async (data: CreateRoutineTaskDto): Promise<{ data: RoutineTask }> => {
+    const response = await apiClient.post('/api/v1/routine_tasks', { routineTask: data });
+    return response.data;
+  },
+
+  generateTasks: async (id: number): Promise<{ data: { jobId: string } }> => {
+    const response = await apiClient.post(`/api/v1/routine_tasks/${id}/generate`);
+    return response.data;
+  },
+
+  getGenerationStatus: async (id: number, jobId: string): Promise<{ data: TaskGenerationJob }> => {
+    const response = await apiClient.get(`/api/v1/routine_tasks/${id}/generation_status?job_id=${jobId}`);
+    return response.data;
+  },
+};
+```
+
+#### **2. タスク生成フック**
+
+```typescript
+// features/routineTasks/hooks/useTaskGeneration.ts
+import { useState, useCallback, useEffect } from 'react';
+import { routineTasksApi } from '../api/routineTasksApi';
+
+export const useTaskGeneration = (routineTaskId: number | null) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [jobStatus, setJobStatus] = useState<TaskGenerationJob | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const generateTasks = useCallback(async () => {
+    if (!routineTaskId) return;
+
+    try {
+      setIsGenerating(true);
+      setError(null);
+      const response = await routineTasksApi.generateTasks(routineTaskId);
+      setJobId(response.data.jobId);
+    } catch (e) {
+      setError('タスクの生成に失敗しました');
+    } finally {
+      setIsGenerating(false);
+    }
+  }, [routineTaskId]);
+
+  // ジョブステータスのポーリング
+  useEffect(() => {
+    if (!jobId || !routineTaskId) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await routineTasksApi.getGenerationStatus(routineTaskId, jobId);
+        setJobStatus(response.data);
+        if (response.data.completed) {
+          clearInterval(interval);
+        }
+      } catch (e) {
+        console.error('ジョブステータスの取得に失敗しました', e);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [jobId, routineTaskId]);
+
+  return { generateTasks, isGenerating, jobStatus, error };
 };
 ```
 

@@ -129,7 +129,8 @@ backend/
 │   │   │   └── v1/                    # API v1
 │   │   │       ├── base_controller.rb # 共通コントローラー
 │   │   │       ├── tasks_controller.rb
-│   │   │       └── categories_controller.rb
+│   │   │       ├── categories_controller.rb
+│   │   │       └── routine_tasks_controller.rb
 │   │   ├── concerns/                   # 共通機能
 │   │   │   ├── secured.rb             # 認証・認可
 │   │   │   ├── error_handler.rb       # エラーハンドリング
@@ -142,18 +143,21 @@ backend/
 │   │   │   └── timestamped.rb         # タイムスタンプ
 │   │   ├── task.rb
 │   │   ├── category.rb
+│   │   ├── routine_task.rb
 │   │   └── application_record.rb
 │   │
 │   ├── services/                       # サービス層
 │   │   ├── base_service.rb            # 基底サービス
 │   │   ├── task_service.rb
 │   │   ├── category_service.rb
+│   │   ├── routine_task_service.rb
 │   │   └── auth_service.rb
 │   │
 │   ├── serializers/                    # シリアライザー層
 │   │   ├── base_serializer.rb         # 基底シリアライザー
 │   │   ├── task_serializer.rb
-│   │   └── category_serializer.rb
+│   │   ├── category_serializer.rb
+│   │   └── routine_task_serializer.rb
 │   │
 │   ├── validators/                     # カスタムバリデーター
 │   │   ├── future_date_validator.rb
@@ -161,6 +165,7 @@ backend/
 │   │
 │   ├── jobs/                          # バックグラウンドジョブ
 │   │   ├── application_job.rb
+│   │   ├── routine_task_generator_job.rb
 │   │   ├── task_notification_job.rb
 │   │   └── cleanup_job.rb
 │   │
