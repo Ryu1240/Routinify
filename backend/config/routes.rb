@@ -3,7 +3,12 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :tasks, only: [ :index, :show, :create, :update, :destroy ]
       resources :categories, only: [ :index, :create, :update, :destroy ]
-      resources :routine_tasks, only: [ :index, :show, :create, :update, :destroy ]
+      resources :routine_tasks, only: [ :index, :show, :create, :update, :destroy ] do
+        member do
+          post :generate
+          get :generation_status
+        end
+      end
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -6,6 +6,7 @@ FactoryBot.define do
     interval_value { nil }
     last_generated_at { nil }
     next_generation_at { 1.day.from_now }
+    start_generation_at { 1.day.from_now }
     max_active_tasks { 3 }
     category_id { nil }
     priority { 'medium' }
@@ -58,6 +59,7 @@ FactoryBot.define do
     # 生成済み
     trait :with_last_generation do
       last_generated_at { 1.day.ago }
+      # start_generation_atはテストで明示的に設定する必要がある（last_generated_atより過去に設定）
     end
 
     # 生成準備完了

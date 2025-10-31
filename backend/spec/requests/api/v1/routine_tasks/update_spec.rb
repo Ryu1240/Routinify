@@ -258,6 +258,57 @@ RSpec.describe 'PUT /api/v1/routine_tasks/:id', type: :request do
         # interval_valueは更新されないのでそのまま（バリデーションはdaily/weekly/monthlyでは無視される）
         expect(custom_routine_task.interval_value).to eq(5)
       end
+
+      it '期限オフセットを更新できること' do
+        params_with_due_date_offset = {
+          routine_task: {
+            due_date_offset_days: 3,
+            due_date_offset_hour: 15
+          }
+        }
+
+        put "/api/v1/routine_tasks/#{routine_task.id}", params: params_with_due_date_offset, headers: auth_headers
+        expect(response).to have_http_status(:ok)
+
+        routine_task.reload
+        expect(routine_task.due_date_offset_days).to eq(3)
+        expect(routine_task.due_date_offset_hour).to eq(15)
+      end
+
+      it '開始期限を更新できること（生成が行われていない場合）' do
+        new_start_time = 2.days.from_now
+        params_with_start_generation = {
+          routine_task: {
+            start_generation_at: new_start_time
+          }
+        }
+
+        put "/api/v1/routine_tasks/#{routine_task.id}", params: params_with_start_generation, headers: auth_headers
+        expect(response).to have_http_status(:ok)
+
+        routine_task.reload
+        expect(routine_task.start_generation_at).to be_within(1.second).of(new_start_time)
+      end
+
+      it '一度でも生成が行われた場合、開始期限は変更できないこと' do
+        # 生成済みのroutine_taskを作成（start_generation_atはlast_generated_atより過去に設定）
+        routine_task_with_generation = create(:routine_task, :with_last_generation,
+                                              account_id: user_id,
+                                              start_generation_at: 2.days.ago)
+        original_start_generation_at = routine_task_with_generation.start_generation_at
+        new_start_time = 2.days.from_now
+        params_with_start_generation = {
+          routine_task: {
+            start_generation_at: new_start_time
+          }
+        }
+
+        put "/api/v1/routine_tasks/#{routine_task_with_generation.id}", params: params_with_start_generation, headers: auth_headers
+        expect(response).to have_http_status(:unprocessable_entity)
+
+        json_response = JSON.parse(response.body)
+        expect(json_response['errors']).to include('開始期限は一度でも生成が行われると変更できません')
+      end
     end
   end
 end

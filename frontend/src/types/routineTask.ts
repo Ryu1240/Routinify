@@ -13,6 +13,9 @@ export type RoutineTask = {
   categoryName: string | null;
   priority: RoutineTaskPriority | null;
   isActive: boolean;
+  dueDateOffsetDays: number | null;
+  dueDateOffsetHour: number | null;
+  startGenerationAt: string;
   readonly createdAt: string;
   readonly updatedAt: string;
 };

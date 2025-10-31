@@ -23,6 +23,9 @@ type RoutineTaskRequestBody = {
     category_id?: number | null;
     priority?: string | null;
     is_active: boolean;
+    due_date_offset_days?: number | null;
+    due_date_offset_hour?: number | null;
+    start_generation_at: string;
   };
 };
 
@@ -36,7 +39,32 @@ type UpdateRoutineTaskRequestBody = {
     category_id?: number | null;
     priority?: string | null;
     is_active?: boolean;
+    due_date_offset_days?: number | null;
+    due_date_offset_hour?: number | null;
+    start_generation_at: string;
   };
+};
+
+export type TaskGenerationJob = {
+  jobId: string;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  completed: boolean;
+  generatedTasksCount?: number;
+  error?: string;
+  createdAt: string;
+  completedAt?: string;
+};
+
+type GenerateResponse = {
+  success: boolean;
+  data: {
+    jobId: string;
+  };
+};
+
+type GenerationStatusResponse = {
+  success: boolean;
+  data: TaskGenerationJob;
 };
 
 export const routineTasksApi = {
@@ -67,6 +95,9 @@ export const routineTasksApi = {
         category_id: routineTaskData.categoryId,
         priority: routineTaskData.priority,
         is_active: routineTaskData.isActive,
+        due_date_offset_days: routineTaskData.dueDateOffsetDays,
+        due_date_offset_hour: routineTaskData.dueDateOffsetHour,
+        start_generation_at: routineTaskData.startGenerationAt,
       },
     };
     const response = await axios.post<SingleRoutineTaskResponse>(
@@ -80,6 +111,11 @@ export const routineTasksApi = {
     id: number,
     routineTaskData: UpdateRoutineTaskDto
   ): Promise<RoutineTask> => {
+    // start_generation_atは必須なので、undefinedの場合はエラー
+    if (!routineTaskData.startGenerationAt) {
+      throw new Error('startGenerationAt is required');
+    }
+
     const body: UpdateRoutineTaskRequestBody = {
       routine_task: {
         ...(routineTaskData.title !== undefined && {
@@ -106,6 +142,13 @@ export const routineTasksApi = {
         ...(routineTaskData.isActive !== undefined && {
           is_active: routineTaskData.isActive,
         }),
+        ...(routineTaskData.dueDateOffsetDays !== undefined && {
+          due_date_offset_days: routineTaskData.dueDateOffsetDays,
+        }),
+        ...(routineTaskData.dueDateOffsetHour !== undefined && {
+          due_date_offset_hour: routineTaskData.dueDateOffsetHour,
+        }),
+        start_generation_at: routineTaskData.startGenerationAt, // 必須
       },
     };
     const response = await axios.put<SingleRoutineTaskResponse>(
@@ -117,5 +160,36 @@ export const routineTasksApi = {
 
   delete: async (id: number): Promise<void> => {
     await axios.delete(`/api/v1/routine_tasks/${id}`);
+  },
+
+  /**
+   * タスク生成ジョブを開始する
+   * @param routineTaskId - 習慣化タスクID
+   * @returns ジョブID
+   */
+  generate: async (routineTaskId: number): Promise<{ jobId: string }> => {
+    const response = await axios.post<GenerateResponse>(
+      `/api/v1/routine_tasks/${routineTaskId}/generate`
+    );
+    return response.data.data;
+  },
+
+  /**
+   * タスク生成ジョブのステータスを取得する
+   * @param routineTaskId - 習慣化タスクID
+   * @param jobId - ジョブID
+   * @returns ジョブステータス情報
+   */
+  getGenerationStatus: async (
+    routineTaskId: number,
+    jobId: string
+  ): Promise<TaskGenerationJob> => {
+    const response = await axios.get<GenerationStatusResponse>(
+      `/api/v1/routine_tasks/${routineTaskId}/generation_status`,
+      {
+        params: { job_id: jobId },
+      }
+    );
+    return response.data.data;
   },
 };

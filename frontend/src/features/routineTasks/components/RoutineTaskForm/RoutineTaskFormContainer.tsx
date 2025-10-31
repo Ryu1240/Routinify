@@ -23,6 +23,9 @@ export const RoutineTaskFormContainer: React.FC = () => {
   } = useRoutineTaskForm();
 
   const [loading, setLoading] = useState(false);
+  const [routineTask, setRoutineTask] = useState<{
+    lastGeneratedAt: string | null;
+  } | null>(null);
 
   // 編集モード時にデータ取得
   useEffect(() => {
@@ -32,6 +35,7 @@ export const RoutineTaskFormContainer: React.FC = () => {
         .fetchById(Number(id))
         .then((task) => {
           setFormDataFromRoutineTask(task);
+          setRoutineTask(task);
         })
         .catch((error) => {
           console.error('習慣化タスクの取得に失敗:', error);
@@ -48,9 +52,9 @@ export const RoutineTaskFormContainer: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const routineTaskData = getSubmitData();
-
     try {
+      const routineTaskData = getSubmitData();
+
       if (isEditMode && id) {
         await updateRoutineTask(
           Number(id),
@@ -62,6 +66,11 @@ export const RoutineTaskFormContainer: React.FC = () => {
       navigate('/routine-tasks');
     } catch (error) {
       console.error('習慣化タスクの保存に失敗:', error);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('習慣化タスクの保存に失敗しました');
+      }
     }
   };
 
@@ -69,6 +78,10 @@ export const RoutineTaskFormContainer: React.FC = () => {
   const handleCancel = () => {
     navigate('/routine-tasks');
   };
+
+  const isGenerated =
+    routineTask?.lastGeneratedAt !== null &&
+    routineTask?.lastGeneratedAt !== undefined;
 
   return (
     <RoutineTaskForm
@@ -80,6 +93,7 @@ export const RoutineTaskFormContainer: React.FC = () => {
       loading={loading}
       submitLoading={createLoading || updateLoading}
       categories={categories}
+      isGenerated={isGenerated}
     />
   );
 };

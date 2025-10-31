@@ -53,4 +53,7 @@ Rails.application.configure do
 
   # Allow all hosts in test environment
   config.hosts.clear
+
+  # Use test queue adapter for ActiveJob
+  config.active_job.queue_adapter = :test
 end

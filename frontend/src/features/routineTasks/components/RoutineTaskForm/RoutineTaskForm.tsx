@@ -23,6 +23,9 @@ type FormData = {
   categoryId: string | null;
   priority: RoutineTaskPriority | null;
   isActive: boolean;
+  dueDateOffsetDays: number | string | null;
+  dueDateOffsetHour: number | string | null;
+  startGenerationAt: Date | null;
 };
 
 type RoutineTaskFormProps = {
@@ -37,6 +40,21 @@ type RoutineTaskFormProps = {
   loading: boolean;
   submitLoading: boolean;
   categories: Category[];
+  isGenerated?: boolean;
+};
+
+// Mantine 8系ではDateTimePickerのonChangeが文字列を返すため、
+// Dateオブジェクトに変換する関数
+const toDate = (value: unknown): Date | null => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  // Mantine 8系では文字列が返される可能性があるため、文字列をDateオブジェクトに変換
+  const date = new Date(value as string | number);
+  return isNaN(date.getTime()) ? null : date;
 };
 
 export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
@@ -48,6 +66,7 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
   loading,
   submitLoading,
   categories,
+  isGenerated = false,
 }) => {
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
@@ -105,8 +124,11 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
             placeholder="次回生成日時を選択"
             value={formData.nextGenerationAt}
             onChange={(value) => {
-              if (value) {
-                onInputChange('nextGenerationAt', value);
+              // Mantine 8系ではonChangeが文字列を返すため、Dateオブジェクトに変換
+              // 必須フィールドのためnullは受け入れない
+              const dateValue = toDate(value);
+              if (dateValue) {
+                onInputChange('nextGenerationAt', dateValue);
               }
             }}
             required
@@ -152,6 +174,53 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
             checked={formData.isActive}
             onChange={(event) =>
               onInputChange('isActive', event.currentTarget.checked)
+            }
+          />
+
+          <Box>
+            <Title order={4} mb="sm">
+              期限設定（任意）
+            </Title>
+            <Group gap="md">
+              <NumberInput
+                label="期限の日"
+                placeholder="日数"
+                value={formData.dueDateOffsetDays ?? undefined}
+                onChange={(value) => onInputChange('dueDateOffsetDays', value)}
+                min={0}
+                style={{ flex: 1 }}
+              />
+              <NumberInput
+                label="期限の時"
+                placeholder="0-23"
+                value={formData.dueDateOffsetHour ?? undefined}
+                onChange={(value) => onInputChange('dueDateOffsetHour', value)}
+                min={0}
+                max={23}
+                style={{ flex: 1 }}
+              />
+            </Group>
+            <Box mt="xs" style={{ fontSize: '0.875rem', color: '#666' }}>
+              指定された期限の日と時を生成日に加算して期限日時とします
+            </Box>
+          </Box>
+
+          <DateTimePicker
+            label="開始期限"
+            placeholder="開始期限を選択"
+            value={formData.startGenerationAt}
+            onChange={(value) => {
+              // Mantine 8系ではonChangeが文字列を返すため、Dateオブジェクトに変換
+              // nullも受け入れる
+              const dateValue = toDate(value);
+              onInputChange('startGenerationAt', dateValue);
+            }}
+            required
+            disabled={isEditMode && isGenerated}
+            description={
+              isEditMode && isGenerated
+                ? '一度でも生成が行われると変更できません'
+                : 'この日からタスクの生成が始まります'
             }
           />
 

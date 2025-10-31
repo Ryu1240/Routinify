@@ -76,4 +76,7 @@ RSpec.configure do |config|
 
   # AuthorizationHelperの設定
   config.include AuthorizationHelper
+
+  # ActiveJob のテストヘルパーを有効化
+  config.include ActiveJob::TestHelper
 end

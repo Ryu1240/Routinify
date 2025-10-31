@@ -253,6 +253,21 @@ components:
           type: boolean
           description: 有効/無効フラグ
           default: true
+        dueDateOffsetDays:
+          type: integer
+          nullable: true
+          description: 期限の日数
+          minimum: 0
+        dueDateOffsetHour:
+          type: integer
+          nullable: true
+          description: 期限の時（0-23）
+          minimum: 0
+          maximum: 23
+        startGenerationAt:
+          type: string
+          format: date-time
+          description: 開始期限（この日からタスクの生成が始まります。一度でも生成が行われると変更できません）
         createdAt:
           type: string
           format: date-time
@@ -311,10 +326,27 @@ components:
           type: boolean
           description: 有効/無効フラグ
           default: true
+        dueDateOffsetDays:
+          type: integer
+          nullable: true
+          description: 期限の日数
+          minimum: 0
+        dueDateOffsetHour:
+          type: integer
+          nullable: true
+          description: 期限の時（0-23）
+          minimum: 0
+          maximum: 23
+        startGenerationAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 開始期限（この日からタスクの生成が始まります）
       required:
         - title
         - frequency
         - nextGenerationAt
+        - startGenerationAt
 
     RoutineTaskUpdate:
       type: object
@@ -351,6 +383,57 @@ components:
         isActive:
           type: boolean
           description: 有効/無効フラグ
+        dueDateOffsetDays:
+          type: integer
+          nullable: true
+          description: 期限の日数
+          minimum: 0
+        dueDateOffsetHour:
+          type: integer
+          nullable: true
+          description: 期限の時（0-23）
+          minimum: 0
+          maximum: 23
+        startGenerationAt:
+          type: string
+          format: date-time
+          description: 開始期限（この日からタスクの生成が始まります。一度でも生成が行われると変更できません）
+
+    TaskGenerationJob:
+      type: object
+      properties:
+        jobId:
+          type: string
+          format: uuid
+          description: ジョブID
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        status:
+          type: string
+          enum: [pending, running, completed, failed]
+          description: ジョブステータス
+          example: "completed"
+        completed:
+          type: boolean
+          description: ジョブが完了したかどうか
+          example: true
+        generatedTasksCount:
+          type: integer
+          description: 生成されたタスク数
+          example: 3
+          nullable: true
+        error:
+          type: string
+          description: エラーメッセージ（失敗時のみ）
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          description: ジョブ作成日時
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: ジョブ完了日時
 
     # HabitStatus:
     #   type: object
@@ -825,6 +908,114 @@ paths:
                     items:
                       type: string
                     example: ["習慣化タスクが見つかりません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /routine-tasks/{id}/generate:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    post:
+      tags:
+        - 習慣化タスク
+      summary: 習慣化タスクから通常タスクを生成（非同期）
+      description: |
+        指定された習慣化タスクに基づいて通常タスクを非同期で生成します。
+        生成処理はジョブキューで実行され、ジョブIDが返却されます。
+        フロントエンドはこのジョブIDを使用してステータスをポーリングします。
+      security:
+        - Auth0:
+            - write:routine-tasks
+      responses:
+        '202':
+          description: タスク生成ジョブをキューに追加しました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      jobId:
+                        type: string
+                        format: uuid
+                        description: ジョブID
+                        example: "550e8400-e29b-41d4-a716-446655440000"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: 習慣化タスクが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["習慣化タスクが見つかりません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /routine-tasks/{id}/generation-status:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: job_id
+        in: query
+        required: true
+        schema:
+          type: string
+        description: タスク生成ジョブのID
+    get:
+      tags:
+        - 習慣化タスク
+      summary: タスク生成ジョブのステータス確認
+      description: |
+        指定されたジョブIDのタスク生成処理の進行状況を確認します。
+        フロントエンドはこのエンドポイントをポーリング（3秒間隔）して完了を監視します。
+      security:
+        - Auth0:
+            - read:routine-tasks
+      responses:
+        '200':
+          description: ジョブステータスの取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TaskGenerationJob'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: ジョブが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["ジョブが見つかりません"]
         '500':
           $ref: '#/components/responses/InternalServerError'
 
