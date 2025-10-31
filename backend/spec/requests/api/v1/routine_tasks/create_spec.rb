@@ -11,6 +11,7 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
         title: 'New Routine Task',
         frequency: 'daily',
         next_generation_at: 1.day.from_now,
+        start_generation_at: 1.day.from_now,
         max_active_tasks: 3,
         priority: 'high',
         category_id: category.id,
@@ -53,7 +54,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           routine_task: {
             title: 'Minimal Routine Task',
             frequency: 'daily',
-            next_generation_at: 1.day.from_now
+            next_generation_at: 1.day.from_now,
+            start_generation_at: 1.day.from_now
           }
         }
 
@@ -106,7 +108,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           routine_task: {
             title: 'Task with defaults',
             frequency: 'weekly',
-            next_generation_at: 1.week.from_now
+            next_generation_at: 1.week.from_now,
+            start_generation_at: 1.week.from_now
           }
         }
 
@@ -124,7 +127,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           routine_task: {
             title: 'Custom without interval',
             frequency: 'custom',
-            next_generation_at: 3.days.from_now
+            next_generation_at: 3.days.from_now,
+            start_generation_at: 3.days.from_now
           }
         }
 
@@ -143,7 +147,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           invalid_params = {
             routine_task: {
               frequency: 'daily',
-              next_generation_at: 1.day.from_now
+              next_generation_at: 1.day.from_now,
+              start_generation_at: 1.day.from_now
             }
           }
 
@@ -160,7 +165,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
             routine_task: {
               title: 'a' * 256,
               frequency: 'daily',
-              next_generation_at: 1.day.from_now
+              next_generation_at: 1.day.from_now,
+              start_generation_at: 1.day.from_now
             }
           }
 
@@ -176,7 +182,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           invalid_params = {
             routine_task: {
               title: 'Test Task',
-              next_generation_at: 1.day.from_now
+              next_generation_at: 1.day.from_now,
+              start_generation_at: 1.day.from_now
             }
           }
 
@@ -193,7 +200,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
             routine_task: {
               title: 'Test Task',
               frequency: 'invalid_frequency',
-              next_generation_at: 1.day.from_now
+              next_generation_at: 1.day.from_now,
+              start_generation_at: 1.day.from_now
             }
           }
 
@@ -208,7 +216,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           invalid_params = {
             routine_task: {
               title: 'Test Task',
-              frequency: 'daily'
+              frequency: 'daily',
+              start_generation_at: 1.day.from_now
             }
           }
 
@@ -219,13 +228,31 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           expect(json_response['success']).to be false
         end
 
+        it 'returns 422 when start_generation_at is missing' do
+          invalid_params = {
+            routine_task: {
+              title: 'Test Task',
+              frequency: 'daily',
+              next_generation_at: 1.day.from_now
+            }
+          }
+
+          post '/api/v1/routine_tasks', params: invalid_params, headers: auth_headers
+          expect(response).to have_http_status(:unprocessable_entity)
+
+          json_response = JSON.parse(response.body)
+          expect(json_response['success']).to be false
+          expect(json_response['errors']).to include(match(/Start generation at/))
+        end
+
         it 'returns 422 when interval_value is 0 or negative' do
           invalid_params = {
             routine_task: {
               title: 'Test Task',
               frequency: 'custom',
               interval_value: 0,
-              next_generation_at: 1.day.from_now
+              next_generation_at: 1.day.from_now,
+              start_generation_at: 1.day.from_now
             }
           }
 
@@ -242,6 +269,7 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
               title: 'Test Task',
               frequency: 'daily',
               next_generation_at: 1.day.from_now,
+              start_generation_at: 1.day.from_now,
               priority: 'invalid_priority'
             }
           }
@@ -287,7 +315,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           routine_task: {
             title: 'a' * 255,
             frequency: 'daily',
-            next_generation_at: 1.day.from_now
+            next_generation_at: 1.day.from_now,
+            start_generation_at: 1.day.from_now
           }
         }
 
@@ -307,7 +336,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
           routine_task: {
             title: '習慣タスク (重要) - 毎日実行が必要です！',
             frequency: 'daily',
-            next_generation_at: 1.day.from_now
+            next_generation_at: 1.day.from_now,
+            start_generation_at: 1.day.from_now
           }
         }
 
@@ -328,6 +358,7 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
             title: 'No category task',
             frequency: 'weekly',
             next_generation_at: 1.week.from_now,
+            start_generation_at: 1.week.from_now,
             category_id: nil
           }
         }
@@ -349,6 +380,7 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
             title: 'No priority task',
             frequency: 'monthly',
             next_generation_at: 1.month.from_now,
+            start_generation_at: 1.month.from_now,
             priority: nil
           }
         }
@@ -370,7 +402,8 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
             title: 'Custom frequency task',
             frequency: 'custom',
             interval_value: 5,
-            next_generation_at: 5.days.from_now
+            next_generation_at: 5.days.from_now,
+            start_generation_at: 5.days.from_now
           }
         }
 
@@ -383,6 +416,44 @@ RSpec.describe 'POST /api/v1/routine_tasks', type: :request do
         created_routine_task = RoutineTask.last
         expect(created_routine_task.frequency).to eq('custom')
         expect(created_routine_task.interval_value).to eq(5)
+      end
+
+      it '期限オフセットを設定して作成できること' do
+        params_with_due_date_offset = {
+          routine_task: {
+            title: 'Task with due date offset',
+            frequency: 'daily',
+            next_generation_at: 1.day.from_now,
+            start_generation_at: 1.day.from_now,
+            due_date_offset_days: 2,
+            due_date_offset_hour: 14
+          }
+        }
+
+        post '/api/v1/routine_tasks', params: params_with_due_date_offset, headers: auth_headers
+        expect(response).to have_http_status(:created)
+
+        created_routine_task = RoutineTask.last
+        expect(created_routine_task.due_date_offset_days).to eq(2)
+        expect(created_routine_task.due_date_offset_hour).to eq(14)
+      end
+
+      it '開始期限を設定して作成できること' do
+        start_time = 1.day.from_now
+        params_with_start_generation = {
+          routine_task: {
+            title: 'Task with start generation',
+            frequency: 'daily',
+            next_generation_at: 1.day.from_now,
+            start_generation_at: start_time
+          }
+        }
+
+        post '/api/v1/routine_tasks', params: params_with_start_generation, headers: auth_headers
+        expect(response).to have_http_status(:created)
+
+        created_routine_task = RoutineTask.last
+        expect(created_routine_task.start_generation_at).to be_within(1.second).of(start_time)
       end
     end
   end

@@ -23,6 +23,9 @@ type RoutineTaskRequestBody = {
     category_id?: number | null;
     priority?: string | null;
     is_active: boolean;
+    due_date_offset_days?: number | null;
+    due_date_offset_hour?: number | null;
+    start_generation_at: string;
   };
 };
 
@@ -36,6 +39,9 @@ type UpdateRoutineTaskRequestBody = {
     category_id?: number | null;
     priority?: string | null;
     is_active?: boolean;
+    due_date_offset_days?: number | null;
+    due_date_offset_hour?: number | null;
+    start_generation_at: string;
   };
 };
 
@@ -89,6 +95,9 @@ export const routineTasksApi = {
         category_id: routineTaskData.categoryId,
         priority: routineTaskData.priority,
         is_active: routineTaskData.isActive,
+        due_date_offset_days: routineTaskData.dueDateOffsetDays,
+        due_date_offset_hour: routineTaskData.dueDateOffsetHour,
+        start_generation_at: routineTaskData.startGenerationAt,
       },
     };
     const response = await axios.post<SingleRoutineTaskResponse>(
@@ -102,6 +111,11 @@ export const routineTasksApi = {
     id: number,
     routineTaskData: UpdateRoutineTaskDto
   ): Promise<RoutineTask> => {
+    // start_generation_atは必須なので、undefinedの場合はエラー
+    if (!routineTaskData.startGenerationAt) {
+      throw new Error('startGenerationAt is required');
+    }
+
     const body: UpdateRoutineTaskRequestBody = {
       routine_task: {
         ...(routineTaskData.title !== undefined && {
@@ -128,6 +142,13 @@ export const routineTasksApi = {
         ...(routineTaskData.isActive !== undefined && {
           is_active: routineTaskData.isActive,
         }),
+        ...(routineTaskData.dueDateOffsetDays !== undefined && {
+          due_date_offset_days: routineTaskData.dueDateOffsetDays,
+        }),
+        ...(routineTaskData.dueDateOffsetHour !== undefined && {
+          due_date_offset_hour: routineTaskData.dueDateOffsetHour,
+        }),
+        start_generation_at: routineTaskData.startGenerationAt, // 必須
       },
     };
     const response = await axios.put<SingleRoutineTaskResponse>(

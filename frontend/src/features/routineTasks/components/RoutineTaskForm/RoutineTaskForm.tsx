@@ -23,6 +23,9 @@ type FormData = {
   categoryId: string | null;
   priority: RoutineTaskPriority | null;
   isActive: boolean;
+  dueDateOffsetDays: number | string | null;
+  dueDateOffsetHour: number | string | null;
+  startGenerationAt: Date | null;
 };
 
 type RoutineTaskFormProps = {
@@ -37,6 +40,7 @@ type RoutineTaskFormProps = {
   loading: boolean;
   submitLoading: boolean;
   categories: Category[];
+  isGenerated?: boolean;
 };
 
 export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
@@ -48,6 +52,7 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
   loading,
   submitLoading,
   categories,
+  isGenerated = false,
 }) => {
   const categoryOptions = categories.map((cat) => ({
     value: cat.id.toString(),
@@ -152,6 +157,50 @@ export const RoutineTaskForm: React.FC<RoutineTaskFormProps> = ({
             checked={formData.isActive}
             onChange={(event) =>
               onInputChange('isActive', event.currentTarget.checked)
+            }
+          />
+
+          <Box>
+            <Title order={4} mb="sm">
+              期限設定（任意）
+            </Title>
+            <Group gap="md">
+              <NumberInput
+                label="期限の日"
+                placeholder="日数"
+                value={formData.dueDateOffsetDays ?? undefined}
+                onChange={(value) => onInputChange('dueDateOffsetDays', value)}
+                min={0}
+                style={{ flex: 1 }}
+              />
+              <NumberInput
+                label="期限の時"
+                placeholder="0-23"
+                value={formData.dueDateOffsetHour ?? undefined}
+                onChange={(value) => onInputChange('dueDateOffsetHour', value)}
+                min={0}
+                max={23}
+                style={{ flex: 1 }}
+              />
+            </Group>
+            <Box mt="xs" style={{ fontSize: '0.875rem', color: '#666' }}>
+              指定された期限の日と時を生成日に加算して期限日時とします
+            </Box>
+          </Box>
+
+          <DateTimePicker
+            label="開始期限"
+            placeholder="開始期限を選択"
+            value={formData.startGenerationAt}
+            onChange={(value) => {
+              onInputChange('startGenerationAt', value);
+            }}
+            required
+            disabled={isEditMode && isGenerated}
+            description={
+              isEditMode && isGenerated
+                ? '一度でも生成が行われると変更できません'
+                : 'この日からタスクの生成が始まります'
             }
           />
 

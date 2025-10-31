@@ -7,6 +7,13 @@ class RoutineTaskGeneratorJob < ApplicationJob
     routine_task = RoutineTask.find(routine_task_id)
     current_time = Time.current
 
+    # Step 0: 開始期限のチェック
+    if current_time < routine_task.start_generation_at
+      # 開始期限に達していない場合は何も生成しない
+      update_job_status(job_id, 'completed', true, generated_tasks_count: 0, completed_at: current_time)
+      return
+    end
+
     # Step 1: 現在の未完了タスク数を取得
     current_active_count = routine_task.active_tasks_count
 
@@ -17,14 +24,33 @@ class RoutineTaskGeneratorJob < ApplicationJob
     available_slots = routine_task.max_active_tasks - current_active_count
 
     # Step 4: 実際に生成するタスク数を決定
-    actual_generate_count = [tasks_to_generate, available_slots].min.clamp(0, Float::INFINITY)
+    actual_generate_count = [ tasks_to_generate, available_slots ].min.clamp(0, Float::INFINITY)
 
     # Step 5: タスクを生成
     generated_tasks_count = 0
     if actual_generate_count > 0
+      # 基準日時の決定
+      # 最初の生成時：start_generation_atを使用
+      # 2回目以降：last_generated_atを使用
+      base_time = routine_task.last_generated_at.present? ? routine_task.last_generated_at : routine_task.start_generation_at
+
+      # 最初のタスク生成かどうかを判定
+      is_first_generation = routine_task.last_generated_at.nil?
+
       actual_generate_count.times do |i|
-        # 未来の日付にするため、現在時刻から1日後を基準にする
-        due_date = current_time + ((i + 1) * routine_task.interval_days).days
+        # 生成日時を計算（基準日時から間隔日数を加算）
+        generation_date = base_time + ((i + 1) * routine_task.interval_days).days
+
+        # 期限日時を計算
+        # 最初のタスク生成時：開始日（start_generation_at）を基準
+        # 2回目以降：生成日時を基準
+        if is_first_generation && i == 0
+          # 最初のタスクの場合は開始日を基準にする
+          due_date = routine_task.calculate_due_date(routine_task.start_generation_at) || generation_date
+        else
+          # 2回目以降は生成日時を基準にする
+          due_date = routine_task.calculate_due_date(generation_date) || generation_date
+        end
 
         Task.create!(
           account_id: routine_task.account_id,
@@ -33,7 +59,8 @@ class RoutineTaskGeneratorJob < ApplicationJob
           due_date: due_date,
           priority: routine_task.priority,
           category_id: routine_task.category_id,
-          status: 'pending'
+          status: 'pending', # 習慣化タスクから生成されたタスクは常に未着手ステータス
+          generated_at: generation_date
         )
         generated_tasks_count += 1
       end

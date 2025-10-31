@@ -24,9 +24,10 @@ const Header: React.FC = () => {
             <Image
               src="/Routinify-Logo.png"
               alt="Routinify Logo"
-              width={36}
-              height={36}
+              w={rem(36)}
+              h={rem(36)}
               radius="md"
+              style={{ flexShrink: 0 }}
             />
             <Text
               size="xl"

@@ -41,6 +41,13 @@ module Api
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('習慣化タスク') unless routine_task
 
+          # 一度でも生成が行われた場合、start_generation_atは変更不可
+          if routine_task.generated? && routine_task_params[:start_generation_at].present?
+            if routine_task.start_generation_at.present? && routine_task_params[:start_generation_at] != routine_task.start_generation_at
+              return render_error(errors: [ '開始期限は一度でも生成が行われると変更できません' ], status: :unprocessable_entity)
+            end
+          end
+
           if routine_task.update(routine_task_params)
             render_success(
               data: RoutineTaskSerializer.new(routine_task).as_json,
@@ -120,7 +127,7 @@ module Api
       private
 
       def routine_task_params
-        params.require(:routine_task).permit(:title, :frequency, :interval_value, :next_generation_at, :max_active_tasks, :category_id, :priority, :is_active)
+        params.require(:routine_task).permit(:title, :frequency, :interval_value, :next_generation_at, :max_active_tasks, :category_id, :priority, :is_active, :due_date_offset_days, :due_date_offset_hour, :start_generation_at)
       end
     end
   end

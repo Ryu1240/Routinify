@@ -9,9 +9,13 @@ class RoutineTask < ApplicationRecord
   validates :title, presence: true, length: { maximum: 255 }
   validates :frequency, presence: true, inclusion: { in: FREQUENCIES }
   validates :next_generation_at, presence: true
+  validates :start_generation_at, presence: true
   validates :max_active_tasks, presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 1 }
   validates :priority, inclusion: { in: PRIORITIES }, allow_nil: true
+  validates :due_date_offset_days, numericality: { only_integer: true, greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :due_date_offset_hour, numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than: 24 }, allow_nil: true
   validate :validate_interval_value_based_on_frequency
+  validate :validate_start_generation_at_immutable
 
   scope :by_account, ->(account_id) { where(account_id: account_id) }
 
@@ -61,6 +65,29 @@ class RoutineTask < ApplicationRecord
     base_time + interval_days.days
   end
 
+  # 生成済みかどうかをチェック（一度でも生成が行われたか）
+  def generated?
+    last_generated_at.present?
+  end
+
+  # 期限日時を計算（基準日にオフセットを加算）
+  # @param base_date [Time, Date] 基準日時（最初のタスクの場合は開始日、2回目以降は生成日時）
+  def calculate_due_date(base_date)
+    return nil unless base_date
+
+    due_date = base_date.to_date.beginning_of_day
+
+    if due_date_offset_days.present?
+      due_date += due_date_offset_days.days
+    end
+
+    if due_date_offset_hour.present?
+      due_date += due_date_offset_hour.hours
+    end
+
+    due_date
+  end
+
   private
 
   def validate_interval_value_based_on_frequency
@@ -73,6 +100,14 @@ class RoutineTask < ApplicationRecord
     else
       # daily/weekly/monthlyの場合はinterval_valueはNULLであるべき
       # 値が設定されていてもバリデーションエラーにはしない（無視される）
+    end
+  end
+
+  def validate_start_generation_at_immutable
+    # 一度でも生成が行われた場合、start_generation_atは変更不可
+    # ただし、新規作成時は変更と判断しない
+    if generated? && start_generation_at_changed? && persisted?
+      errors.add(:start_generation_at, 'は一度でも生成が行われると変更できません')
     end
   end
 end

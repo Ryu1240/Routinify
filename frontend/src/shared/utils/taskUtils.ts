@@ -34,6 +34,8 @@ export const getStatusColor = (status: string | null) => {
       return COLORS.MEDIUM;
     case 'pending':
       return COLORS.LIGHT;
+    case 'on_hold':
+      return COLORS.GRAY;
     case 'cancelled':
       return COLORS.GRAY;
     default:
@@ -48,6 +50,8 @@ export const getStatusLabel = (status: string | null) => {
     case 'in_progress':
       return '進行中';
     case 'pending':
+      return '未着手';
+    case 'on_hold':
       return '保留';
     case 'cancelled':
       return 'キャンセル';

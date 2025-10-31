@@ -253,6 +253,21 @@ components:
           type: boolean
           description: 有効/無効フラグ
           default: true
+        dueDateOffsetDays:
+          type: integer
+          nullable: true
+          description: 期限の日数
+          minimum: 0
+        dueDateOffsetHour:
+          type: integer
+          nullable: true
+          description: 期限の時（0-23）
+          minimum: 0
+          maximum: 23
+        startGenerationAt:
+          type: string
+          format: date-time
+          description: 開始期限（この日からタスクの生成が始まります。一度でも生成が行われると変更できません）
         createdAt:
           type: string
           format: date-time
@@ -311,10 +326,27 @@ components:
           type: boolean
           description: 有効/無効フラグ
           default: true
+        dueDateOffsetDays:
+          type: integer
+          nullable: true
+          description: 期限の日数
+          minimum: 0
+        dueDateOffsetHour:
+          type: integer
+          nullable: true
+          description: 期限の時（0-23）
+          minimum: 0
+          maximum: 23
+        startGenerationAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 開始期限（この日からタスクの生成が始まります）
       required:
         - title
         - frequency
         - nextGenerationAt
+        - startGenerationAt
 
     RoutineTaskUpdate:
       type: object
@@ -351,6 +383,21 @@ components:
         isActive:
           type: boolean
           description: 有効/無効フラグ
+        dueDateOffsetDays:
+          type: integer
+          nullable: true
+          description: 期限の日数
+          minimum: 0
+        dueDateOffsetHour:
+          type: integer
+          nullable: true
+          description: 期限の時（0-23）
+          minimum: 0
+          maximum: 23
+        startGenerationAt:
+          type: string
+          format: date-time
+          description: 開始期限（この日からタスクの生成が始まります。一度でも生成が行われると変更できません）
 
     TaskGenerationJob:
       type: object

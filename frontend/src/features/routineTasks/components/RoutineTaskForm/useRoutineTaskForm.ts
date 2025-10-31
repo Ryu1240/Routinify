@@ -15,6 +15,9 @@ type FormData = {
   categoryId: string | null;
   priority: RoutineTaskPriority | null;
   isActive: boolean;
+  dueDateOffsetDays: number | string | null;
+  dueDateOffsetHour: number | string | null;
+  startGenerationAt: Date | null;
 };
 
 type UseRoutineTaskFormReturn = {
@@ -37,6 +40,9 @@ const getInitialFormData = (): FormData => ({
   categoryId: null,
   priority: null,
   isActive: true,
+  dueDateOffsetDays: null,
+  dueDateOffsetHour: null,
+  startGenerationAt: null, // ユーザーが必須で入力する
 });
 
 export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
@@ -53,6 +59,11 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
       categoryId: task.categoryId?.toString() ?? null,
       priority: task.priority,
       isActive: task.isActive,
+      dueDateOffsetDays: task.dueDateOffsetDays ?? null,
+      dueDateOffsetHour: task.dueDateOffsetHour ?? null,
+      startGenerationAt: task.startGenerationAt
+        ? new Date(task.startGenerationAt)
+        : null, // 編集時も値がない場合はnull（通常は存在するはず）
     });
   }, []);
 
@@ -69,6 +80,9 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
 
   // フォームデータをDTOに変換
   const getSubmitData = useCallback((): CreateRoutineTaskDto => {
+    if (!formData.startGenerationAt) {
+      throw new Error('開始期限は必須です');
+    }
     return {
       title: formData.title,
       frequency: formData.frequency,
@@ -79,6 +93,15 @@ export const useRoutineTaskForm = (): UseRoutineTaskFormReturn => {
       categoryId: formData.categoryId ? Number(formData.categoryId) : null,
       priority: formData.priority,
       isActive: formData.isActive,
+      dueDateOffsetDays:
+        formData.dueDateOffsetDays !== null && formData.dueDateOffsetDays !== ''
+          ? Number(formData.dueDateOffsetDays)
+          : null,
+      dueDateOffsetHour:
+        formData.dueDateOffsetHour !== null && formData.dueDateOffsetHour !== ''
+          ? Number(formData.dueDateOffsetHour)
+          : null,
+      startGenerationAt: formData.startGenerationAt.toISOString(),
     };
   }, [formData]);
 
