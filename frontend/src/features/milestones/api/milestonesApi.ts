@@ -21,7 +21,17 @@ type MilestoneCreateResponse = {
   data: Milestone;
 };
 
-type MilestoneRequestBody = {
+type CreateMilestoneRequestBody = {
+  milestone: {
+    name: string;
+    description?: string | null;
+    start_date?: string | null;
+    due_date?: string | null;
+    status?: string;
+  };
+};
+
+type UpdateMilestoneRequestBody = {
   milestone: {
     name?: string;
     description?: string | null;
@@ -30,7 +40,6 @@ type MilestoneRequestBody = {
     status?: string;
   };
 };
-
 export const milestonesApi = {
   getAll: async (filters?: MilestoneFilters): Promise<Milestone[]> => {
     const params: Record<string, string> = {};
@@ -55,7 +64,7 @@ export const milestonesApi = {
   },
 
   create: async (milestoneData: CreateMilestoneDto): Promise<void> => {
-    const body: MilestoneRequestBody = {
+    const body: CreateMilestoneRequestBody = {
       milestone: {
         name: milestoneData.name,
         description: milestoneData.description || null,
@@ -71,7 +80,7 @@ export const milestonesApi = {
     id: number,
     milestoneData: UpdateMilestoneDto
   ): Promise<Milestone> => {
-    const body: MilestoneRequestBody = {
+    const body: UpdateMilestoneRequestBody = {
       milestone: {},
     };
 
