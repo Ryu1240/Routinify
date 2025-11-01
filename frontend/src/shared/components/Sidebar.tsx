@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, NavLink, rem } from '@mantine/core';
-import { IconChecklist, IconCategory, IconRepeat } from '@tabler/icons-react';
+import { IconChecklist, IconCategory, IconRepeat, IconFlag } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
 
@@ -26,6 +26,12 @@ const Sidebar: React.FC = () => {
       icon: <IconCategory size={16} />,
       path: '/categories',
       description: 'カテゴリの作成・編集',
+    },
+    {
+      label: 'マイルストーン',
+      icon: <IconFlag size={16} />,
+      path: '/milestones',
+      description: 'マイルストーンの管理',
     },
   ];
 

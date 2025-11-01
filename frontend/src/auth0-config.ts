@@ -39,7 +39,7 @@ export const auth0Config: Auth0ProviderOptions = {
     redirect_uri: `${window.location.origin}/tasks`,
     audience,
     scope:
-      'openid profile email read:tasks write:tasks delete:tasks read:routine-tasks write:routine-tasks delete:routine-tasks',
+      'openid profile email read:tasks write:tasks delete:tasks read:routine-tasks write:routine-tasks delete:routine-tasks read:milestones write:milestones delete:milestones',
   },
   cacheLocation: 'localstorage',
   useRefreshTokens: true,
