@@ -35,15 +35,14 @@ class Milestone < ApplicationRecord
   end
 
   def task_statistics
-    # includes(:tasks)でロード済みの場合はメモリ上で計算、そうでない場合は1回のクエリで取得
+    # includes(:tasks)でロード済みの場合はメモリ上で計算、そうでない場合はDBクエリで取得
     if association(:tasks).loaded?
       total = tasks.size
       completed = tasks.count { |task| task.status == 'completed' }
     else
-      # 1回のクエリでタスク総数と完了タスク数を取得
-      result = tasks.select('COUNT(*) as total, COUNT(CASE WHEN tasks.status = \'completed\' THEN 1 END) as completed').first
-      total = result ? result.total.to_i : 0
-      completed = result ? result.completed.to_i : 0
+      # タスク総数と完了タスク数を取得
+      total = tasks.count
+      completed = tasks.where(status: 'completed').count
     end
 
     progress = total.zero? ? 0 : (completed.to_f / total * 100).round

@@ -11,7 +11,31 @@ module Api
         end
       end
 
+      def create
+        validate_permissions([ 'write:milestones' ]) do
+          service = MilestoneCreateService.new(
+            account_id: current_user_id,
+            milestone_params: milestone_params.to_h
+          )
+          result = service.call
+
+          if result.success?
+            render_success(
+              data: MilestoneSerializer.new(result.data).as_json,
+              message: result.message,
+              status: result.status
+            )
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
+        end
+      end
+
       private
+
+      def milestone_params
+        params.require(:milestone).permit(:name, :description, :start_date, :due_date, :status)
+      end
 
       def search_params
         params.permit(:status, :due_date_range, :q, :sort_by, :sort_order)

@@ -7,7 +7,9 @@ import {
   Text,
   Title,
   Stack,
+  Button,
 } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Milestone, MilestoneFilters } from '@/types/milestone';
 import {
@@ -28,6 +30,7 @@ type MilestoneListProps = {
   ) => void;
   loading: boolean;
   error: string | null;
+  onCreate?: () => void;
   onEdit?: (milestoneId: number) => void;
   onDelete?: (milestoneId: number) => void;
 };
@@ -40,6 +43,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
   onFilterChange,
   loading,
   error,
+  onCreate,
   onEdit,
   onDelete,
 }) => {
@@ -80,9 +84,18 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
 
   return (
     <Container size="xl" py="xl">
-      <Title order={2} mb="lg">
-        マイルストーン一覧
-      </Title>
+      <Group justify="space-between" mb="lg">
+        <Title order={2}>マイルストーン一覧</Title>
+        {onCreate && (
+          <Button
+            leftSection={<IconPlus size={18} />}
+            onClick={onCreate}
+            color={COLORS.PRIMARY}
+          >
+            新規作成
+          </Button>
+        )}
+      </Group>
 
       <MilestoneListFilters filters={filters} onFilterChange={onFilterChange} />
 

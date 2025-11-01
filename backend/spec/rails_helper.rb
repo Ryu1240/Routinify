@@ -27,15 +27,79 @@ require 'factory_bot_rails'
 Rails.root.glob('spec/support/**/*.rb').sort_by(&:to_s).each { |f| require f }
 
 # Ensures that the test database schema matches the current schema file.
-# If there are pending migrations it will invoke `db:test:prepare` to
-# recreate the test database by loading the schema.
-# If you are not using ActiveRecord, you can remove these lines.
-begin
-  ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-  abort e.to_s.strip
-end
+# Note: This project uses Ridgepole instead of Rails migrations.
+# Therefore, we apply Ridgepole schema before running tests.
 RSpec.configure do |config|
+  # Apply Ridgepole schema before running tests
+  # This ensures the test database schema is always up-to-date
+  config.before(:suite) do
+    unless ENV['SKIP_RIDGEPOLE_APPLY'] == 'true'
+      schema_file = Rails.root.join('db', 'Schemafile')
+      config_file = Rails.root.join('config', 'database.yml')
+
+      if File.exist?(schema_file) && File.exist?(config_file)
+        puts 'Applying Ridgepole schema to test database...'
+        
+        # Check if test database has tables
+        ActiveRecord::Base.establish_connection(:test)
+        has_tables = ActiveRecord::Base.connection.tables.any? { |t| !t.start_with?('schema_migrations', 'ar_internal_metadata') }
+        
+        unless has_tables
+          # Export schema from development database using pg_dump via Docker
+          # This is more reliable than Ridgepole's --export for empty databases
+          dev_db_config = ActiveRecord::Base.configurations.configs_for(env_name: 'development').first
+          test_db_config = ActiveRecord::Base.configurations.configs_for(env_name: 'test').first
+          
+          if dev_db_config && test_db_config
+            schema_sql = Rails.root.join('tmp', 'test_schema.sql')
+            dev_hash = dev_db_config.configuration_hash
+            test_hash = test_db_config.configuration_hash
+            
+            # Use docker-compose exec to run pg_dump from db container
+            # Export schema from development database
+            export_cmd = "docker compose exec -T db pg_dump -U #{dev_hash[:username] || 'postgres'} -d #{dev_hash[:database]} --schema-only --no-owner --no-acl > #{schema_sql}"
+            export_result = system(export_cmd, out: File::NULL, err: File::NULL)
+            
+            if export_result && File.exist?(schema_sql) && File.size(schema_sql) > 0
+              # Apply schema to test database
+              apply_cmd = "docker compose exec -T db psql -U #{test_hash[:username] || 'postgres'} -d #{test_hash[:database]} < #{schema_sql}"
+              apply_result = system(apply_cmd, out: File::NULL, err: File::NULL)
+              
+              unless apply_result
+                puts "\n⚠️  Failed to apply schema to test database. Tests may fail."
+                puts "   You can skip schema application by setting SKIP_RIDGEPOLE_APPLY=true"
+              end
+            else
+              puts "⚠️  Failed to export schema from development database."
+            end
+          end
+        end
+        
+        # Ensure db/schema.rb exists for maintain_test_schema!
+        # Note: db/schema.rb should be generated automatically when Ridgepole is applied
+        # via make ridgepole-apply. If it doesn't exist, generate it here as a fallback.
+        schema_rb = Rails.root.join('db', 'schema.rb')
+        unless File.exist?(schema_rb) && File.size(schema_rb) > 100
+          puts '⚠️  db/schema.rb not found. Generating from development database...'
+          system(
+            "RAILS_ENV=development bundle exec rails db:schema:dump",
+            out: File::NULL,
+            err: File::NULL
+          )
+        end
+      else
+        puts "⚠️  Schemafile or database.yml not found. Skipping Ridgepole schema application."
+      end
+    end
+  end
+
+  # Use maintain_test_schema! after Ridgepole schema is applied
+  # This ensures db/schema.rb is up-to-date for subsequent test runs
+  begin
+    ActiveRecord::Migration.maintain_test_schema!
+  rescue ActiveRecord::PendingMigrationError => e
+    abort e.to_s.strip
+  end
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [
     Rails.root.join('spec/fixtures')

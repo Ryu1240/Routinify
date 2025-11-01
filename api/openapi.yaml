@@ -19,8 +19,8 @@ tags:
     description: カテゴリの管理（作成、取得、更新、削除）
   - name: 習慣化タスク
     description: 習慣化タスクの管理（作成、取得、更新、削除）
-  # - name: マイルストーン
-  #   description: マイルストーンの管理
+  - name: マイルストーン
+    description: マイルストーンの管理
   # - name: 習慣化
   #   description: 習慣化状況の管理
   # - name: ユーザー管理
@@ -43,6 +43,9 @@ components:
             read:routine-tasks: 習慣化タスクの読み取り
             write:routine-tasks: 習慣化タスクの作成・更新
             delete:routine-tasks: 習慣化タスクの削除
+            read:milestones: マイルストーンの読み取り
+            write:milestones: マイルストーンの作成・更新
+            delete:milestones: マイルストーンの削除
 
   responses:
     Unauthorized:
@@ -454,26 +457,101 @@ components:
     #     - date
     #     - status
 
-    # Milestone:
-    #   type: object
-    #   properties:
-    #     id:
-    #       type: integer
-    #     title:
-    #       type: string
-    #     description:
-    #       type: string
-    #     dueDate:
-    #       type: string
-    #       format: date
-    #     relatedTasks:
-    #       type: array
-    #       items:
-    #         type: integer
-    #   required:
-    #     - id
-    #     - title
-    #     - dueDate
+    Milestone:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: マイルストーンID
+        accountId:
+          type: string
+          description: ユーザーID（Auth0）
+        name:
+          type: string
+          description: マイルストーン名
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: 説明
+        startDate:
+          type: string
+          format: date
+          nullable: true
+          description: 開始日
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+          description: 期限日
+        status:
+          type: string
+          description: ステータス
+          enum: [planning, in_progress, completed, cancelled]
+          default: planning
+        completedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: 完了日時
+        progressPercentage:
+          type: integer
+          description: 進捗率（0-100）
+          minimum: 0
+          maximum: 100
+        totalTasksCount:
+          type: integer
+          description: タスク総数
+        completedTasksCount:
+          type: integer
+          description: 完了タスク数
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+      required:
+        - id
+        - accountId
+        - name
+        - status
+        - progressPercentage
+        - totalTasksCount
+        - completedTasksCount
+        - createdAt
+        - updatedAt
+
+    MilestoneCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: マイルストーン名
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: 説明
+        startDate:
+          type: string
+          format: date
+          nullable: true
+          description: 開始日
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+          description: 期限日
+        status:
+          type: string
+          description: ステータス
+          enum: [planning, in_progress, completed, cancelled]
+          default: planning
+      required:
+        - name
 
 paths:
   # /auth/signin:
@@ -1186,22 +1264,111 @@ paths:
   #       '204':
   #         description: 削除成功
 
+  /milestones:
+    get:
+      tags:
+        - マイルストーン
+      summary: マイルストーン一覧の取得
+      security:
+        - Auth0:
+            - read:milestones
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [planning, in_progress, completed, cancelled]
+          description: ステータスでフィルタリング
+        - name: due_date_range
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [overdue, today, this_week, this_month]
+          description: 期限範囲でフィルタリング
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: 名前で検索
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [created_at, due_date, progress]
+            default: created_at
+          description: ソート基準
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: ソート順
+      responses:
+        '200':
+          description: マイルストーン一覧の取得に成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Milestone'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - マイルストーン
+      summary: 新しいマイルストーンの登録
+      security:
+        - Auth0:
+            - write:milestones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                milestone:
+                  $ref: '#/components/schemas/MilestoneCreate'
+      responses:
+        '201':
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "マイルストーンが正常に作成されました"
+                  data:
+                    $ref: '#/components/schemas/Milestone'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   # /milestones:
-  #   post:
-  #     tags:
-  #       - マイルストーン
-  #     summary: マイルストーンの登録
-  #     security:
-  #       - Auth0: [write:milestones]
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/Milestone'
-  #     responses:
-  #       '201':
-  #         description: 作成成功
 
   # /milestones/{id}:
   #   parameters:

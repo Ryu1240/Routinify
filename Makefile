@@ -70,11 +70,25 @@ exec-db db: ## データベースコンテナに入る
 	docker compose exec db bash
 
 # データベース操作
-ridgepole-apply ra: ## データベーススキーマを適用
+ridgepole-apply ra: ## データベーススキーマを適用（開発環境）
 	docker compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+	docker compose exec backend bundle exec rails db:schema:dump
 
 ridgepole-dry-run rr: ## データベーススキーマの変更を確認
 	docker compose exec backend bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply --dry-run
+
+ridgepole-test-apply rta: ## テスト環境のデータベーススキーマを適用
+	RAILS_ENV=test docker compose exec backend sh -c 'cd /app && bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply'
+	RAILS_ENV=development docker compose exec backend bundle exec rails db:schema:dump
+
+test-db-cleanup: ## テストデータベースをクリーンアップ（スキーマ再構築）
+	RAILS_ENV=test docker compose exec backend sh -c 'cd /app && bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply'
+	RAILS_ENV=development docker compose exec backend bundle exec rails db:schema:dump
+
+test-db-reset: ## テストデータベースを完全にリセット（データベース削除→作成→スキーマ適用）
+	RAILS_ENV=test docker compose exec backend bundle exec rails db:reset || true
+	RAILS_ENV=test docker compose exec backend sh -c 'cd /app && bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply'
+	RAILS_ENV=development docker compose exec backend bundle exec rails db:schema:dump
 
 seed: ## シードデータを生成
 	docker compose exec backend bundle exec rails db:seed
