@@ -122,6 +122,7 @@ RSpec.describe Milestone, type: :model do
     let!(:user1_milestone1) { create(:milestone, account_id: 'user1', status: 'planning') }
     let!(:user1_milestone2) { create(:milestone, account_id: 'user1', status: 'in_progress') }
     let!(:user2_milestone) { create(:milestone, account_id: 'user2', status: 'completed') }
+    let(:test_milestones) { Milestone.where(id: [user1_milestone1.id, user1_milestone2.id, user2_milestone.id]) }
 
     describe '.by_account' do
       it '指定されたアカウントIDのマイルストーンのみを返すこと' do
@@ -136,8 +137,6 @@ RSpec.describe Milestone, type: :model do
 
     describe '.by_status' do
       it '指定されたステータスのマイルストーンのみを返すこと' do
-        # seedデータを除外するため、テストデータのみで確認
-        test_milestones = Milestone.where(account_id: [ 'user1', 'user2' ])
         expect(test_milestones.by_status('planning')).to contain_exactly(user1_milestone1)
         expect(test_milestones.by_status('in_progress')).to contain_exactly(user1_milestone2)
         expect(test_milestones.by_status('completed')).to contain_exactly(user2_milestone)
@@ -146,16 +145,12 @@ RSpec.describe Milestone, type: :model do
 
     describe '.active' do
       it 'planningとin_progressのマイルストーンを返すこと' do
-        # seedデータを除外するため、テストデータのみで確認
-        test_milestones = Milestone.where(account_id: [ 'user1', 'user2' ])
         expect(test_milestones.active).to contain_exactly(user1_milestone1, user1_milestone2)
       end
     end
 
     describe '.completed' do
       it 'completedステータスのマイルストーンのみを返すこと' do
-        # seedデータを除外するため、テストデータのみで確認
-        test_milestones = Milestone.where(account_id: [ 'user1', 'user2' ])
         expect(test_milestones.completed).to contain_exactly(user2_milestone)
       end
     end
