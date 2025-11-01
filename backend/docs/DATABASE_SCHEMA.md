@@ -435,16 +435,19 @@ end
 
 | カラム名 | 型 | NULL | 説明 |
 |---------|---|------|------|
-| milestone_id | integer | NO | マイルストーンID（外部キー） |
-| task_id | integer | NO | タスクID（外部キー） |
+| milestone_id | integer | NO | マイルストーンID（外部キー、複合主キーの一部） |
+| task_id | integer | NO | タスクID（外部キー、複合主キーの一部） |
 
-**注意**: 主キー（id）なし
+**注意**: 主キーとして`(milestone_id, task_id)`の複合キーを使用しています。単一の`id`カラムはありません。
 
-#### インデックス
+#### 主キー
 
 ```ruby
-add_index 'milestone_tasks', ['milestone_id', 'task_id'], unique: true
+# 複合主キー: (milestone_id, task_id)
+execute('ALTER TABLE milestone_tasks ADD PRIMARY KEY (milestone_id, task_id)')
 ```
+
+**注記**: PostgreSQLでは複合主キーを設定すると、自動的にユニークインデックスも作成されるため、別途ユニークインデックスの定義は不要です。
 
 #### 外部キー
 
@@ -458,6 +461,7 @@ add_foreign_key 'milestone_tasks', 'tasks'
 ```ruby
 class MilestoneTask < ApplicationRecord
   self.table_name = 'milestone_tasks'
+  # 複合主キー(milestone_id, task_id)を使用するため、primary_keyをnilに設定
   self.primary_key = nil
 
   belongs_to :milestone
@@ -465,9 +469,22 @@ class MilestoneTask < ApplicationRecord
 
   validates :milestone_id, presence: true
   validates :task_id, presence: true
+  # データベースレベルの複合主キー制約により一意性が保証されるが、
+  # Rails側でもバリデーションを設定することでエラーメッセージを分かりやすくする
   validates :milestone_id, uniqueness: { scope: :task_id }
+
+  # 複合主キーで検索する際のヘルパーメソッド
+  def self.find_by_ids(milestone_id:, task_id:)
+    find_by(milestone_id: milestone_id, task_id: task_id)
+  end
 end
 ```
+
+**使用方法**:
+- アソシエーション経由での作成: `milestone.milestone_tasks.create(task: task)`
+- 複合主キーでの検索: `MilestoneTask.find_by_ids(milestone_id: 1, task_id: 2)`
+- 削除: `milestone_task.destroy`
+- 注意: `MilestoneTask.find(id)`や`MilestoneTask.update(id, ...)`は使用できません（単一のidカラムがないため）
 
 ---
 
@@ -539,7 +556,7 @@ Milestone (N) ──< has_many through :milestone_tasks >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
-| 2025-11-01 | 2.3.0 | milestonesテーブルにaccount_id, description, start_date, status, completed_atカラムを追加。nameを必須に変更。account_idとstatusにインデックス追加。MilestoneモデルとMilestoneTaskモデルを実装。進捗率計算メソッド、ステータス判定メソッドを追加。Taskモデルにmilestone関連のアソシエーションを追加。 |
+| 2025-11-01 | 2.3.0 | milestonesテーブルにaccount_id, description, start_date, status, completed_atカラムを追加。nameを必須に変更。account_idとstatusにインデックス追加。MilestoneモデルとMilestoneTaskモデルを実装。進捗率計算メソッド、ステータス判定メソッドを追加。Taskモデルにmilestone関連のアソシエーションを追加。milestone_tasksテーブルに複合主キー(milestone_id, task_id)を設定。MilestoneTaskモデルに複合主キー対応のコメントとfind_by_idsヘルパーメソッドを追加。 |
 | 2025-11-01 | 2.2.0 | routine_tasksテーブルのカラム情報を完全化。due_date_offset_days、due_date_offset_hour、start_generation_atカラムの説明を追加。モデルコードを最新の実装に合わせて更新。 |
 | 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
 | 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。routine_tasksテーブル新規追加、tasksテーブルにroutine_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
