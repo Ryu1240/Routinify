@@ -128,8 +128,10 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     onClose();
   };
 
-  const allSelected = filteredTasks.length > 0 && selectedTaskIds.length === filteredTasks.length;
-  const someSelected = selectedTaskIds.length > 0 && selectedTaskIds.length < filteredTasks.length;
+  const allSelected =
+    filteredTasks.length > 0 && selectedTaskIds.length === filteredTasks.length;
+  const someSelected =
+    selectedTaskIds.length > 0 && selectedTaskIds.length < filteredTasks.length;
 
   return (
     <Modal
@@ -221,7 +223,10 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
                       <Text fw={500}>{task.title}</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Badge color={getStatusColor(task.status)} variant="light">
+                      <Badge
+                        color={getStatusColor(task.status)}
+                        variant="light"
+                      >
                         {getStatusLabel(task.status)}
                       </Badge>
                     </Table.Td>
