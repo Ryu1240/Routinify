@@ -10,15 +10,23 @@ import {
   Loader,
 } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
-import { CreateMilestoneDto, MilestoneStatus } from '@/types/milestone';
+import {
+  CreateMilestoneDto,
+  MilestoneStatus,
+  Milestone,
+  UpdateMilestoneDto,
+} from '@/types/milestone';
 import { MILESTONE_STATUS_LABELS } from '@/types/milestone';
 import { useMilestoneForm } from '../../hooks/useMilestoneForm';
 
 type MilestoneFormProps = {
   opened: boolean;
   onClose: () => void;
-  onSubmit: (milestoneData: CreateMilestoneDto) => Promise<void>;
+  onCreate?: (milestoneData: CreateMilestoneDto) => Promise<void>;
+  onUpdate?: (milestoneData: UpdateMilestoneDto) => Promise<void>;
   loading?: boolean;
+  initialData?: Milestone;
+  mode?: 'create' | 'edit';
 };
 
 const statusOptions = Object.entries(MILESTONE_STATUS_LABELS).map(
@@ -31,17 +39,21 @@ const statusOptions = Object.entries(MILESTONE_STATUS_LABELS).map(
 export const MilestoneForm: React.FC<MilestoneFormProps> = ({
   opened,
   onClose,
-  onSubmit,
+  onCreate,
+  onUpdate,
   loading = false,
+  initialData,
+  mode = 'create',
 }) => {
   const {
     formData,
     errors,
     handleInputChange,
     validateForm,
-    getSubmitData,
+    getCreateData,
+    getUpdateData,
     resetForm,
-  } = useMilestoneForm();
+  } = useMilestoneForm(initialData);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,12 +63,23 @@ export const MilestoneForm: React.FC<MilestoneFormProps> = ({
     }
 
     try {
-      const milestoneData = getSubmitData();
-      await onSubmit(milestoneData);
+      const isEditMode = mode === 'edit';
+      if (isEditMode && onUpdate) {
+        const milestoneData = getUpdateData();
+        await onUpdate(milestoneData);
+      } else if (!isEditMode && onCreate) {
+        const milestoneData = getCreateData();
+        await onCreate(milestoneData);
+      }
       resetForm();
       onClose();
     } catch (error) {
-      console.error('マイルストーン作成エラー:', error);
+      console.error(
+        mode === 'create'
+          ? 'マイルストーン作成エラー:'
+          : 'マイルストーン更新エラー:',
+        error
+      );
     }
   };
 
@@ -65,11 +88,17 @@ export const MilestoneForm: React.FC<MilestoneFormProps> = ({
     onClose();
   };
 
+  const isEditMode = mode === 'edit';
+  const title = isEditMode
+    ? 'マイルストーンを編集'
+    : '新しいマイルストーンを作成';
+  const submitButtonText = isEditMode ? '更新' : '作成';
+
   return (
     <Modal
       opened={opened}
       onClose={handleClose}
-      title="新しいマイルストーンを作成"
+      title={title}
       size="md"
       centered
     >
@@ -181,7 +210,7 @@ export const MilestoneForm: React.FC<MilestoneFormProps> = ({
               color={COLORS.PRIMARY}
               leftSection={loading ? <Loader size={16} /> : undefined}
             >
-              作成
+              {submitButtonText}
             </Button>
           </Group>
         </Stack>

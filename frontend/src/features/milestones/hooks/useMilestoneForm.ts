@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { CreateMilestoneDto } from '@/types/milestone';
+import {
+  CreateMilestoneDto,
+  UpdateMilestoneDto,
+  Milestone,
+} from '@/types/milestone';
 
-export const useMilestoneForm = () => {
+export const useMilestoneForm = (initialData?: Milestone) => {
   const [formData, setFormData] = useState<CreateMilestoneDto>({
-    name: '',
-    description: null,
-    startDate: null,
-    dueDate: null,
-    status: 'planning',
+    name: initialData?.name || '',
+    description: initialData?.description || null,
+    startDate: initialData?.startDate || null,
+    dueDate: initialData?.dueDate || null,
+    status: initialData?.status || 'planning',
   });
   const [errors, setErrors] = useState<{ name?: string }>({});
 
@@ -22,7 +26,7 @@ export const useMilestoneForm = () => {
   };
 
   const validateForm = (): boolean => {
-    if (!formData.name.trim()) {
+    if (!formData.name || !formData.name.trim()) {
       setErrors({ name: 'マイルストーン名は必須です' });
       return false;
     }
@@ -33,9 +37,9 @@ export const useMilestoneForm = () => {
     return true;
   };
 
-  const getSubmitData = (): CreateMilestoneDto => {
+  const getCreateData = (): CreateMilestoneDto => {
     return {
-      ...formData,
+      name: formData.name || '',
       description: formData.description || null,
       startDate: formData.startDate || null,
       dueDate: formData.dueDate || null,
@@ -43,13 +47,52 @@ export const useMilestoneForm = () => {
     };
   };
 
+  const getUpdateData = (): UpdateMilestoneDto => {
+    if (!initialData) {
+      // 初期データがない場合は空のオブジェクトを返す
+      return {};
+    }
+
+    const updateData: UpdateMilestoneDto = {};
+    
+    // 初期データと比較して、変更されたフィールドのみを追加
+    if (formData.name !== undefined && formData.name !== initialData.name) {
+      updateData.name = formData.name;
+    }
+    if (formData.description !== undefined && formData.description !== initialData.description) {
+      updateData.description = formData.description;
+    }
+    if (formData.startDate !== undefined && formData.startDate !== initialData.startDate) {
+      updateData.startDate = formData.startDate;
+    }
+    if (formData.dueDate !== undefined && formData.dueDate !== initialData.dueDate) {
+      updateData.dueDate = formData.dueDate;
+    }
+    if (formData.status !== undefined && formData.status !== initialData.status) {
+      updateData.status = formData.status;
+    }
+    
+    return updateData;
+  };
+
   const resetForm = () => {
     setFormData({
-      name: '',
-      description: null,
-      startDate: null,
-      dueDate: null,
-      status: 'planning',
+      name: initialData?.name || '',
+      description: initialData?.description || null,
+      startDate: initialData?.startDate || null,
+      dueDate: initialData?.dueDate || null,
+      status: initialData?.status || 'planning',
+    });
+    setErrors({});
+  };
+
+  const setInitialData = (data: Milestone) => {
+    setFormData({
+      name: data.name,
+      description: data.description || null,
+      startDate: data.startDate || null,
+      dueDate: data.dueDate || null,
+      status: data.status,
     });
     setErrors({});
   };
@@ -59,7 +102,9 @@ export const useMilestoneForm = () => {
     errors,
     handleInputChange,
     validateForm,
-    getSubmitData,
+    getCreateData,
+    getUpdateData,
     resetForm,
+    setInitialData,
   };
 };

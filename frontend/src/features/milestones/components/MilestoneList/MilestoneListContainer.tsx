@@ -2,9 +2,15 @@ import React, { useState } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFetchMilestones } from '../../hooks';
 import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
-import { MilestoneFilters, CreateMilestoneDto } from '@/types/milestone';
+import {
+  MilestoneFilters,
+  CreateMilestoneDto,
+  UpdateMilestoneDto,
+  Milestone,
+} from '@/types/milestone';
 import { MilestoneList } from './MilestoneList';
 import { MilestoneForm } from '@/features/milestones/components/MilestoneForm';
+import { milestonesApi } from '../../api/milestonesApi';
 
 export const MilestoneListContainer: React.FC = () => {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -13,10 +19,18 @@ export const MilestoneListContainer: React.FC = () => {
     sortOrder: 'desc',
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingMilestoneId, setEditingMilestoneId] = useState<number | null>(
+    null
+  );
+  const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(
+    null
+  );
   const { milestones, loading, error, fetchMilestones } = useFetchMilestones();
-  const { createMilestone, createLoading } = useMilestoneMutations(() => {
-    fetchMilestones(filters);
-  });
+  const { createMilestone, createLoading, updateMilestone, updateLoading } =
+    useMilestoneMutations(() => {
+      fetchMilestones(filters);
+    });
 
   React.useEffect(() => {
     if (!isAuthenticated) {
@@ -38,6 +52,9 @@ export const MilestoneListContainer: React.FC = () => {
   };
 
   const handleCreate = () => {
+    setIsEditMode(false);
+    setEditingMilestoneId(null);
+    setEditingMilestone(null);
     setIsModalOpen(true);
   };
 
@@ -46,9 +63,25 @@ export const MilestoneListContainer: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleEdit = (milestoneId: number) => {
-    // TODO: 編集機能の実装
-    console.log('Edit milestone:', milestoneId);
+  const handleEdit = async (milestoneId: number) => {
+    try {
+      const milestone = await milestonesApi.getById(milestoneId);
+      setEditingMilestone(milestone);
+      setEditingMilestoneId(milestoneId);
+      setIsEditMode(true);
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('マイルストーンの取得に失敗しました:', error);
+    }
+  };
+
+  const handleEditSubmit = async (milestoneData: UpdateMilestoneDto) => {
+    if (!editingMilestoneId) return;
+    await updateMilestone(editingMilestoneId, milestoneData);
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingMilestoneId(null);
+    setEditingMilestone(null);
   };
 
   const handleDelete = (milestoneId: number) => {
@@ -56,6 +89,13 @@ export const MilestoneListContainer: React.FC = () => {
     if (window.confirm('このマイルストーンを削除してもよろしいですか？')) {
       console.log('Delete milestone:', milestoneId);
     }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setIsEditMode(false);
+    setEditingMilestoneId(null);
+    setEditingMilestone(null);
   };
 
   return (
@@ -73,10 +113,18 @@ export const MilestoneListContainer: React.FC = () => {
         onDelete={handleDelete}
       />
       <MilestoneForm
+        key={
+          isEditMode && editingMilestone
+            ? `edit-${editingMilestone.id}`
+            : `create-${isModalOpen}`
+        }
         opened={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleCreateSubmit}
-        loading={createLoading}
+        onClose={handleModalClose}
+        onCreate={handleCreateSubmit}
+        onUpdate={handleEditSubmit}
+        loading={isEditMode ? updateLoading : createLoading}
+        initialData={editingMilestone || undefined}
+        mode={isEditMode ? 'edit' : 'create'}
       />
     </>
   );

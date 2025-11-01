@@ -3,6 +3,7 @@ import {
   Milestone,
   MilestoneFilters,
   CreateMilestoneDto,
+  UpdateMilestoneDto,
 } from '@/types/milestone';
 
 type MilestoneResponse = {
@@ -22,7 +23,7 @@ type MilestoneCreateResponse = {
 
 type MilestoneRequestBody = {
   milestone: {
-    name: string;
+    name?: string;
     description?: string | null;
     start_date?: string | null;
     due_date?: string | null;
@@ -64,5 +65,37 @@ export const milestonesApi = {
       },
     };
     await axios.post<MilestoneCreateResponse>('/api/v1/milestones', body);
+  },
+
+  update: async (
+    id: number,
+    milestoneData: UpdateMilestoneDto
+  ): Promise<Milestone> => {
+    const body: MilestoneRequestBody = {
+      milestone: {},
+    };
+
+    // undefinedでないフィールドのみを追加
+    if (milestoneData.name !== undefined) {
+      body.milestone.name = milestoneData.name;
+    }
+    if (milestoneData.description !== undefined) {
+      body.milestone.description = milestoneData.description;
+    }
+    if (milestoneData.startDate !== undefined) {
+      body.milestone.start_date = milestoneData.startDate;
+    }
+    if (milestoneData.dueDate !== undefined) {
+      body.milestone.due_date = milestoneData.dueDate;
+    }
+    if (milestoneData.status !== undefined) {
+      body.milestone.status = milestoneData.status;
+    }
+
+    const response = await axios.put<MilestoneDetailResponse>(
+      `/api/v1/milestones/${id}`,
+      body
+    );
+    return response.data.data;
   },
 };

@@ -8,6 +8,8 @@ class Milestone < ApplicationRecord
   validates :account_id, presence: true
   validates :status, inclusion: { in: %w[planning in_progress completed cancelled] }, allow_nil: false
 
+  before_save :set_completed_at
+
   scope :by_status, ->(status) { where(status: status) }
   scope :active, -> { where(status: %w[planning in_progress]) }
   scope :completed, -> { where(status: 'completed') }
@@ -66,5 +68,15 @@ class Milestone < ApplicationRecord
     return 0 if total_tasks_count.zero?
 
     (completed_tasks_count.to_f / total_tasks_count * 100).round
+  end
+
+  private
+
+  def set_completed_at
+    if status == 'completed' && completed_at.nil?
+      self.completed_at = Time.current
+    elsif status != 'completed' && completed_at.present?
+      self.completed_at = nil
+    end
   end
 end

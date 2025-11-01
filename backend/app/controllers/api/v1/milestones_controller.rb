@@ -43,6 +43,33 @@ module Api
         end
       end
 
+      def update
+        validate_permissions([ 'write:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          service = MilestoneUpdateService.new(
+            milestone: milestone,
+            milestone_params: milestone_params.to_h
+          )
+          result = service.call
+
+          if result.success?
+            render_success(
+              data: MilestoneSerializer.new(result.data).as_json,
+              message: result.message,
+              status: result.status
+            )
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
+        end
+      end
+
       private
 
       def milestone_params
