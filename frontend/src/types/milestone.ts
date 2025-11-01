@@ -1,5 +1,7 @@
 // マイルストーン関連の型定義
 
+import type { Task } from './task';
+
 export type MilestoneStatus =
   | 'planning'
   | 'in_progress'
@@ -20,6 +22,7 @@ export type Milestone = {
   completedTasksCount: number;
   readonly createdAt: string;
   readonly updatedAt: string;
+  tasks?: Task[]; // 詳細取得時のみ含まれる
 };
 
 // フィルタリング・ソート用の型
