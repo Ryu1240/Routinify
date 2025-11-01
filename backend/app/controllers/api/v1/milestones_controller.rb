@@ -70,6 +70,20 @@ module Api
         end
       end
 
+      def destroy
+        validate_permissions([ 'delete:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          milestone.destroy
+          head :no_content
+        end
+      end
+
       private
 
       def milestone_params

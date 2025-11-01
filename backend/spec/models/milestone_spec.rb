@@ -122,7 +122,7 @@ RSpec.describe Milestone, type: :model do
     let!(:user1_milestone1) { create(:milestone, account_id: 'user1', status: 'planning') }
     let!(:user1_milestone2) { create(:milestone, account_id: 'user1', status: 'in_progress') }
     let!(:user2_milestone) { create(:milestone, account_id: 'user2', status: 'completed') }
-    let(:test_milestones) { Milestone.where(id: [user1_milestone1.id, user1_milestone2.id, user2_milestone.id]) }
+    let(:test_milestones) { Milestone.where(id: [ user1_milestone1.id, user1_milestone2.id, user2_milestone.id ]) }
 
     describe '.by_account' do
       it '指定されたアカウントIDのマイルストーンのみを返すこと' do

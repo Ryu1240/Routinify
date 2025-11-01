@@ -107,4 +107,8 @@ export const milestonesApi = {
     );
     return response.data.data;
   },
+
+  delete: async (id: number): Promise<void> => {
+    await axios.delete(`/api/v1/milestones/${id}`);
+  },
 };

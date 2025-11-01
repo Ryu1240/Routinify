@@ -1,5 +1,5 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Loader, Alert, Text, Group } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
 import { useAuth } from '@/shared/hooks/useAuth';
@@ -7,18 +7,22 @@ import { useFetchMilestone } from '../../hooks/useFetchMilestone';
 import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
 import { UpdateMilestoneDto } from '@/types/milestone';
 import { MilestoneDetail } from './MilestoneDetail';
+import { DeleteMilestoneConfirmModal } from '@/features/milestones/components/DeleteMilestoneConfirmModal';
 
 export const MilestoneDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const milestoneId = id ? parseInt(id, 10) : null;
   const { milestone, loading, error, refreshMilestone } =
     useFetchMilestone(milestoneId);
-  const { updateMilestone, updateLoading } = useMilestoneMutations(() => {
-    if (milestoneId) {
-      refreshMilestone();
-    }
-  });
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const { updateMilestone, updateLoading, deleteMilestone, deleteLoading } =
+    useMilestoneMutations(() => {
+      if (milestoneId) {
+        refreshMilestone();
+      }
+    });
 
   const handleEdit = async (milestoneData: UpdateMilestoneDto) => {
     if (!milestoneId) return;
@@ -26,10 +30,19 @@ export const MilestoneDetailContainer: React.FC = () => {
   };
 
   const handleDelete = () => {
-    // TODO: 削除機能の実装
-    if (window.confirm('このマイルストーンを削除してもよろしいですか？')) {
-      console.log('Delete milestone:', milestoneId);
-    }
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!milestoneId) return;
+    await deleteMilestone(milestoneId);
+    setIsDeleteModalOpen(false);
+    // 削除後は一覧ページにリダイレクト
+    navigate('/milestones');
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
   };
 
   if (authLoading || loading) {
@@ -82,11 +95,20 @@ export const MilestoneDetailContainer: React.FC = () => {
   }
 
   return (
-    <MilestoneDetail
-      milestone={milestone}
-      onEdit={handleEdit}
-      onDelete={handleDelete}
-      editLoading={updateLoading}
-    />
+    <>
+      <MilestoneDetail
+        milestone={milestone}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        editLoading={updateLoading}
+      />
+      <DeleteMilestoneConfirmModal
+        opened={isDeleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        milestoneName={milestone.name}
+        loading={deleteLoading}
+      />
+    </>
   );
 };
