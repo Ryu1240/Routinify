@@ -9,21 +9,24 @@ export const useFetchMilestones = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMilestones = useCallback(async (filters?: Parameters<typeof milestonesApi.getAll>[0]) => {
-    try {
-      setLoading(true);
-      const data = await milestonesApi.getAll(filters);
-      setMilestones(data);
-      setError(null);
-    } catch (err) {
-      console.error('マイルストーンの取得に失敗しました:', err);
-      setError(
-        'マイルストーンの取得に失敗しました。しばらく時間をおいて再度お試しください。'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchMilestones = useCallback(
+    async (filters?: Parameters<typeof milestonesApi.getAll>[0]) => {
+      try {
+        setLoading(true);
+        const data = await milestonesApi.getAll(filters);
+        setMilestones(data);
+        setError(null);
+      } catch (err) {
+        console.error('マイルストーンの取得に失敗しました:', err);
+        setError(
+          'マイルストーンの取得に失敗しました。しばらく時間をおいて再度お試しください。'
+        );
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     if (isAuthenticated && accessToken) {
@@ -35,9 +38,12 @@ export const useFetchMilestones = () => {
     }
   }, [isAuthenticated, accessToken, fetchMilestones]);
 
-  const refreshMilestones = useCallback(async (filters?: Parameters<typeof milestonesApi.getAll>[0]) => {
-    await fetchMilestones(filters);
-  }, [fetchMilestones]);
+  const refreshMilestones = useCallback(
+    async (filters?: Parameters<typeof milestonesApi.getAll>[0]) => {
+      await fetchMilestones(filters);
+    },
+    [fetchMilestones]
+  );
 
   return {
     milestones,
@@ -47,4 +53,3 @@ export const useFetchMilestones = () => {
     fetchMilestones,
   };
 };
-

@@ -10,4 +10,3 @@ RSpec.shared_context 'milestones request spec setup' do
     mock_request_authentication(user_id: user_id)
   end
 end
-

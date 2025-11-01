@@ -18,7 +18,10 @@ export const MilestoneListContainer: React.FC = () => {
     }
   }, [isAuthenticated, filters, fetchMilestones]);
 
-  const handleFilterChange = (key: keyof MilestoneFilters, value: MilestoneFilters[keyof MilestoneFilters]) => {
+  const handleFilterChange = (
+    key: keyof MilestoneFilters,
+    value: MilestoneFilters[keyof MilestoneFilters]
+  ) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value,

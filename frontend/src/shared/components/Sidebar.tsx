@@ -1,6 +1,11 @@
 import React from 'react';
 import { Box, NavLink, rem } from '@mantine/core';
-import { IconChecklist, IconCategory, IconRepeat, IconFlag } from '@tabler/icons-react';
+import {
+  IconChecklist,
+  IconCategory,
+  IconRepeat,
+  IconFlag,
+} from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
 

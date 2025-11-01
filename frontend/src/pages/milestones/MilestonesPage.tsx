@@ -11,4 +11,3 @@ const MilestonesPage: React.FC = () => {
 };
 
 export default MilestonesPage;
-

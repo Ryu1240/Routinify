@@ -49,4 +49,3 @@ class Milestone < ApplicationRecord
     (completed_tasks_count.to_f / total_tasks_count * 100).round
   end
 end
-

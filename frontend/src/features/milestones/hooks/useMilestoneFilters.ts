@@ -7,12 +7,18 @@ export const useMilestoneFilters = (milestones: Milestone[]) => {
     sortOrder: 'desc',
   });
 
-  const updateFilter = useCallback((key: keyof MilestoneFilters, value: MilestoneFilters[keyof MilestoneFilters]) => {
-    setFilters((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  }, []);
+  const updateFilter = useCallback(
+    (
+      key: keyof MilestoneFilters,
+      value: MilestoneFilters[keyof MilestoneFilters]
+    ) => {
+      setFilters((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    },
+    []
+  );
 
   const clearFilters = useCallback(() => {
     setFilters({
@@ -110,4 +116,3 @@ export const useMilestoneFilters = (milestones: Milestone[]) => {
     filteredMilestones: sortedMilestones,
   };
 };
-

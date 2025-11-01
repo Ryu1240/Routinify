@@ -17,4 +17,3 @@ class MilestoneTask < ApplicationRecord
     find_by(milestone_id: milestone_id, task_id: task_id)
   end
 end
-

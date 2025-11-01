@@ -20,11 +20,7 @@ export type {
   UpdateRoutineTaskDto,
   RoutineTaskKeys,
 } from './routineTask';
-export type {
-  Milestone,
-  MilestoneStatus,
-  MilestoneFilters,
-} from './milestone';
+export type { Milestone, MilestoneStatus, MilestoneFilters } from './milestone';
 export type {
   ApiResponse,
   ApiError,

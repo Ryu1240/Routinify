@@ -121,7 +121,7 @@ RSpec.describe 'GET /api/v1/milestones', type: :request do
 
         json_response = JSON.parse(response.body)
         milestone_names = json_response['data'].map { |m| m['name'] }
-        expect(milestone_names).to eq(['Third', 'Second', 'First'])
+        expect(milestone_names).to eq([ 'Third', 'Second', 'First' ])
       end
 
       it '作成日で昇順ソートできること' do
@@ -129,7 +129,7 @@ RSpec.describe 'GET /api/v1/milestones', type: :request do
 
         json_response = JSON.parse(response.body)
         milestone_names = json_response['data'].map { |m| m['name'] }
-        expect(milestone_names).to eq(['First', 'Second', 'Third'])
+        expect(milestone_names).to eq([ 'First', 'Second', 'Third' ])
       end
 
       it '期限日でソートできること' do
@@ -140,8 +140,8 @@ RSpec.describe 'GET /api/v1/milestones', type: :request do
         get '/api/v1/milestones', params: { sort_by: 'due_date', sort_order: 'asc' }, headers: auth_headers
 
         json_response = JSON.parse(response.body)
-        milestone_ids = json_response['data'].select { |m| [milestone_due_yesterday.id, milestone_due_today.id, milestone_due_tomorrow.id].include?(m['id']) }
-        expect(milestone_ids.map { |m| m['id'] }).to eq([milestone_due_yesterday.id, milestone_due_today.id, milestone_due_tomorrow.id])
+        milestone_ids = json_response['data'].select { |m| [ milestone_due_yesterday.id, milestone_due_today.id, milestone_due_tomorrow.id ].include?(m['id']) }
+        expect(milestone_ids.map { |m| m['id'] }).to eq([ milestone_due_yesterday.id, milestone_due_today.id, milestone_due_tomorrow.id ])
       end
     end
 
@@ -203,4 +203,3 @@ RSpec.describe 'GET /api/v1/milestones', type: :request do
     end
   end
 end
-

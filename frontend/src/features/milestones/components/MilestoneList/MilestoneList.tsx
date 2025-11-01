@@ -16,14 +16,22 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconEdit, IconTrash } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
-import { Milestone, MilestoneFilters, MILESTONE_STATUS_LABELS, DUE_DATE_RANGE_LABELS } from '@/types/milestone';
+import {
+  Milestone,
+  MilestoneFilters,
+  MILESTONE_STATUS_LABELS,
+  DUE_DATE_RANGE_LABELS,
+} from '@/types/milestone';
 
 type MilestoneListProps = {
   isAuthenticated: boolean;
   authLoading: boolean;
   milestones: Milestone[];
   filters: MilestoneFilters;
-  onFilterChange: (key: keyof MilestoneFilters, value: MilestoneFilters[keyof MilestoneFilters]) => void;
+  onFilterChange: (
+    key: keyof MilestoneFilters,
+    value: MilestoneFilters[keyof MilestoneFilters]
+  ) => void;
   loading: boolean;
   error: string | null;
   onEdit?: (milestoneId: number) => void;
@@ -72,7 +80,9 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
         <Group justify="center">
           <Loader size="lg" color={COLORS.PRIMARY} />
           <Text c={COLORS.MEDIUM}>
-            {authLoading ? '認証情報を確認中...' : 'マイルストーンを読み込み中...'}
+            {authLoading
+              ? '認証情報を確認中...'
+              : 'マイルストーンを読み込み中...'}
           </Text>
         </Group>
       </Container>
@@ -111,7 +121,9 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
             placeholder="マイルストーン名で検索..."
             leftSection={<IconSearch size={16} color={COLORS.PRIMARY} />}
             value={filters.search || ''}
-            onChange={(event) => onFilterChange('search', event.currentTarget.value)}
+            onChange={(event) =>
+              onFilterChange('search', event.currentTarget.value)
+            }
             styles={{
               input: {
                 borderColor: COLORS.LIGHT,
@@ -130,12 +142,20 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
             data={[
               { value: '', label: 'すべて' },
               { value: 'planning', label: MILESTONE_STATUS_LABELS.planning },
-              { value: 'in_progress', label: MILESTONE_STATUS_LABELS.in_progress },
+              {
+                value: 'in_progress',
+                label: MILESTONE_STATUS_LABELS.in_progress,
+              },
               { value: 'completed', label: MILESTONE_STATUS_LABELS.completed },
               { value: 'cancelled', label: MILESTONE_STATUS_LABELS.cancelled },
             ]}
             value={filters.status || ''}
-            onChange={(value) => onFilterChange('status', value as Milestone['status'] || undefined)}
+            onChange={(value) =>
+              onFilterChange(
+                'status',
+                (value as Milestone['status']) || undefined
+              )
+            }
             clearable
           />
 
@@ -150,7 +170,12 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
               { value: 'this_month', label: DUE_DATE_RANGE_LABELS.this_month },
             ]}
             value={filters.dueDateRange || ''}
-            onChange={(value) => onFilterChange('dueDateRange', value as MilestoneFilters['dueDateRange'] || undefined)}
+            onChange={(value) =>
+              onFilterChange(
+                'dueDateRange',
+                (value as MilestoneFilters['dueDateRange']) || undefined
+              )
+            }
             clearable
           />
 
@@ -163,7 +188,12 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
               { value: 'progress', label: '進捗率' },
             ]}
             value={filters.sortBy || 'created_at'}
-            onChange={(value) => onFilterChange('sortBy', value as MilestoneFilters['sortBy'] || 'created_at')}
+            onChange={(value) =>
+              onFilterChange(
+                'sortBy',
+                (value as MilestoneFilters['sortBy']) || 'created_at'
+              )
+            }
           />
 
           <Select
@@ -174,23 +204,41 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
               { value: 'asc', label: '昇順' },
             ]}
             value={filters.sortOrder || 'desc'}
-            onChange={(value) => onFilterChange('sortOrder', value as MilestoneFilters['sortOrder'] || 'desc')}
+            onChange={(value) =>
+              onFilterChange(
+                'sortOrder',
+                (value as MilestoneFilters['sortOrder']) || 'desc'
+              )
+            }
           />
         </Group>
       </Stack>
 
       {milestones.length === 0 ? (
-        <Alert title="マイルストーンがありません" color={COLORS.PRIMARY} variant="light">
+        <Alert
+          title="マイルストーンがありません"
+          color={COLORS.PRIMARY}
+          variant="light"
+        >
           マイルストーンが存在しません。
         </Alert>
       ) : (
         <Stack gap="md">
           {milestones.map((milestone) => (
-            <Card key={milestone.id} shadow="sm" padding="lg" radius="md" withBorder>
+            <Card
+              key={milestone.id}
+              shadow="sm"
+              padding="lg"
+              radius="md"
+              withBorder
+            >
               <Group justify="space-between" mb="xs">
                 <Group>
                   <Title order={4}>{milestone.name}</Title>
-                  <Badge color={getStatusColor(milestone.status)} variant="light">
+                  <Badge
+                    color={getStatusColor(milestone.status)}
+                    variant="light"
+                  >
                     {MILESTONE_STATUS_LABELS[milestone.status]}
                   </Badge>
                 </Group>
@@ -224,13 +272,23 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
 
               <Group mb="md">
                 <Text size="sm">
-                  <Text span fw={500}>開始日:</Text> {formatDate(milestone.startDate)}
+                  <Text span fw={500}>
+                    開始日:
+                  </Text>{' '}
+                  {formatDate(milestone.startDate)}
                 </Text>
                 <Text size="sm">
-                  <Text span fw={500}>期限日:</Text> {formatDate(milestone.dueDate)}
+                  <Text span fw={500}>
+                    期限日:
+                  </Text>{' '}
+                  {formatDate(milestone.dueDate)}
                 </Text>
                 <Text size="sm">
-                  <Text span fw={500}>タスク:</Text> {milestone.completedTasksCount}/{milestone.totalTasksCount} 完了
+                  <Text span fw={500}>
+                    タスク:
+                  </Text>{' '}
+                  {milestone.completedTasksCount}/{milestone.totalTasksCount}{' '}
+                  完了
                 </Text>
               </Group>
 
@@ -239,7 +297,11 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
                   value={milestone.progressPercentage}
                   size="lg"
                   radius="xl"
-                  color={milestone.progressPercentage === 100 ? 'green' : COLORS.PRIMARY}
+                  color={
+                    milestone.progressPercentage === 100
+                      ? 'green'
+                      : COLORS.PRIMARY
+                  }
                   style={{ flex: 1 }}
                 />
                 <Text size="sm" fw={500} c="dimmed">
@@ -259,4 +321,3 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
     </Container>
   );
 };
-

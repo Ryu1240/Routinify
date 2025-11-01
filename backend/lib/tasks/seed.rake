@@ -15,13 +15,13 @@ namespace :db do
 
       # 関連データを削除（外部キー制約があるため順序が重要）
       Task.where(account_id: test_user_id).destroy_all
-      puts "  - Tasks deleted"
+      puts '  - Tasks deleted'
 
       RoutineTask.where(account_id: test_user_id).destroy_all
-      puts "  - RoutineTasks deleted"
+      puts '  - RoutineTasks deleted'
 
       Category.where(account_id: test_user_id).destroy_all
-      puts "  - Categories deleted"
+      puts '  - Categories deleted'
 
       puts '既存データの削除が完了しました！'
       puts '========================================'
@@ -48,17 +48,16 @@ namespace :db do
 
       # 関連データを削除（外部キー制約があるため順序が重要）
       Task.where(account_id: test_user_id).destroy_all
-      puts "  - Tasks deleted"
+      puts '  - Tasks deleted'
 
       RoutineTask.where(account_id: test_user_id).destroy_all
-      puts "  - RoutineTasks deleted"
+      puts '  - RoutineTasks deleted'
 
       Category.where(account_id: test_user_id).destroy_all
-      puts "  - Categories deleted"
+      puts '  - Categories deleted'
 
       puts 'シードデータの削除が完了しました！'
       puts '========================================'
     end
   end
 end
-

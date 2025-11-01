@@ -1,6 +1,10 @@
 // マイルストーン関連の型定義
 
-export type MilestoneStatus = 'planning' | 'in_progress' | 'completed' | 'cancelled';
+export type MilestoneStatus =
+  | 'planning'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
 
 export type Milestone = {
   readonly id: number;
@@ -51,4 +55,3 @@ export const DUE_DATE_RANGE_LABELS: Record<
   this_week: '今週',
   this_month: '今月',
 };
-
