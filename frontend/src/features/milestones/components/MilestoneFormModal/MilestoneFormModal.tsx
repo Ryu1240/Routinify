@@ -19,7 +19,7 @@ import {
 import { MILESTONE_STATUS_LABELS } from '@/types/milestone';
 import { useMilestoneForm } from '../../hooks/useMilestoneForm';
 
-type MilestoneFormProps = {
+type MilestoneFormModalProps = {
   opened: boolean;
   onClose: () => void;
   onCreate?: (milestoneData: CreateMilestoneDto) => Promise<void>;
@@ -36,7 +36,7 @@ const statusOptions = Object.entries(MILESTONE_STATUS_LABELS).map(
   })
 );
 
-export const MilestoneForm: React.FC<MilestoneFormProps> = ({
+export const MilestoneFormModal: React.FC<MilestoneFormModalProps> = ({
   opened,
   onClose,
   onCreate,

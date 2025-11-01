@@ -9,7 +9,7 @@ import {
   Milestone,
 } from '@/types/milestone';
 import { MilestoneList } from './MilestoneList';
-import { MilestoneForm } from '@/features/milestones/components/MilestoneForm';
+import { MilestoneFormModal } from '@/features/milestones/components/MilestoneFormModal/MilestoneFormModal';
 import { milestonesApi } from '../../api/milestonesApi';
 
 export const MilestoneListContainer: React.FC = () => {
@@ -112,7 +112,7 @@ export const MilestoneListContainer: React.FC = () => {
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
-      <MilestoneForm
+      <MilestoneFormModal
         key={
           isEditMode && editingMilestone
             ? `edit-${editingMilestone.id}`
