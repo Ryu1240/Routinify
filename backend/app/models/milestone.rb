@@ -30,10 +30,23 @@ class Milestone < ApplicationRecord
     status == 'completed'
   end
 
+  ##
+  # Checks whether the milestone's status is 'cancelled'.
+  # @return [Boolean] `true` if the status equals 'cancelled', `false` otherwise.
   def cancelled?
     status == 'cancelled'
   end
 
+  ##
+  # Compute task counts and completion progress for the milestone.
+  #
+  # Returns a hash containing the total number of tasks, the number of completed tasks,
+  # and the completion progress as a percentage (rounded to the nearest whole number).
+  # The progress value is 0 when the milestone has no tasks.
+  # @return [Hash] A hash with the following keys:
+  #   - :total_tasks_count [Integer] The total number of tasks for the milestone.
+  #   - :completed_tasks_count [Integer] The number of tasks whose status is `completed`.
+  #   - :progress_percentage [Integer] The completion percentage (0–100, rounded).
   def task_statistics
     # includes(:tasks)でロード済みの場合はメモリ上で計算、そうでない場合はDBクエリで取得
     if association(:tasks).loaded?

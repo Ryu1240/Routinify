@@ -1,6 +1,11 @@
 module Api
   module V1
     class MilestonesController < BaseController
+      ##
+      # Retrieve a list of milestones for the current user, applying optional filters and sorting.
+      #
+      # Enforces the `read:milestones` permission and returns serialized milestone records. Query parameters may be used to filter (status, due_date_range, q) and sort (sort_by, sort_order) the results.
+      # @return [Array<Hash>] An array of serialized milestone objects (hashes) suitable for JSON rendering.
       def index
         validate_permissions([ 'read:milestones' ]) do
           milestones = Milestone.for_user(current_user_id).includes(:tasks)
@@ -11,6 +16,11 @@ module Api
         end
       end
 
+      ##
+      # Creates a new milestone for the current user, requiring the `write:milestones` permission.
+      # On success, responds with the serialized milestone data, the service message, and the service status.
+      # On failure, responds with the service errors and status.
+      # Uses strong parameters from `milestone_params`.
       def create
         validate_permissions([ 'write:milestones' ]) do
           service = MilestoneCreateService.new(
@@ -33,10 +43,16 @@ module Api
 
       private
 
+      ##
+      # Strong parameters for creating or updating a milestone, permitting only the allowed attributes.
+      # @return [ActionController::Parameters] The permitted milestone attributes: :name, :description, :start_date, :due_date, and :status.
       def milestone_params
         params.require(:milestone).permit(:name, :description, :start_date, :due_date, :status)
       end
 
+      ##
+      # Permits and returns query parameters allowed for searching and sorting milestones.
+      # @return [ActionController::Parameters] A params object containing only `:status`, `:due_date_range`, `:q`, `:sort_by`, and `:sort_order`.
       def search_params
         params.permit(:status, :due_date_range, :q, :sort_by, :sort_order)
       end
