@@ -93,7 +93,14 @@ module Api
             return
           end
 
-          task_ids = task_association_params[:task_ids] || []
+          raw_task_ids = task_association_params[:task_ids]
+          
+          if raw_task_ids.nil? || (raw_task_ids.is_a?(Array) && raw_task_ids.empty?)
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          task_ids = Array(raw_task_ids).compact.map(&:to_i).reject(&:zero?)
 
           if task_ids.empty?
             render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
@@ -117,13 +124,20 @@ module Api
             return
           end
 
-          # 新しいタスクを関連付け
+          # 新しいタスクを関連付け（重複を避けるため、個別に追加）
           new_tasks = tasks.where(id: new_task_ids)
-          milestone.tasks << new_tasks
+          new_tasks.each do |task|
+            begin
+              milestone.tasks << task unless milestone.tasks.exists?(task.id)
+            rescue ActiveRecord::RecordNotUnique
+              # 既に関連付けられている場合はスキップ
+              next
+            end
+          end
 
           render_success(
             data: MilestoneSerializer.new(milestone.reload).as_json,
-            message: "#{new_tasks.count}件のタスクをマイルストーンに関連付けました",
+            message: "#{new_task_ids.count}件のタスクをマイルストーンに関連付けました",
             status: :ok
           )
         end
@@ -138,7 +152,14 @@ module Api
             return
           end
 
-          task_ids = task_association_params[:task_ids] || []
+          raw_task_ids = task_association_params[:task_ids]
+          
+          if raw_task_ids.nil? || (raw_task_ids.is_a?(Array) && raw_task_ids.empty?)
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          task_ids = Array(raw_task_ids).compact.map(&:to_i).reject(&:zero?)
 
           if task_ids.empty?
             render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
@@ -155,6 +176,7 @@ module Api
 
           # 関連付けられているタスクのみを取得
           associated_tasks = milestone.tasks.where(id: task_ids)
+          associated_count = associated_tasks.count
 
           if associated_tasks.empty?
             render_error(errors: [ 'すべてのタスクはマイルストーンに関連付けられていません' ], status: :unprocessable_entity)
@@ -166,7 +188,7 @@ module Api
 
           render_success(
             data: MilestoneSerializer.new(milestone.reload).as_json,
-            message: "#{associated_tasks.count}件のタスクの関連付けを解除しました",
+            message: "#{associated_count}件のタスクの関連付けを解除しました",
             status: :ok
           )
         end
