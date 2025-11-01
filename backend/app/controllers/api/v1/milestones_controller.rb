@@ -50,7 +50,7 @@ module Api
           milestones.order(due_date: sort_order.to_sym)
         when 'progress'
           # 進捗率でソートする場合は、LEFT JOINとGROUP BYを使用して計算
-          # serializerで使用するメソッドが正しく動作するよう、includes(:tasks)を維持
+          # serializerで使用するtask_statisticsメソッドが正しく動作するよう、includes(:tasks)を維持
           milestones.left_joins(:tasks)
             .select('milestones.*, COUNT(tasks.id) as total_tasks_count, COUNT(CASE WHEN tasks.status = \'completed\' THEN 1 END) as completed_tasks_count')
             .group('milestones.id')
