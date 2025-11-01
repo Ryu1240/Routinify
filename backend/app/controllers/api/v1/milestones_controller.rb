@@ -84,6 +84,116 @@ module Api
         end
       end
 
+      def associate_task
+        validate_permissions([ 'write:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          raw_task_ids = task_association_params[:task_ids]
+          
+          if raw_task_ids.nil? || (raw_task_ids.is_a?(Array) && raw_task_ids.empty?)
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          task_ids = Array(raw_task_ids).compact.map(&:to_i).reject(&:zero?)
+
+          if task_ids.empty?
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          # タスクIDの検証
+          tasks = Task.for_user(current_user_id).where(id: task_ids)
+
+          if tasks.count != task_ids.count
+            render_error(errors: [ '一部のタスクが見つかりません' ], status: :not_found)
+            return
+          end
+
+          # 既に関連付けられているタスクを除外
+          existing_task_ids = milestone.tasks.where(id: task_ids).pluck(:id)
+          new_task_ids = task_ids - existing_task_ids
+
+          if new_task_ids.empty?
+            render_error(errors: [ 'すべてのタスクは既にマイルストーンに関連付けられています' ], status: :unprocessable_entity)
+            return
+          end
+
+          # 新しいタスクを関連付け（重複を避けるため、個別に追加）
+          new_tasks = tasks.where(id: new_task_ids)
+          new_tasks.each do |task|
+            begin
+              milestone.tasks << task unless milestone.tasks.exists?(task.id)
+            rescue ActiveRecord::RecordNotUnique
+              # 既に関連付けられている場合はスキップ
+              next
+            end
+          end
+
+          render_success(
+            data: MilestoneSerializer.new(milestone.reload).as_json,
+            message: "#{new_task_ids.count}件のタスクをマイルストーンに関連付けました",
+            status: :ok
+          )
+        end
+      end
+
+      def dissociate_task
+        validate_permissions([ 'write:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          raw_task_ids = task_association_params[:task_ids]
+          
+          if raw_task_ids.nil? || (raw_task_ids.is_a?(Array) && raw_task_ids.empty?)
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          task_ids = Array(raw_task_ids).compact.map(&:to_i).reject(&:zero?)
+
+          if task_ids.empty?
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          # タスクIDの検証
+          tasks = Task.for_user(current_user_id).where(id: task_ids)
+
+          if tasks.count != task_ids.count
+            render_error(errors: [ '一部のタスクが見つかりません' ], status: :not_found)
+            return
+          end
+
+          # 関連付けられているタスクのみを取得
+          associated_tasks = milestone.tasks.where(id: task_ids)
+          associated_count = associated_tasks.count
+
+          if associated_tasks.empty?
+            render_error(errors: [ 'すべてのタスクはマイルストーンに関連付けられていません' ], status: :unprocessable_entity)
+            return
+          end
+
+          # タスクの関連付けを解除
+          milestone.tasks.delete(associated_tasks)
+
+          render_success(
+            data: MilestoneSerializer.new(milestone.reload).as_json,
+            message: "#{associated_count}件のタスクの関連付けを解除しました",
+            status: :ok
+          )
+        end
+      end
+
       private
 
       def milestone_params
@@ -92,6 +202,16 @@ module Api
 
       def search_params
         params.permit(:status, :due_date_range, :q, :sort_by, :sort_order)
+      end
+
+      def task_association_params
+        # { task: { task_ids: [1, 2, 3] } } 形式を試す
+        if params[:task].present?
+          params.require(:task).permit(task_ids: [])
+        else
+          # フォールバック: { task_ids: [1, 2, 3] } 形式
+          params.permit(task_ids: [])
+        end
       end
 
       def apply_filters(milestones, filters)
