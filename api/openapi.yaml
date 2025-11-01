@@ -1503,15 +1503,37 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  #   delete:
-  #     tags:
-  #       - マイルストーン
-  #     summary: マイルストーンの削除
-  #     security:
-  #       - Auth0: [delete:milestones]
-  #     responses:
-  #       '204':
-  #         description: 削除成功
+    delete:
+      tags:
+        - マイルストーン
+      summary: マイルストーンの削除
+      security:
+        - Auth0:
+            - delete:milestones
+      responses:
+        '204':
+          description: 削除成功
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: マイルストーンが見つかりません
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["マイルストーンが見つかりません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   # /milestones/{id}/tasks:
   #   parameters:

@@ -10,6 +10,7 @@ import {
 } from '@/types/milestone';
 import { MilestoneList } from './MilestoneList';
 import { MilestoneFormModal } from '@/features/milestones/components/MilestoneFormModal/MilestoneFormModal';
+import { DeleteMilestoneConfirmModal } from '@/features/milestones/components/DeleteMilestoneConfirmModal';
 import { milestonesApi } from '../../api/milestonesApi';
 
 export const MilestoneListContainer: React.FC = () => {
@@ -26,11 +27,24 @@ export const MilestoneListContainer: React.FC = () => {
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(
     null
   );
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingMilestoneId, setDeletingMilestoneId] = useState<number | null>(
+    null
+  );
+  const [deletingMilestoneName, setDeletingMilestoneName] = useState<
+    string | null
+  >(null);
   const { milestones, loading, error, fetchMilestones } = useFetchMilestones();
-  const { createMilestone, createLoading, updateMilestone, updateLoading } =
-    useMilestoneMutations(() => {
-      fetchMilestones(filters);
-    });
+  const {
+    createMilestone,
+    createLoading,
+    updateMilestone,
+    updateLoading,
+    deleteMilestone,
+    deleteLoading,
+  } = useMilestoneMutations(() => {
+    fetchMilestones(filters);
+  });
 
   React.useEffect(() => {
     if (!isAuthenticated) {
@@ -71,7 +85,7 @@ export const MilestoneListContainer: React.FC = () => {
       setIsEditMode(true);
       setIsModalOpen(true);
     } catch (error) {
-      console.error('マイルストーンの取得に失敗しました:', error);
+      console.error('マイルストーンの更新に失敗しました:', error);
     }
   };
 
@@ -84,11 +98,29 @@ export const MilestoneListContainer: React.FC = () => {
     setEditingMilestone(null);
   };
 
-  const handleDelete = (milestoneId: number) => {
-    // TODO: 削除機能の実装
-    if (window.confirm('このマイルストーンを削除してもよろしいですか？')) {
-      console.log('Delete milestone:', milestoneId);
+  const handleDelete = async (milestoneId: number) => {
+    try {
+      const milestone = await milestonesApi.getById(milestoneId);
+      setDeletingMilestoneId(milestoneId);
+      setDeletingMilestoneName(milestone.name);
+      setIsDeleteModalOpen(true);
+    } catch (error) {
+      console.error('マイルストーンの削除に失敗しました:', error);
     }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deletingMilestoneId) return;
+    await deleteMilestone(deletingMilestoneId);
+    setIsDeleteModalOpen(false);
+    setDeletingMilestoneId(null);
+    setDeletingMilestoneName(null);
+  };
+
+  const handleDeleteModalClose = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingMilestoneId(null);
+    setDeletingMilestoneName(null);
   };
 
   const handleModalClose = () => {
@@ -125,6 +157,13 @@ export const MilestoneListContainer: React.FC = () => {
         loading={isEditMode ? updateLoading : createLoading}
         initialData={editingMilestone || undefined}
         mode={isEditMode ? 'edit' : 'create'}
+      />
+      <DeleteMilestoneConfirmModal
+        opened={isDeleteModalOpen}
+        onClose={handleDeleteModalClose}
+        onConfirm={handleDeleteConfirm}
+        milestoneName={deletingMilestoneName || undefined}
+        loading={deleteLoading}
       />
     </>
   );

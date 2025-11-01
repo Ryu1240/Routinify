@@ -39,32 +39,32 @@ RSpec.configure do |config|
 
       if File.exist?(schema_file) && File.exist?(config_file)
         puts 'Applying Ridgepole schema to test database...'
-        
+
         # Check if test database has tables
         ActiveRecord::Base.establish_connection(:test)
         has_tables = ActiveRecord::Base.connection.tables.any? { |t| !t.start_with?('schema_migrations', 'ar_internal_metadata') }
-        
+
         unless has_tables
           # Export schema from development database using pg_dump via Docker
           # This is more reliable than Ridgepole's --export for empty databases
           dev_db_config = ActiveRecord::Base.configurations.configs_for(env_name: 'development').first
           test_db_config = ActiveRecord::Base.configurations.configs_for(env_name: 'test').first
-          
+
           if dev_db_config && test_db_config
             schema_sql = Rails.root.join('tmp', 'test_schema.sql')
             dev_hash = dev_db_config.configuration_hash
             test_hash = test_db_config.configuration_hash
-            
+
             # Use docker-compose exec to run pg_dump from db container
             # Export schema from development database
             export_cmd = "docker compose exec -T db pg_dump -U #{dev_hash[:username] || 'postgres'} -d #{dev_hash[:database]} --schema-only --no-owner --no-acl > #{schema_sql}"
             export_result = system(export_cmd, out: File::NULL, err: File::NULL)
-            
+
             if export_result && File.exist?(schema_sql) && File.size(schema_sql) > 0
               # Apply schema to test database
               apply_cmd = "docker compose exec -T db psql -U #{test_hash[:username] || 'postgres'} -d #{test_hash[:database]} < #{schema_sql}"
               apply_result = system(apply_cmd, out: File::NULL, err: File::NULL)
-              
+
               unless apply_result
                 puts "\n⚠️  Failed to apply schema to test database. Tests may fail."
                 puts "   You can skip schema application by setting SKIP_RIDGEPOLE_APPLY=true"
@@ -74,7 +74,7 @@ RSpec.configure do |config|
             end
           end
         end
-        
+
         # Ensure db/schema.rb exists for maintain_test_schema!
         # Note: db/schema.rb should be generated automatically when Ridgepole is applied
         # via make ridgepole-apply. If it doesn't exist, generate it here as a fallback.

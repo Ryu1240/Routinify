@@ -221,4 +221,3 @@ RSpec.describe 'PUT /api/v1/milestones/:id', type: :request do
     end
   end
 end
-

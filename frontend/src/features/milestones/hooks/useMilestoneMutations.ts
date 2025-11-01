@@ -5,6 +5,7 @@ import { milestonesApi } from '../api/milestonesApi';
 export const useMilestoneMutations = (onRefresh: () => void) => {
   const [createLoading, setCreateLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const createMilestone = async (milestoneData: CreateMilestoneDto) => {
@@ -50,11 +51,33 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
     }
   };
 
+  const deleteMilestone = async (id: number) => {
+    try {
+      setDeleteLoading(true);
+      setError(null);
+
+      await milestonesApi.delete(id);
+
+      // 削除後にマイルストーンリストを再取得
+      onRefresh();
+    } catch (err) {
+      console.error('マイルストーンの削除に失敗しました:', err);
+      setError(
+        'マイルストーンの削除に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+      throw err;
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   return {
     createMilestone,
     createLoading,
     updateMilestone,
     updateLoading,
+    deleteMilestone,
+    deleteLoading,
     error,
   };
 };
