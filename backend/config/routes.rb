@@ -9,7 +9,12 @@ Rails.application.routes.draw do
           get :generation_status
         end
       end
-      resources :milestones, only: [ :index, :show, :create, :update, :destroy ]
+      resources :milestones, only: [ :index, :show, :create, :update, :destroy ] do
+        member do
+          post :tasks, to: 'milestones#associate_task'
+          delete 'tasks/:task_id', to: 'milestones#dissociate_task'
+        end
+      end
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

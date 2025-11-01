@@ -84,6 +84,76 @@ module Api
         end
       end
 
+      def associate_task
+        validate_permissions([ 'write:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          task_id = task_association_params[:task_id]
+
+          if task_id.nil?
+            render_error(errors: [ 'task_idは必須です' ], status: :unprocessable_entity)
+            return
+          end
+
+          task = Task.for_user(current_user_id).find_by(id: task_id)
+
+          if task.nil?
+            render_error(errors: [ 'タスクが見つかりません' ], status: :not_found)
+            return
+          end
+
+          # 重複チェック
+          if milestone.tasks.exists?(task.id)
+            render_error(errors: [ 'このタスクは既にマイルストーンに関連付けられています' ], status: :unprocessable_entity)
+            return
+          end
+
+          milestone.tasks << task
+
+          render_success(
+            data: MilestoneSerializer.new(milestone.reload).as_json,
+            message: 'タスクをマイルストーンに関連付けました',
+            status: :ok
+          )
+        end
+      end
+
+      def dissociate_task
+        validate_permissions([ 'write:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          task = Task.for_user(current_user_id).find_by(id: params[:task_id])
+
+          if task.nil?
+            render_error(errors: [ 'タスクが見つかりません' ], status: :not_found)
+            return
+          end
+
+          unless milestone.tasks.exists?(task.id)
+            render_error(errors: [ 'このタスクはマイルストーンに関連付けられていません' ], status: :unprocessable_entity)
+            return
+          end
+
+          milestone.tasks.delete(task)
+
+          render_success(
+            data: MilestoneSerializer.new(milestone.reload).as_json,
+            message: 'タスクの関連付けを解除しました',
+            status: :ok
+          )
+        end
+      end
+
       private
 
       def milestone_params
@@ -92,6 +162,16 @@ module Api
 
       def search_params
         params.permit(:status, :due_date_range, :q, :sort_by, :sort_order)
+      end
+
+      def task_association_params
+        # まず { task: { task_id: 123 } } 形式を試す
+        if params[:task].present?
+          params.require(:task).permit(:task_id)
+        else
+          # フォールバック: { task_id: 123 } 形式
+          params.permit(:task_id)
+        end
       end
 
       def apply_filters(milestones, filters)

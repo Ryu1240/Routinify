@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { CreateMilestoneDto, UpdateMilestoneDto } from '@/types/milestone';
+import {
+  CreateMilestoneDto,
+  UpdateMilestoneDto,
+  Milestone,
+} from '@/types/milestone';
 import { milestonesApi } from '../api/milestonesApi';
 
 export const useMilestoneMutations = (onRefresh: () => void) => {
   const [createLoading, setCreateLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [associateLoading, setAssociateLoading] = useState(false);
+  const [dissociateLoading, setDissociateLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const createMilestone = async (milestoneData: CreateMilestoneDto) => {
@@ -71,6 +77,62 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
     }
   };
 
+  const associateTask = async (
+    milestoneId: number,
+    taskId: number
+  ): Promise<Milestone> => {
+    try {
+      setAssociateLoading(true);
+      setError(null);
+
+      const updatedMilestone = await milestonesApi.associateTask(
+        milestoneId,
+        taskId
+      );
+
+      // 更新後にマイルストーンリストを再取得
+      onRefresh();
+
+      return updatedMilestone;
+    } catch (err) {
+      console.error('タスクの関連付けに失敗しました:', err);
+      setError(
+        'タスクの関連付けに失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+      throw err;
+    } finally {
+      setAssociateLoading(false);
+    }
+  };
+
+  const dissociateTask = async (
+    milestoneId: number,
+    taskId: number
+  ): Promise<Milestone> => {
+    try {
+      setDissociateLoading(true);
+      setError(null);
+
+      const updatedMilestone = await milestonesApi.dissociateTask(
+        milestoneId,
+        taskId
+      );
+
+      // 更新後にマイルストーンリストを再取得
+      onRefresh();
+
+      return updatedMilestone;
+    } catch (err) {
+      console.error('タスクの関連付け解除に失敗しました:', err);
+      setError(
+        'タスクの関連付け解除に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+      throw err;
+    } finally {
+      setDissociateLoading(false);
+    }
+  };
+
   return {
     createMilestone,
     createLoading,
@@ -78,6 +140,10 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
     updateLoading,
     deleteMilestone,
     deleteLoading,
+    associateTask,
+    associateLoading,
+    dissociateTask,
+    dissociateLoading,
     error,
   };
 };

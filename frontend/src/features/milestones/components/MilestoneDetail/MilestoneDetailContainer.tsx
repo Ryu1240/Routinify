@@ -8,6 +8,7 @@ import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
 import { UpdateMilestoneDto } from '@/types/milestone';
 import { MilestoneDetail } from './MilestoneDetail';
 import { DeleteMilestoneConfirmModal } from '@/features/milestones/components/DeleteMilestoneConfirmModal';
+import { AssociateTaskModal } from './AssociateTaskModal';
 
 export const MilestoneDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,12 +18,22 @@ export const MilestoneDetailContainer: React.FC = () => {
   const { milestone, loading, error, refreshMilestone } =
     useFetchMilestone(milestoneId);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const { updateMilestone, updateLoading, deleteMilestone, deleteLoading } =
-    useMilestoneMutations(() => {
-      if (milestoneId) {
-        refreshMilestone();
-      }
-    });
+  const [isAssociateTaskModalOpen, setIsAssociateTaskModalOpen] =
+    useState(false);
+  const {
+    updateMilestone,
+    updateLoading,
+    deleteMilestone,
+    deleteLoading,
+    associateTask,
+    associateLoading,
+    dissociateTask,
+    dissociateLoading,
+  } = useMilestoneMutations(() => {
+    if (milestoneId) {
+      refreshMilestone();
+    }
+  });
 
   const handleEdit = async (milestoneData: UpdateMilestoneDto) => {
     if (!milestoneId) return;
@@ -43,6 +54,29 @@ export const MilestoneDetailContainer: React.FC = () => {
 
   const handleDeleteModalClose = () => {
     setIsDeleteModalOpen(false);
+  };
+
+  const handleDissociateTask = async (taskId: number) => {
+    if (!milestoneId) return;
+    try {
+      await dissociateTask(milestoneId, taskId);
+    } catch (error) {
+      console.error('タスクの関連付け解除に失敗:', error);
+    }
+  };
+
+  const handleAddTask = () => {
+    setIsAssociateTaskModalOpen(true);
+  };
+
+  const handleAssociateTask = async (taskId: number) => {
+    if (!milestoneId) return;
+    try {
+      await associateTask(milestoneId, taskId);
+    } catch (error) {
+      console.error('タスクの関連付けに失敗:', error);
+      throw error;
+    }
   };
 
   if (authLoading || loading) {
@@ -100,7 +134,10 @@ export const MilestoneDetailContainer: React.FC = () => {
         milestone={milestone}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onDissociateTask={handleDissociateTask}
+        onAddTask={handleAddTask}
         editLoading={updateLoading}
+        dissociateLoading={dissociateLoading}
       />
       <DeleteMilestoneConfirmModal
         opened={isDeleteModalOpen}
@@ -108,6 +145,13 @@ export const MilestoneDetailContainer: React.FC = () => {
         onConfirm={handleDeleteConfirm}
         milestoneName={milestone.name}
         loading={deleteLoading}
+      />
+      <AssociateTaskModal
+        opened={isAssociateTaskModalOpen}
+        onClose={() => setIsAssociateTaskModalOpen(false)}
+        onAssociate={handleAssociateTask}
+        loading={associateLoading}
+        associatedTaskIds={milestone?.tasks?.map((t) => t.id) || []}
       />
     </>
   );

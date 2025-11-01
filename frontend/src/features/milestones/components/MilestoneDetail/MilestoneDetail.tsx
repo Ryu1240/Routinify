@@ -9,14 +9,20 @@ type MilestoneDetailProps = {
   milestone: Milestone;
   onEdit?: (milestoneData: UpdateMilestoneDto) => Promise<void>;
   onDelete?: () => void;
+  onDissociateTask?: (taskId: number) => Promise<void>;
+  onAddTask?: () => void;
   editLoading?: boolean;
+  dissociateLoading?: boolean;
 };
 
 export const MilestoneDetail: React.FC<MilestoneDetailProps> = ({
   milestone,
   onEdit,
   onDelete,
+  onDissociateTask,
+  onAddTask,
   editLoading,
+  dissociateLoading,
 }) => {
   const tasks = milestone.tasks || [];
 
@@ -29,7 +35,12 @@ export const MilestoneDetail: React.FC<MilestoneDetailProps> = ({
         onDelete={onDelete}
         loading={editLoading}
       />
-      <MilestoneTasksTable tasks={tasks} />
+      <MilestoneTasksTable
+        tasks={tasks}
+        onDissociateTask={onDissociateTask}
+        onAddTask={onAddTask}
+        dissociateLoading={dissociateLoading}
+      />
     </Container>
   );
 };
