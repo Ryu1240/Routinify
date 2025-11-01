@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   Group,
@@ -11,23 +11,60 @@ import {
 } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
-import { Milestone, MILESTONE_STATUS_LABELS } from '@/types/milestone';
+import { Milestone, UpdateMilestoneDto } from '@/types/milestone';
 import {
   getStatusColor,
   formatDate,
 } from '@/features/milestones/components/MilestoneList/utils/utils';
+import { MILESTONE_STATUS_LABELS } from '@/types/milestone';
+import { MilestoneInfoCardEdit } from './MilestoneInfoCardEdit';
 
 type MilestoneInfoCardProps = {
   milestone: Milestone;
-  onEdit?: () => void;
+  onEdit?: (milestoneData: UpdateMilestoneDto) => Promise<void>;
   onDelete?: () => void;
+  loading?: boolean;
 };
 
 export const MilestoneInfoCard: React.FC<MilestoneInfoCardProps> = ({
   milestone,
   onEdit,
   onDelete,
+  loading = false,
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleStartEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
+
+  const handleSave = async (milestoneData: UpdateMilestoneDto) => {
+    if (onEdit) {
+      try {
+        await onEdit(milestoneData);
+        setIsEditing(false);
+      } catch (error) {
+        console.error('マイルストーン更新エラー:', error);
+        throw error;
+      }
+    }
+  };
+
+  if (isEditing && onEdit) {
+    return (
+      <MilestoneInfoCardEdit
+        milestone={milestone}
+        onSave={handleSave}
+        onCancel={handleCancelEdit}
+        loading={loading}
+      />
+    );
+  }
+
   return (
     <Card shadow="sm" padding="lg" radius="md" withBorder mb="lg">
       <Group justify="space-between" mb="md">
@@ -43,7 +80,7 @@ export const MilestoneInfoCard: React.FC<MilestoneInfoCardProps> = ({
               leftSection={<IconEdit size={16} />}
               variant="light"
               color={COLORS.PRIMARY}
-              onClick={onEdit}
+              onClick={handleStartEdit}
             >
               編集
             </Button>

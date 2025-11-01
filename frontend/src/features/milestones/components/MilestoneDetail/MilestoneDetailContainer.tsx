@@ -4,17 +4,25 @@ import { Container, Loader, Alert, Text, Group } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFetchMilestone } from '../../hooks/useFetchMilestone';
+import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
+import { UpdateMilestoneDto } from '@/types/milestone';
 import { MilestoneDetail } from './MilestoneDetail';
 
 export const MilestoneDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const milestoneId = id ? parseInt(id, 10) : null;
-  const { milestone, loading, error } = useFetchMilestone(milestoneId);
+  const { milestone, loading, error, refreshMilestone } =
+    useFetchMilestone(milestoneId);
+  const { updateMilestone, updateLoading } = useMilestoneMutations(() => {
+    if (milestoneId) {
+      refreshMilestone();
+    }
+  });
 
-  const handleEdit = () => {
-    // TODO: 編集機能の実装
-    console.log('Edit milestone:', milestoneId);
+  const handleEdit = async (milestoneData: UpdateMilestoneDto) => {
+    if (!milestoneId) return;
+    await updateMilestone(milestoneId, milestoneData);
   };
 
   const handleDelete = () => {
@@ -78,6 +86,7 @@ export const MilestoneDetailContainer: React.FC = () => {
       milestone={milestone}
       onEdit={handleEdit}
       onDelete={handleDelete}
+      editLoading={updateLoading}
     />
   );
 };

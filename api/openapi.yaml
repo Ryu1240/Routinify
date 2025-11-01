@@ -558,6 +558,32 @@ components:
       required:
         - name
 
+    MilestoneUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: マイルストーン名
+          maxLength: 255
+        description:
+          type: string
+          nullable: true
+          description: 説明
+        startDate:
+          type: string
+          format: date
+          nullable: true
+          description: 開始日
+        dueDate:
+          type: string
+          format: date
+          nullable: true
+          description: 期限日
+        status:
+          type: string
+          description: ステータス
+          enum: [planning, in_progress, completed, cancelled]
+
 paths:
   # /auth/signin:
   #   post:
@@ -1422,21 +1448,61 @@ paths:
                     example: ["マイルストーンが見つかりません"]
         '500':
           $ref: '#/components/responses/InternalServerError'
-  #   put:
-  #     tags:
-  #       - マイルストーン
-  #     summary: マイルストーンの編集
-  #     security:
-  #       - Auth0: [write:milestones]
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/Milestone'
-  #     responses:
-  #       '200':
-  #         description: 更新成功
+    put:
+      tags:
+        - マイルストーン
+      summary: マイルストーンの更新
+      security:
+        - Auth0:
+            - write:milestones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                milestone:
+                  $ref: '#/components/schemas/MilestoneUpdate'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "マイルストーンが正常に更新されました"
+                  data:
+                    $ref: '#/components/schemas/Milestone'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: マイルストーンが見つかりません
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["マイルストーンが見つかりません"]
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   #   delete:
   #     tags:
   #       - マイルストーン

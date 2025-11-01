@@ -3,6 +3,7 @@ import {
   Milestone,
   MilestoneFilters,
   CreateMilestoneDto,
+  UpdateMilestoneDto,
 } from '@/types/milestone';
 
 type MilestoneResponse = {
@@ -20,7 +21,7 @@ type MilestoneCreateResponse = {
   data: Milestone;
 };
 
-type MilestoneRequestBody = {
+type CreateMilestoneRequestBody = {
   milestone: {
     name: string;
     description?: string | null;
@@ -30,6 +31,15 @@ type MilestoneRequestBody = {
   };
 };
 
+type UpdateMilestoneRequestBody = {
+  milestone: {
+    name?: string;
+    description?: string | null;
+    start_date?: string | null;
+    due_date?: string | null;
+    status?: string;
+  };
+};
 export const milestonesApi = {
   getAll: async (filters?: MilestoneFilters): Promise<Milestone[]> => {
     const params: Record<string, string> = {};
@@ -54,7 +64,7 @@ export const milestonesApi = {
   },
 
   create: async (milestoneData: CreateMilestoneDto): Promise<void> => {
-    const body: MilestoneRequestBody = {
+    const body: CreateMilestoneRequestBody = {
       milestone: {
         name: milestoneData.name,
         description: milestoneData.description || null,
@@ -64,5 +74,37 @@ export const milestonesApi = {
       },
     };
     await axios.post<MilestoneCreateResponse>('/api/v1/milestones', body);
+  },
+
+  update: async (
+    id: number,
+    milestoneData: UpdateMilestoneDto
+  ): Promise<Milestone> => {
+    const body: UpdateMilestoneRequestBody = {
+      milestone: {},
+    };
+
+    // undefinedでないフィールドのみを追加
+    if (milestoneData.name !== undefined) {
+      body.milestone.name = milestoneData.name;
+    }
+    if (milestoneData.description !== undefined) {
+      body.milestone.description = milestoneData.description;
+    }
+    if (milestoneData.startDate !== undefined) {
+      body.milestone.start_date = milestoneData.startDate;
+    }
+    if (milestoneData.dueDate !== undefined) {
+      body.milestone.due_date = milestoneData.dueDate;
+    }
+    if (milestoneData.status !== undefined) {
+      body.milestone.status = milestoneData.status;
+    }
+
+    const response = await axios.put<MilestoneDetailResponse>(
+      `/api/v1/milestones/${id}`,
+      body
+    );
+    return response.data.data;
   },
 };
