@@ -2,7 +2,7 @@ namespace :db do
   namespace :seed do
     desc '既存のシードデータを削除してからシードを実行（開発環境・テスト環境のみ）'
     task reset: :environment do
-      if Rails.env.production?
+      if Rails.env.production? || Rails.env.test?
         puts 'エラー: 本番環境ではこのタスクを実行できません。'
         exit 1
       end
@@ -35,7 +35,7 @@ namespace :db do
 
     desc 'シードデータをクリーンアップ（削除のみ）'
     task cleanup: :environment do
-      if Rails.env.production?
+      if Rails.env.production? || Rails.env.test?
         puts 'エラー: 本番環境ではこのタスクを実行できません。'
         exit 1
       end

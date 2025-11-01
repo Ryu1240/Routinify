@@ -2,17 +2,12 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# 使用方法:
+#   rails db:seed                    # 通常のシード実行（既存データは保持）
+#   RESET_SEED=true rails db:seed    # 既存データを削除してからシード実行（開発環境のみ）
+#   rails db:seed:reset              # 既存データを削除してからシード実行（開発環境のみ）
+#   rails db:seed:cleanup            # シードデータの削除のみ（開発環境のみ）
 
-# テスト環境ではseedを実行しない（テストは独立して実行されるべき）
-if Rails.env.test?
-  puts 'テスト環境ではseedデータは実行されません。'
-  exit 0
-end
 
 # 既存データを削除するかどうか（環境変数で制御、デフォルトはfalse）
 # 使用方法: RESET_SEED=true rails db:seed
