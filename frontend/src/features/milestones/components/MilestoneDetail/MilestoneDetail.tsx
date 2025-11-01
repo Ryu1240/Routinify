@@ -9,7 +9,7 @@ type MilestoneDetailProps = {
   milestone: Milestone;
   onEdit?: (milestoneData: UpdateMilestoneDto) => Promise<void>;
   onDelete?: () => void;
-  onDissociateTask?: (taskId: number) => Promise<void>;
+  onDissociateTask?: (taskIds: number[]) => Promise<void>;
   onAddTask?: () => void;
   editLoading?: boolean;
   dissociateLoading?: boolean;

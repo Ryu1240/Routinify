@@ -56,10 +56,10 @@ export const MilestoneDetailContainer: React.FC = () => {
     setIsDeleteModalOpen(false);
   };
 
-  const handleDissociateTask = async (taskId: number) => {
+  const handleDissociateTask = async (taskIds: number[]) => {
     if (!milestoneId) return;
     try {
-      await dissociateTask(milestoneId, [taskId]);
+      await dissociateTask(milestoneId, taskIds);
     } catch (error) {
       console.error('タスクの関連付け解除に失敗:', error);
     }
