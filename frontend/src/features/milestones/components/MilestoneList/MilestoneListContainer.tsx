@@ -17,26 +17,9 @@ export const MilestoneListContainer: React.FC = () => {
       return;
     }
 
-    const requestFilters: Record<string, string> = {};
-
-    if (filters.status) {
-      requestFilters.status = filters.status;
-    }
-    if (filters.dueDateRange) {
-      requestFilters.due_date_range = filters.dueDateRange;
-    }
-    if (filters.search) {
-      requestFilters.q = filters.search;
-    }
-    if (filters.sortBy) {
-      requestFilters.sort_by = filters.sortBy;
-    }
-    if (filters.sortOrder) {
-      requestFilters.sort_order = filters.sortOrder;
-    }
-
-    fetchMilestones(requestFilters);
-  }, [isAuthenticated, filters, fetchMilestones]);
+    fetchMilestones(filters);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, filters]);
 
   const handleFilterChange = (
     key: keyof MilestoneFilters,

@@ -8,6 +8,7 @@ type MilestoneResponse = {
 export const milestonesApi = {
   getAll: async (filters?: MilestoneFilters): Promise<Milestone[]> => {
     const params: Record<string, string> = {};
+
     if (filters?.status) params.status = filters.status;
     if (filters?.dueDateRange) params.due_date_range = filters.dueDateRange;
     if (filters?.search) params.q = filters.search;
