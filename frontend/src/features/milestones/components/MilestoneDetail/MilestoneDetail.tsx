@@ -16,7 +16,7 @@ export const MilestoneDetail: React.FC<MilestoneDetailProps> = ({
   milestone,
   onEdit,
   onDelete,
-  editLoading = false,
+  editLoading,
 }) => {
   const tasks = milestone.tasks || [];
 
