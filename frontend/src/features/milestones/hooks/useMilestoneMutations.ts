@@ -79,7 +79,7 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
 
   const associateTask = async (
     milestoneId: number,
-    taskId: number
+    taskIds: number[]
   ): Promise<Milestone> => {
     try {
       setAssociateLoading(true);
@@ -87,7 +87,7 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
 
       const updatedMilestone = await milestonesApi.associateTask(
         milestoneId,
-        taskId
+        taskIds
       );
 
       // 更新後にマイルストーンリストを再取得
@@ -107,7 +107,7 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
 
   const dissociateTask = async (
     milestoneId: number,
-    taskId: number
+    taskIds: number[]
   ): Promise<Milestone> => {
     try {
       setDissociateLoading(true);
@@ -115,7 +115,7 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
 
       const updatedMilestone = await milestonesApi.dissociateTask(
         milestoneId,
-        taskId
+        taskIds
       );
 
       // 更新後にマイルストーンリストを再取得

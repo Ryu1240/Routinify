@@ -28,7 +28,7 @@ import {
 type AssociateTaskModalProps = {
   opened: boolean;
   onClose: () => void;
-  onAssociate: (taskId: number) => Promise<void>;
+  onAssociate: (taskIds: number[]) => Promise<void>;
   loading?: boolean;
   associatedTaskIds?: number[];
 };
@@ -111,10 +111,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     if (selectedTaskIds.length === 0) return;
 
     try {
-      // 選択されたタスクを順番に関連付け
-      for (const taskId of selectedTaskIds) {
-        await onAssociate(taskId);
-      }
+      await onAssociate(selectedTaskIds);
       onClose();
     } catch (err) {
       console.error('タスクの関連付けに失敗:', err);

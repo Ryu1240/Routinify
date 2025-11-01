@@ -114,11 +114,11 @@ export const milestonesApi = {
 
   associateTask: async (
     milestoneId: number,
-    taskId: number
+    taskIds: number[]
   ): Promise<Milestone> => {
     const body = {
       task: {
-        task_id: taskId,
+        task_ids: taskIds,
       },
     };
     const response = await axios.post<MilestoneDetailResponse>(
@@ -130,10 +130,16 @@ export const milestonesApi = {
 
   dissociateTask: async (
     milestoneId: number,
-    taskId: number
+    taskIds: number[]
   ): Promise<Milestone> => {
+    const body = {
+      task: {
+        task_ids: taskIds,
+      },
+    };
     const response = await axios.delete<MilestoneDetailResponse>(
-      `/api/v1/milestones/${milestoneId}/tasks/${taskId}`
+      `/api/v1/milestones/${milestoneId}/tasks`,
+      { data: body }
     );
     return response.data.data;
   },

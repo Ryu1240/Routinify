@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       resources :milestones, only: [ :index, :show, :create, :update, :destroy ] do
         member do
           post :tasks, to: 'milestones#associate_task'
-          delete 'tasks/:task_id', to: 'milestones#dissociate_task'
+          delete :tasks, to: 'milestones#dissociate_task'
         end
       end
     end

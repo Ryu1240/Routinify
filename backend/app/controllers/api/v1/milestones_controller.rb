@@ -93,31 +93,37 @@ module Api
             return
           end
 
-          task_id = task_association_params[:task_id]
+          task_ids = task_association_params[:task_ids] || []
 
-          if task_id.nil?
-            render_error(errors: [ 'task_idは必須です' ], status: :unprocessable_entity)
+          if task_ids.empty?
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
             return
           end
 
-          task = Task.for_user(current_user_id).find_by(id: task_id)
+          # タスクIDの検証
+          tasks = Task.for_user(current_user_id).where(id: task_ids)
 
-          if task.nil?
-            render_error(errors: [ 'タスクが見つかりません' ], status: :not_found)
+          if tasks.count != task_ids.count
+            render_error(errors: [ '一部のタスクが見つかりません' ], status: :not_found)
             return
           end
 
-          # 重複チェック
-          if milestone.tasks.exists?(task.id)
-            render_error(errors: [ 'このタスクは既にマイルストーンに関連付けられています' ], status: :unprocessable_entity)
+          # 既に関連付けられているタスクを除外
+          existing_task_ids = milestone.tasks.where(id: task_ids).pluck(:id)
+          new_task_ids = task_ids - existing_task_ids
+
+          if new_task_ids.empty?
+            render_error(errors: [ 'すべてのタスクは既にマイルストーンに関連付けられています' ], status: :unprocessable_entity)
             return
           end
 
-          milestone.tasks << task
+          # 新しいタスクを関連付け
+          new_tasks = tasks.where(id: new_task_ids)
+          milestone.tasks << new_tasks
 
           render_success(
             data: MilestoneSerializer.new(milestone.reload).as_json,
-            message: 'タスクをマイルストーンに関連付けました',
+            message: "#{new_tasks.count}件のタスクをマイルストーンに関連付けました",
             status: :ok
           )
         end
@@ -132,23 +138,35 @@ module Api
             return
           end
 
-          task = Task.for_user(current_user_id).find_by(id: params[:task_id])
+          task_ids = task_association_params[:task_ids] || []
 
-          if task.nil?
-            render_error(errors: [ 'タスクが見つかりません' ], status: :not_found)
+          if task_ids.empty?
+            render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
             return
           end
 
-          unless milestone.tasks.exists?(task.id)
-            render_error(errors: [ 'このタスクはマイルストーンに関連付けられていません' ], status: :unprocessable_entity)
+          # タスクIDの検証
+          tasks = Task.for_user(current_user_id).where(id: task_ids)
+
+          if tasks.count != task_ids.count
+            render_error(errors: [ '一部のタスクが見つかりません' ], status: :not_found)
             return
           end
 
-          milestone.tasks.delete(task)
+          # 関連付けられているタスクのみを取得
+          associated_tasks = milestone.tasks.where(id: task_ids)
+
+          if associated_tasks.empty?
+            render_error(errors: [ 'すべてのタスクはマイルストーンに関連付けられていません' ], status: :unprocessable_entity)
+            return
+          end
+
+          # タスクの関連付けを解除
+          milestone.tasks.delete(associated_tasks)
 
           render_success(
             data: MilestoneSerializer.new(milestone.reload).as_json,
-            message: 'タスクの関連付けを解除しました',
+            message: "#{associated_tasks.count}件のタスクの関連付けを解除しました",
             status: :ok
           )
         end
@@ -165,12 +183,12 @@ module Api
       end
 
       def task_association_params
-        # まず { task: { task_id: 123 } } 形式を試す
+        # { task: { task_ids: [1, 2, 3] } } 形式を試す
         if params[:task].present?
-          params.require(:task).permit(:task_id)
+          params.require(:task).permit(task_ids: [])
         else
-          # フォールバック: { task_id: 123 } 形式
-          params.permit(:task_id)
+          # フォールバック: { task_ids: [1, 2, 3] } 形式
+          params.permit(task_ids: [])
         end
       end
 
