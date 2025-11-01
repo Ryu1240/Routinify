@@ -13,6 +13,7 @@ import { TaskList } from './pages/tasks';
 import { CategoryList } from './pages/categories';
 import { RoutineTaskList } from './pages/routineTasks';
 import { RoutineTaskForm } from './pages/routineTasks/RoutineTaskForm';
+import { MilestonesPage } from './pages/milestones';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -86,6 +87,14 @@ const AppContent: React.FC = () => {
         element={
           <ProtectedRoute>
             <RoutineTaskForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/milestones"
+        element={
+          <ProtectedRoute>
+            <MilestonesPage />
           </ProtectedRoute>
         }
       />

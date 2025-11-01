@@ -8,10 +8,15 @@ class Milestone < ApplicationRecord
   validates :account_id, presence: true
   validates :status, inclusion: { in: %w[planning in_progress completed cancelled] }, allow_nil: false
 
-  scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }
   scope :active, -> { where(status: %w[planning in_progress]) }
   scope :completed, -> { where(status: 'completed') }
+
+  scope :search_by_name, ->(query) { where('name ILIKE ?', "%#{query}%") if query.present? }
+  scope :overdue, -> { where('due_date < ?', Date.current) }
+  scope :due_today, -> { where(due_date: Date.current) }
+  scope :due_this_week, -> { where(due_date: Date.current..Date.current.end_of_week) }
+  scope :due_this_month, -> { where(due_date: Date.current.beginning_of_month..Date.current.end_of_month) }
 
   def planning?
     status == 'planning'
@@ -29,6 +34,27 @@ class Milestone < ApplicationRecord
     status == 'cancelled'
   end
 
+  def task_statistics
+    # includes(:tasks)でロード済みの場合はメモリ上で計算、そうでない場合は1回のクエリで取得
+    if association(:tasks).loaded?
+      total = tasks.size
+      completed = tasks.count { |task| task.status == 'completed' }
+    else
+      # 1回のクエリでタスク総数と完了タスク数を取得
+      result = tasks.select('COUNT(*) as total, COUNT(CASE WHEN tasks.status = \'completed\' THEN 1 END) as completed').first
+      total = result ? result.total.to_i : 0
+      completed = result ? result.completed.to_i : 0
+    end
+
+    progress = total.zero? ? 0 : (completed.to_f / total * 100).round
+
+    {
+      total_tasks_count: total,
+      completed_tasks_count: completed,
+      progress_percentage: progress
+    }
+  end
+
   def total_tasks_count
     tasks.count
   end
@@ -43,4 +69,3 @@ class Milestone < ApplicationRecord
     (completed_tasks_count.to_f / total_tasks_count * 100).round
   end
 end
-

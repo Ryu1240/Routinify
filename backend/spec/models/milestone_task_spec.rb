@@ -92,4 +92,3 @@ RSpec.describe MilestoneTask, type: :model do
     end
   end
 end
-
