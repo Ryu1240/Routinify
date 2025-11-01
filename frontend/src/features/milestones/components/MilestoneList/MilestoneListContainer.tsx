@@ -13,9 +13,29 @@ export const MilestoneListContainer: React.FC = () => {
   const { milestones, loading, error, fetchMilestones } = useFetchMilestones();
 
   React.useEffect(() => {
-    if (isAuthenticated) {
-      fetchMilestones(filters);
+    if (!isAuthenticated) {
+      return;
     }
+
+    const requestFilters: Record<string, string> = {};
+
+    if (filters.status) {
+      requestFilters.status = filters.status;
+    }
+    if (filters.dueDateRange) {
+      requestFilters.due_date_range = filters.dueDateRange;
+    }
+    if (filters.search) {
+      requestFilters.q = filters.search;
+    }
+    if (filters.sortBy) {
+      requestFilters.sort_by = filters.sortBy;
+    }
+    if (filters.sortOrder) {
+      requestFilters.sort_order = filters.sortOrder;
+    }
+
+    fetchMilestones(requestFilters);
   }, [isAuthenticated, filters, fetchMilestones]);
 
   const handleFilterChange = (
