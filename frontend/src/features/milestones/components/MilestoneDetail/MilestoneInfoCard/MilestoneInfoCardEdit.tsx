@@ -39,13 +39,8 @@ export const MilestoneInfoCardEdit: React.FC<MilestoneInfoCardEditProps> = ({
   onCancel,
   loading = false,
 }) => {
-  const {
-    formData,
-    errors,
-    handleInputChange,
-    validateForm,
-    getUpdateData,
-  } = useMilestoneForm(milestone);
+  const { formData, errors, handleInputChange, validateForm, getUpdateData } =
+    useMilestoneForm(milestone);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,4 +177,3 @@ export const MilestoneInfoCardEdit: React.FC<MilestoneInfoCardEditProps> = ({
     </Card>
   );
 };
-

@@ -12,9 +12,8 @@ export const MilestoneDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const milestoneId = id ? parseInt(id, 10) : null;
-  const { milestone, loading, error, refreshMilestone } = useFetchMilestone(
-    milestoneId
-  );
+  const { milestone, loading, error, refreshMilestone } =
+    useFetchMilestone(milestoneId);
   const { updateMilestone, updateLoading } = useMilestoneMutations(() => {
     if (milestoneId) {
       refreshMilestone();

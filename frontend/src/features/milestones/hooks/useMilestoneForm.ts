@@ -54,24 +54,24 @@ export const useMilestoneForm = (initialData?: Milestone) => {
     }
 
     const updateData: UpdateMilestoneDto = {};
-    
+
     // 初期データと比較して、変更されたフィールドのみを追加
-    if (formData.name !== undefined && formData.name !== initialData.name) {
+    if (formData.name !== initialData.name) {
       updateData.name = formData.name;
     }
-    if (formData.description !== undefined && formData.description !== initialData.description) {
+    if (formData.description !== initialData.description) {
       updateData.description = formData.description;
     }
-    if (formData.startDate !== undefined && formData.startDate !== initialData.startDate) {
+    if (formData.startDate !== initialData.startDate) {
       updateData.startDate = formData.startDate;
     }
-    if (formData.dueDate !== undefined && formData.dueDate !== initialData.dueDate) {
+    if (formData.dueDate !== initialData.dueDate) {
       updateData.dueDate = formData.dueDate;
     }
-    if (formData.status !== undefined && formData.status !== initialData.status) {
+    if (formData.status !== initialData.status) {
       updateData.status = formData.status;
     }
-    
+
     return updateData;
   };
 

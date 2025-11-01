@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import {
-  CreateMilestoneDto,
-  UpdateMilestoneDto,
-} from '@/types/milestone';
+import { CreateMilestoneDto, UpdateMilestoneDto } from '@/types/milestone';
 import { milestonesApi } from '../api/milestonesApi';
 
 export const useMilestoneMutations = (onRefresh: () => void) => {

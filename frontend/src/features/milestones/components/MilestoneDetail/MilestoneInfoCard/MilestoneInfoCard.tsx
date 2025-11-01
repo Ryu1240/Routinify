@@ -57,7 +57,6 @@ export const MilestoneInfoCard: React.FC<MilestoneInfoCardProps> = ({
   if (isEditing && onEdit) {
     return (
       <MilestoneInfoCardEdit
-        key={`edit-${milestone.id}`}
         milestone={milestone}
         onSave={handleSave}
         onCancel={handleCancelEdit}
