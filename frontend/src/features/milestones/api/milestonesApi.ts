@@ -9,6 +9,11 @@ type MilestoneResponse = {
   data: Milestone[];
 };
 
+type MilestoneDetailResponse = {
+  success: boolean;
+  data: Milestone;
+};
+
 type MilestoneCreateResponse = {
   success: boolean;
   message: string;
@@ -38,6 +43,13 @@ export const milestonesApi = {
     const response = await axios.get<MilestoneResponse>('/api/v1/milestones', {
       params,
     });
+    return response.data.data;
+  },
+
+  getById: async (id: number): Promise<Milestone> => {
+    const response = await axios.get<MilestoneDetailResponse>(
+      `/api/v1/milestones/${id}`
+    );
     return response.data.data;
   },
 

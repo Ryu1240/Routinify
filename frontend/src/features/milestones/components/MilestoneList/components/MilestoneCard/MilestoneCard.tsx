@@ -9,6 +9,7 @@ import {
   Title,
 } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { COLORS } from '@/shared/constants/colors';
 import { Milestone, MILESTONE_STATUS_LABELS } from '@/types/milestone';
 import { getStatusColor, formatDate } from '../../utils';
@@ -24,8 +25,35 @@ export const MilestoneCard: React.FC<MilestoneCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/milestones/${milestone.id}`);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit(milestone.id);
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(milestone.id);
+    }
+  };
+
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
+    <Card
+      shadow="sm"
+      padding="lg"
+      radius="md"
+      withBorder
+      style={{ cursor: 'pointer' }}
+      onClick={handleCardClick}
+    >
       <Group justify="space-between" mb="xs">
         <Group>
           <Title order={4}>{milestone.name}</Title>
@@ -38,7 +66,7 @@ export const MilestoneCard: React.FC<MilestoneCardProps> = ({
             <ActionIcon
               variant="subtle"
               color={COLORS.PRIMARY}
-              onClick={() => onEdit(milestone.id)}
+              onClick={handleEditClick}
             >
               <IconEdit size={16} />
             </ActionIcon>
@@ -47,7 +75,7 @@ export const MilestoneCard: React.FC<MilestoneCardProps> = ({
             <ActionIcon
               variant="subtle"
               color="red"
-              onClick={() => onDelete(milestone.id)}
+              onClick={handleDeleteClick}
             >
               <IconTrash size={16} />
             </ActionIcon>

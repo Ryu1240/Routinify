@@ -14,7 +14,8 @@ class MilestoneSerializer < BaseSerializer
       totalTasksCount: stats[:total_tasks_count],
       completedTasksCount: stats[:completed_tasks_count],
       createdAt: format_datetime(@object.created_at),
-      updatedAt: format_datetime(@object.updated_at)
+      updatedAt: format_datetime(@object.updated_at),
+      tasks: @object.tasks.map { |task| TaskSerializer.new(task).as_json }
     }
   end
 end

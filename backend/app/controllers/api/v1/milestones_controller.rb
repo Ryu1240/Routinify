@@ -11,6 +11,18 @@ module Api
         end
       end
 
+      def show
+        validate_permissions([ 'read:milestones' ]) do
+          milestone = Milestone.for_user(current_user_id).includes(:tasks).find_by(id: params[:id])
+
+          if milestone
+            render_success(data: MilestoneSerializer.new(milestone).as_json)
+          else
+            render_not_found('マイルストーン')
+          end
+        end
+      end
+
       def create
         validate_permissions([ 'write:milestones' ]) do
           service = MilestoneCreateService.new(

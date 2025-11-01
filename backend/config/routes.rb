@@ -9,7 +9,7 @@ Rails.application.routes.draw do
           get :generation_status
         end
       end
-      resources :milestones, only: [ :index, :create ]
+      resources :milestones, only: [ :index, :show, :create ]
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

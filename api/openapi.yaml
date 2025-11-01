@@ -513,6 +513,11 @@ components:
           type: string
           format: date-time
           description: 更新日時
+        tasks:
+          type: array
+          description: 関連タスク一覧（詳細取得時のみ含まれる）
+          items:
+            $ref: '#/components/schemas/Task'
       required:
         - id
         - accountId
@@ -1368,24 +1373,55 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  # /milestones:
-
-  # /milestones/{id}:
-  #   parameters:
-  #     - name: id
-  #       in: path
-  #       required: true
-  #       schema:
-  #         type: integer
-  #   get:
-  #     tags:
-  #       - マイルストーン
-  #     summary: 特定のマイルストーンの詳細表示
-  #     security:
-  #       - Auth0: [read:milestones]
-  #     responses:
-  #       '200':
-  #         description: 成功
+  /milestones/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: マイルストーンID
+    get:
+      tags:
+        - マイルストーン
+      summary: 特定のマイルストーンの詳細表示
+      security:
+        - Auth0:
+            - read:milestones
+      responses:
+        '200':
+          description: マイルストーン詳細の取得に成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/Milestone'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: マイルストーンが見つかりません
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["マイルストーンが見つかりません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   #   put:
   #     tags:
   #       - マイルストーン
