@@ -55,3 +55,14 @@ export const DUE_DATE_RANGE_LABELS: Record<
   this_week: '今週',
   this_month: '今月',
 };
+
+// DTO型（Data Transfer Object）
+export type CreateMilestoneDto = {
+  name: string;
+  description?: string | null;
+  startDate?: string | null;
+  dueDate?: string | null;
+  status?: MilestoneStatus;
+};
+
+export type UpdateMilestoneDto = Partial<CreateMilestoneDto>;
