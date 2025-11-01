@@ -8,7 +8,6 @@ class Milestone < ApplicationRecord
   validates :account_id, presence: true
   validates :status, inclusion: { in: %w[planning in_progress completed cancelled] }, allow_nil: false
 
-  scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }
   scope :active, -> { where(status: %w[planning in_progress]) }
   scope :completed, -> { where(status: 'completed') }

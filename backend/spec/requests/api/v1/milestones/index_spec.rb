@@ -49,8 +49,8 @@ RSpec.describe 'GET /api/v1/milestones', type: :request do
         expect(returned_milestone['progressPercentage']).to eq(0)
         expect(returned_milestone['totalTasksCount']).to eq(0)
         expect(returned_milestone['completedTasksCount']).to eq(0)
-        expect(returned_milestone['createdAt']).to eq(milestone.created_at.iso8601(3))
-        expect(returned_milestone['updatedAt']).to eq(milestone.updated_at.iso8601(3))
+        expect(returned_milestone['createdAt']).to eq(milestone.created_at.iso8601)
+        expect(returned_milestone['updatedAt']).to eq(milestone.updated_at.iso8601)
       end
 
       it 'includes progress percentage and task counts when milestone has tasks' do

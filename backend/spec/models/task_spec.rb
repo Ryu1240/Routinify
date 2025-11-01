@@ -246,22 +246,24 @@ RSpec.describe Task, type: :model do
 
   describe 'クラスメソッド' do
     describe '.search' do
-      let!(:task1) { create(:task, title: 'テストタスク1') }
-      let!(:task2) { create(:task, title: 'サンプルタスク2') }
-      let!(:task3) { create(:task, title: 'テスト用タスク3') }
+      let(:test_account_id) { 'test-search-user' }
+      let!(:task1) { create(:task, account_id: test_account_id, title: 'テストタスク1') }
+      let!(:task2) { create(:task, account_id: test_account_id, title: 'サンプルタスク2') }
+      let!(:task3) { create(:task, account_id: test_account_id, title: 'テスト用タスク3') }
 
       it 'タイトルで検索できること' do
-        results = Task.search('テスト')
+        # seedデータを除外するため、テストアカウントのデータのみで確認
+        results = Task.where(account_id: test_account_id).search('テスト')
         expect(results).to contain_exactly(task1, task3)
       end
 
       it '部分一致で検索できること' do
-        results = Task.search('サンプル')
+        results = Task.where(account_id: test_account_id).search('サンプル')
         expect(results).to contain_exactly(task2)
       end
 
       it '大文字小文字を区別しないこと' do
-        results = Task.search('テスト')
+        results = Task.where(account_id: test_account_id).search('テスト')
         expect(results).to contain_exactly(task1, task3)
       end
 

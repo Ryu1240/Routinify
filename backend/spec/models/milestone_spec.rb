@@ -136,21 +136,27 @@ RSpec.describe Milestone, type: :model do
 
     describe '.by_status' do
       it '指定されたステータスのマイルストーンのみを返すこと' do
-        expect(Milestone.by_status('planning')).to contain_exactly(user1_milestone1)
-        expect(Milestone.by_status('in_progress')).to contain_exactly(user1_milestone2)
-        expect(Milestone.by_status('completed')).to contain_exactly(user2_milestone)
+        # seedデータを除外するため、テストデータのみで確認
+        test_milestones = Milestone.where(account_id: [ 'user1', 'user2' ])
+        expect(test_milestones.by_status('planning')).to contain_exactly(user1_milestone1)
+        expect(test_milestones.by_status('in_progress')).to contain_exactly(user1_milestone2)
+        expect(test_milestones.by_status('completed')).to contain_exactly(user2_milestone)
       end
     end
 
     describe '.active' do
       it 'planningとin_progressのマイルストーンを返すこと' do
-        expect(Milestone.active).to contain_exactly(user1_milestone1, user1_milestone2)
+        # seedデータを除外するため、テストデータのみで確認
+        test_milestones = Milestone.where(account_id: [ 'user1', 'user2' ])
+        expect(test_milestones.active).to contain_exactly(user1_milestone1, user1_milestone2)
       end
     end
 
     describe '.completed' do
       it 'completedステータスのマイルストーンのみを返すこと' do
-        expect(Milestone.completed).to contain_exactly(user2_milestone)
+        # seedデータを除外するため、テストデータのみで確認
+        test_milestones = Milestone.where(account_id: [ 'user1', 'user2' ])
+        expect(test_milestones.completed).to contain_exactly(user2_milestone)
       end
     end
 

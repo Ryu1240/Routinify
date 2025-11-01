@@ -8,6 +8,12 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
+# テスト環境ではseedを実行しない（テストは独立して実行されるべき）
+if Rails.env.test?
+  puts 'テスト環境ではseedデータは実行されません。'
+  exit 0
+end
+
 # 既存データを削除するかどうか（環境変数で制御、デフォルトはfalse）
 # 使用方法: RESET_SEED=true rails db:seed
 # または: RESET_SEED=true bundle exec rails db:seed
