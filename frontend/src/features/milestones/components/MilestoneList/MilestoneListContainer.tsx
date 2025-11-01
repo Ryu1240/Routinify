@@ -85,7 +85,7 @@ export const MilestoneListContainer: React.FC = () => {
       setIsEditMode(true);
       setIsModalOpen(true);
     } catch (error) {
-      console.error('マイルストーンの取得に失敗しました:', error);
+      console.error('マイルストーンの更新に失敗しました:', error);
     }
   };
 
@@ -105,7 +105,7 @@ export const MilestoneListContainer: React.FC = () => {
       setDeletingMilestoneName(milestone.name);
       setIsDeleteModalOpen(true);
     } catch (error) {
-      console.error('マイルストーンの取得に失敗しました:', error);
+      console.error('マイルストーンの削除に失敗しました:', error);
     }
   };
 
