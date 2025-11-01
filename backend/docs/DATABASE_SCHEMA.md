@@ -1,7 +1,7 @@
 # データベーススキーマ設計書
 
 **最終更新日**: 2025-11-01
-**バージョン**: 2.2.0
+**バージョン**: 2.3.0
 
 ## 概要
 
@@ -23,8 +23,8 @@
 | tasks | タスク情報を管理 | ✅ 実装済み |
 | categories | タスクのカテゴリを管理 | ✅ 実装済み |
 | routine_tasks | 習慣化タスクのテンプレートを管理 | ✅ 実装済み |
-| milestones | マイルストーン情報を管理 | ⚠️ スキーマのみ |
-| milestone_tasks | タスクとマイルストーンの関連付け | ⚠️ スキーマのみ |
+| milestones | マイルストーン情報を管理 | ✅ 実装済み |
+| milestone_tasks | タスクとマイルストーンの関連付け | ✅ 実装済み |
 
 ---
 
@@ -63,6 +63,33 @@
 │ category_id (FK) │──────────────────┘
 │ routine_task_id  │
 │ generated_at     │
+│ created_at       │
+│ updated_at       │
+└──────────────────┘
+         │
+         │ N:M
+         │
+         ▼
+┌──────────────────────┐
+│   milestone_tasks    │ (中間テーブル)
+├──────────────────────┤
+│ milestone_id (FK)    │──┐
+│ task_id (FK)         │  │
+└──────────────────────┘  │
+         │                │
+         │                │
+         ▼                │
+┌──────────────────┐      │
+│   milestones      │      │
+├──────────────────┤      │
+│ id (PK)          │◄─────┘
+│ account_id       │
+│ name             │
+│ description      │
+│ start_date       │
+│ status           │
+│ due_date         │
+│ completed_at     │
 │ created_at       │
 │ updated_at       │
 └──────────────────┘
@@ -120,6 +147,8 @@ class Task < ApplicationRecord
 
   belongs_to :category, optional: true
   belongs_to :routine_task, optional: true
+  has_many :milestone_tasks, dependent: :destroy
+  has_many :milestones, through: :milestone_tasks
 
   validates :title, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
@@ -313,19 +342,88 @@ end
 
 ### milestones
 
-**説明**: 複数のタスクをグループ化するマイルストーン機能（将来の実装予定）。
+**説明**: 複数のタスクをグループ化するマイルストーン機能。ユーザー単位で管理され、進捗状況を追跡できます。
 
 #### カラム
 
-| カラム名 | 型 | NULL | 説明 |
-|---------|---|------|------|
-| id | integer | NO | 主キー |
-| name | string(255) | YES | マイルストーン名 |
-| due_date | date | YES | 期限日 |
-| created_at | datetime | YES | 作成日時 |
-| updated_at | datetime | YES | 更新日時 |
+| カラム名 | 型 | NULL | デフォルト | 説明 |
+|---------|---|------|-----------|------|
+| id | integer | NO | - | 主キー |
+| name | string(255) | NO | - | マイルストーン名 |
+| account_id | string(255) | NO | - | Auth0のユーザーID |
+| description | text | YES | NULL | 説明 |
+| start_date | date | YES | NULL | 開始日 |
+| status | string(255) | NO | 'planning' | planning, in_progress, completed, cancelled |
+| due_date | date | YES | NULL | 期限日 |
+| completed_at | datetime | YES | NULL | 完了日時 |
+| created_at | datetime | YES | - | 作成日時 |
+| updated_at | datetime | YES | - | 更新日時 |
 
-**注記**: スキーマ定義は存在しますが、モデル・コントローラーは未実装です。
+#### status の値
+
+| 値 | 説明 |
+|----|------|
+| planning | 計画中 |
+| in_progress | 進行中 |
+| completed | 完了 |
+| cancelled | キャンセル |
+
+#### インデックス
+
+```ruby
+add_index 'milestones', ['account_id']
+add_index 'milestones', ['status']
+```
+
+#### モデル
+
+```ruby
+class Milestone < ApplicationRecord
+  include AccountScoped
+
+  has_many :milestone_tasks, dependent: :destroy
+  has_many :tasks, through: :milestone_tasks
+
+  validates :name, presence: true, length: { maximum: 255 }
+  validates :account_id, presence: true
+  validates :status, inclusion: { in: %w[planning in_progress completed cancelled] }, allow_nil: false
+
+  scope :by_account, ->(account_id) { where(account_id: account_id) }
+  scope :by_status, ->(status) { where(status: status) }
+  scope :active, -> { where(status: %w[planning in_progress]) }
+  scope :completed, -> { where(status: 'completed') }
+
+  def planning?
+    status == 'planning'
+  end
+
+  def in_progress?
+    status == 'in_progress'
+  end
+
+  def completed?
+    status == 'completed'
+  end
+
+  def cancelled?
+    status == 'cancelled'
+  end
+
+  def total_tasks_count
+    tasks.count
+  end
+
+  def completed_tasks_count
+    tasks.where(status: 'completed').count
+  end
+
+  def progress_percentage
+    return 0 if total_tasks_count.zero?
+
+    (completed_tasks_count.to_f / total_tasks_count * 100).round
+  end
+end
+```
 
 ---
 
@@ -337,16 +435,19 @@ end
 
 | カラム名 | 型 | NULL | 説明 |
 |---------|---|------|------|
-| milestone_id | integer | NO | マイルストーンID（外部キー） |
-| task_id | integer | NO | タスクID（外部キー） |
+| milestone_id | integer | NO | マイルストーンID（外部キー、複合主キーの一部） |
+| task_id | integer | NO | タスクID（外部キー、複合主キーの一部） |
 
-**注意**: 主キー（id）なし
+**注意**: 主キーとして`(milestone_id, task_id)`の複合キーを使用しています。単一の`id`カラムはありません。
 
-#### インデックス
+#### 主キー
 
 ```ruby
-add_index 'milestone_tasks', ['milestone_id', 'task_id'], unique: true
+# 複合主キー: (milestone_id, task_id)
+execute('ALTER TABLE milestone_tasks ADD PRIMARY KEY (milestone_id, task_id)')
 ```
+
+**注記**: PostgreSQLでは複合主キーを設定すると、自動的にユニークインデックスも作成されるため、別途ユニークインデックスの定義は不要です。
 
 #### 外部キー
 
@@ -355,7 +456,35 @@ add_foreign_key 'milestone_tasks', 'milestones'
 add_foreign_key 'milestone_tasks', 'tasks'
 ```
 
-**注記**: スキーマ定義は存在しますが、モデル・コントローラーは未実装です。
+#### モデル
+
+```ruby
+class MilestoneTask < ApplicationRecord
+  self.table_name = 'milestone_tasks'
+  # 複合主キー(milestone_id, task_id)を使用するため、primary_keyをnilに設定
+  self.primary_key = nil
+
+  belongs_to :milestone
+  belongs_to :task
+
+  validates :milestone_id, presence: true
+  validates :task_id, presence: true
+  # データベースレベルの複合主キー制約により一意性が保証されるが、
+  # Rails側でもバリデーションを設定することでエラーメッセージを分かりやすくする
+  validates :milestone_id, uniqueness: { scope: :task_id }
+
+  # 複合主キーで検索する際のヘルパーメソッド
+  def self.find_by_ids(milestone_id:, task_id:)
+    find_by(milestone_id: milestone_id, task_id: task_id)
+  end
+end
+```
+
+**使用方法**:
+- アソシエーション経由での作成: `milestone.milestone_tasks.create(task: task)`
+- 複合主キーでの検索: `MilestoneTask.find_by_ids(milestone_id: 1, task_id: 2)`
+- 削除: `milestone_task.destroy`
+- 注意: `MilestoneTask.find(id)`や`MilestoneTask.update(id, ...)`は使用できません（単一のidカラムがないため）
 
 ---
 
@@ -367,17 +496,14 @@ add_foreign_key 'milestone_tasks', 'tasks'
 Category (1) ──< has_many >── (N) Task
 Category (1) ──< has_many >── (N) RoutineTask
 RoutineTask (1) ──< has_many >── (N) Task
+Milestone (N) ──< has_many through :milestone_tasks >── (N) Task
 ```
 
 **削除時の動作**:
 - カテゴリ削除 → タスク・習慣タスクの `category_id` が NULL
 - 習慣タスク削除 → タスクの `routine_task_id` が NULL（生成済みタスクは残る）
-
-### 未実装
-
-```
-Milestone (N) ──< has_many through >── (N) Task
-```
+- マイルストーン削除 → 関連する `milestone_tasks` レコードが削除（タスクは残る）
+- タスク削除 → 関連する `milestone_tasks` レコードが削除（マイルストーンは残る）
 
 ---
 
@@ -430,6 +556,7 @@ Milestone (N) ──< has_many through >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
+| 2025-11-01 | 2.3.0 | milestonesテーブルにaccount_id, description, start_date, status, completed_atカラムを追加。nameを必須に変更。account_idとstatusにインデックス追加。MilestoneモデルとMilestoneTaskモデルを実装。進捗率計算メソッド、ステータス判定メソッドを追加。Taskモデルにmilestone関連のアソシエーションを追加。milestone_tasksテーブルに複合主キー(milestone_id, task_id)を設定。MilestoneTaskモデルに複合主キー対応のコメントとfind_by_idsヘルパーメソッドを追加。 |
 | 2025-11-01 | 2.2.0 | routine_tasksテーブルのカラム情報を完全化。due_date_offset_days、due_date_offset_hour、start_generation_atカラムの説明を追加。モデルコードを最新の実装に合わせて更新。 |
 | 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
 | 2025-10-20 | 2.0.0 | 習慣化タスク機能を追加。routine_tasksテーブル新規追加、tasksテーブルにroutine_task_id/generated_atカラム追加。MTI採用、生成履歴テーブルなし。ドキュメントを簡潔に整理。 |
