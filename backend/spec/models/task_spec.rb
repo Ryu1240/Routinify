@@ -18,6 +18,26 @@ RSpec.describe Task, type: :model do
       expect(task).to be_valid
       expect(task.category).to eq(category)
     end
+
+    it 'has many milestone_tasks' do
+      task = Task.reflect_on_association(:milestone_tasks)
+      expect(task.macro).to eq(:has_many)
+    end
+
+    it 'has many milestones through milestone_tasks' do
+      task = Task.reflect_on_association(:milestones)
+      expect(task.macro).to eq(:has_many)
+      expect(task.options[:through]).to eq(:milestone_tasks)
+    end
+
+    it 'can be associated with milestones' do
+      milestone = Milestone.create!(name: 'Test Milestone', account_id: 'test_user')
+      task = Task.create!(title: 'Test Task', account_id: 'test_user')
+      MilestoneTask.create!(milestone: milestone, task: task)
+
+      expect(task.milestones).to include(milestone)
+      expect(milestone.tasks).to include(task)
+    end
   end
 
   describe 'バリデーション' do
