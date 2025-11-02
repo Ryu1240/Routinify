@@ -34,4 +34,3 @@ export const AchievementProgressBar: React.FC<AchievementProgressBarProps> = ({
     </Group>
   );
 };
-

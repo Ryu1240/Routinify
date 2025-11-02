@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import {
+  formatDate,
   formatDateToISO,
   formatDateToDisplay,
+  formatDateStringToDisplay,
   formatDateRange,
   getWeekRangeDates,
   getWeekRangeStrings,
@@ -10,6 +12,27 @@ import {
 } from './dateUtils';
 
 describe('dateUtils', () => {
+  describe('formatDate', () => {
+    it('formats date to YYYY-MM-DD format', () => {
+      const date = new Date(2024, 0, 15); // January 15, 2024
+      expect(formatDate(date)).toBe('2024-01-15');
+    });
+
+    it('returns null for null input', () => {
+      expect(formatDate(null)).toBeNull();
+    });
+
+    it('pads single digit month and day with zeros', () => {
+      const date = new Date(2024, 0, 5); // January 5, 2024
+      expect(formatDate(date)).toBe('2024-01-05');
+    });
+
+    it('handles December correctly', () => {
+      const date = new Date(2024, 11, 31); // December 31, 2024
+      expect(formatDate(date)).toBe('2024-12-31');
+    });
+  });
+
   describe('formatDateToISO', () => {
     it('formats date to YYYY-MM-DD format', () => {
       const date = new Date(2024, 0, 15); // January 15, 2024
@@ -39,6 +62,20 @@ describe('dateUtils', () => {
     });
   });
 
+  describe('formatDateStringToDisplay', () => {
+    it('formats date string to YYYY/MM/DD format', () => {
+      expect(formatDateStringToDisplay('2024-01-15')).toBe('2024/01/15');
+    });
+
+    it('handles ISO date strings', () => {
+      expect(formatDateStringToDisplay('2024-12-31')).toBe('2024/12/31');
+    });
+
+    it('pads single digit month and day with zeros', () => {
+      expect(formatDateStringToDisplay('2024-01-05')).toBe('2024/01/05');
+    });
+  });
+
   describe('formatDateRange', () => {
     it('formats date range correctly', () => {
       const start = new Date(2024, 0, 1);
@@ -59,13 +96,17 @@ describe('dateUtils', () => {
     it('returns previous week range when offset is -1', () => {
       const currentWeek = getWeekRangeDates(0);
       const previousWeek = getWeekRangeDates(-1);
-      expect(previousWeek.end.getTime()).toBeLessThan(currentWeek.start.getTime());
+      expect(previousWeek.end.getTime()).toBeLessThan(
+        currentWeek.start.getTime()
+      );
     });
 
     it('returns next week range when offset is 1', () => {
       const currentWeek = getWeekRangeDates(0);
       const nextWeek = getWeekRangeDates(1);
-      expect(nextWeek.start.getTime()).toBeGreaterThan(currentWeek.end.getTime());
+      expect(nextWeek.start.getTime()).toBeGreaterThan(
+        currentWeek.end.getTime()
+      );
     });
 
     it('week starts at Monday 00:00:00', () => {
@@ -111,13 +152,17 @@ describe('dateUtils', () => {
     it('returns previous month range when offset is -1', () => {
       const currentMonth = getMonthRangeDates(0);
       const previousMonth = getMonthRangeDates(-1);
-      expect(previousMonth.end.getTime()).toBeLessThan(currentMonth.start.getTime());
+      expect(previousMonth.end.getTime()).toBeLessThan(
+        currentMonth.start.getTime()
+      );
     });
 
     it('returns next month range when offset is 1', () => {
       const currentMonth = getMonthRangeDates(0);
       const nextMonth = getMonthRangeDates(1);
-      expect(nextMonth.start.getTime()).toBeGreaterThan(currentMonth.end.getTime());
+      expect(nextMonth.start.getTime()).toBeGreaterThan(
+        currentMonth.end.getTime()
+      );
     });
 
     it('month starts at 1st day 00:00:00', () => {
@@ -153,4 +198,3 @@ describe('dateUtils', () => {
     });
   });
 });
-

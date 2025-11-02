@@ -1,6 +1,7 @@
 import React from 'react';
 import { Group } from '@mantine/core';
 import { DatesProvider, DatePickerInput } from '@mantine/dates';
+import { formatDate } from '@/shared/utils/dateUtils';
 
 export type DateRangePickerProps = {
   startDate: string | null;
@@ -31,14 +32,6 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     if (!dateString) return null;
     const date = new Date(dateString);
     return isNaN(date.getTime()) ? null : date;
-  };
-
-  const formatDate = (date: Date | null): string | null => {
-    if (!date) return null;
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
   };
 
   const handleStartDateChange = (value: unknown) => {
@@ -78,4 +71,3 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     </DatesProvider>
   );
 };
-

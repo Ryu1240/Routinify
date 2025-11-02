@@ -23,4 +23,3 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
 
   return <Badge color={color}>{label}</Badge>;
 };
-

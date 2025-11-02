@@ -2,7 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 import { RoutineTask } from '@/types';
-import { getWeekRangeStrings, getMonthRangeStrings } from '@/shared/utils/dateUtils';
+import {
+  getWeekRangeStrings,
+  getMonthRangeStrings,
+  formatDate,
+} from '@/shared/utils/dateUtils';
 import { useAchievementStats } from '../../hooks/useAchievementStats';
 import { PeriodType } from '../PeriodSelector';
 import { AchievementDetail } from './AchievementDetail';
@@ -23,16 +27,16 @@ export const AchievementDetailContainer: React.FC = () => {
     const twoWeeksAgo = new Date(today);
     twoWeeksAgo.setDate(today.getDate() - 14);
 
-    const formatDate = (date: Date): string => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
+    const startDateStr = formatDate(twoWeeksAgo);
+    const endDateStr = formatDate(today);
+
+    if (!startDateStr || !endDateStr) {
+      throw new Error('Failed to format default custom date range');
+    }
 
     return {
-      startDate: formatDate(twoWeeksAgo),
-      endDate: formatDate(today),
+      startDate: startDateStr,
+      endDate: endDateStr,
     };
   };
 
@@ -51,7 +55,6 @@ export const AchievementDetailContainer: React.FC = () => {
   const [routineTask, setRoutineTask] = useState<RoutineTask | null>(null);
   const [routineTaskLoading, setRoutineTaskLoading] = useState(false);
   const [routineTaskError, setRoutineTaskError] = useState<string | null>(null);
-
 
   // 期間に応じた開始日・終了日を計算
   const { startDate, endDate } = useMemo(() => {
