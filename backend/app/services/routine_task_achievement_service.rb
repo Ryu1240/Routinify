@@ -62,15 +62,28 @@ class RoutineTaskAchievementService < BaseService
     case @period
     when 'weekly'
       # 週次: 月曜日〜日曜日を1週間として定義
-      # 現在の週の月曜日を開始日、日曜日を終了日とする
-      today = Date.current
-      @start_date = today.beginning_of_week
-      @end_date = today.end_of_week
+      # start_dateとend_dateが指定されている場合はそれを使用
+      # 指定されていない場合は現在の週を使用
+      if @start_date.present? && @end_date.present?
+        # 指定された期間を使用（既に設定されている）
+      else
+        # デフォルト: 現在の週の月曜日を開始日、日曜日を終了日とする
+        today = Date.current
+        @start_date = today.beginning_of_week
+        @end_date = today.end_of_week
+      end
     when 'monthly'
       # 月次: 1日〜月末を1ヶ月として定義
-      today = Date.current
-      @start_date = today.beginning_of_month
-      @end_date = today.end_of_month
+      # start_dateとend_dateが指定されている場合はそれを使用
+      # 指定されていない場合は今月を使用
+      if @start_date.present? && @end_date.present?
+        # 指定された期間を使用（既に設定されている）
+      else
+        # デフォルト: 今月の1日を開始日、月末を終了日とする
+        today = Date.current
+        @start_date = today.beginning_of_month
+        @end_date = today.end_of_month
+      end
     when 'custom'
       # 特定期間: ユーザー指定の期間（start_date 〜 end_date）
       # start_dateとend_dateは既に設定されている

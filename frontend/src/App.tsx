@@ -14,7 +14,10 @@ import { CategoryList } from './pages/categories';
 import { RoutineTaskList } from './pages/routineTasks';
 import { RoutineTaskForm } from './pages/routineTasks/RoutineTaskForm';
 import { MilestonesPage, MilestoneDetailPage } from './pages/milestones';
-import { AchievementListPage } from './pages/achievements';
+import {
+  AchievementListPage,
+  AchievementDetailPage,
+} from './pages/achievements';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -119,8 +122,7 @@ const AppContent: React.FC = () => {
         path="/achievements/:id"
         element={
           <ProtectedRoute>
-            {/* TODO: 詳細ページは#165で実装 */}
-            <AchievementListPage />
+            <AchievementDetailPage />
           </ProtectedRoute>
         }
       />
