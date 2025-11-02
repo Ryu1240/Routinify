@@ -127,7 +127,7 @@ export const TaskListContainer: React.FC = () => {
       setMilestoneChangeLoading(true);
       // 各マイルストーンにタスクを紐付け
       await Promise.all(
-        milestoneIds.map(milestoneId => 
+        milestoneIds.map((milestoneId) =>
           associateTask(milestoneId, [editingTaskIdForMilestone])
         )
       );
