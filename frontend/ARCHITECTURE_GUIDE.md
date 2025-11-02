@@ -290,14 +290,24 @@ export const useTaskForm = (onSubmit: (data: CreateTaskDto) => Promise<void>) =>
 
 **責任**: HTTPリクエストの実行
 
+#### データ形式の規約
+
+**重要**: バックエンドからは**キャメルケース（camelCase）**の状態でデータが返されます。
+
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+- **型定義**: バックエンドのレスポンス形式に合わせてキャメルケースで記述
+
 ```typescript
 // features/tasks/api/tasksApi.ts
 import { apiClient } from '@/lib/axios';
 import type { Task, CreateTaskDto, UpdateTaskDto } from '@/types';
 
+// バックエンドから返されるデータはキャメルケース形式
+// 型定義もキャメルケースで記述されているため、そのまま使用可能
 export const tasksApi = {
   getAll: async (): Promise<{ data: Task[] }> => {
     const response = await apiClient.get('/api/v1/tasks');
+    // response.data内のTaskは既にキャメルケース形式（accountId, dueDate等）
     return response.data;
   },
 
@@ -622,19 +632,22 @@ const { categories } = useCategories();
 ### タスク管理機能の完全実装
 
 #### **1. 型定義**
+
+**注意**: バックエンドから返されるデータはキャメルケース形式のため、型定義もキャメルケースで記述します。
+
 ```typescript
 // types/task.ts
 export type Task = {
   readonly id: number;
-  accountId: string;
+  accountId: string;        // camelCase（バックエンドレスポンス形式に合わせる）
   title: string;
   description?: string;
-  categoryId: number | null;
+  categoryId: number | null; // camelCase
   status: TaskStatus | null;
   priority: TaskPriority | null;
-  dueDate: string | null;
-  readonly createdAt: string;
-  readonly updatedAt: string;
+  dueDate: string | null;   // camelCase
+  readonly createdAt: string; // camelCase
+  readonly updatedAt: string;  // camelCase
 };
 
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';

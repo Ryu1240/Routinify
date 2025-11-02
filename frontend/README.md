@@ -337,6 +337,28 @@ pnpm build
 - **OpenAPI仕様**: `../api/openapi.yaml`（ルートディレクトリからの相対パス）
 - **Swagger UI**: http://localhost:8080（開発環境）
 
+#### データ形式の規約
+
+**重要**: バックエンドからは**キャメルケース（camelCase）**の状態でデータが返されます。
+
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+
+フロントエンド側では、型定義もキャメルケースで記述します：
+
+```typescript
+export type Task = {
+  readonly id: number;
+  accountId: string;        // camelCase
+  title: string;
+  dueDate: string | null;   // camelCase
+  status: TaskStatus | null;
+  priority: TaskPriority | null;
+  categoryId: number | null; // camelCase
+  createdAt: string;        // camelCase
+  updatedAt: string;        // camelCase
+};
+```
+
 詳細なAPI仕様については、バックエンドの[README](../backend/README.md#api仕様)を参照してください。
 
 ## コントリビューション
