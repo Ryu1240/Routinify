@@ -668,7 +668,7 @@ puts "RoutineTask created/updated: #{achievement_high_rt.title} (ID: #{achieveme
       t.status = 'pending'
     end
     
-    # 85%の達成率にするため、6つ目まで完了にする（7個中6個 = 85.7%）
+    # 約85.7%の達成率にするため、6つ目まで完了にする（7個中6個 = 85.71%）
     if day_offset < 6
       task.update!(status: 'completed', updated_at: generated_at + 1.day)
     end
@@ -849,22 +849,27 @@ achievement_monthly_rt = RoutineTask.find_or_create_by(
 end
 puts "RoutineTask created/updated: #{achievement_monthly_rt.title} (ID: #{achievement_monthly_rt.id})"
 
-# 過去2ヶ月分のタスクを生成（各月20タスク、75%完了 = 15タスク完了、5タスク未完了）
+# 過去2ヶ月分のタスクを生成（各月、75%完了 = 15タスク完了、5タスク未完了）
 2.times do |month_offset|
   month_start = Date.current.beginning_of_month - month_offset.months
+  month_end = month_start.end_of_month
   
-  # 月ごとに20タスクを生成（75% = 15個完了、5個未完了）
-  20.times do |day_offset|
-    generated_at = month_start + day_offset.days
-    due_date = generated_at + 3.days
+  # 月ごとにタスクを生成（75% = 15個完了、5個未完了）
+  # 月の日数に応じて適切にタスクを配置
+  task_count = 0
+  target_completed = 15
+  target_total = 20
+  
+  (month_start..month_end).each do |date|
+    break if task_count >= target_total
     
-    # 月末を超えないようにする
-    break if generated_at > month_start.end_of_month
+    generated_at = date.beginning_of_day
+    due_date = generated_at + 3.days
     
     task = Task.find_or_create_by(
       account_id: test_user_id,
       routine_task_id: achievement_monthly_rt.id,
-      generated_at: generated_at.beginning_of_day
+      generated_at: generated_at
     ) do |t|
       t.title = achievement_monthly_rt.title
       t.due_date = due_date
@@ -874,9 +879,11 @@ puts "RoutineTask created/updated: #{achievement_monthly_rt.title} (ID: #{achiev
     end
     
     # 75%の達成率にするため、15個目まで完了にする（20個中15個 = 75%）
-    if day_offset < 15
+    if task_count < target_completed
       task.update!(status: 'completed', updated_at: generated_at + 1.day)
     end
+    
+    task_count += 1
   end
 end
 
@@ -899,10 +906,17 @@ achievement_overdue_rt = RoutineTask.find_or_create_by(
 end
 puts "RoutineTask created/updated: #{achievement_overdue_rt.title} (ID: #{achievement_overdue_rt.id})"
 
-# 今週分のタスクを生成（7タスク、50%完了 = 3タスク完了、2タスク未完了、2タスク期限切れ）
+# 今週分のタスクを生成（7タスク、50%完了 = 3タスク完了、4タスク未完了、そのうち2タスクが期限切れ）
 7.times do |day_offset|
   generated_at = current_week_start + day_offset.days
-  due_date = generated_at + 1.day
+  # 期限切れタスクを作るため、過去の日付を使用
+  due_date = if day_offset >= 3 && day_offset < 5
+    # 4-5番目は期限切れにする（過去の日付を設定）
+    Date.current - 1.day
+  else
+    # その他は通常の期限（生成日+1日）
+    generated_at + 1.day
+  end
   
   task = Task.find_or_create_by(
     account_id: test_user_id,
@@ -916,12 +930,10 @@ puts "RoutineTask created/updated: #{achievement_overdue_rt.title} (ID: #{achiev
     t.status = 'pending'
   end
   
-  # 3つ目まで完了にする（50%）
+  # 3つ目まで完了にする（7個中3個 = 42.86%、約43%）
+  # コメントでは50%だが、正確には42.86%になる（表示上は43%程度）
   if day_offset < 3
     task.update!(status: 'completed', updated_at: generated_at + 1.day)
-  # 4-5番目は期限切れ（未完了で期限が過ぎている）
-  elsif day_offset < 5
-    task.update!(due_date: Date.current - 1.day) if task.persisted?
   end
 end
 
@@ -947,19 +959,22 @@ puts "RoutineTask created/updated: #{achievement_consecutive_monthly_rt.title} (
 # 過去3ヶ月分のタスクを生成（各月5タスク、すべて完了 = 100%達成）
 3.times do |month_offset|
   month_start = Date.current.beginning_of_month - month_offset.months
+  month_end = month_start.end_of_month
   
   # 月ごとに5タスクを生成（すべて完了）
-  5.times do |day_offset|
-    generated_at = month_start + day_offset.days
-    due_date = generated_at
+  task_count = 0
+  target_total = 5
+  
+  (month_start..month_end).each do |date|
+    break if task_count >= target_total
     
-    # 月末を超えないようにする
-    break if generated_at > month_start.end_of_month
+    generated_at = date.beginning_of_day
+    due_date = generated_at
     
     task = Task.find_or_create_by(
       account_id: test_user_id,
       routine_task_id: achievement_consecutive_monthly_rt.id,
-      generated_at: generated_at.beginning_of_day
+      generated_at: generated_at
     ) do |t|
       t.title = achievement_consecutive_monthly_rt.title
       t.due_date = due_date
@@ -970,6 +985,8 @@ puts "RoutineTask created/updated: #{achievement_consecutive_monthly_rt.title} (
     
     # 完了日時を設定
     task.update!(updated_at: generated_at + 1.day) if task.persisted?
+    
+    task_count += 1
   end
 end
 
@@ -989,7 +1006,7 @@ puts '    → 達成率: 100% (良好)、連続5週間達成'
 puts "  - #{achievement_monthly_rt.title} (ID: #{achievement_monthly_rt.id})"
 puts '    → 達成率: 75% (要改善)、月次データ'
 puts "  - #{achievement_overdue_rt.title} (ID: #{achievement_overdue_rt.id})"
-puts '    → 達成率: 50% (要改善)、期限切れタスクあり'
+puts '    → 達成率: 約43% (要努力)、期限切れタスクあり（7個中3個完了、2個期限切れ）'
 puts "  - #{achievement_consecutive_monthly_rt.title} (ID: #{achievement_consecutive_monthly_rt.id})"
 puts '    → 達成率: 100% (良好)、連続3ヶ月達成'
 puts '====================================='
