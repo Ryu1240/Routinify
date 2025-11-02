@@ -258,4 +258,3 @@ RSpec.describe 'GET /api/v1/routine_tasks/:id/achievement_stats', type: :request
     end
   end
 end
-
