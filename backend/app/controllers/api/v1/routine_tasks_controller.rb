@@ -180,7 +180,10 @@ module Api
             )
             return {}
           end
+        end
 
+        # start_dateとend_dateが指定されている場合、日付としてパース
+        if start_date.present? && end_date.present?
           begin
             start_date = Date.parse(start_date)
             end_date = Date.parse(end_date)

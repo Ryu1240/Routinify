@@ -1,5 +1,6 @@
 import axios from '@/lib/axios';
 import { AchievementStats, RoutineTaskWithStats } from '@/types/achievement';
+import { formatDate } from '@/shared/utils/dateUtils';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
 // APIレスポンス型（バックエンドはsnake_caseで返す）
@@ -52,9 +53,15 @@ export const getAchievementStats = async (
   const data = response.data.data;
 
   // start_dateとend_dateを文字列に変換（Dateオブジェクトの可能性に対応）
-  const formatDate = (date: string | Date): string => {
+  const convertDateToString = (date: string | Date): string => {
     if (typeof date === 'string') return date;
-    if (date instanceof Date) return date.toISOString().split('T')[0];
+    if (date instanceof Date) {
+      const formatted = formatDate(date);
+      if (formatted === null) {
+        return date.toISOString().split('T')[0];
+      }
+      return formatted;
+    }
     return String(date);
   };
 
@@ -66,8 +73,8 @@ export const getAchievementStats = async (
     overdueCount: data.overdue_count,
     achievementRate: data.achievement_rate,
     period: data.period as 'weekly' | 'monthly' | 'custom',
-    startDate: formatDate(data.start_date),
-    endDate: formatDate(data.end_date),
+    startDate: convertDateToString(data.start_date),
+    endDate: convertDateToString(data.end_date),
     consecutivePeriodsCount: data.consecutive_periods_count,
     averageCompletionDays: data.average_completion_days,
   };

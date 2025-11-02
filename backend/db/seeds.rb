@@ -668,7 +668,7 @@ puts "RoutineTask created/updated: #{achievement_high_rt.title} (ID: #{achieveme
       t.status = 'pending'
     end
     
-    # 85%の達成率にするため、6つ目まで完了にする（7個中6個 = 85.7%）
+    # 約85.7%の達成率にするため、6つ目まで完了にする（7個中6個 = 85.71%）
     if day_offset < 6
       task.update!(status: 'completed', updated_at: generated_at + 1.day)
     end
@@ -830,6 +830,166 @@ puts "RoutineTask created/updated: #{achievement_consecutive_rt.title} (ID: #{ac
   end
 end
 
+# 6. 達成状況詳細画面の動作確認用：月次データ
+achievement_monthly_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】月次データ（達成率75%）'
+) do |rt|
+  rt.frequency = 'monthly'
+  rt.interval_value = nil
+  rt.start_generation_at = 3.months.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 20
+  rt.category_id = categories_map['仕事']&.id
+  rt.priority = 'medium'
+  rt.is_active = true
+  rt.due_date_offset_days = 3
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_monthly_rt.title} (ID: #{achievement_monthly_rt.id})"
+
+# 過去2ヶ月分のタスクを生成（各月、75%完了 = 15タスク完了、5タスク未完了）
+2.times do |month_offset|
+  month_start = Date.current.beginning_of_month - month_offset.months
+  month_end = month_start.end_of_month
+  
+  # 月ごとにタスクを生成（75% = 15個完了、5個未完了）
+  # 月の日数に応じて適切にタスクを配置
+  task_count = 0
+  target_completed = 15
+  target_total = 20
+  
+  (month_start..month_end).each do |date|
+    break if task_count >= target_total
+    
+    generated_at = date.beginning_of_day
+    due_date = generated_at + 3.days
+    
+    task = Task.find_or_create_by(
+      account_id: test_user_id,
+      routine_task_id: achievement_monthly_rt.id,
+      generated_at: generated_at
+    ) do |t|
+      t.title = achievement_monthly_rt.title
+      t.due_date = due_date
+      t.priority = achievement_monthly_rt.priority
+      t.category_id = achievement_monthly_rt.category_id
+      t.status = 'pending'
+    end
+    
+    # 75%の達成率にするため、15個目まで完了にする（20個中15個 = 75%）
+    if task_count < target_completed
+      task.update!(status: 'completed', updated_at: generated_at + 1.day)
+    end
+    
+    task_count += 1
+  end
+end
+
+# 7. 達成状況詳細画面の動作確認用：期限切れタスクを含むパターン
+achievement_overdue_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】期限切れタスクあり（達成率50%）'
+) do |rt|
+  rt.frequency = 'daily'
+  rt.interval_value = nil
+  rt.start_generation_at = 2.weeks.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 7
+  rt.category_id = categories_map['学習']&.id
+  rt.priority = 'high'
+  rt.is_active = true
+  rt.due_date_offset_days = 1
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_overdue_rt.title} (ID: #{achievement_overdue_rt.id})"
+
+# 今週分のタスクを生成（7タスク、50%完了 = 3タスク完了、4タスク未完了、そのうち2タスクが期限切れ）
+7.times do |day_offset|
+  generated_at = current_week_start + day_offset.days
+  # 期限切れタスクを作るため、過去の日付を使用
+  due_date = if day_offset >= 3 && day_offset < 5
+    # 4-5番目は期限切れにする（過去の日付を設定）
+    Date.current - 1.day
+  else
+    # その他は通常の期限（生成日+1日）
+    generated_at + 1.day
+  end
+  
+  task = Task.find_or_create_by(
+    account_id: test_user_id,
+    routine_task_id: achievement_overdue_rt.id,
+    generated_at: generated_at.beginning_of_day
+  ) do |t|
+    t.title = achievement_overdue_rt.title
+    t.due_date = due_date
+    t.priority = achievement_overdue_rt.priority
+    t.category_id = achievement_overdue_rt.category_id
+    t.status = 'pending'
+  end
+  
+  # 3つ目まで完了にする（7個中3個 = 42.86%、約43%）
+  # コメントでは50%だが、正確には42.86%になる（表示上は43%程度）
+  if day_offset < 3
+    task.update!(status: 'completed', updated_at: generated_at + 1.day)
+  end
+end
+
+# 8. 達成状況詳細画面の動作確認用：連続達成月数が異なるパターン（連続3ヶ月達成）
+achievement_consecutive_monthly_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】連続3ヶ月達成'
+) do |rt|
+  rt.frequency = 'monthly'
+  rt.interval_value = nil
+  rt.start_generation_at = 4.months.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 5
+  rt.category_id = categories_map['健康']&.id
+  rt.priority = 'high'
+  rt.is_active = true
+  rt.due_date_offset_days = 0
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_consecutive_monthly_rt.title} (ID: #{achievement_consecutive_monthly_rt.id})"
+
+# 過去3ヶ月分のタスクを生成（各月5タスク、すべて完了 = 100%達成）
+3.times do |month_offset|
+  month_start = Date.current.beginning_of_month - month_offset.months
+  month_end = month_start.end_of_month
+  
+  # 月ごとに5タスクを生成（すべて完了）
+  task_count = 0
+  target_total = 5
+  
+  (month_start..month_end).each do |date|
+    break if task_count >= target_total
+    
+    generated_at = date.beginning_of_day
+    due_date = generated_at
+    
+    task = Task.find_or_create_by(
+      account_id: test_user_id,
+      routine_task_id: achievement_consecutive_monthly_rt.id,
+      generated_at: generated_at
+    ) do |t|
+      t.title = achievement_consecutive_monthly_rt.title
+      t.due_date = due_date
+      t.priority = achievement_consecutive_monthly_rt.priority
+      t.category_id = achievement_consecutive_monthly_rt.category_id
+      t.status = 'completed'
+    end
+    
+    # 完了日時を設定
+    task.update!(updated_at: generated_at + 1.day) if task.persisted?
+    
+    task_count += 1
+  end
+end
+
 puts 'Achievement stats test data creation completed!'
 puts '===== 習慣化状況一覧画面の動作確認用データ ====='
 puts '以下の習慣化タスクが作成されました:'
@@ -843,4 +1003,18 @@ puts "  - #{achievement_none_rt.title} (ID: #{achievement_none_rt.id})"
 puts '    → 達成率: 0% (データなし)'
 puts "  - #{achievement_consecutive_rt.title} (ID: #{achievement_consecutive_rt.id})"
 puts '    → 達成率: 100% (良好)、連続5週間達成'
+puts "  - #{achievement_monthly_rt.title} (ID: #{achievement_monthly_rt.id})"
+puts '    → 達成率: 75% (要改善)、月次データ'
+puts "  - #{achievement_overdue_rt.title} (ID: #{achievement_overdue_rt.id})"
+puts '    → 達成率: 約43% (要努力)、期限切れタスクあり（7個中3個完了、2個期限切れ）'
+puts "  - #{achievement_consecutive_monthly_rt.title} (ID: #{achievement_consecutive_monthly_rt.id})"
+puts '    → 達成率: 100% (良好)、連続3ヶ月達成'
+puts '====================================='
+puts ''
+puts '===== 達成状況詳細画面の動作確認用 ====='
+puts '以下の習慣化タスクIDで詳細画面を確認できます:'
+puts "  - 週次データ: #{achievement_high_rt.id}, #{achievement_medium_rt.id}, #{achievement_consecutive_rt.id}"
+puts "  - 月次データ: #{achievement_monthly_rt.id}, #{achievement_consecutive_monthly_rt.id}"
+puts "  - 期限切れタスクあり: #{achievement_overdue_rt.id}"
+puts "  - データなし: #{achievement_none_rt.id}"
 puts '====================================='

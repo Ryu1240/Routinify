@@ -1,15 +1,15 @@
 import React from 'react';
 import { Box, Title, Text, Card, Group, Stack, Badge } from '@mantine/core';
 import { RoutineTaskWithStats } from '@/types/achievement';
-import { AchievementProgressBar } from '../AchievementProgressBar';
 import { AchievementBadge } from '../AchievementBadge';
+import { AchievementProgressBar } from '../AchievementProgressBar';
 
-interface AchievementListProps {
+export type AchievementListProps = {
   routineTasksWithStats: RoutineTaskWithStats[];
   isLoading: boolean;
   error: string | null;
   onTaskClick: (id: number) => void;
-}
+};
 
 export const AchievementList: React.FC<AchievementListProps> = ({
   routineTasksWithStats,

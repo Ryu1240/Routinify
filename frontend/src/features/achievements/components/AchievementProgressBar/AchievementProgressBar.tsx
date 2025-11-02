@@ -1,9 +1,9 @@
 import React from 'react';
 import { Progress, Group, Text } from '@mantine/core';
 
-interface AchievementProgressBarProps {
+export type AchievementProgressBarProps = {
   achievementRate: number;
-}
+};
 
 export const AchievementProgressBar: React.FC<AchievementProgressBarProps> = ({
   achievementRate,
@@ -20,15 +20,15 @@ export const AchievementProgressBar: React.FC<AchievementProgressBarProps> = ({
   };
 
   return (
-    <Group gap="xs" align="center">
+    <Group gap="xs" align="center" wrap="nowrap">
       <Progress
         value={achievementRate}
         color={getColor()}
         size="lg"
         radius="md"
-        style={{ flex: 1 }}
+        style={{ flex: 1, minWidth: 0 }}
       />
-      <Text size="sm" fw={500} c="dimmed">
+      <Text size="sm" fw={500} c="dimmed" style={{ whiteSpace: 'nowrap' }}>
         {achievementRate.toFixed(1)}%
       </Text>
     </Group>
