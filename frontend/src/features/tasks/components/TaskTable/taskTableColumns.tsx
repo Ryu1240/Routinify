@@ -85,6 +85,12 @@ export const createTaskColumns = (
     ),
   },
   {
+    key: 'milestone',
+    label: 'マイルストーン',
+    sortable: false,
+    render: () => null, // マイルストーン列は TaskTableRow で個別にレンダリング
+  },
+  {
     key: 'actions',
     label: '操作',
     isAction: true,

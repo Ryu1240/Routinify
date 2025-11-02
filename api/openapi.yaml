@@ -1535,28 +1535,176 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  # /milestones/{id}/tasks:
-  #   parameters:
-  #     - name: id
-  #       in: path
-  #       required: true
-  #       schema:
-  #         type: integer
-  #   get:
-  #     tags:
-  #       - マイルストーン
-  #     summary: マイルストーンに関連付けられたタスクの一覧取得
-  #     security:
-  #       - Auth0: [read:milestones]
-  #     responses:
-  #       '200':
-  #         description: 成功
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/Task'
+  /milestones/{id}/tasks:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: マイルストーンID
+    post:
+      tags:
+        - マイルストーン
+      summary: マイルストーンにタスクを関連付け（複数対応）
+      security:
+        - Auth0:
+            - write:milestones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - task
+              properties:
+                task:
+                  type: object
+                  required:
+                    - task_ids
+                  properties:
+                    task_ids:
+                      type: array
+                      items:
+                        type: integer
+                      description: 関連付けるタスクIDの配列
+                      example: [1, 2, 3]
+              example:
+                task:
+                  task_ids: [1, 2, 3]
+      responses:
+        '200':
+          description: タスクの関連付け成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "3件のタスクをマイルストーンに関連付けました"
+                  data:
+                    $ref: '#/components/schemas/Milestone'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: マイルストーンまたはタスクが見つかりません
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["マイルストーンが見つかりません"]
+        '422':
+          description: バリデーションエラー（タスクが既に関連付けられているなど）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["すべてのタスクは既にマイルストーンに関連付けられています"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags:
+        - マイルストーン
+      summary: マイルストーンからタスクの関連付けを解除（複数対応）
+      security:
+        - Auth0:
+            - write:milestones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - task
+              properties:
+                task:
+                  type: object
+                  required:
+                    - task_ids
+                  properties:
+                    task_ids:
+                      type: array
+                      items:
+                        type: integer
+                      description: 関連付けを解除するタスクIDの配列
+                      example: [1, 2, 3]
+      responses:
+        '200':
+          description: タスクの関連付け解除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "3件のタスクの関連付けを解除しました"
+                  data:
+                    $ref: '#/components/schemas/Milestone'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: マイルストーンまたはタスクが見つかりません
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["マイルストーンが見つかりません"]
+        '422':
+          description: バリデーションエラー（タスクが関連付けられていないなど）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["すべてのタスクはマイルストーンに関連付けられていません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   # /habit-status/{task_id}:
   #   parameters:
