@@ -313,4 +313,39 @@ RSpec.describe RoutineTask, type: :model do
       expect(routine_task).to be_valid
     end
   end
+
+  describe 'ソフトデリート関連' do
+    let(:routine_task) { create(:routine_task) }
+    let!(:task1) { create(:task, routine_task: routine_task, account_id: routine_task.account_id) }
+    let!(:task2) { create(:task, routine_task: routine_task, account_id: routine_task.account_id) }
+    let!(:task3) { create(:task, account_id: routine_task.account_id) }
+
+    describe '#tasks_with_deleted' do
+      it '削除されたタスクも含めて取得できること' do
+        task1.update_column(:deleted_at, Time.current)
+        expect(routine_task.tasks_with_deleted.count).to eq(2)
+      end
+    end
+
+    describe 'before_destroyコールバック' do
+      it '習慣化タスク削除時に紐づくタスク（論理削除済み含む）を物理削除すること' do
+        task1.update_column(:deleted_at, Time.current)
+        task1_id = task1.id
+        task2_id = task2.id
+
+        routine_task.destroy
+
+        expect(Task.with_deleted.find_by(id: task1_id)).to be_nil
+        expect(Task.with_deleted.find_by(id: task2_id)).to be_nil
+      end
+
+      it '習慣化タスクに紐づかないタスクは削除しないこと' do
+        task3_id = task3.id
+
+        routine_task.destroy
+
+        expect(Task.find_by(id: task3_id)).to be_present
+      end
+    end
+  end
 end

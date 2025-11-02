@@ -138,5 +138,50 @@ RSpec.describe 'DELETE /api/v1/tasks/:id', type: :request do
         expect(Task.find_by(id: other_user_task.id)).not_to be_nil
       end
     end
+
+    context 'ソフトデリート' do
+      context '習慣化タスクに紐づくタスクの場合' do
+        let(:routine_task) { create(:routine_task, account_id: user_id) }
+        let!(:routine_task_related_task) { create(:task, account_id: user_id, routine_task: routine_task, title: 'Routine Task') }
+
+        it '論理削除されること' do
+          delete "/api/v1/tasks/#{routine_task_related_task.id}", headers: auth_headers
+          expect(response).to have_http_status(:no_content)
+
+          # タスクはデータベースに残る
+          deleted_task = Task.with_deleted.find_by(id: routine_task_related_task.id)
+          expect(deleted_task).to be_present
+          expect(deleted_task.deleted_at).to be_present
+        end
+
+        it 'デフォルトスコープでは取得できないこと' do
+          delete "/api/v1/tasks/#{routine_task_related_task.id}", headers: auth_headers
+          expect(Task.find_by(id: routine_task_related_task.id)).to be_nil
+        end
+
+        it 'カウントが減ること' do
+          expect do
+            delete "/api/v1/tasks/#{routine_task_related_task.id}", headers: auth_headers
+          end.to change(Task, :count).by(-1)
+        end
+      end
+
+      context '習慣化タスクに紐づかないタスクの場合' do
+        it '物理削除されること' do
+          task_id = task.id
+          delete "/api/v1/tasks/#{task.id}", headers: auth_headers
+          expect(response).to have_http_status(:no_content)
+
+          # タスクはデータベースから完全に削除される
+          expect(Task.with_deleted.find_by(id: task_id)).to be_nil
+        end
+
+        it 'カウントが減ること' do
+          expect do
+            delete "/api/v1/tasks/#{task.id}", headers: auth_headers
+          end.to change(Task, :count).by(-1)
+        end
+      end
+    end
   end
 end

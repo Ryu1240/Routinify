@@ -271,4 +271,107 @@ RSpec.describe Task, type: :model do
       end
     end
   end
+
+  describe 'ソフトデリート' do
+    let(:task) { create(:task) }
+    let(:routine_task) { create(:routine_task) }
+    let(:routine_task_related_task) { create(:task, routine_task: routine_task, account_id: routine_task.account_id) }
+
+    describe 'デフォルトスコープ' do
+      it '削除されていないタスクのみを返すこと' do
+        task1 = create(:task)
+        task2 = create(:task)
+        task2.update_column(:deleted_at, Time.current)
+
+        expect(Task.all).to contain_exactly(task1)
+      end
+    end
+
+    describe '.with_deleted' do
+      it '削除されたタスクも含めて取得できること' do
+        task1 = create(:task)
+        task2 = create(:task)
+        task2.update_column(:deleted_at, Time.current)
+
+        expect(Task.with_deleted.count).to eq(2)
+      end
+    end
+
+    describe '.only_deleted' do
+      it '削除されたタスクのみを取得できること' do
+        task1 = create(:task)
+        task2 = create(:task)
+        task2.update_column(:deleted_at, Time.current)
+
+        expect(Task.only_deleted).to contain_exactly(task2)
+      end
+    end
+
+    describe '#soft_delete' do
+      it 'deleted_atを設定すること' do
+        expect { task.soft_delete }.to change { task.reload.deleted_at }.from(nil).to(be_present)
+      end
+
+      it '削除されたタスクはデフォルトスコープで取得できないこと' do
+        task.soft_delete
+        expect(Task.find_by(id: task.id)).to be_nil
+      end
+
+      it 'with_deletedスコープで取得できること' do
+        task.soft_delete
+        expect(Task.with_deleted.find_by(id: task.id)).to be_present
+      end
+    end
+
+    describe '#hard_delete' do
+      it 'タスクを物理削除すること' do
+        task_id = task.id
+        task.hard_delete
+        expect(Task.with_deleted.find_by(id: task_id)).to be_nil
+      end
+    end
+
+    describe '#delete_task' do
+      context '習慣化タスクに紐づくタスクの場合' do
+        it '論理削除すること' do
+          expect { routine_task_related_task.delete_task }.to change { routine_task_related_task.reload.deleted_at }.from(nil).to(be_present)
+        end
+
+        it 'タスクはデータベースに残ること' do
+          task_id = routine_task_related_task.id
+          routine_task_related_task.delete_task
+          expect(Task.with_deleted.find_by(id: task_id)).to be_present
+        end
+      end
+
+      context '習慣化タスクに紐づかないタスクの場合' do
+        it '物理削除すること' do
+          task_id = task.id
+          task.delete_task
+          expect(Task.with_deleted.find_by(id: task_id)).to be_nil
+        end
+      end
+    end
+
+    describe '#deleted?' do
+      it '削除されていないタスクでfalseを返すこと' do
+        expect(task.deleted?).to be false
+      end
+
+      it '削除されたタスクでtrueを返すこと' do
+        task.update_column(:deleted_at, Time.current)
+        expect(task.deleted?).to be true
+      end
+    end
+
+    describe '#routine_task_related?' do
+      it '習慣化タスクに紐づくタスクでtrueを返すこと' do
+        expect(routine_task_related_task.routine_task_related?).to be true
+      end
+
+      it '習慣化タスクに紐づかないタスクでfalseを返すこと' do
+        expect(task.routine_task_related?).to be false
+      end
+    end
+  end
 end

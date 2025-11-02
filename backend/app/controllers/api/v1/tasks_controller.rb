@@ -56,10 +56,10 @@ module Api
 
       def destroy
         validate_permissions([ 'delete:tasks' ]) do
-          task = Task.find_by(id: params[:id], account_id: current_user_id)
+          task = Task.with_deleted.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('タスク') unless task
 
-          task.destroy
+          task.delete_task
           render_success(
             status: :no_content
           )

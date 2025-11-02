@@ -86,14 +86,14 @@ class RoutineTaskGeneratorJob < ApplicationJob
   private
 
   def cleanup_excess_tasks(routine_task)
-    # 未完了タスクを取得
+    # 未完了タスクを取得（論理削除済みを除く）
     incomplete_tasks = routine_task.tasks.where.not(status: 'completed').order(created_at: :asc)
 
-    # max_active_tasksを超えている場合、古いタスクから削除
+    # max_active_tasksを超えている場合、古いタスクから論理削除
     excess_count = incomplete_tasks.count - routine_task.max_active_tasks
     if excess_count > 0
       tasks_to_delete = incomplete_tasks.limit(excess_count)
-      tasks_to_delete.destroy_all
+      tasks_to_delete.each(&:soft_delete)
     end
   end
 
