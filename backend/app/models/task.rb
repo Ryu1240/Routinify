@@ -3,7 +3,7 @@ class Task < ApplicationRecord
 
   belongs_to :category, optional: true
   belongs_to :routine_task, optional: true
-  has_many :milestone_tasks, dependent: :destroy
+  has_many :milestone_tasks, dependent: :delete_all
   has_many :milestones, through: :milestone_tasks
 
   validates :title, presence: true, length: { maximum: 255 }
@@ -12,17 +12,20 @@ class Task < ApplicationRecord
   validates :priority, inclusion: { in: %w[low medium high] }, allow_nil: true
   validates :due_date, future_date: { allow_past: true }, allow_nil: true
 
+  scope :active, -> { where(deleted_at: nil) }
   scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }
   scope :overdue, -> { where('due_date < ?', Time.current) }
   scope :due_today, -> { where(due_date: Date.current.beginning_of_day..Date.current.end_of_day) }
+  scope :with_deleted, -> { all }
+  scope :only_deleted, -> { where.not(deleted_at: nil) }
 
   def self.for_user(user_id)
-    by_account(user_id)
+    active.by_account(user_id)
   end
 
   def self.search(query)
-    where('title ILIKE ?', "%#{query}%")
+    active.where('title ILIKE ?', "%#{query}%")
   end
 
   def overdue?
@@ -39,6 +42,35 @@ class Task < ApplicationRecord
 
   def pending?
     status == 'pending'
+  end
+
+  # 論理削除/物理削除の分岐
+  def delete_task
+    if routine_task_related?
+      soft_delete
+    else
+      hard_delete
+    end
+  end
+
+  # 論理削除（deleted_atを設定）
+  def soft_delete
+    update_column(:deleted_at, Time.current)
+  end
+
+  # 物理削除
+  def hard_delete
+    destroy
+  end
+
+  # 論理削除済みか判定
+  def deleted?
+    deleted_at.present?
+  end
+
+  # 習慣化タスクに紐づくか判定
+  def routine_task_related?
+    routine_task_id.present?
   end
 
   private

@@ -29,7 +29,7 @@ RSpec.describe 'GET /api/v1/tasks', type: :request do
         json_response = JSON.parse(response.body)
         task_ids = json_response['data'].map { |task| task['id'] }
 
-        expect(task_ids).to include(*Task.where(account_id: user_id).pluck(:id))
+        expect(task_ids).to include(*Task.active.where(account_id: user_id).pluck(:id))
         expect(task_ids).not_to include(other_user_task.id)
       end
 

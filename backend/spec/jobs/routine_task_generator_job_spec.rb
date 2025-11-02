@@ -25,10 +25,10 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(3)
+        end.to change(Task.active, :count).by(3)
 
         # 生成されたタスクの検証
-        generated_tasks = Task.where(routine_task_id: routine_task.id).order(due_date: :asc)
+        generated_tasks = Task.active.where(routine_task_id: routine_task.id).order(due_date: :asc)
         expect(generated_tasks.count).to eq(3)
         expect(generated_tasks.all? { |t| t.status == 'pending' }).to be true
         expect(generated_tasks.all? { |t| t.title == routine_task.title }).to be true
@@ -84,7 +84,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         # 10日分のタスクがあるが、max_active_tasks=3 - 既存2つ = 1つのみ生成される
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(1)
+        end.to change(Task.active, :count).by(1)
       end
 
       it 'カテゴリと優先度を継承したタスクを生成すること' do
@@ -99,7 +99,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.where(routine_task_id: routine_task.id).last
+        generated_task = Task.active.where(routine_task_id: routine_task.id).last
         expect(generated_task.category_id).to eq(category.id)
         expect(generated_task.priority).to eq('high')
       end
@@ -143,12 +143,12 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
                     account_id: routine_task.account_id,
                     status: 'pending')
 
-        initial_completed_count = Task.where(routine_task: routine_task, status: 'completed').count
+        initial_completed_count = Task.active.where(routine_task: routine_task, status: 'completed').count
 
         described_class.perform_now(routine_task.id, job_id)
 
         # 完了タスクは削除されない
-        expect(Task.where(routine_task: routine_task, status: 'completed').count).to eq(initial_completed_count)
+        expect(Task.active.where(routine_task: routine_task, status: 'completed').count).to eq(initial_completed_count)
       end
     end
 
@@ -192,7 +192,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(1)
+        end.to change(Task.active, :count).by(1)
       end
 
       it 'max_active_tasksに達している場合、新しいタスクを生成しないこと' do
@@ -227,7 +227,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(2)
+        end.to change(Task.active, :count).by(2)
       end
 
       it 'custom頻度で正しくタスクを生成すること' do
@@ -241,7 +241,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(3)
+        end.to change(Task.active, :count).by(3)
       end
     end
 
@@ -257,7 +257,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.where(routine_task_id: routine_task.id).last
+        generated_task = Task.active.where(routine_task_id: routine_task.id).last
         expect(generated_task.due_date).to be_present
         # due_dateはdate型なので、日付のみ比較（オフセット分加算された日付になることを確認）
         expect(generated_task.due_date.to_date).to eq((generated_task.generated_at.to_date + 2.days))
@@ -274,7 +274,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.where(routine_task_id: routine_task.id).last
+        generated_task = Task.active.where(routine_task_id: routine_task.id).last
         expect(generated_task.due_date).to be_present
         # 開始日を基準に期限を計算（過去の日付も許可されるため、オフセット後の日付が過去でも問題ない）
         # calculate_due_dateはTimeオブジェクトを返すが、due_dateはdate型なので日付のみ比較
@@ -294,7 +294,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.where(routine_task_id: routine_task.id).last
+        generated_task = Task.active.where(routine_task_id: routine_task.id).last
         expect(generated_task).to be_present
         expect(generated_task.due_date).to be_present
         # due_dateはdate型なので、日付のみ比較（オフセット分加算された日付になることを確認）
@@ -327,7 +327,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(1)
+        end.to change(Task.active, :count).by(1)
       end
 
       it '開始期限が設定されている場合、start_generation_atを基準にタスクを生成すること' do
@@ -340,7 +340,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.where(routine_task_id: routine_task.id).last
+        generated_task = Task.active.where(routine_task_id: routine_task.id).last
         # generated_atがstart_generation_atから1日後になっていることを確認
         expect(generated_task.generated_at).to be_within(1.second).of(start_time + 1.day)
       end
