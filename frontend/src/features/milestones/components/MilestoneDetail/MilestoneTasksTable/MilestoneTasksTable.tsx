@@ -60,6 +60,7 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
   const handleDissociate = (taskId: number) => {
     if (window.confirm('このタスクの関連付けを解除してもよろしいですか？')) {
       onDissociateTask?.([taskId]);
+      setSelectedTaskIds((prev) => prev.filter((id) => id !== taskId));
     }
   };
 
@@ -182,7 +183,6 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
                       onSave={handleSave}
                       onCancel={handleCancel}
                     />
-                    {onDissociateTask && <Table.Td></Table.Td>}
                   </>
                 ) : (
                   <>
@@ -198,7 +198,10 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
                       <Text fw={500}>{task.title}</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Badge color={getStatusColor(task.status)} variant="light">
+                      <Badge
+                        color={getStatusColor(task.status)}
+                        variant="light"
+                      >
                         {getStatusLabel(task.status)}
                       </Badge>
                     </Table.Td>
