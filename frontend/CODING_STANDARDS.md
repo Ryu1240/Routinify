@@ -329,6 +329,14 @@ export const ApiBaseUrl = 'http://...';     // PascalCase不可
 
 ## 型定義規約
 
+### データ形式の規約
+
+**重要**: バックエンドからは**キャメルケース（camelCase）**の状態でデータが返されます。
+
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+
+フロントエンド側の型定義も、バックエンドのレスポンス形式に合わせて**キャメルケース**で記述します。
+
 ### typeで統一
 
 **理由**:
@@ -338,10 +346,17 @@ export const ApiBaseUrl = 'http://...';     // PascalCase不可
 - 意図しない拡張の防止
 
 ```typescript
-// ✅ 良い例: typeを使用
+// ✅ 良い例: typeを使用、キャメルケースで記述
 export type Task = {
-  id: number;
+  readonly id: number;
+  accountId: string;        // camelCase（バックエンドのレスポンス形式に合わせる）
   title: string;
+  dueDate: string | null;   // camelCase
+  status: TaskStatus | null;
+  priority: TaskPriority | null;
+  categoryId: number | null; // camelCase
+  createdAt: string;        // camelCase
+  updatedAt: string;        // camelCase
 };
 
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';
@@ -352,6 +367,13 @@ export interface Task {  // interface不可
   id: number;
   title: string;
 }
+
+// ❌ 悪い例: snake_caseで型定義している（バックエンドレスポンスと不一致）
+export type Task = {
+  account_id: string;    // ❌ snake_case不可
+  due_date: string;      // ❌ snake_case不可
+  created_at: string;    // ❌ snake_case不可
+};
 ```
 
 ### 型定義の配置（ハイブリッド方式）

@@ -4,13 +4,38 @@
 
 シリアライザー層は、モデルオブジェクトをJSON形式に変換する責任を担います。APIレスポンスの一貫性を保ち、フロントエンドが必要とする形式でデータを提供します。
 
+## データ形式の規約
+
+### **キャメルケース変換の必須化**
+
+**重要**: バックエンドは、フロントエンド側に**キャメルケース（camelCase）**の状態でデータを返すことが必須です。
+
+- **データベース**: snake_case（`account_id`, `due_date`, `created_at`など）
+- **Rubyコード**: snake_case（変数名、メソッド名など）
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+
+この変換は**シリアライザー層**で実施します。
+
+### 変換規則
+
+```ruby
+# 変換例
+account_id    → accountId
+due_date      → dueDate
+created_at    → createdAt
+updated_at    → updatedAt
+category_id   → categoryId
+is_active     → isActive
+last_generated_at → lastGeneratedAt
+```
+
 ## 責任範囲
 
 ### ✅ **シリアライザー層が担当すべき処理**
 
 1. **データ変換**
    - モデルオブジェクトからJSONへの変換
-   - 属性名の変換（snake_case → camelCase）
+   - 属性名の変換（snake_case → camelCase）**（必須）**
    - 日付・時刻のフォーマット
 
 2. **レスポンス構造の統一**
@@ -305,9 +330,11 @@ end
 
 ## ベストプラクティス
 
-1. **命名規則の統一**
-   - フロントエンドの命名規則に合わせる
+1. **命名規則の統一（必須）**
+   - **フロントエンドに合わせてキャメルケース（camelCase）で返すこと**
+   - すべての属性名をsnake_caseからcamelCaseに変換
    - 一貫した変換ルールの適用
+   - 新しい属性を追加する際も必ずキャメルケースで返す
 
 2. **パフォーマンスの考慮**
    - 不要な属性の計算を避ける

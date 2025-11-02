@@ -31,6 +31,20 @@ Routinifyは、習慣化を支援するタスク管理システムです。以�
 - **Docker & Docker Compose**: コンテナ化
 - **Swagger UI**: APIドキュメント
 
+## API設計規約
+
+### データ形式の規約
+
+**重要**: バックエンドは、フロントエンド側に**キャメルケース（camelCase）**の状態でデータを返すことが必須です。
+
+- **データベース**: snake_case（`account_id`, `due_date`, `created_at`など）
+- **Rubyコード**: snake_case（変数名、メソッド名など）
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+
+この変換は**シリアライザー層**で実施します。
+
+詳細は[バックエンドのコーディング規約](backend/CODING_STANDARDS.md#レスポンス形式)を参照してください。
+
 ## ドキュメント
 
 ### バックエンド開発ガイド
