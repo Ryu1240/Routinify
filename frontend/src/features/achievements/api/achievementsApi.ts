@@ -1,5 +1,9 @@
 import axios from '@/lib/axios';
-import { AchievementStats, RoutineTaskWithStats } from '@/types/achievement';
+import {
+  AchievementStats,
+  RoutineTaskWithStats,
+  AchievementTrendData,
+} from '@/types/achievement';
 import { formatDate } from '@/shared/utils/dateUtils';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
@@ -136,4 +140,51 @@ export const getAllRoutineTasksWithStats = async (): Promise<
   });
 
   return Promise.all(statsPromises);
+};
+
+// APIレスポンス型（バックエンドはsnake_caseで返す）
+type AchievementTrendApiResponse = {
+  success: boolean;
+  data: {
+    period: string;
+    achievement_rate: number;
+    total_count: number;
+    completed_count: number;
+  }[];
+};
+
+/**
+ * 習慣化タスクの達成率推移を取得する
+ * @param routineTaskId - 習慣化タスクID
+ * @param params - 取得パラメータ
+ * @returns 達成率推移データ
+ */
+export const getAchievementTrend = async (
+  routineTaskId: number,
+  params: {
+    period: 'weekly' | 'monthly';
+    weeks?: number;
+    months?: number;
+  }
+): Promise<AchievementTrendData[]> => {
+  const queryParams = new URLSearchParams();
+  queryParams.append('period', params.period);
+  if (params.period === 'weekly' && params.weeks) {
+    queryParams.append('weeks', params.weeks.toString());
+  }
+  if (params.period === 'monthly' && params.months) {
+    queryParams.append('months', params.months.toString());
+  }
+
+  const url = `/api/v1/routine_tasks/${routineTaskId}/achievement_trend?${queryParams.toString()}`;
+
+  const response = await axios.get<AchievementTrendApiResponse>(url);
+
+  // バックエンドがsnake_caseで返すため、camelCaseに変換
+  return response.data.data.map((item) => ({
+    period: item.period,
+    achievementRate: item.achievement_rate,
+    totalCount: item.total_count,
+    completedCount: item.completed_count,
+  }));
 };
