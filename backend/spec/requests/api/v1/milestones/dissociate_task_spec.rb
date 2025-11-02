@@ -11,20 +11,20 @@ RSpec.describe 'DELETE /api/v1/milestones/:id/tasks', type: :request do
   let(:valid_params) do
     {
       task: {
-        task_ids: [task.id]
+        task_ids: [ task.id ]
       }
     }
   end
   let(:multiple_valid_params) do
     {
       task: {
-        task_ids: [task.id, task2.id, task3.id]
+        task_ids: [ task.id, task2.id, task3.id ]
       }
     }
   end
 
   before do
-    milestone.tasks << [task, task2, task3]
+    milestone.tasks << [ task, task2, task3 ]
   end
 
   describe 'DELETE /api/v1/milestones/:id/tasks' do
@@ -76,7 +76,7 @@ RSpec.describe 'DELETE /api/v1/milestones/:id/tasks', type: :request do
       end
 
       it 'handles task_ids in root params' do
-        root_params = { task_ids: [task.id] }
+        root_params = { task_ids: [ task.id ] }
         delete "/api/v1/milestones/#{milestone.id}/tasks", params: root_params, headers: auth_headers
         expect(response).to have_http_status(:ok)
       end
@@ -97,7 +97,7 @@ RSpec.describe 'DELETE /api/v1/milestones/:id/tasks', type: :request do
 
       context 'タスクが見つからない場合' do
         it 'returns 404 when task does not exist' do
-          invalid_params = { task: { task_ids: [99999] } }
+          invalid_params = { task: { task_ids: [ 99999 ] } }
           delete "/api/v1/milestones/#{milestone.id}/tasks", params: invalid_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
@@ -110,7 +110,7 @@ RSpec.describe 'DELETE /api/v1/milestones/:id/tasks', type: :request do
       context '他のユーザーのタスクの場合' do
         it 'returns 404 when task belongs to another user' do
           other_user_task = create(:task, account_id: 'other-user-id')
-          invalid_params = { task: { task_ids: [other_user_task.id] } }
+          invalid_params = { task: { task_ids: [ other_user_task.id ] } }
 
           delete "/api/v1/milestones/#{milestone.id}/tasks", params: invalid_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
@@ -124,7 +124,7 @@ RSpec.describe 'DELETE /api/v1/milestones/:id/tasks', type: :request do
       context 'タスクが関連付けられていない場合' do
         it 'returns 422 when all tasks are not associated' do
           unassociated_task = create(:task, account_id: user_id)
-          invalid_params = { task: { task_ids: [unassociated_task.id] } }
+          invalid_params = { task: { task_ids: [ unassociated_task.id ] } }
 
           delete "/api/v1/milestones/#{milestone.id}/tasks", params: invalid_params, headers: auth_headers
           expect(response).to have_http_status(:unprocessable_entity)
@@ -181,4 +181,3 @@ RSpec.describe 'DELETE /api/v1/milestones/:id/tasks', type: :request do
     end
   end
 end
-

@@ -11,14 +11,14 @@ RSpec.describe 'POST /api/v1/milestones/:id/tasks', type: :request do
   let(:valid_params) do
     {
       task: {
-        task_ids: [task.id]
+        task_ids: [ task.id ]
       }
     }
   end
   let(:multiple_valid_params) do
     {
       task: {
-        task_ids: [task.id, task2.id, task3.id]
+        task_ids: [ task.id, task2.id, task3.id ]
       }
     }
   end
@@ -73,14 +73,14 @@ RSpec.describe 'POST /api/v1/milestones/:id/tasks', type: :request do
       end
 
       it 'handles task_ids in root params' do
-        root_params = { task_ids: [task.id] }
+        root_params = { task_ids: [ task.id ] }
         post "/api/v1/milestones/#{milestone.id}/tasks", params: root_params, headers: auth_headers
         expect(response).to have_http_status(:ok)
       end
 
       it 'excludes already associated tasks' do
         milestone.tasks << task
-        
+
         expect do
           post "/api/v1/milestones/#{milestone.id}/tasks", params: multiple_valid_params, headers: auth_headers
         end.to change(milestone.tasks, :count).by(2)
@@ -102,7 +102,7 @@ RSpec.describe 'POST /api/v1/milestones/:id/tasks', type: :request do
 
       context 'タスクが見つからない場合' do
         it 'returns 404 when task does not exist' do
-          invalid_params = { task: { task_ids: [99999] } }
+          invalid_params = { task: { task_ids: [ 99999 ] } }
           post "/api/v1/milestones/#{milestone.id}/tasks", params: invalid_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
 
@@ -115,7 +115,7 @@ RSpec.describe 'POST /api/v1/milestones/:id/tasks', type: :request do
       context '他のユーザーのタスクの場合' do
         it 'returns 404 when task belongs to another user' do
           other_user_task = create(:task, account_id: 'other-user-id')
-          invalid_params = { task: { task_ids: [other_user_task.id] } }
+          invalid_params = { task: { task_ids: [ other_user_task.id ] } }
 
           post "/api/v1/milestones/#{milestone.id}/tasks", params: invalid_params, headers: auth_headers
           expect(response).to have_http_status(:not_found)
@@ -185,4 +185,3 @@ RSpec.describe 'POST /api/v1/milestones/:id/tasks', type: :request do
     end
   end
 end
-

@@ -94,7 +94,7 @@ module Api
           end
 
           raw_task_ids = task_association_params[:task_ids]
-          
+
           if raw_task_ids.nil? || (raw_task_ids.is_a?(Array) && raw_task_ids.empty?)
             render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
             return
@@ -154,7 +154,7 @@ module Api
           end
 
           raw_task_ids = task_association_params[:task_ids]
-          
+
           if raw_task_ids.nil? || (raw_task_ids.is_a?(Array) && raw_task_ids.empty?)
             render_error(errors: [ 'task_idsは必須です' ], status: :unprocessable_entity)
             return
