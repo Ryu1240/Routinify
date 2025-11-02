@@ -45,8 +45,8 @@ RSpec.describe 'GET /api/v1/categories', type: :request do
           'accountId' => category.account_id,
           'name' => category.name
         )
-        expect(returned_category['createdAt']).to eq(category.created_at.iso8601(3))
-        expect(returned_category['updatedAt']).to eq(category.updated_at.iso8601(3))
+        expect(returned_category['createdAt']).to eq(category.created_at.iso8601)
+        expect(returned_category['updatedAt']).to eq(category.updated_at.iso8601)
       end
     end
 
