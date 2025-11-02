@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AchievementList } from './AchievementList';
 import { useAchievementsList } from '../../hooks/useAchievementsList';
+import { AchievementList } from './AchievementList';
 
 export const AchievementListContainer: React.FC = () => {
   const navigate = useNavigate();

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Tabs, Group, Button, Text, Stack } from '@mantine/core';
-import { DateRangePicker } from './DateRangePicker';
+import { DateRangePicker } from '../DateRangePicker';
 
 export type PeriodType = 'weekly' | 'monthly' | 'custom';
 
-export interface PeriodSelectorProps {
+export type PeriodSelectorProps = {
   period: PeriodType;
   onPeriodChange: (period: PeriodType) => void;
   // 週次用
@@ -20,7 +20,7 @@ export interface PeriodSelectorProps {
     startDate: string | null,
     endDate: string | null
   ) => void;
-}
+};
 
 export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   period,
@@ -179,3 +179,4 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
     </Tabs>
   );
 };
+

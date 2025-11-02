@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AchievementDetail } from './AchievementDetail';
-import { useAchievementStats } from '../../hooks/useAchievementStats';
-import { PeriodType } from '../PeriodSelector';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 import { RoutineTask } from '@/types';
+import { useAchievementStats } from '../../hooks/useAchievementStats';
+import { PeriodType } from '../PeriodSelector';
+import { AchievementDetail } from './AchievementDetail';
 
 export const AchievementDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();

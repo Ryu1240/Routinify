@@ -1,9 +1,9 @@
 import React from 'react';
 import { Badge } from '@mantine/core';
 
-interface AchievementBadgeProps {
+export type AchievementBadgeProps = {
   achievementRate: number;
-}
+};
 
 export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
   achievementRate,
@@ -23,3 +23,4 @@ export const AchievementBadge: React.FC<AchievementBadgeProps> = ({
 
   return <Badge color={color}>{label}</Badge>;
 };
+

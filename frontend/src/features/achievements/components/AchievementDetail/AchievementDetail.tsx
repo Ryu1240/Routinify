@@ -16,7 +16,7 @@ import { PeriodSelector, PeriodType } from '../PeriodSelector';
 import { AchievementStats } from '@/types/achievement';
 import { COLORS } from '@/shared/constants/colors';
 
-export interface AchievementDetailProps {
+export type AchievementDetailProps = {
   routineTaskTitle: string;
   routineTaskCategoryName?: string | null;
   stats: AchievementStats | null;
@@ -36,7 +36,7 @@ export interface AchievementDetailProps {
     startDate: string | null,
     endDate: string | null
   ) => void;
-}
+};
 
 export const AchievementDetail: React.FC<AchievementDetailProps> = ({
   routineTaskTitle,

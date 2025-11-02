@@ -2,11 +2,11 @@ import React from 'react';
 import { Group } from '@mantine/core';
 import { DatesProvider, DatePickerInput } from '@mantine/dates';
 
-export interface DateRangePickerProps {
+export type DateRangePickerProps = {
   startDate: string | null;
   endDate: string | null;
   onDateChange: (startDate: string | null, endDate: string | null) => void;
-}
+};
 
 // Mantine 8系ではDatePickerInputのonChangeが文字列またはDateを返す可能性があるため、
 // Dateオブジェクトに変換する関数
@@ -78,3 +78,4 @@ export const DateRangePicker: React.FC<DateRangePickerProps> = ({
     </DatesProvider>
   );
 };
+
