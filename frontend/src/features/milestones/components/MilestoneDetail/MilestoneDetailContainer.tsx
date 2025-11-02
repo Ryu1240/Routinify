@@ -6,9 +6,13 @@ import { useAuth } from '@/shared/hooks/useAuth';
 import { useFetchMilestone } from '../../hooks/useFetchMilestone';
 import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
 import { UpdateMilestoneDto } from '@/types/milestone';
+import { UpdateTaskDto } from '@/types/task';
+import { CreateCategoryDto } from '@/types/category';
 import { MilestoneDetail } from './MilestoneDetail';
 import { DeleteMilestoneConfirmModal } from '@/features/milestones/components/DeleteMilestoneConfirmModal';
 import { AssociateTaskModal } from './AssociateTaskModal';
+import { useCategories } from '@/shared/hooks/useCategories';
+import { tasksApi } from '@/features/tasks/api/tasksApi';
 
 export const MilestoneDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,6 +38,10 @@ export const MilestoneDetailContainer: React.FC = () => {
       refreshMilestone();
     }
   });
+  const {
+    createCategory,
+    createLoading: categoryCreateLoading,
+  } = useCategories();
 
   const handleEdit = async (milestoneData: UpdateMilestoneDto) => {
     if (!milestoneId) return;
@@ -75,6 +83,27 @@ export const MilestoneDetailContainer: React.FC = () => {
       await associateTask(milestoneId, taskIds);
     } catch (error) {
       console.error('タスクの関連付けに失敗:', error);
+      throw error;
+    }
+  };
+
+  const handleEditTask = async (taskId: number, taskData: UpdateTaskDto) => {
+    try {
+      await tasksApi.update(taskId, taskData);
+      if (milestoneId) {
+        refreshMilestone();
+      }
+    } catch (error) {
+      console.error('タスク更新に失敗:', error);
+      throw error;
+    }
+  };
+
+  const handleCreateCategory = async (categoryData: CreateCategoryDto) => {
+    try {
+      await createCategory(categoryData);
+    } catch (error) {
+      console.error('カテゴリ作成に失敗:', error);
       throw error;
     }
   };
@@ -136,8 +165,11 @@ export const MilestoneDetailContainer: React.FC = () => {
         onDelete={handleDelete}
         onDissociateTask={handleDissociateTask}
         onAddTask={handleAddTask}
+        onEditTask={handleEditTask}
         editLoading={updateLoading}
         dissociateLoading={dissociateLoading}
+        onCreateCategory={handleCreateCategory}
+        createCategoryLoading={categoryCreateLoading}
       />
       <DeleteMilestoneConfirmModal
         opened={isDeleteModalOpen}

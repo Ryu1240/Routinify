@@ -9,10 +9,11 @@ import {
   Group,
   Button,
   Checkbox,
+  Tooltip,
 } from '@mantine/core';
-import { IconTrash, IconPlus } from '@tabler/icons-react';
+import { IconTrash, IconPlus, IconEdit } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
-import { Task } from '@/types/task';
+import { Task, UpdateTaskDto } from '@/types/task';
 import {
   getPriorityColor,
   getPriorityLabel,
@@ -20,21 +21,30 @@ import {
   getStatusLabel,
   formatDate,
 } from '@/shared/utils/taskUtils';
+import { MilestoneTaskEditableRow } from './MilestoneTaskEditableRow';
+import { CreateCategoryDto } from '@/types/category';
 
 type MilestoneTasksTableProps = {
   tasks: Task[];
   onDissociateTask?: (taskIds: number[]) => void;
   onAddTask?: () => void;
+  onEditTask?: (taskId: number, taskData: UpdateTaskDto) => Promise<void>;
   dissociateLoading?: boolean;
+  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
+  createCategoryLoading?: boolean;
 };
 
 export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
   tasks,
   onDissociateTask,
   onAddTask,
+  onEditTask,
   dissociateLoading = false,
+  onCreateCategory,
+  createCategoryLoading = false,
 }) => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
 
   const handleToggleTask = (taskId: number) => {
     setSelectedTaskIds((prev) =>
@@ -68,6 +78,25 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
       onDissociateTask?.(selectedTaskIds);
       setSelectedTaskIds([]);
     }
+  };
+
+  const handleEdit = (taskId: number) => {
+    setEditingTaskId(taskId);
+  };
+
+  const handleSave = async (taskId: number, taskData: UpdateTaskDto) => {
+    if (onEditTask) {
+      try {
+        await onEditTask(taskId, taskData);
+        setEditingTaskId(null);
+      } catch (error) {
+        console.error('タスク更新に失敗:', error);
+      }
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingTaskId(null);
   };
 
   const allSelected =
@@ -127,7 +156,9 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
               <Table.Th>ステータス</Table.Th>
               <Table.Th>期限日</Table.Th>
               <Table.Th>優先度</Table.Th>
-              {onDissociateTask && <Table.Th>操作</Table.Th>}
+              {(onDissociateTask || onEditTask) && (
+                <Table.Th style={{ textAlign: 'center' }}>操作</Table.Th>
+              )}
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -140,47 +171,89 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
                     : 'transparent',
                 }}
               >
-                {onDissociateTask && (
-                  <Table.Td>
-                    <Checkbox
-                      checked={selectedTaskIds.includes(task.id)}
-                      onChange={() => handleToggleTask(task.id)}
+                {editingTaskId === task.id ? (
+                  <>
+                    {onDissociateTask && (
+                      <Table.Td>
+                        <Checkbox
+                          checked={selectedTaskIds.includes(task.id)}
+                          onChange={() => handleToggleTask(task.id)}
+                          disabled
+                        />
+                      </Table.Td>
+                    )}
+                    <MilestoneTaskEditableRow
+                      task={task}
+                      onSave={handleSave}
+                      onCancel={handleCancel}
+                      onCreateCategory={onCreateCategory}
+                      createCategoryLoading={createCategoryLoading}
                     />
-                  </Table.Td>
-                )}
-                <Table.Td>
-                  <Text fw={500}>{task.title}</Text>
-                </Table.Td>
-                <Table.Td>
-                  <Badge color={getStatusColor(task.status)} variant="light">
-                    {getStatusLabel(task.status)}
-                  </Badge>
-                </Table.Td>
-                <Table.Td>
-                  <Text size="sm" c={COLORS.GRAY}>
-                    {formatDate(task.dueDate)}
-                  </Text>
-                </Table.Td>
-                <Table.Td>
-                  <Badge
-                    color={getPriorityColor(task.priority)}
-                    variant="light"
-                  >
-                    {getPriorityLabel(task.priority)}
-                  </Badge>
-                </Table.Td>
-                {onDissociateTask && (
-                  <Table.Td>
-                    <ActionIcon
-                      color="red"
-                      variant="light"
-                      onClick={() => handleDissociate(task.id)}
-                      loading={dissociateLoading}
-                      disabled={dissociateLoading}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  </Table.Td>
+                    {onDissociateTask && <Table.Td></Table.Td>}
+                  </>
+                ) : (
+                  <>
+                    {onDissociateTask && (
+                      <Table.Td>
+                        <Checkbox
+                          checked={selectedTaskIds.includes(task.id)}
+                          onChange={() => handleToggleTask(task.id)}
+                        />
+                      </Table.Td>
+                    )}
+                    <Table.Td>
+                      <Text fw={500}>{task.title}</Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge color={getStatusColor(task.status)} variant="light">
+                        {getStatusLabel(task.status)}
+                      </Badge>
+                    </Table.Td>
+                    <Table.Td>
+                      <Text size="sm" c={COLORS.GRAY}>
+                        {formatDate(task.dueDate)}
+                      </Text>
+                    </Table.Td>
+                    <Table.Td>
+                      <Badge
+                        color={getPriorityColor(task.priority)}
+                        variant="light"
+                      >
+                        {getPriorityLabel(task.priority)}
+                      </Badge>
+                    </Table.Td>
+                    {(onDissociateTask || onEditTask) && (
+                      <Table.Td>
+                        <Group gap="xs" justify="center">
+                          {onEditTask && (
+                            <Tooltip label="編集">
+                              <ActionIcon
+                                size="sm"
+                                variant="subtle"
+                                color={COLORS.PRIMARY}
+                                onClick={() => handleEdit(task.id)}
+                              >
+                                <IconEdit size={16} />
+                              </ActionIcon>
+                            </Tooltip>
+                          )}
+                          {onDissociateTask && (
+                            <Tooltip label="関連付け解除">
+                              <ActionIcon
+                                color="red"
+                                variant="light"
+                                onClick={() => handleDissociate(task.id)}
+                                loading={dissociateLoading}
+                                disabled={dissociateLoading}
+                              >
+                                <IconTrash size={16} />
+                              </ActionIcon>
+                            </Tooltip>
+                          )}
+                        </Group>
+                      </Table.Td>
+                    )}
+                  </>
                 )}
               </Table.Tr>
             ))}
