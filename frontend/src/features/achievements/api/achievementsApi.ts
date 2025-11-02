@@ -49,7 +49,7 @@ export const getAchievementStats = async (
 
 /**
  * 全習慣化タスクを取得し、それぞれの週次達成率を並行取得する
- * @returns 達成状況付きの習慣化タスク一覧
+ * @returns 達成状況付きの習慣化タスク一覧（有効なもののみ）
  */
 export const getAllRoutineTasksWithStats = async (): Promise<
   RoutineTaskWithStats[]
@@ -57,8 +57,11 @@ export const getAllRoutineTasksWithStats = async (): Promise<
   // 全習慣化タスクを取得
   const routineTasks = await routineTasksApi.fetchAll();
 
+  // 有効な習慣化タスクのみをフィルタリング
+  const activeTasks = routineTasks.filter((task) => task.isActive);
+
   // 各タスクの週次達成率を並行取得
-  const statsPromises = routineTasks.map(async (task) => {
+  const statsPromises = activeTasks.map(async (task) => {
     try {
       const stats = await getAchievementStats(task.id, { period: 'weekly' });
       return {
