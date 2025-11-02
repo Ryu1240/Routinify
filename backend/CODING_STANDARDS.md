@@ -395,8 +395,18 @@ POST   /api/v1/deleteTask/:id
 
 ### レスポンス形式
 
+#### データ形式の規約
+
+**重要**: バックエンドは、フロントエンド側に**キャメルケース（camelCase）**の状態でデータを返すことが必須です。
+
+- **データベース**: snake_case（`account_id`, `due_date`, `created_at`など）
+- **Rubyコード**: snake_case（変数名、メソッド名など）
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+
+この変換は**シリアライザー層**で実施します。
+
 ```ruby
-# ✅ 成功レスポンス
+# ✅ 成功レスポンス（キャメルケース）
 {
   "data": {
     "id": 1,
@@ -420,12 +430,56 @@ POST   /api/v1/deleteTask/:id
   ]
 }
 
+# ❌ 悪い例（snake_caseで返している）
+{
+  "data": {
+    "id": 1,
+    "account_id": "user-123",        # ❌ snake_case
+    "due_date": "2024-01-15",        # ❌ snake_case
+    "created_at": "2024-01-01"       # ❌ snake_case
+  }
+}
+
 # ❌ 悪い例（一貫性のない形式）
 {
   "task": { ... },
   "success": true,
   "error_message": null
 }
+```
+
+#### シリアライザーでの実装例
+
+```ruby
+# ✅ 良い例: シリアライザーでキャメルケースに変換
+class TaskSerializer < BaseSerializer
+  def as_json
+    {
+      id: @object.id,
+      accountId: @object.account_id,           # snake_case → camelCase
+      title: @object.title,
+      dueDate: format_datetime(@object.due_date),  # snake_case → camelCase
+      status: @object.status,
+      priority: @object.priority,
+      categoryId: @object.category_id,        # snake_case → camelCase
+      categoryName: @object.category&.name,
+      createdAt: format_datetime(@object.created_at),  # snake_case → camelCase
+      updatedAt: format_datetime(@object.updated_at)   # snake_case → camelCase
+    }
+  end
+end
+
+# ❌ 悪い例: snake_caseのまま返している
+class TaskSerializer < BaseSerializer
+  def as_json
+    {
+      id: @object.id,
+      account_id: @object.account_id,    # ❌ snake_caseのまま
+      due_date: format_datetime(@object.due_date),  # ❌ snake_caseのまま
+      created_at: format_datetime(@object.created_at)  # ❌ snake_caseのまま
+    }
+  end
+end
 ```
 
 ### HTTPステータスコード
