@@ -92,8 +92,9 @@ class RoutineTaskGeneratorJob < ApplicationJob
     # max_active_tasksを超えている場合、古いタスクから論理削除
     excess_count = incomplete_tasks.count - routine_task.max_active_tasks
     if excess_count > 0
-      tasks_to_delete = incomplete_tasks.limit(excess_count)
-      tasks_to_delete.each(&:soft_delete)
+      tasks_to_delete_ids = incomplete_tasks.limit(excess_count).pluck(:id)
+      # 一括で論理削除（クエリを1回にまとめる）
+      Task.unscoped.where(id: tasks_to_delete_ids).update_all(deleted_at: Time.current)
     end
   end
 
