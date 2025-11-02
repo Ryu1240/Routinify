@@ -124,10 +124,89 @@ module Api
         end
       end
 
+      def achievement_stats
+        validate_permissions([ 'read:routine-tasks' ]) do
+          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+          return render_not_found('習慣化タスク') unless routine_task
+
+          # パラメータの取得と変換
+          achievement_params = achievement_stats_params
+          return if performed? # バリデーションエラーで既にレスポンスを返している場合
+
+          # サービスを呼び出し
+          service = RoutineTaskAchievementService.new(
+            routine_task,
+            period: achievement_params[:period],
+            start_date: achievement_params[:start_date],
+            end_date: achievement_params[:end_date]
+          )
+
+          result = service.calculate
+
+          if result.success?
+            render_success(data: result.data)
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
+        end
+      end
+
       private
 
       def routine_task_params
         params.require(:routine_task).permit(:title, :frequency, :interval_value, :next_generation_at, :max_active_tasks, :category_id, :priority, :is_active, :due_date_offset_days, :due_date_offset_hour, :start_generation_at)
+      end
+
+      def achievement_stats_params
+        period = params[:period] || 'weekly'
+        start_date = params[:start_date]
+        end_date = params[:end_date]
+
+        # periodのバリデーション
+        unless %w[weekly monthly custom].include?(period)
+          render_error(
+            errors: [ 'periodはweekly、monthly、customのいずれかである必要があります' ],
+            status: :bad_request
+          )
+          return {}
+        end
+
+        # custom期間の場合、start_dateとend_dateが必須
+        if period == 'custom'
+          if start_date.blank? || end_date.blank?
+            render_error(
+              errors: [ 'periodがcustomの場合、start_dateとend_dateは必須です' ],
+              status: :bad_request
+            )
+            return {}
+          end
+
+          begin
+            start_date = Date.parse(start_date)
+            end_date = Date.parse(end_date)
+          rescue ArgumentError
+            render_error(
+              errors: [ 'start_dateとend_dateは有効な日付形式である必要があります' ],
+              status: :bad_request
+            )
+            return {}
+          end
+
+          # start_dateがend_dateより前であることを確認
+          if start_date > end_date
+            render_error(
+              errors: [ 'start_dateはend_dateより前である必要があります' ],
+              status: :bad_request
+            )
+            return {}
+          end
+        end
+
+        {
+          period: period,
+          start_date: start_date,
+          end_date: end_date
+        }
       end
     end
   end

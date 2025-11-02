@@ -7,6 +7,7 @@ Rails.application.routes.draw do
         member do
           post :generate
           get :generation_status
+          get :achievement_stats
         end
       end
       resources :milestones, only: [ :index, :show, :create, :update, :destroy ] do
