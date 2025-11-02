@@ -10,24 +10,18 @@ import {
 import { IconCheck, IconX } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Task, UpdateTaskDto } from '@/types/task';
-import { CreateCategoryDto } from '@/types/category';
 import { statusOptions, priorityOptions } from '@/features/tasks/constants';
-import { CreateCategoryModal } from '@/features/categories/components/CreateCategoryModal';
 
 type MilestoneTaskEditableRowProps = {
   task: Task;
   onSave: (taskId: number, taskData: UpdateTaskDto) => Promise<void>;
   onCancel: () => void;
-  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
-  createCategoryLoading?: boolean;
 };
 
 export const MilestoneTaskEditableRow: React.FC<MilestoneTaskEditableRowProps> = ({
   task,
   onSave,
   onCancel,
-  onCreateCategory,
-  createCategoryLoading = false,
 }) => {
   const [formData, setFormData] = useState<UpdateTaskDto>({
     title: task.title,
@@ -38,7 +32,6 @@ export const MilestoneTaskEditableRow: React.FC<MilestoneTaskEditableRowProps> =
   });
   const [errors, setErrors] = useState<{ title?: string }>({});
   const [saving, setSaving] = useState(false);
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const handleSave = async () => {
     if (!formData.title || !formData.title.trim()) {
@@ -63,13 +56,6 @@ export const MilestoneTaskEditableRow: React.FC<MilestoneTaskEditableRowProps> =
     setFormData((prev: UpdateTaskDto) => ({ ...prev, [field]: value }));
     if (field === 'title' && errors.title) {
       setErrors((prev: { title?: string }) => ({ ...prev, title: undefined }));
-    }
-  };
-
-  const handleCreateCategory = async (categoryData: CreateCategoryDto) => {
-    if (onCreateCategory) {
-      await onCreateCategory(categoryData);
-      setIsCategoryModalOpen(false);
     }
   };
 
@@ -167,13 +153,6 @@ export const MilestoneTaskEditableRow: React.FC<MilestoneTaskEditableRowProps> =
           </Tooltip>
         </Group>
       </Table.Td>
-
-      <CreateCategoryModal
-        opened={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        onSubmit={handleCreateCategory}
-        loading={createCategoryLoading}
-      />
     </>
   );
 };

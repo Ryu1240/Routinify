@@ -22,7 +22,6 @@ import {
   formatDate,
 } from '@/shared/utils/taskUtils';
 import { MilestoneTaskEditableRow } from './MilestoneTaskEditableRow';
-import { CreateCategoryDto } from '@/types/category';
 
 type MilestoneTasksTableProps = {
   tasks: Task[];
@@ -30,8 +29,6 @@ type MilestoneTasksTableProps = {
   onAddTask?: () => void;
   onEditTask?: (taskId: number, taskData: UpdateTaskDto) => Promise<void>;
   dissociateLoading?: boolean;
-  onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
-  createCategoryLoading?: boolean;
 };
 
 export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
@@ -40,8 +37,6 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
   onAddTask,
   onEditTask,
   dissociateLoading = false,
-  onCreateCategory,
-  createCategoryLoading = false,
 }) => {
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
@@ -186,8 +181,6 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
                       task={task}
                       onSave={handleSave}
                       onCancel={handleCancel}
-                      onCreateCategory={onCreateCategory}
-                      createCategoryLoading={createCategoryLoading}
                     />
                     {onDissociateTask && <Table.Td></Table.Td>}
                   </>
