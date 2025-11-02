@@ -18,6 +18,10 @@ type UseBatchTaskGenerationReturn = {
 
 const POLLING_INTERVAL = 3000; // 3秒
 const POLLING_TIMEOUT = 180000; // 3分
+const BATCH_SIZE = 10; // 一度に処理するリクエスト数
+const BATCH_DELAY = 200; // バッチ間の待機時間（ミリ秒）
+const MAX_RETRIES = 3; // 最大リトライ回数
+const RETRY_DELAY = 1000; // リトライ間の待機時間（ミリ秒）
 
 type JobStatus = {
   routineTaskId: number;
@@ -62,13 +66,10 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
   // 全完了時の処理（集計と通知）
   const handleAllComplete = useCallback(() => {
     // 合計生成件数を計算
-    const totalGenerated = jobStatusesRef.current.reduce(
-      (sum, job) => {
-        const count = job.generatedTasksCount || 0;
-        return sum + count;
-      },
-      0
-    );
+    const totalGenerated = jobStatusesRef.current.reduce((sum, job) => {
+      const count = job.generatedTasksCount || 0;
+      return sum + count;
+    }, 0);
     setTotalGeneratedTasksCount(totalGenerated);
 
     // 一度だけ完了通知を表示
@@ -141,7 +142,11 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
               job.generatedTasksCount = 0;
             }
           } catch (err) {
-            console.error(`ジョブ ${job.jobId} のステータス取得に失敗:`, err);
+            // タイムアウトエラーなどの一時的なエラーは次のポーリングで再試行されるため、静かに処理
+            // 重大なエラーの場合のみログに記録
+            if (err instanceof Error && !err.message.includes('timeout')) {
+              console.error(`ジョブ ${job.jobId} のステータス取得に失敗:`, err);
+            }
             // エラーが発生しても他のジョブの確認は続ける
           }
         });
@@ -152,7 +157,25 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
         const completed = jobStatusesRef.current.filter(
           (job) => job.completed
         ).length;
-        setCompletedCount(completed);
+
+        // ジョブ完了検知後に即座に生成件数を更新
+        const currentTotalGenerated = jobStatusesRef.current.reduce(
+          (sum, job) => {
+            // 完了したジョブのみを集計対象とする
+            if (job.completed && job.generatedTasksCount !== undefined) {
+              return sum + job.generatedTasksCount;
+            }
+            return sum;
+          },
+          0
+        );
+
+        // 完了数と生成件数を更新
+        // setInterval内での更新を確実にするため、setTimeoutでラップ
+        setTimeout(() => {
+          setCompletedCount(completed);
+          setTotalGeneratedTasksCount(currentTotalGenerated);
+        }, 0);
 
         // 全て完了したか確認
         if (completed === jobStatusesRef.current.length) {
@@ -202,8 +225,11 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
 
       setTotalCount(totalCountValue);
 
-      // 各タスクに対して非同期処理を開始
-      const jobPromises = activeTasks.map(async (task: RoutineTask) => {
+      // リトライ機能付きのジョブ生成関数
+      const generateJobWithRetry = async (
+        task: RoutineTask,
+        retryCount = 0
+      ): Promise<void> => {
         try {
           const job = await routineTasksApi.generate(task.id);
           jobStatusesRef.current.push({
@@ -214,7 +240,23 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
             title: task.title,
           });
         } catch (err) {
-          console.error(`習慣化タスク ${task.id} のジョブ開始に失敗:`, err);
+          // タイムアウトエラーでリトライ回数が上限に達していない場合は再試行
+          const isTimeoutError =
+            err instanceof Error &&
+            (err.message.includes('timeout') ||
+              err.message.includes('ECONNABORTED'));
+
+          if (isTimeoutError && retryCount < MAX_RETRIES) {
+            // リトライ前に待機
+            await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+            return generateJobWithRetry(task, retryCount + 1);
+          }
+
+          // リトライ上限に達した、またはタイムアウト以外のエラーの場合
+          console.error(
+            `習慣化タスク ${task.id} のジョブ開始に失敗 (リトライ ${retryCount}/${MAX_RETRIES}):`,
+            err
+          );
           // エラーが発生しても他のタスクの処理は続ける
           jobStatusesRef.current.push({
             routineTaskId: task.id,
@@ -224,9 +266,22 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
             title: task.title,
           });
         }
-      });
+      };
 
-      await Promise.all(jobPromises);
+      // バッチ処理: タスクをバッチサイズごとに分割して順次処理
+      for (let i = 0; i < activeTasks.length; i += BATCH_SIZE) {
+        const batch = activeTasks.slice(i, i + BATCH_SIZE);
+
+        // バッチ内のリクエストを並行処理
+        const batchPromises = batch.map((task) => generateJobWithRetry(task));
+
+        await Promise.all(batchPromises);
+
+        // 最後のバッチでない場合、次のバッチの前に待機
+        if (i + BATCH_SIZE < activeTasks.length) {
+          await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY));
+        }
+      }
 
       // ポーリング開始
       if (jobStatusesRef.current.length > 0) {

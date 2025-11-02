@@ -59,5 +59,15 @@ namespace :db do
       puts 'シードデータの削除が完了しました！'
       puts '========================================'
     end
+
+    desc 'バッチタスク生成テスト用の大量データを作成'
+    task batch_generation: :environment do
+      if Rails.env.production?
+        puts 'エラー: 本番環境ではこのタスクを実行できません。'
+        exit 1
+      end
+
+      load Rails.root.join('db', 'seeds_batch_generation.rb')
+    end
   end
 end
