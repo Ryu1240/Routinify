@@ -616,3 +616,231 @@ puts '  - 今週が期限のマイルストーン (期限: 今週)'
 puts '  - 今月が期限のマイルストーン (期限: 今月)'
 puts '  - キャンセルされたマイルストーン (キャンセル)'
 puts '====================================='
+
+# ===== 習慣化状況一覧画面の動作確認用データ =====
+puts ''
+puts 'Creating achievement stats test data...'
+
+# 週次達成状況を確認するための習慣化タスクを作成
+# 現在の週の月曜日から遡って過去数週間分のタスクを生成
+
+today = Date.current
+current_week_start = today.beginning_of_week
+
+# 1. 達成率80%以上（良好）の習慣化タスク
+achievement_high_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】良好な習慣（達成率85%）'
+) do |rt|
+  rt.frequency = 'daily'
+  rt.interval_value = nil
+  rt.start_generation_at = 4.weeks.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 7
+  rt.category_id = categories_map['健康']&.id
+  rt.priority = 'high'
+  rt.is_active = true
+  rt.due_date_offset_days = 1
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_high_rt.title} (ID: #{achievement_high_rt.id})"
+
+# 過去3週間分のタスクを生成（各週7タスク、85%完了 = 6タスク完了、1タスク未完了）
+# 注: 連続達成週数は達成率100%のみを達成と見なすため、このタスクは連続達成週数0になります
+3.times do |week_offset|
+  week_start = current_week_start - week_offset.weeks
+  
+  # 週ごとに7タスクを生成
+  7.times do |day_offset|
+    generated_at = week_start + day_offset.days
+    due_date = generated_at + 1.day
+    
+    task = Task.find_or_create_by(
+      account_id: test_user_id,
+      routine_task_id: achievement_high_rt.id,
+      generated_at: generated_at.beginning_of_day
+    ) do |t|
+      t.title = achievement_high_rt.title
+      t.due_date = due_date
+      t.priority = achievement_high_rt.priority
+      t.category_id = achievement_high_rt.category_id
+      t.status = 'pending'
+    end
+    
+    # 85%の達成率にするため、6つ目まで完了にする（7個中6個 = 85.7%）
+    if day_offset < 6
+      task.update!(status: 'completed', updated_at: generated_at + 1.day)
+    end
+  end
+end
+
+# 2. 達成率50-79%（要改善）の習慣化タスク
+achievement_medium_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】要改善な習慣（達成率60%）'
+) do |rt|
+  rt.frequency = 'weekly'
+  rt.interval_value = nil
+  rt.start_generation_at = 3.weeks.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 5
+  rt.category_id = categories_map['仕事']&.id
+  rt.priority = 'medium'
+  rt.is_active = true
+  rt.due_date_offset_days = 2
+  rt.due_date_offset_hour = 10
+end
+puts "RoutineTask created/updated: #{achievement_medium_rt.title} (ID: #{achievement_medium_rt.id})"
+
+# 過去2週間分のタスクを生成（各週5タスク、60%完了 = 3タスク完了、2タスク未完了）
+# 注: 連続達成週数は達成率100%のみを達成と見なすため、このタスクは連続達成週数0になります
+2.times do |week_offset|
+  week_start = current_week_start - week_offset.weeks
+  
+  # 週ごとに5タスクを生成
+  5.times do |day_offset|
+    generated_at = week_start + day_offset.days
+    due_date = generated_at + 2.days
+    
+    task = Task.find_or_create_by(
+      account_id: test_user_id,
+      routine_task_id: achievement_medium_rt.id,
+      generated_at: generated_at.beginning_of_day
+    ) do |t|
+      t.title = achievement_medium_rt.title
+      t.due_date = due_date
+      t.priority = achievement_medium_rt.priority
+      t.category_id = achievement_medium_rt.category_id
+      t.status = 'pending'
+    end
+    
+    # 60%の達成率にするため、3つ目まで完了にする（5個中3個 = 60%）
+    if day_offset < 3
+      task.update!(status: 'completed', updated_at: generated_at + 1.day)
+    end
+  end
+end
+
+# 3. 達成率50%未満（要努力）の習慣化タスク - 連続達成なし
+achievement_low_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】要努力な習慣（達成率40%）'
+) do |rt|
+  rt.frequency = 'daily'
+  rt.interval_value = nil
+  rt.start_generation_at = 2.weeks.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 5
+  rt.category_id = categories_map['学習']&.id
+  rt.priority = 'low'
+  rt.is_active = true
+  rt.due_date_offset_days = 1
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_low_rt.title} (ID: #{achievement_low_rt.id})"
+
+# 今週分のタスクを生成（5タスク、40%完了 = 2タスク完了、3タスク未完了）
+5.times do |day_offset|
+  generated_at = current_week_start + day_offset.days
+  due_date = generated_at + 1.day
+  
+  task = Task.find_or_create_by(
+    account_id: test_user_id,
+    routine_task_id: achievement_low_rt.id,
+    generated_at: generated_at.beginning_of_day
+  ) do |t|
+    t.title = achievement_low_rt.title
+    t.due_date = due_date
+    t.priority = achievement_low_rt.priority
+    t.category_id = achievement_low_rt.category_id
+    t.status = 'pending'
+  end
+  
+  # 40%の達成率にするため、2つ目まで完了にする（5個中2個 = 40%）
+  if day_offset < 2
+    task.update!(status: 'completed', updated_at: generated_at + 1.day)
+  end
+end
+
+# 4. データなし（タスクが生成されていない）の習慣化タスク
+achievement_none_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】データなしの習慣'
+) do |rt|
+  rt.frequency = 'daily'
+  rt.interval_value = nil
+  rt.start_generation_at = 1.week.from_now # 未来なのでタスクが生成されない
+  rt.next_generation_at = 1.week.from_now
+  rt.last_generated_at = nil
+  rt.max_active_tasks = 3
+  rt.category_id = categories_map['個人']&.id
+  rt.priority = 'medium'
+  rt.is_active = true
+  rt.due_date_offset_days = 1
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_none_rt.title} (ID: #{achievement_none_rt.id})"
+
+# 5. 連続達成週数が異なるパターン（連続5週間達成）
+achievement_consecutive_rt = RoutineTask.find_or_create_by(
+  account_id: test_user_id,
+  title: '【達成状況確認用】連続5週間達成'
+) do |rt|
+  rt.frequency = 'weekly'
+  rt.interval_value = nil
+  rt.start_generation_at = 6.weeks.ago
+  rt.next_generation_at = 1.day.ago
+  rt.last_generated_at = 1.day.ago
+  rt.max_active_tasks = 7
+  rt.category_id = categories_map['健康']&.id
+  rt.priority = 'high'
+  rt.is_active = true
+  rt.due_date_offset_days = 0
+  rt.due_date_offset_hour = nil
+end
+puts "RoutineTask created/updated: #{achievement_consecutive_rt.title} (ID: #{achievement_consecutive_rt.id})"
+
+# 過去5週間分のタスクを生成（各週7タスク、すべて完了 = 100%達成）
+# 連続達成週数は達成率100%のみを達成と見なすため、このタスクは連続5週間達成になります
+5.times do |week_offset|
+  week_start = current_week_start - week_offset.weeks
+  
+  # 週ごとに7タスクを生成（すべて完了）
+  7.times do |day_offset|
+    generated_at = week_start + day_offset.days
+    due_date = generated_at
+    
+    task = Task.find_or_create_by(
+      account_id: test_user_id,
+      routine_task_id: achievement_consecutive_rt.id,
+      generated_at: generated_at.beginning_of_day
+    ) do |t|
+      t.title = achievement_consecutive_rt.title
+      t.due_date = due_date
+      t.priority = achievement_consecutive_rt.priority
+      t.category_id = achievement_consecutive_rt.category_id
+      t.status = 'completed'
+    end
+    
+    # 完了日時を設定
+    task.update!(updated_at: generated_at + 1.day) if task.persisted?
+  end
+end
+
+puts 'Achievement stats test data creation completed!'
+puts '===== 習慣化状況一覧画面の動作確認用データ ====='
+puts '以下の習慣化タスクが作成されました:'
+puts "  - #{achievement_high_rt.title} (ID: #{achievement_high_rt.id})"
+puts '    → 達成率: 85% (良好)、連続達成週数: 0（達成率100%のみが達成と見なされるため）'
+puts "  - #{achievement_medium_rt.title} (ID: #{achievement_medium_rt.id})"
+puts '    → 達成率: 60% (要改善)、連続達成週数: 0（達成率100%のみが達成と見なされるため）'
+puts "  - #{achievement_low_rt.title} (ID: #{achievement_low_rt.id})"
+puts '    → 達成率: 40% (要努力)、連続達成なし'
+puts "  - #{achievement_none_rt.title} (ID: #{achievement_none_rt.id})"
+puts '    → 達成率: 0% (データなし)'
+puts "  - #{achievement_consecutive_rt.title} (ID: #{achievement_consecutive_rt.id})"
+puts '    → 達成率: 100% (良好)、連続5週間達成'
+puts '====================================='
