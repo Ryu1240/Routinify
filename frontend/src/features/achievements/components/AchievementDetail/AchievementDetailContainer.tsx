@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 import { RoutineTask } from '@/types';
+import { getWeekRangeStrings, getMonthRangeStrings } from '@/shared/utils/dateUtils';
 import { useAchievementStats } from '../../hooks/useAchievementStats';
 import { PeriodType } from '../PeriodSelector';
 import { AchievementDetail } from './AchievementDetail';
@@ -51,70 +52,14 @@ export const AchievementDetailContainer: React.FC = () => {
   const [routineTaskLoading, setRoutineTaskLoading] = useState(false);
   const [routineTaskError, setRoutineTaskError] = useState<string | null>(null);
 
-  // 週の開始日と終了日を計算
-  const getWeekRange = (offset: number): { start: string; end: string } => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (日) から 6 (土)
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 月曜日を週の開始とする
-
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() + mondayOffset + offset * 7);
-    weekStart.setHours(0, 0, 0, 0);
-
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
-
-    const formatDate = (date: Date): string => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    return {
-      start: formatDate(weekStart),
-      end: formatDate(weekEnd),
-    };
-  };
-
-  // 月の開始日と終了日を計算
-  const getMonthRange = (offset: number): { start: string; end: string } => {
-    const today = new Date();
-    const monthStart = new Date(
-      today.getFullYear(),
-      today.getMonth() + offset,
-      1
-    );
-    monthStart.setHours(0, 0, 0, 0);
-
-    const monthEnd = new Date(
-      today.getFullYear(),
-      today.getMonth() + offset + 1,
-      0
-    );
-    monthEnd.setHours(23, 59, 59, 999);
-
-    const formatDate = (date: Date): string => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
-
-    return {
-      start: formatDate(monthStart),
-      end: formatDate(monthEnd),
-    };
-  };
 
   // 期間に応じた開始日・終了日を計算
   const { startDate, endDate } = useMemo(() => {
     if (period === 'weekly') {
-      const range = getWeekRange(weeklyOffset);
+      const range = getWeekRangeStrings(weeklyOffset);
       return { startDate: range.start, endDate: range.end };
     } else if (period === 'monthly') {
-      const range = getMonthRange(monthlyOffset);
+      const range = getMonthRangeStrings(monthlyOffset);
       return { startDate: range.start, endDate: range.end };
     } else {
       // custom

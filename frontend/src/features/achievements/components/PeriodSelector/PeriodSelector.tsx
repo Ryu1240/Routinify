@@ -1,5 +1,10 @@
 import React from 'react';
 import { Tabs, Group, Button, Text, Stack } from '@mantine/core';
+import {
+  getWeekRangeDates,
+  getMonthRangeDates,
+  formatDateRange,
+} from '@/shared/utils/dateUtils';
 import { DateRangePicker } from '../DateRangePicker';
 
 export type PeriodType = 'weekly' | 'monthly' | 'custom';
@@ -33,55 +38,8 @@ export const PeriodSelector: React.FC<PeriodSelectorProps> = ({
   customEndDate,
   onCustomDateChange,
 }) => {
-  // 週の開始日と終了日を計算
-  const getWeekRange = (offset: number): { start: Date; end: Date } => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 (日) から 6 (土)
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // 月曜日を週の開始とする
-
-    const weekStart = new Date(today);
-    weekStart.setDate(today.getDate() + mondayOffset + offset * 7);
-    weekStart.setHours(0, 0, 0, 0);
-
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekStart.getDate() + 6);
-    weekEnd.setHours(23, 59, 59, 999);
-
-    return { start: weekStart, end: weekEnd };
-  };
-
-  // 月の開始日と終了日を計算
-  const getMonthRange = (offset: number): { start: Date; end: Date } => {
-    const today = new Date();
-    const monthStart = new Date(
-      today.getFullYear(),
-      today.getMonth() + offset,
-      1
-    );
-    monthStart.setHours(0, 0, 0, 0);
-
-    const monthEnd = new Date(
-      today.getFullYear(),
-      today.getMonth() + offset + 1,
-      0
-    );
-    monthEnd.setHours(23, 59, 59, 999);
-
-    return { start: monthStart, end: monthEnd };
-  };
-
-  const formatDateRange = (start: Date, end: Date): string => {
-    const formatDate = (date: Date): string => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}/${month}/${day}`;
-    };
-    return `${formatDate(start)} - ${formatDate(end)}`;
-  };
-
-  const weeklyRange = getWeekRange(weeklyOffset);
-  const monthlyRange = getMonthRange(monthlyOffset);
+  const weeklyRange = getWeekRangeDates(weeklyOffset);
+  const monthlyRange = getMonthRangeDates(monthlyOffset);
 
   const getWeeklyLabel = (offset: number): string => {
     if (offset === 0) return '今週';
