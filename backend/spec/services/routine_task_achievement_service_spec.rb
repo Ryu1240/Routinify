@@ -4,57 +4,25 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
   let(:account_id) { 'user-1' }
   let(:routine_task) { create(:routine_task, account_id: account_id) }
 
-  describe '#initialize' do
+  describe '#call' do
     context '無効なperiodが指定された場合' do
-      it 'ArgumentErrorを発生させること' do
-        expect {
-          RoutineTaskAchievementService.new(routine_task, period: 'invalid')
-        }.to raise_error(ArgumentError, /period must be one of/)
+      it 'エラーを返すこと' do
+        service = RoutineTaskAchievementService.new(routine_task, period: 'invalid')
+        result = service.call
+        expect(result.error?).to be true
+        expect(result.errors.any? { |e| e.match?(/period must be one of/) }).to be true
       end
     end
 
     context 'custom期間でstart_dateとend_dateが指定されていない場合' do
-      it 'ArgumentErrorを発生させること' do
-        expect {
-          RoutineTaskAchievementService.new(routine_task, period: 'custom')
-        }.to raise_error(ArgumentError, /start_date and end_date are required/)
+      it 'エラーを返すこと' do
+        service = RoutineTaskAchievementService.new(routine_task, period: 'custom')
+        result = service.call
+        expect(result.error?).to be true
+        expect(result.errors.any? { |e| e.match?(/start_date and end_date are required/) }).to be true
       end
     end
 
-    context '週次が指定された場合' do
-      it '現在の週の月曜日〜日曜日を設定すること' do
-        service = RoutineTaskAchievementService.new(routine_task, period: 'weekly')
-        expect(service.send(:instance_variable_get, :@start_date)).to eq(Date.current.beginning_of_week)
-        expect(service.send(:instance_variable_get, :@end_date)).to eq(Date.current.end_of_week)
-      end
-    end
-
-    context '月次が指定された場合' do
-      it '現在の月の1日〜月末を設定すること' do
-        service = RoutineTaskAchievementService.new(routine_task, period: 'monthly')
-        expect(service.send(:instance_variable_get, :@start_date)).to eq(Date.current.beginning_of_month)
-        expect(service.send(:instance_variable_get, :@end_date)).to eq(Date.current.end_of_month)
-      end
-    end
-
-    context '特定期間が指定された場合' do
-      let(:start_date) { 1.week.ago.to_date }
-      let(:end_date) { Date.current }
-
-      it '指定された期間を設定すること' do
-        service = RoutineTaskAchievementService.new(
-          routine_task,
-          period: 'custom',
-          start_date: start_date,
-          end_date: end_date
-        )
-        expect(service.send(:instance_variable_get, :@start_date)).to eq(start_date)
-        expect(service.send(:instance_variable_get, :@end_date)).to eq(end_date)
-      end
-    end
-  end
-
-  describe '#calculate' do
     describe '週次の達成率計算' do
       let(:service) { RoutineTaskAchievementService.new(routine_task, period: 'weekly') }
       let(:week_start) { Date.current.beginning_of_week }
@@ -70,10 +38,12 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '達成率が100%になること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(3)
-          expect(result[:completed_count]).to eq(3)
-          expect(result[:achievement_rate]).to eq(100.0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(3)
+          expect(data[:completed_count]).to eq(3)
+          expect(data[:achievement_rate]).to eq(100.0)
         end
       end
 
@@ -88,20 +58,24 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '正しい達成率を計算すること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(3)
-          expect(result[:completed_count]).to eq(1)
-          expect(result[:achievement_rate]).to eq(33.33)
-          expect(result[:incomplete_count]).to eq(2)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(3)
+          expect(data[:completed_count]).to eq(1)
+          expect(data[:achievement_rate]).to eq(33.33)
+          expect(data[:incomplete_count]).to eq(2)
         end
       end
 
       context 'タスクが1つも生成されていない場合' do
         it '達成率が0%になること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(0)
-          expect(result[:completed_count]).to eq(0)
-          expect(result[:achievement_rate]).to eq(0.0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(0)
+          expect(data[:completed_count]).to eq(0)
+          expect(data[:achievement_rate]).to eq(0.0)
         end
       end
 
@@ -119,9 +93,11 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '期間内のタスクのみを集計すること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(1)
-          expect(result[:completed_count]).to eq(1)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(1)
+          expect(data[:completed_count]).to eq(1)
         end
       end
     end
@@ -141,10 +117,12 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '達成率が100%になること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(5)
-          expect(result[:completed_count]).to eq(5)
-          expect(result[:achievement_rate]).to eq(100.0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(5)
+          expect(data[:completed_count]).to eq(5)
+          expect(data[:achievement_rate]).to eq(100.0)
         end
       end
 
@@ -163,10 +141,12 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '正しい達成率を計算すること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(5)
-          expect(result[:completed_count]).to eq(3)
-          expect(result[:achievement_rate]).to eq(60.0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(5)
+          expect(data[:completed_count]).to eq(3)
+          expect(data[:achievement_rate]).to eq(60.0)
         end
       end
     end
@@ -198,12 +178,14 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '正しい達成率を計算すること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(6)
-          expect(result[:completed_count]).to eq(4)
-          expect(result[:achievement_rate]).to eq(66.67)
-          expect(result[:start_date]).to eq(start_date)
-          expect(result[:end_date]).to eq(end_date)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(6)
+          expect(data[:completed_count]).to eq(4)
+          expect(data[:achievement_rate]).to eq(66.67)
+          expect(data[:start_date]).to eq(start_date)
+          expect(data[:end_date]).to eq(end_date)
         end
       end
     end
@@ -222,10 +204,12 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
       end
 
       it '削除されたタスクも総タスク数に含まれること' do
-        result = service.calculate
-        expect(result[:total_count]).to eq(2)
-        expect(result[:completed_count]).to eq(2)
-        expect(result[:achievement_rate]).to eq(100.0)
+        result = service.call
+        expect(result.success?).to be true
+        data = result.data
+        expect(data[:total_count]).to eq(2)
+        expect(data[:completed_count]).to eq(2)
+        expect(data[:achievement_rate]).to eq(100.0)
       end
     end
 
@@ -243,8 +227,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
       end
 
       it '期限超過タスク数を正しく計算すること' do
-        result = service.calculate
-        expect(result[:overdue_count]).to eq(1)
+        result = service.call
+        expect(result.success?).to be true
+        data = result.data
+        expect(data[:overdue_count]).to eq(1)
       end
     end
 
@@ -269,8 +255,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
           end
 
           it '連続達成週数が3になること' do
-            result = service.calculate
-            expect(result[:consecutive_periods_count]).to eq(3)
+            result = service.call
+            expect(result.success?).to be true
+            data = result.data
+            expect(data[:consecutive_periods_count]).to eq(3)
           end
         end
 
@@ -290,8 +278,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
           end
 
           it '連続達成週数が1になること（最新の週のみ達成）' do
-            result = service.calculate
-            expect(result[:consecutive_periods_count]).to eq(1)
+            result = service.call
+            expect(result.success?).to be true
+            data = result.data
+            expect(data[:consecutive_periods_count]).to eq(1)
           end
         end
 
@@ -307,8 +297,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
           end
 
           it '連続達成週数が1になること' do
-            result = service.calculate
-            expect(result[:consecutive_periods_count]).to eq(1)
+            result = service.call
+            expect(result.success?).to be true
+            data = result.data
+            expect(data[:consecutive_periods_count]).to eq(1)
           end
         end
 
@@ -325,8 +317,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
           end
 
           it '連続達成週数が0になること' do
-            result = service.calculate
-            expect(result[:consecutive_periods_count]).to eq(0)
+            result = service.call
+            expect(result.success?).to be true
+            data = result.data
+            expect(data[:consecutive_periods_count]).to eq(0)
           end
         end
       end
@@ -348,8 +342,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
           end
 
           it '連続達成月数が2になること' do
-            result = service.calculate
-            expect(result[:consecutive_periods_count]).to eq(2)
+            result = service.call
+            expect(result.success?).to be true
+            data = result.data
+            expect(data[:consecutive_periods_count]).to eq(2)
           end
         end
       end
@@ -367,8 +363,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '連続達成期間数が0になること（カスタム期間では連続達成は意味がない）' do
-          result = service.calculate
-          expect(result[:consecutive_periods_count]).to eq(0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:consecutive_periods_count]).to eq(0)
         end
       end
     end
@@ -391,8 +389,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '平均完了日数を正しく計算すること' do
-          result = service.calculate
-          expect(result[:average_completion_days]).to eq(2.5)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:average_completion_days]).to eq(2.5)
         end
       end
 
@@ -403,8 +403,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '平均完了日数が0になること' do
-          result = service.calculate
-          expect(result[:average_completion_days]).to eq(0.0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:average_completion_days]).to eq(0.0)
         end
       end
     end
@@ -414,14 +416,16 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
 
       context '期間内にタスクが存在しない場合' do
         it 'すべての値が0または適切なデフォルト値になること' do
-          result = service.calculate
-          expect(result[:total_count]).to eq(0)
-          expect(result[:completed_count]).to eq(0)
-          expect(result[:incomplete_count]).to eq(0)
-          expect(result[:overdue_count]).to eq(0)
-          expect(result[:achievement_rate]).to eq(0.0)
-          expect(result[:consecutive_periods_count]).to eq(0)
-          expect(result[:average_completion_days]).to eq(0.0)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:total_count]).to eq(0)
+          expect(data[:completed_count]).to eq(0)
+          expect(data[:incomplete_count]).to eq(0)
+          expect(data[:overdue_count]).to eq(0)
+          expect(data[:achievement_rate]).to eq(0.0)
+          expect(data[:consecutive_periods_count]).to eq(0)
+          expect(data[:average_completion_days]).to eq(0.0)
         end
       end
 
@@ -434,8 +438,10 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         end
 
         it '未完了タスク数に含まれること' do
-          result = service.calculate
-          expect(result[:incomplete_count]).to eq(1)
+          result = service.call
+          expect(result.success?).to be true
+          data = result.data
+          expect(data[:incomplete_count]).to eq(1)
         end
       end
     end

@@ -1,4 +1,4 @@
-class RoutineTaskAchievementService
+class RoutineTaskAchievementService < BaseService
   PERIODS = %w[weekly monthly custom].freeze
   ACHIEVEMENT_THRESHOLD = 100.0
 
@@ -7,14 +7,13 @@ class RoutineTaskAchievementService
     @period = period.to_s
     @start_date = start_date&.to_date
     @end_date = end_date&.to_date
-
-    validate_period!
-    calculate_period_dates!
   end
 
-  # 達成状況を計算
-  def calculate
-    {
+  def call
+    validate_period!
+    calculate_period_dates!
+
+    result = {
       total_count: total_count,
       completed_count: completed_count,
       incomplete_count: incomplete_count,
@@ -26,6 +25,19 @@ class RoutineTaskAchievementService
       consecutive_periods_count: consecutive_periods_count,
       average_completion_days: average_completion_days
     }
+
+    ServiceResult.success(data: result)
+  rescue ArgumentError => e
+    ServiceResult.error(
+      errors: [ e.message ],
+      status: :unprocessable_entity
+    )
+  rescue StandardError => e
+    log_error(e, { routine_task_id: @routine_task&.id, period: @period })
+    ServiceResult.error(
+      errors: [ '達成状況の計算に失敗しました' ],
+      status: :internal_server_error
+    )
   end
 
   private
