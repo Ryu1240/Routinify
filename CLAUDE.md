@@ -17,6 +17,11 @@ Routinify is a task management system designed to support habit formation. The c
   - Asynchronous task generation jobs
   - Active task limit management
   - Due date calculation
+- **Milestones**: Group multiple tasks together and track progress
+  - Milestone CRUD operations
+  - Task association and dissociation
+  - Automatic progress percentage calculation
+  - Status management (planning, in_progress, completed, cancelled)
 
 ## Development Commands
 
@@ -71,14 +76,24 @@ make exec-db         # Shell into PostgreSQL container
 │   │   ├── controllers/api/v1/  # API endpoints
 │   │   │   ├── tasks_controller.rb
 │   │   │   ├── categories_controller.rb
-│   │   │   └── routine_tasks_controller.rb
+│   │   │   ├── routine_tasks_controller.rb
+│   │   │   └── milestones_controller.rb
 │   │   ├── models/              # ActiveRecord models
 │   │   │   ├── task.rb
 │   │   │   ├── category.rb
-│   │   │   └── routine_task.rb
+│   │   │   ├── routine_task.rb
+│   │   │   ├── milestone.rb
+│   │   │   └── milestone_task.rb
+│   │   ├── services/            # Business logic services
+│   │   │   ├── milestone_create_service.rb
+│   │   │   └── milestone_update_service.rb
 │   │   ├── jobs/                # Background jobs
 │   │   │   └── routine_task_generator_job.rb
 │   │   └── serializers/         # Response serializers
+│   │       ├── task_serializer.rb
+│   │       ├── category_serializer.rb
+│   │       ├── routine_task_serializer.rb
+│   │       └── milestone_serializer.rb
 │   ├── db/
 │   │   ├── Schemafile          # Ridgepole schema definition
 │   │   └── schemas/            # Table definitions
@@ -88,7 +103,8 @@ make exec-db         # Shell into PostgreSQL container
 │       ├── features/           # Feature modules
 │       │   ├── tasks/          # Task management
 │       │   ├── categories/     # Category management
-│       │   └── routineTasks/   # Routine task management
+│       │   ├── routineTasks/   # Routine task management
+│       │   └── milestones/     # Milestone management
 │       ├── shared/             # Shared components and hooks
 │       ├── lib/                # External library wrappers
 │       └── pages/              # Route components
@@ -115,10 +131,17 @@ make exec-db         # Shell into PostgreSQL container
 
 ### Key Models
 - **Task**: Individual tasks (both regular and generated from routine tasks)
+  - Can be associated with milestones through milestone_tasks join table
 - **Category**: Task categorization
 - **RoutineTask**: Template for recurring tasks with frequency settings
   - Supports daily, weekly, monthly, and custom intervals
   - Manages active task limits and generation schedules
+- **Milestone**: Groups multiple tasks together for progress tracking
+  - Status: planning, in_progress, completed, cancelled
+  - Automatically calculates progress percentage based on associated tasks
+  - Has many tasks through milestone_tasks join table
+- **MilestoneTask**: Join table for many-to-many relationship between milestones and tasks
+  - Composite primary key: (milestone_id, task_id)
 
 ## Environment Setup
 

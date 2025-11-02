@@ -26,6 +26,11 @@ Routinify Backendは、以下の機能を提供するRails APIアプリケーシ
   - 未完了タスク数の上限管理
   - 非同期タスク生成ジョブ
   - 期限日の自動計算
+- **マイルストーン**: 複数のタスクをグループ化し、進捗状況を追跡する機能
+  - マイルストーンのCRUD操作
+  - タスクとの関連付け・解除
+  - 進捗率の自動計算
+  - ステータス管理（planning, in_progress, completed, cancelled）
 - **RESTful API**: 標準的なREST API設計
 - **セキュリティ**: 包括的なセキュリティ対策
 
@@ -333,6 +338,15 @@ bundle exec rspec --parallel
 - `DELETE /api/v1/routine_tasks/:id` - 習慣化タスク削除
 - `POST /api/v1/routine_tasks/:id/generate` - タスク生成ジョブの開始
 - `GET /api/v1/routine_tasks/:id/generation_status?job_id=:job_id` - タスク生成ジョブのステータス確認
+
+**マイルストーン**
+- `GET /api/v1/milestones` - マイルストーン一覧取得
+- `POST /api/v1/milestones` - マイルストーン作成
+- `GET /api/v1/milestones/:id` - マイルストーン詳細取得
+- `PUT /api/v1/milestones/:id` - マイルストーン更新
+- `DELETE /api/v1/milestones/:id` - マイルストーン削除
+- `POST /api/v1/milestones/:id/tasks` - タスクをマイルストーンに関連付け
+- `DELETE /api/v1/milestones/:id/tasks` - タスクの関連付けを解除
 
 **ヘルスチェック**
 - `GET /up` - アプリケーションの稼働状況確認

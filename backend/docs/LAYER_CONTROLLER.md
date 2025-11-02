@@ -29,7 +29,8 @@ app/controllers/
 │       ├── base_controller.rb         # 共通コントローラー
 │       ├── tasks_controller.rb        # タスクコントローラー
 │       ├── categories_controller.rb   # カテゴリコントローラー
-│       └── routine_tasks_controller.rb # 習慣化タスクコントローラー
+│       ├── routine_tasks_controller.rb # 習慣化タスクコントローラー
+│       └── milestones_controller.rb  # マイルストーンコントローラー
 ├── concerns/
 │   ├── error_handler.rb            # エラーハンドリング
 │   └── response_formatter.rb       # レスポンス整形
@@ -365,6 +366,115 @@ class TasksController < BaseController
 
   def search_params
     params.permit(:status, :overdue, :due_today, :q, :page, :per_page)
+  end
+end
+```
+
+### **マイルストーンコントローラーの例（サービス層との連携）**
+```ruby
+module Api
+  module V1
+    class MilestonesController < BaseController
+      def create
+        validate_permissions(['write:milestones']) do
+          service = MilestoneCreateService.new(
+            account_id: current_user_id,
+            milestone_params: milestone_params.to_h
+          )
+          result = service.call
+
+          if result.success?
+            render_success(
+              data: MilestoneSerializer.new(result.data).as_json,
+              message: result.message,
+              status: result.status
+            )
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
+        end
+      end
+
+      def update
+        validate_permissions(['write:milestones']) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+
+          if milestone.nil?
+            render_not_found('マイルストーン')
+            return
+          end
+
+          service = MilestoneUpdateService.new(
+            milestone: milestone,
+            milestone_params: milestone_params.to_h
+          )
+          result = service.call
+
+          if result.success?
+            render_success(
+              data: MilestoneSerializer.new(result.data).as_json,
+              message: result.message,
+              status: result.status
+            )
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
+        end
+      end
+
+      def associate_task
+        validate_permissions(['write:milestones']) do
+          milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+          return render_not_found('マイルストーン') unless milestone
+
+          task_ids = Array(task_association_params[:task_ids]).compact.map(&:to_i).reject(&:zero?)
+          
+          if task_ids.empty?
+            return render_error(errors: ['task_idsは必須です'], status: :unprocessable_entity)
+          end
+
+          # タスクIDの検証と関連付け処理
+          tasks = Task.for_user(current_user_id).where(id: task_ids)
+          
+          if tasks.count != task_ids.count
+            return render_error(errors: ['一部のタスクが見つかりません'], status: :not_found)
+          end
+
+          new_task_ids = milestone.not_associated_task_ids(task_ids)
+          associated_count = 0
+
+          new_task_ids.each do |task_id|
+            task = tasks.find { |t| t.id == task_id }
+            begin
+              milestone.tasks << task unless milestone.tasks.exists?(task.id)
+              associated_count += 1
+            rescue ActiveRecord::RecordNotUnique
+              next
+            end
+          end
+
+          render_success(
+            data: MilestoneSerializer.new(milestone.reload).as_json,
+            message: "#{associated_count}件のタスクをマイルストーンに関連付けました",
+            status: :ok
+          )
+        end
+      end
+
+      private
+
+      def milestone_params
+        params.require(:milestone).permit(:name, :description, :start_date, :due_date, :status)
+      end
+
+      def task_association_params
+        if params[:task].present?
+          params.require(:task).permit(task_ids: [])
+        else
+          params.permit(task_ids: [])
+        end
+      end
+    end
   end
 end
 ```
