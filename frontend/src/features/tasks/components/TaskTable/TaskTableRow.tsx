@@ -1,6 +1,6 @@
 import React from 'react';
-import { Text, Badge, Group, ActionIcon, Tooltip } from '@mantine/core';
-import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { Text, Badge, Group, ActionIcon, Tooltip, Stack } from '@mantine/core';
+import { IconEdit, IconTrash, IconFlag } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import {
   getPriorityColor,
@@ -13,12 +13,16 @@ import {
 import { DataTable } from '@/shared/components/DataTable/index';
 import { Task } from '@/types/task';
 import { Category } from '@/types/category';
+import { Milestone } from '@/types/milestone';
 
 interface TaskTableRowProps {
   task: Task;
   onEdit: (taskId: number) => void;
   onDelete: (taskId: number) => void;
   categories?: Category[];
+  milestones?: Milestone[];
+  taskMilestoneIds?: number[]; // このタスクが紐づいているマイルストーンIDの配列
+  onOpenMilestoneModal?: (taskId: number) => void;
 }
 
 export const TaskTableRow: React.FC<TaskTableRowProps> = ({
@@ -26,10 +30,18 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
   onEdit,
   onDelete,
   categories = [],
+  milestones = [],
+  taskMilestoneIds = [],
+  onOpenMilestoneModal,
 }) => {
   const categoryName = task.categoryId
     ? categories.find((cat) => cat.id === task.categoryId)?.name
     : null;
+
+  const associatedMilestones = milestones.filter((m) =>
+    taskMilestoneIds.includes(m.id)
+  );
+
   return (
     <>
       <DataTable.Td>
@@ -61,6 +73,26 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
         </Text>
       </DataTable.Td>
       <DataTable.Td>
+        {associatedMilestones.length > 0 ? (
+          <Stack gap="xs" align="flex-start">
+            {associatedMilestones.map((milestone) => (
+              <Badge
+                key={milestone.id}
+                color={COLORS.PRIMARY}
+                variant="light"
+                leftSection={<IconFlag size={12} />}
+              >
+                {milestone.name}
+              </Badge>
+            ))}
+          </Stack>
+        ) : (
+          <Text size="sm" c={COLORS.GRAY}>
+            -
+          </Text>
+        )}
+      </DataTable.Td>
+      <DataTable.Td>
         <Group gap="xs" justify="center">
           <Tooltip label="編集">
             <ActionIcon
@@ -72,6 +104,18 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
               <IconEdit size={16} />
             </ActionIcon>
           </Tooltip>
+          {onOpenMilestoneModal && (
+            <Tooltip label="マイルストーンを管理">
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                color={COLORS.PRIMARY}
+                onClick={() => onOpenMilestoneModal(task.id)}
+              >
+                <IconFlag size={16} />
+              </ActionIcon>
+            </Tooltip>
+          )}
           <Tooltip label="削除">
             <ActionIcon
               size="sm"

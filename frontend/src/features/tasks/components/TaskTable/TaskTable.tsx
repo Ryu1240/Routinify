@@ -2,6 +2,7 @@ import React from 'react';
 import { DataTable } from '@/shared/components/DataTable/index';
 import { TaskTableProps } from './types';
 import { Category, CreateCategoryDto } from '@/types/category';
+import { Milestone } from '@/types/milestone';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
 import { createTableColumns } from './taskTableColumns';
@@ -10,6 +11,9 @@ type ExtendedTaskTableProps = TaskTableProps & {
   categories?: Category[];
   onCreateCategory?: (categoryData: CreateCategoryDto) => Promise<void>;
   createCategoryLoading?: boolean;
+  milestones?: Milestone[];
+  taskMilestoneMap?: Map<number, number[]>; // タスクID -> マイルストーンIDの配列のマップ
+  onOpenMilestoneModal?: (taskId: number) => void;
 };
 
 export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
@@ -25,6 +29,9 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   categories = [],
   onCreateCategory,
   createCategoryLoading = false,
+  milestones = [],
+  taskMilestoneMap,
+  onOpenMilestoneModal,
 }) => {
   const tableColumns = createTableColumns(categories);
 
@@ -38,7 +45,7 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
           onSort={onSort}
         />
       </DataTable.Thead>
-      <DataTable.Tbody emptyMessage="タスクがありません" colSpan={7}>
+      <DataTable.Tbody emptyMessage="タスクがありません" colSpan={8}>
         {tasks.map((task) => (
           <DataTable.Tr key={task.id}>
             {editingTaskId === task.id ? (
@@ -56,6 +63,9 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
                 onEdit={onEdit}
                 onDelete={onDelete}
                 categories={categories}
+                milestones={milestones}
+                taskMilestoneIds={taskMilestoneMap?.get(task.id) ?? []}
+                onOpenMilestoneModal={onOpenMilestoneModal}
               />
             )}
           </DataTable.Tr>

@@ -13,6 +13,7 @@ import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Task, UpdateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
+import { Milestone } from '@/types/milestone';
 import { TaskTable } from '@/features/tasks/components/TaskTable';
 
 type TaskListProps = {
@@ -35,6 +36,9 @@ type TaskListProps = {
   categories: Category[];
   onCreateCategory: (categoryData: CreateCategoryDto) => Promise<void>;
   createCategoryLoading: boolean;
+  milestones?: Milestone[];
+  taskMilestoneMap?: Map<number, number[]>;
+  onOpenMilestoneModal?: (taskId: number) => void;
 };
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -57,6 +61,9 @@ export const TaskList: React.FC<TaskListProps> = ({
   categories,
   onCreateCategory,
   createCategoryLoading,
+  milestones = [],
+  taskMilestoneMap,
+  onOpenMilestoneModal,
 }) => {
   if (authLoading || loading) {
     return (
@@ -136,6 +143,9 @@ export const TaskList: React.FC<TaskListProps> = ({
         categories={categories}
         onCreateCategory={onCreateCategory}
         createCategoryLoading={createCategoryLoading}
+        milestones={milestones}
+        taskMilestoneMap={taskMilestoneMap}
+        onOpenMilestoneModal={onOpenMilestoneModal}
       />
 
       {tasks.length > 0 && (
