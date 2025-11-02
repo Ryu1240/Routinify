@@ -120,7 +120,8 @@ export const AchievementTrendChart: React.FC<AchievementTrendChartProps> = ({
               label={period === 'weekly' ? '週数' : '月数'}
               value={count}
               onChange={(value) => {
-                const numValue = typeof value === 'string' ? parseInt(value, 10) : value;
+                const numValue =
+                  typeof value === 'string' ? parseInt(value, 10) : value;
                 if (numValue !== undefined && !isNaN(numValue)) {
                   onCountChange(numValue);
                 }
@@ -141,7 +142,10 @@ export const AchievementTrendChart: React.FC<AchievementTrendChartProps> = ({
 
         {/* グラフ */}
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart
+            data={chartData}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke={COLORS.LIGHT} />
             <XAxis
               dataKey="period"
@@ -188,4 +192,3 @@ export const AchievementTrendChart: React.FC<AchievementTrendChartProps> = ({
     </Card>
   );
 };
-

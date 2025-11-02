@@ -54,4 +54,3 @@ export const useAchievementTrend = (
     refetch: fetchTrend,
   };
 };
-

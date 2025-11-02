@@ -55,7 +55,9 @@ export const AchievementDetailContainer: React.FC = () => {
 
   // タブとグラフ表示関連の状態
   const [activeTab, setActiveTab] = useState<'stats' | 'graph'>('stats');
-  const [trendChartPeriod, setTrendChartPeriod] = useState<'weekly' | 'monthly'>('weekly');
+  const [trendChartPeriod, setTrendChartPeriod] = useState<
+    'weekly' | 'monthly'
+  >('weekly');
   const [trendChartCount, setTrendChartCount] = useState(4);
 
   const [routineTask, setRoutineTask] = useState<RoutineTask | null>(null);

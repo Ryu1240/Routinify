@@ -11,7 +11,11 @@ import {
   ActionIcon,
   Tabs,
 } from '@mantine/core';
-import { IconArrowLeft, IconChartLine, IconChartBar } from '@tabler/icons-react';
+import {
+  IconArrowLeft,
+  IconChartLine,
+  IconChartBar,
+} from '@tabler/icons-react';
 import { AchievementProgressBar } from '../AchievementProgressBar';
 import { PeriodSelector, PeriodType } from '../PeriodSelector';
 import { AchievementTrendChart } from '../AchievementTrendChart';
@@ -152,98 +156,100 @@ export const AchievementDetail: React.FC<AchievementDetailProps> = ({
               />
 
               <Card shadow="sm" p="lg" radius="md" withBorder>
-              <Stack gap="lg">
-                {/* 達成率 */}
-                <Box>
-                  <Text size="sm" mb="xs" fw={500}>
-                    達成率
-                  </Text>
-                  <AchievementProgressBar achievementRate={stats.achievementRate} />
-                </Box>
-
-                <Divider />
-
-                {/* 期間表示 */}
-                <Box>
-                  <Text size="sm" mb="xs" fw={500}>
-                    期間
-                  </Text>
-                  <Text size="sm">
-                    {formatDateStringToDisplay(stats.startDate)} -{' '}
-                    {formatDateStringToDisplay(stats.endDate)}
-                  </Text>
-                </Box>
-
-                <Divider />
-
-                {/* 必須項目 */}
-                <Group gap="xl">
+                <Stack gap="lg">
+                  {/* 達成率 */}
                   <Box>
-                    <Text size="sm" c="dimmed" mb={4}>
-                      総タスク数
+                    <Text size="sm" mb="xs" fw={500}>
+                      達成率
                     </Text>
-                    <Text size="xl" fw={700}>
-                      {stats.totalCount}
+                    <AchievementProgressBar
+                      achievementRate={stats.achievementRate}
+                    />
+                  </Box>
+
+                  <Divider />
+
+                  {/* 期間表示 */}
+                  <Box>
+                    <Text size="sm" mb="xs" fw={500}>
+                      期間
+                    </Text>
+                    <Text size="sm">
+                      {formatDateStringToDisplay(stats.startDate)} -{' '}
+                      {formatDateStringToDisplay(stats.endDate)}
                     </Text>
                   </Box>
-                  <Box>
-                    <Text size="sm" c="dimmed" mb={4}>
-                      完了タスク数
-                    </Text>
-                    <Text size="xl" fw={700} c="green">
-                      {stats.completedCount}
-                    </Text>
-                  </Box>
-                </Group>
 
-                {/* 連続達成バッジ */}
-                {stats.consecutivePeriodsCount > 0 && (
-                  <Box>
-                    <Text size="sm" c="dimmed" mb={4}>
-                      連続達成
-                    </Text>
-                    <Badge color="blue" variant="light" size="lg">
-                      {stats.consecutivePeriodsCount}
-                      {period === 'weekly'
-                        ? '週間'
-                        : period === 'monthly'
-                          ? 'ヶ月'
-                          : '期間'}
-                    </Badge>
-                  </Box>
-                )}
+                  <Divider />
 
-                <Divider />
+                  {/* 必須項目 */}
+                  <Group gap="xl">
+                    <Box>
+                      <Text size="sm" c="dimmed" mb={4}>
+                        総タスク数
+                      </Text>
+                      <Text size="xl" fw={700}>
+                        {stats.totalCount}
+                      </Text>
+                    </Box>
+                    <Box>
+                      <Text size="sm" c="dimmed" mb={4}>
+                        完了タスク数
+                      </Text>
+                      <Text size="xl" fw={700} c="green">
+                        {stats.completedCount}
+                      </Text>
+                    </Box>
+                  </Group>
 
-                {/* オプション項目 */}
-                <Stack gap="sm">
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      未完了タスク数
-                    </Text>
-                    <Text size="sm" fw={500}>
-                      {stats.incompleteCount}
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      期限切れタスク数
-                    </Text>
-                    <Text size="sm" fw={500} c="red">
-                      {stats.overdueCount}
-                    </Text>
-                  </Group>
-                  <Group justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      平均完了日数
-                    </Text>
-                    <Text size="sm" fw={500}>
-                      {stats.averageCompletionDays.toFixed(1)}日
-                    </Text>
-                  </Group>
+                  {/* 連続達成バッジ */}
+                  {stats.consecutivePeriodsCount > 0 && (
+                    <Box>
+                      <Text size="sm" c="dimmed" mb={4}>
+                        連続達成
+                      </Text>
+                      <Badge color="blue" variant="light" size="lg">
+                        {stats.consecutivePeriodsCount}
+                        {period === 'weekly'
+                          ? '週間'
+                          : period === 'monthly'
+                            ? 'ヶ月'
+                            : '期間'}
+                      </Badge>
+                    </Box>
+                  )}
+
+                  <Divider />
+
+                  {/* オプション項目 */}
+                  <Stack gap="sm">
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        未完了タスク数
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {stats.incompleteCount}
+                      </Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        期限切れタスク数
+                      </Text>
+                      <Text size="sm" fw={500} c="red">
+                        {stats.overdueCount}
+                      </Text>
+                    </Group>
+                    <Group justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        平均完了日数
+                      </Text>
+                      <Text size="sm" fw={500}>
+                        {stats.averageCompletionDays.toFixed(1)}日
+                      </Text>
+                    </Group>
+                  </Stack>
                 </Stack>
-              </Stack>
-            </Card>
+              </Card>
             </Stack>
           </Tabs.Panel>
 
