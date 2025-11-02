@@ -14,13 +14,13 @@ class RoutineTaskAchievementTrendService < BaseService
     ServiceResult.success(data: trend_data)
   rescue ArgumentError => e
     ServiceResult.error(
-      errors: [e.message],
+      errors: [ e.message ],
       status: :unprocessable_entity
     )
   rescue StandardError => e
     log_error(e, { routine_task_id: @routine_task&.id, period: @period })
     ServiceResult.error(
-      errors: ['達成率推移の計算に失敗しました'],
+      errors: [ '達成率推移の計算に失敗しました' ],
       status: :internal_server_error
     )
   end
@@ -69,10 +69,10 @@ class RoutineTaskAchievementTrendService < BaseService
     case @period
     when 'weekly'
       # 週次: 月曜日を開始日とする
-      [date.beginning_of_week, date.end_of_week]
+      [ date.beginning_of_week, date.end_of_week ]
     when 'monthly'
       # 月次: 1日を開始日とする
-      [date.beginning_of_month, date.end_of_month]
+      [ date.beginning_of_month, date.end_of_month ]
     else
       raise ArgumentError, "Invalid period for calculate_period_range: #{@period}"
     end
@@ -90,4 +90,3 @@ class RoutineTaskAchievementTrendService < BaseService
     end
   end
 end
-

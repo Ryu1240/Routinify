@@ -47,21 +47,21 @@ RSpec.describe 'GET /api/v1/routine_tasks/:id/achievement_stats', type: :request
           expect(json_response['success']).to be true
           expect(json_response['data']).to be_a(Hash)
           expect(json_response['data']).to include(
-            'total_count',
-            'completed_count',
-            'incomplete_count',
-            'overdue_count',
-            'achievement_rate',
+            'totalCount',
+            'completedCount',
+            'incompleteCount',
+            'overdueCount',
+            'achievementRate',
             'period',
-            'start_date',
-            'end_date',
-            'consecutive_periods_count',
-            'average_completion_days'
+            'startDate',
+            'endDate',
+            'consecutivePeriodsCount',
+            'averageCompletionDays'
           )
           expect(json_response['data']['period']).to eq('weekly')
-          expect(json_response['data']['total_count']).to eq(5)
-          expect(json_response['data']['completed_count']).to eq(3)
-          expect(json_response['data']['incomplete_count']).to eq(2)
+          expect(json_response['data']['totalCount']).to eq(5)
+          expect(json_response['data']['completedCount']).to eq(3)
+          expect(json_response['data']['incompleteCount']).to eq(2)
         end
 
         it 'periodパラメータを指定できること' do
@@ -96,9 +96,9 @@ RSpec.describe 'GET /api/v1/routine_tasks/:id/achievement_stats', type: :request
 
           expect(json_response['success']).to be true
           expect(json_response['data']['period']).to eq('monthly')
-          expect(json_response['data']['total_count']).to eq(8)
-          expect(json_response['data']['completed_count']).to eq(5)
-          expect(json_response['data']['incomplete_count']).to eq(3)
+          expect(json_response['data']['totalCount']).to eq(8)
+          expect(json_response['data']['completedCount']).to eq(5)
+          expect(json_response['data']['incompleteCount']).to eq(3)
         end
       end
 
@@ -126,11 +126,11 @@ RSpec.describe 'GET /api/v1/routine_tasks/:id/achievement_stats', type: :request
 
           expect(json_response['success']).to be true
           expect(json_response['data']['period']).to eq('custom')
-          expect(json_response['data']['start_date']).to eq(start_date.iso8601)
-          expect(json_response['data']['end_date']).to eq(end_date.iso8601)
-          expect(json_response['data']['total_count']).to eq(6)
-          expect(json_response['data']['completed_count']).to eq(4)
-          expect(json_response['data']['incomplete_count']).to eq(2)
+          expect(json_response['data']['startDate']).to eq(start_date.iso8601)
+          expect(json_response['data']['endDate']).to eq(end_date.iso8601)
+          expect(json_response['data']['totalCount']).to eq(6)
+          expect(json_response['data']['completedCount']).to eq(4)
+          expect(json_response['data']['incompleteCount']).to eq(2)
         end
       end
 
@@ -140,9 +140,9 @@ RSpec.describe 'GET /api/v1/routine_tasks/:id/achievement_stats', type: :request
           json_response = JSON.parse(response.body)
 
           expect(json_response['success']).to be true
-          expect(json_response['data']['total_count']).to eq(0)
-          expect(json_response['data']['completed_count']).to eq(0)
-          expect(json_response['data']['achievement_rate']).to eq(0.0)
+          expect(json_response['data']['totalCount']).to eq(0)
+          expect(json_response['data']['completedCount']).to eq(0)
+          expect(json_response['data']['achievementRate']).to eq(0.0)
         end
       end
     end

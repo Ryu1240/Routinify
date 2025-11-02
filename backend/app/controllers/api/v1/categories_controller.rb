@@ -1,13 +1,11 @@
 module Api
   module V1
-    class CategoriesController < ApplicationController
+    class CategoriesController < BaseController
       def index
         validate_permissions([ 'read:tasks' ]) do
           user_id = current_user_id
           categories = Category.for_user(user_id)
-          render json: {
-            data: categories.map { |category| format_category_response(category) }
-          }, status: :ok
+          render_success(data: categories.map { |category| CategorySerializer.new(category).as_json })
         end
       end
 
@@ -17,9 +15,13 @@ module Api
           category = Category.new(category_params.merge(account_id: user_id))
 
           if category.save
-            render json: { message: 'カテゴリが正常に作成されました' }, status: :created
+            render_success(
+              data: CategorySerializer.new(category).as_json,
+              message: 'カテゴリが正常に作成されました',
+              status: :created
+            )
           else
-            render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+            render_error(errors: category.errors.full_messages)
           end
         end
       end
@@ -30,14 +32,17 @@ module Api
           category = Category.find_by(id: params[:id], account_id: user_id)
 
           if category.nil?
-            render json: { errors: [ 'カテゴリが見つかりません' ] }, status: :not_found
+            render_not_found('カテゴリ')
             return
           end
 
           if category.update(category_params)
-            render json: { message: 'カテゴリが正常に更新されました' }, status: :ok
+            render_success(
+              data: CategorySerializer.new(category).as_json,
+              message: 'カテゴリが正常に更新されました'
+            )
           else
-            render json: { errors: category.errors.full_messages }, status: :unprocessable_entity
+            render_error(errors: category.errors.full_messages)
           end
         end
       end
@@ -48,7 +53,7 @@ module Api
           category = Category.find_by(id: params[:id], account_id: user_id)
 
           if category.nil?
-            render json: { errors: [ 'カテゴリが見つかりません' ] }, status: :not_found
+            render_not_found('カテゴリ')
             return
           end
 
@@ -61,16 +66,6 @@ module Api
 
       def category_params
         params.require(:category).permit(:name)
-      end
-
-      def format_category_response(category)
-        {
-          id: category.id,
-          accountId: category.account_id,
-          name: category.name,
-          createdAt: category.created_at.iso8601(3),
-          updatedAt: category.updated_at.iso8601(3)
-        }
       end
     end
   end

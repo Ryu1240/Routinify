@@ -144,7 +144,7 @@ module Api
           result = service.calculate
 
           if result.success?
-            render_success(data: result.data)
+            render_success(data: AchievementStatsSerializer.new(result.data).as_json)
           else
             render_error(errors: result.errors, status: result.status)
           end
@@ -247,7 +247,7 @@ module Api
         # periodのバリデーション
         unless %w[weekly monthly].include?(period)
           render_error(
-            errors: ['periodはweeklyまたはmonthlyである必要があります'],
+            errors: [ 'periodはweeklyまたはmonthlyである必要があります' ],
             status: :bad_request
           )
           return {}
@@ -258,7 +258,7 @@ module Api
           weeks = weeks.to_i
           if weeks < 1 || weeks > 52
             render_error(
-              errors: ['weeksは1以上52以下である必要があります'],
+              errors: [ 'weeksは1以上52以下である必要があります' ],
               status: :bad_request
             )
             return {}
@@ -270,7 +270,7 @@ module Api
           months = months.to_i
           if months < 1 || months > 24
             render_error(
-              errors: ['monthsは1以上24以下である必要があります'],
+              errors: [ 'monthsは1以上24以下である必要があります' ],
               status: :bad_request
             )
             return {}

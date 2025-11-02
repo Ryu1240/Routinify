@@ -4,24 +4,12 @@ import {
   RoutineTaskWithStats,
   AchievementTrendData,
 } from '@/types/achievement';
-import { formatDate } from '@/shared/utils/dateUtils';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
-// APIレスポンス型（バックエンドはsnake_caseで返す）
+// APIレスポンス型（バックエンドはcamelCaseで返す）
 type AchievementStatsApiResponse = {
   success: boolean;
-  data: {
-    total_count: number;
-    completed_count: number;
-    incomplete_count: number;
-    overdue_count: number;
-    achievement_rate: number;
-    period: string;
-    start_date: string | Date;
-    end_date: string | Date;
-    consecutive_periods_count: number;
-    average_completion_days: number;
-  };
+  data: AchievementStats;
 };
 
 /**
@@ -54,34 +42,9 @@ export const getAchievementStats = async (
   }`;
 
   const response = await axios.get<AchievementStatsApiResponse>(url);
-  const data = response.data.data;
 
-  // start_dateとend_dateを文字列に変換（Dateオブジェクトの可能性に対応）
-  const convertDateToString = (date: string | Date): string => {
-    if (typeof date === 'string') return date;
-    if (date instanceof Date) {
-      const formatted = formatDate(date);
-      if (formatted === null) {
-        return date.toISOString().split('T')[0];
-      }
-      return formatted;
-    }
-    return String(date);
-  };
-
-  // バックエンドがsnake_caseで返すため、camelCaseに変換
-  return {
-    totalCount: data.total_count,
-    completedCount: data.completed_count,
-    incompleteCount: data.incomplete_count,
-    overdueCount: data.overdue_count,
-    achievementRate: data.achievement_rate,
-    period: data.period as 'weekly' | 'monthly' | 'custom',
-    startDate: convertDateToString(data.start_date),
-    endDate: convertDateToString(data.end_date),
-    consecutivePeriodsCount: data.consecutive_periods_count,
-    averageCompletionDays: data.average_completion_days,
-  };
+  // バックエンドからcamelCaseで返されるため、そのまま使用
+  return response.data.data;
 };
 
 /**
