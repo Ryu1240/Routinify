@@ -91,6 +91,74 @@ class RoutineTask < ApplicationRecord
     due_date
   end
 
+  # 期間内のタスクを取得（削除されたタスクも含む）
+  # @param start_date [Date] 開始日
+  # @param end_date [Date] 終了日
+  def tasks_in_period(start_date, end_date)
+    tasks_with_deleted.where(generated_at: start_date.beginning_of_day..end_date.end_of_day)
+  end
+
+  # 期間内のタスク統計情報を一括で取得（1クエリでレコードを取得し、メモリ上で集計）
+  # @param start_date [Date] 開始日
+  # @param end_date [Date] 終了日
+  # @return [Hash] 統計情報のハッシュ
+  def task_statistics_in_period(start_date, end_date)
+    # 1クエリで期間内のタスクを全て取得
+    tasks = tasks_in_period(start_date, end_date).to_a
+    current_time = Time.current
+
+    # メモリ上でステータスごとの集計
+    status_counts = tasks.group_by(&:status).transform_values(&:count)
+
+    # メモリ上で期限超過タスク数を計算
+    overdue_count = tasks.count { |task| task.due_date && task.due_date < current_time }
+
+    total_count = tasks.count
+    completed_count = status_counts['completed'] || 0
+    incomplete_count = (status_counts['pending'] || 0) +
+                       (status_counts['in_progress'] || 0) +
+                       (status_counts['on_hold'] || 0)
+
+    {
+      total_count: total_count,
+      completed_count: completed_count,
+      incomplete_count: incomplete_count,
+      overdue_count: overdue_count,
+      status_counts: status_counts
+    }
+  end
+
+  # 期間内の達成率を計算（統計情報を再利用可能）
+  # @param start_date [Date] 開始日
+  # @param end_date [Date] 終了日
+  # @param stats [Hash, nil] 既に計算済みの統計情報（オプション）
+  # @return [Float] 達成率（0.0-100.0）
+  def achievement_rate_in_period(start_date, end_date, stats: nil)
+    stats ||= task_statistics_in_period(start_date, end_date)
+    return 0.0 if stats[:total_count].zero?
+
+    (stats[:completed_count].to_f / stats[:total_count] * 100).round(2)
+  end
+
+  # 期間内の平均完了日数を計算（pluckを使用して効率化）
+  # @param start_date [Date] 開始日
+  # @param end_date [Date] 終了日
+  # @return [Float] 平均完了日数
+  def average_completion_days_in_period(start_date, end_date)
+    completed_data = tasks_in_period(start_date, end_date)
+                      .where(status: 'completed')
+                      .where.not(generated_at: nil)
+                      .pluck(:generated_at, :updated_at)
+
+    return 0.0 if completed_data.empty?
+
+    total_days = completed_data.sum do |generated_at, updated_at|
+      ((updated_at - generated_at) / 1.day).round(2)
+    end
+
+    (total_days.to_f / completed_data.count).round(2)
+  end
+
   private
 
   def destroy_related_tasks

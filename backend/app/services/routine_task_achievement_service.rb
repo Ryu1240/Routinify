@@ -13,11 +13,12 @@ class RoutineTaskAchievementService < BaseService
     validate_period!
     calculate_period_dates!
 
+    stats = task_statistics
     result = {
-      total_count: total_count,
-      completed_count: completed_count,
-      incomplete_count: incomplete_count,
-      overdue_count: overdue_count,
+      total_count: stats[:total_count],
+      completed_count: stats[:completed_count],
+      incomplete_count: stats[:incomplete_count],
+      overdue_count: stats[:overdue_count],
       achievement_rate: achievement_rate,
       period: @period,
       start_date: @start_date,
@@ -71,39 +72,14 @@ class RoutineTaskAchievementService < BaseService
     end
   end
 
-  # 期間内のタスクを取得（削除されたタスクも含む）
-  def tasks_in_period
-    @tasks_in_period ||= @routine_task.tasks_with_deleted
-                                      .where(generated_at: @start_date.beginning_of_day..@end_date.end_of_day)
+  # タスク統計情報を一括で取得（モデルから取得）
+  def task_statistics
+    @task_statistics ||= @routine_task.task_statistics_in_period(@start_date, @end_date)
   end
 
-  # 総タスク数: 期間内にgenerated_atが設定されたタスク数（削除されたタスクも含む）
-  def total_count
-    tasks_in_period.count
-  end
-
-  # 完了タスク数: status = 'completed'のタスク数
-  def completed_count
-    tasks_in_period.where(status: 'completed').count
-  end
-
-  # 未完了タスク数: status = 'pending', 'in_progress', 'on_hold'を未達成として集計
-  def incomplete_count
-    tasks_in_period.where(status: %w[pending in_progress on_hold]).count
-  end
-
-  # 期限超過タスク数
-  def overdue_count
-    tasks_in_period.where('due_date < ?', Time.current).count
-  end
-
-  # 達成率計算
-  # 達成率 = (完了タスク数 / 総タスク数) × 100
-  # タスクが1つも生成されていない場合: 達成率 = 0%
+  # 達成率計算（モデルから取得、統計情報を再利用）
   def achievement_rate
-    return 0.0 if total_count.zero?
-
-    (completed_count.to_f / total_count * 100).round(2)
+    @routine_task.achievement_rate_in_period(@start_date, @end_date, stats: task_statistics)
   end
 
   # 連続達成週数/月数の計算
@@ -120,17 +96,14 @@ class RoutineTaskAchievementService < BaseService
     loop do
       period_start, period_end = calculate_period_range(current_date)
 
-      # その期間内のタスクを取得
-      period_tasks = @routine_task.tasks_with_deleted
-                                  .where(generated_at: period_start.beginning_of_day..period_end.end_of_day)
+      # その期間内のタスク統計を取得
+      period_stats = @routine_task.task_statistics_in_period(period_start, period_end)
 
       # タスクが1つも生成されていない場合: 未達成として扱い、連続が途切れる
-      break if period_tasks.count.zero?
+      break if period_stats[:total_count].zero?
 
-      # 達成率を計算
-      completed = period_tasks.where(status: 'completed').count
-      total = period_tasks.count
-      achievement_rate = total.zero? ? 0.0 : (completed.to_f / total * 100).round(2)
+      # 達成率を計算（統計情報を再利用してクエリを削減）
+      achievement_rate = @routine_task.achievement_rate_in_period(period_start, period_end, stats: period_stats)
 
       # 達成率100%の場合のみ達成と見なす
       break unless achievement_rate >= ACHIEVEMENT_THRESHOLD
@@ -170,21 +143,8 @@ class RoutineTaskAchievementService < BaseService
     end
   end
 
-  # 平均完了日数（完了したタスクのgenerated_atからcompleted_atまでの平均日数）
-  # 注意: Taskモデルにcompleted_atカラムがない場合は、updated_atを使用
+  # 平均完了日数（モデルから取得）
   def average_completion_days
-    completed_tasks = tasks_in_period.where(status: 'completed').to_a
-    return 0.0 if completed_tasks.empty?
-
-    total_days = completed_tasks.sum do |task|
-      if task.generated_at.present?
-        completion_time = task.updated_at # completed_atがないためupdated_atを使用
-        ((completion_time - task.generated_at) / 1.day).round(2)
-      else
-        0
-      end
-    end
-
-    (total_days.to_f / completed_tasks.count).round(2)
+    @routine_task.average_completion_days_in_period(@start_date, @end_date)
   end
 end
