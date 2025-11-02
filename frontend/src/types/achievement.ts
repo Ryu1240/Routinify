@@ -19,3 +19,10 @@ export interface RoutineTaskWithStats {
   categoryName?: string | null;
   achievementStats: AchievementStats;
 }
+
+export interface AchievementTrendData {
+  period: string;
+  achievementRate: number;
+  totalCount: number;
+  completedCount: number;
+}

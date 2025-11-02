@@ -8,6 +8,7 @@ Rails.application.routes.draw do
           post :generate
           get :generation_status
           get :achievement_stats
+          get :achievement_trend
         end
       end
       resources :milestones, only: [ :index, :show, :create, :update, :destroy ] do

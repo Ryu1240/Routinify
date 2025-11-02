@@ -499,6 +499,34 @@ components:
         - consecutivePeriodsCount
         - averageCompletionDays
 
+    AchievementTrendData:
+      type: object
+      description: 達成率推移データ
+      properties:
+        period:
+          type: string
+          format: date
+          description: "期間の開始日（週次の場合: 月曜日、月次の場合: 1日）"
+          example: "2025-01-06"
+        achievementRate:
+          type: number
+          format: float
+          description: 達成率（0.0-100.0）
+          example: 70.0
+        totalCount:
+          type: integer
+          description: 期間内の総タスク数
+          example: 10
+        completedCount:
+          type: integer
+          description: 完了したタスク数
+          example: 7
+      required:
+        - period
+        - achievementRate
+        - totalCount
+        - completedCount
+
     # HabitStatus:
     #   type: object
     #   properties:
@@ -1204,7 +1232,7 @@ paths:
           type: string
           enum: [weekly, monthly, custom]
           default: weekly
-        description: 集計期間の種類（weekly: 週次、monthly: 月次、custom: 特定期間）
+        description: "集計期間の種類（weekly: 週次、monthly: 月次、custom: 特定期間）"
       - name: start_date
         in: query
         required: false
@@ -1274,6 +1302,117 @@ paths:
                     items:
                       type: string
                     example: ["periodはweekly、monthly、customのいずれかである必要があります"]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: 習慣化タスクが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["習慣化タスクが見つかりません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /routine-tasks/{id}/achievement-trend:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 習慣化タスクID
+      - name: period
+        in: query
+        required: true
+        schema:
+          type: string
+          enum: [weekly, monthly]
+        description: "集計期間の種類（weekly: 週次、monthly: 月次）"
+      - name: weeks
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 52
+          default: 4
+        description: "週次の場合、過去N週間（デフォルト: 4）"
+      - name: months
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 24
+          default: 3
+        description: "月次の場合、過去Nヶ月間（デフォルト: 3）"
+    get:
+      tags:
+        - 習慣化タスク
+      summary: 習慣化タスクの達成率推移取得
+      description: |
+        指定された習慣化タスクの達成率推移を取得します。
+        - period: weekly（週次）またはmonthly（月次）を指定
+        - periodがweeklyの場合、weeksパラメータで過去N週間を指定（デフォルト: 4）
+        - periodがmonthlyの場合、monthsパラメータで過去Nヶ月間を指定（デフォルト: 3）
+        - データは古い順（最古が先頭）で返されます
+        - periodは週次の場合、週の開始日（月曜日）を返します
+        - periodは月次の場合、月の開始日（1日）を返します
+      security:
+        - Auth0:
+            - read:routine-tasks
+      responses:
+        '200':
+          description: 達成率推移の取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AchievementTrendData'
+              example:
+                success: true
+                data:
+                  - period: "2025-01-06"
+                    achievementRate: 70.0
+                    totalCount: 10
+                    completedCount: 7
+                  - period: "2024-12-30"
+                    achievementRate: 100.0
+                    totalCount: 10
+                    completedCount: 10
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["periodはweeklyまたはmonthlyである必要があります"]
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':

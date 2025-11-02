@@ -8,6 +8,7 @@ import {
   formatDate,
 } from '@/shared/utils/dateUtils';
 import { useAchievementStats } from '../../hooks/useAchievementStats';
+import { useAchievementTrend } from '../../hooks/useAchievementTrend';
 import { PeriodType } from '../PeriodSelector';
 import { AchievementDetail } from './AchievementDetail';
 
@@ -51,6 +52,13 @@ export const AchievementDetailContainer: React.FC = () => {
   const [customEndDate, setCustomEndDate] = useState<string | null>(
     defaultCustomDateRange.endDate
   );
+
+  // タブとグラフ表示関連の状態
+  const [activeTab, setActiveTab] = useState<'stats' | 'graph'>('stats');
+  const [trendChartPeriod, setTrendChartPeriod] = useState<
+    'weekly' | 'monthly'
+  >('weekly');
+  const [trendChartCount, setTrendChartCount] = useState(4);
 
   const [routineTask, setRoutineTask] = useState<RoutineTask | null>(null);
   const [routineTaskLoading, setRoutineTaskLoading] = useState(false);
@@ -101,6 +109,17 @@ export const AchievementDetailContainer: React.FC = () => {
     error: statsError,
   } = useAchievementStats(routineTaskId, period, startDate, endDate);
 
+  // 達成率推移データを取得（グラフタブがアクティブな場合のみ）
+  const {
+    data: trendData,
+    loading: trendLoading,
+    error: trendError,
+  } = useAchievementTrend(
+    activeTab === 'graph' ? routineTaskId : 0,
+    trendChartPeriod,
+    trendChartCount
+  );
+
   const handleCustomDateChange = (start: string | null, end: string | null) => {
     setCustomStartDate(start);
     setCustomEndDate(end);
@@ -145,6 +164,15 @@ export const AchievementDetailContainer: React.FC = () => {
       customStartDate={customStartDate}
       customEndDate={customEndDate}
       onCustomDateChange={handleCustomDateChange}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      trendChartPeriod={trendChartPeriod}
+      onTrendChartPeriodChange={setTrendChartPeriod}
+      trendChartCount={trendChartCount}
+      onTrendChartCountChange={setTrendChartCount}
+      trendData={trendData}
+      trendLoading={trendLoading}
+      trendError={trendError}
     />
   );
 };

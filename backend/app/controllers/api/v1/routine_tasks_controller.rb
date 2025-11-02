@@ -151,6 +151,33 @@ module Api
         end
       end
 
+      def achievement_trend
+        validate_permissions([ 'read:routine-tasks' ]) do
+          routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+          return render_not_found('習慣化タスク') unless routine_task
+
+          # パラメータの取得と変換
+          trend_params = achievement_trend_params
+          return if performed? # バリデーションエラーで既にレスポンスを返している場合
+
+          # サービスを呼び出し
+          service = RoutineTaskAchievementTrendService.new(
+            routine_task,
+            period: trend_params[:period],
+            weeks: trend_params[:weeks],
+            months: trend_params[:months]
+          )
+
+          result = service.call
+
+          if result.success?
+            render_success(data: result.data)
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
+        end
+      end
+
       private
 
       def routine_task_params
@@ -209,6 +236,51 @@ module Api
           period: period,
           start_date: start_date,
           end_date: end_date
+        }
+      end
+
+      def achievement_trend_params
+        period = params[:period]
+        weeks = params[:weeks] || 4
+        months = params[:months] || 3
+
+        # periodのバリデーション
+        unless %w[weekly monthly].include?(period)
+          render_error(
+            errors: ['periodはweeklyまたはmonthlyである必要があります'],
+            status: :bad_request
+          )
+          return {}
+        end
+
+        # weeksのバリデーション（週次の場合）
+        if period == 'weekly'
+          weeks = weeks.to_i
+          if weeks < 1 || weeks > 52
+            render_error(
+              errors: ['weeksは1以上52以下である必要があります'],
+              status: :bad_request
+            )
+            return {}
+          end
+        end
+
+        # monthsのバリデーション（月次の場合）
+        if period == 'monthly'
+          months = months.to_i
+          if months < 1 || months > 24
+            render_error(
+              errors: ['monthsは1以上24以下である必要があります'],
+              status: :bad_request
+            )
+            return {}
+          end
+        end
+
+        {
+          period: period,
+          weeks: weeks,
+          months: months
         }
       end
     end
