@@ -1626,14 +1626,6 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /milestones/{id}/tasks:
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-        description: マイルストーンID
     delete:
       tags:
         - マイルストーン
