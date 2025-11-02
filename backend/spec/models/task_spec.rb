@@ -309,7 +309,7 @@ RSpec.describe Task, type: :model do
 
     describe '#soft_delete' do
       it 'deleted_atを設定すること' do
-        expect { task.soft_delete }.to change { task.reload.deleted_at }.from(nil).to(be_present)
+        expect { task.soft_delete }.to change { Task.with_deleted.find(task.id).deleted_at }.from(nil).to(be_present)
       end
 
       it '削除されたタスクはデフォルトスコープで取得できないこと' do
@@ -334,7 +334,7 @@ RSpec.describe Task, type: :model do
     describe '#delete_task' do
       context '習慣化タスクに紐づくタスクの場合' do
         it '論理削除すること' do
-          expect { routine_task_related_task.delete_task }.to change { routine_task_related_task.reload.deleted_at }.from(nil).to(be_present)
+          expect { routine_task_related_task.delete_task }.to change { Task.with_deleted.find(routine_task_related_task.id).deleted_at }.from(nil).to(be_present)
         end
 
         it 'タスクはデータベースに残ること' do

@@ -3,7 +3,7 @@ class Task < ApplicationRecord
 
   belongs_to :category, optional: true
   belongs_to :routine_task, optional: true
-  has_many :milestone_tasks, dependent: :destroy
+  has_many :milestone_tasks, dependent: :delete_all
   has_many :milestones, through: :milestone_tasks
 
   validates :title, presence: true, length: { maximum: 255 }

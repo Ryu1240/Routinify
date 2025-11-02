@@ -73,7 +73,10 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.datetime "generated_at"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "deleted_at"
     t.index ["category_id"], name: "index_tasks_on_category_id"
+    t.index ["deleted_at"], name: "index_tasks_on_deleted_at"
+    t.index ["routine_task_id", "deleted_at", "generated_at"], name: "index_tasks_on_routine_and_deleted_and_generated"
     t.index ["routine_task_id", "status", "generated_at"], name: "index_tasks_on_routine_and_status_and_generated"
   end
 

@@ -1,6 +1,6 @@
 class RoutineTask < ApplicationRecord
-  has_many :tasks, dependent: :nullify
-  has_many :tasks_with_deleted, -> { unscope(where: :deleted_at) }, class_name: 'Task', foreign_key: 'routine_task_id', dependent: :destroy
+  has_many :tasks
+  has_many :tasks_with_deleted, -> { unscope(where: :deleted_at) }, class_name: 'Task', foreign_key: 'routine_task_id'
   belongs_to :category, optional: true
 
   before_destroy :destroy_related_tasks
@@ -95,7 +95,7 @@ class RoutineTask < ApplicationRecord
 
   def destroy_related_tasks
     # 紐づくタスク（論理削除済み含む）を物理削除
-    tasks_with_deleted.destroy_all
+    Task.unscoped.where(routine_task_id: id).delete_all
   end
 
   def validate_interval_value_based_on_frequency

@@ -128,16 +128,11 @@ RSpec.describe 'DELETE /api/v1/routine_tasks/:id', type: :request do
           expect(RoutineTask.find_by(id: routine_task_with_tasks.id)).to be_nil
         end
 
-        it 'nullifies routine_task_id in related tasks (not delete tasks)' do
+        it 'physically deletes related tasks (including soft-deleted ones)' do
           delete "/api/v1/routine_tasks/#{routine_task_with_tasks.id}", headers: auth_headers
 
-          generated_task1.reload
-          generated_task2.reload
-
-          expect(generated_task1.routine_task_id).to be_nil
-          expect(generated_task2.routine_task_id).to be_nil
-          expect(Task.find_by(id: generated_task1.id)).to be_present
-          expect(Task.find_by(id: generated_task2.id)).to be_present
+          expect(Task.with_deleted.find_by(id: generated_task1.id)).to be_nil
+          expect(Task.with_deleted.find_by(id: generated_task2.id)).to be_nil
         end
       end
 
