@@ -21,6 +21,7 @@ export type {
   RoutineTaskKeys,
 } from './routineTask';
 export type { Milestone, MilestoneStatus, MilestoneFilters } from './milestone';
+export type { AchievementStats, RoutineTaskWithStats } from './achievement';
 export type {
   ApiResponse,
   ApiError,

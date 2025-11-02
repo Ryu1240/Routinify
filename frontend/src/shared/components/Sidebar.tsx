@@ -5,6 +5,7 @@ import {
   IconCategory,
   IconRepeat,
   IconFlag,
+  IconChartBar,
 } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
@@ -37,6 +38,12 @@ const Sidebar: React.FC = () => {
       icon: <IconFlag size={16} />,
       path: '/milestones',
       description: 'マイルストーンの管理',
+    },
+    {
+      label: '習慣化状況',
+      icon: <IconChartBar size={16} />,
+      path: '/achievements',
+      description: '習慣化タスクの達成状況',
     },
   ];
 
