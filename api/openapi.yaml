@@ -1366,7 +1366,7 @@ paths:
         - period: weekly（週次）またはmonthly（月次）を指定
         - periodがweeklyの場合、weeksパラメータで過去N週間を指定（デフォルト: 4）
         - periodがmonthlyの場合、monthsパラメータで過去Nヶ月間を指定（デフォルト: 3）
-        - データは新しい順（最新が先頭）で返されます
+        - データは古い順（最古が先頭）で返されます
         - periodは週次の場合、週の開始日（月曜日）を返します
         - periodは月次の場合、月の開始日（1日）を返します
       security:

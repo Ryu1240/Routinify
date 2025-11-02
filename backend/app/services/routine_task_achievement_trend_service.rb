@@ -48,7 +48,7 @@ class RoutineTaskAchievementTrendService < BaseService
       # 達成率を計算
       achievement_rate = @routine_task.achievement_rate_in_period(period_start, period_end, stats: period_stats)
 
-      # データを追加（新しい順なので、最新が先頭）
+      # データを追加（収集時は新しい順）
       data << {
         period: period_start.to_s,
         achievementRate: achievement_rate,
@@ -60,7 +60,8 @@ class RoutineTaskAchievementTrendService < BaseService
       current_date = move_to_previous_period(current_date)
     end
 
-    data
+    # 古い順にソート（期間の開始日でソート）
+    data.sort_by { |item| item[:period] }
   end
 
   # 指定された日付が含まれる期間の開始日と終了日を計算

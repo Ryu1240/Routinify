@@ -42,20 +42,14 @@ export const AchievementTrendChart: React.FC<AchievementTrendChartProps> = ({
   onCountChange,
 }) => {
   // グラフ用データを整形（期間を表示用に変換）
-  // バックエンドからは新しい順（最新が先頭）で返されるため、古い順にソート
-  const chartData = [...data]
-    .sort((a, b) => {
-      const dateA = new Date(a.period);
-      const dateB = new Date(b.period);
-      return dateA.getTime() - dateB.getTime();
-    })
-    .map((item) => ({
-      period: formatDateStringToDisplay(item.period) || item.period,
-      date: item.period,
-      achievementRate: item.achievementRate,
-      totalCount: item.totalCount,
-      completedCount: item.completedCount,
-    }));
+  // バックエンドからは古い順で返されるため、そのまま使用
+  const chartData = data.map((item) => ({
+    period: formatDateStringToDisplay(item.period) || item.period,
+    date: item.period,
+    achievementRate: item.achievementRate,
+    totalCount: item.totalCount,
+    completedCount: item.completedCount,
+  }));
 
   // 期間選択のオプション
   const periodOptions = [
