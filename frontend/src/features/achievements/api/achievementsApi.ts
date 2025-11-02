@@ -4,27 +4,29 @@ import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
 type AchievementStatsApiResponse = {
   success: boolean;
-  data: AchievementStats | {
-    totalCount?: number;
-    total_count?: number;
-    completedCount?: number;
-    completed_count?: number;
-    incompleteCount?: number;
-    incomplete_count?: number;
-    overdueCount?: number;
-    overdue_count?: number;
-    achievementRate?: number;
-    achievement_rate?: number;
-    period?: string;
-    startDate?: string;
-    start_date?: string;
-    endDate?: string;
-    end_date?: string;
-    consecutivePeriodsCount?: number;
-    consecutive_periods_count?: number;
-    averageCompletionDays?: number;
-    average_completion_days?: number;
-  };
+  data:
+    | AchievementStats
+    | {
+        totalCount?: number;
+        total_count?: number;
+        completedCount?: number;
+        completed_count?: number;
+        incompleteCount?: number;
+        incomplete_count?: number;
+        overdueCount?: number;
+        overdue_count?: number;
+        achievementRate?: number;
+        achievement_rate?: number;
+        period?: string;
+        startDate?: string;
+        start_date?: string;
+        endDate?: string;
+        end_date?: string;
+        consecutivePeriodsCount?: number;
+        consecutive_periods_count?: number;
+        averageCompletionDays?: number;
+        average_completion_days?: number;
+      };
 };
 
 /**
@@ -58,12 +60,12 @@ export const getAchievementStats = async (
 
   const response = await axios.get<AchievementStatsApiResponse>(url);
   const data = response.data.data;
-  
+
   // AchievementStats型の場合はそのまま返す
   if ('totalCount' in data && typeof data.totalCount === 'number') {
     return data as AchievementStats;
   }
-  
+
   // バックエンドがsnake_caseで返す場合に備えてcamelCaseに変換
   const snakeCaseData = data as {
     total_count?: number;
@@ -77,14 +79,17 @@ export const getAchievementStats = async (
     consecutive_periods_count?: number;
     average_completion_days?: number;
   };
-  
+
   return {
     totalCount: snakeCaseData.total_count ?? 0,
     completedCount: snakeCaseData.completed_count ?? 0,
     incompleteCount: snakeCaseData.incomplete_count ?? 0,
     overdueCount: snakeCaseData.overdue_count ?? 0,
     achievementRate: snakeCaseData.achievement_rate ?? 0,
-    period: (snakeCaseData.period ?? 'weekly') as 'weekly' | 'monthly' | 'custom',
+    period: (snakeCaseData.period ?? 'weekly') as
+      | 'weekly'
+      | 'monthly'
+      | 'custom',
     startDate: String(snakeCaseData.start_date ?? ''),
     endDate: String(snakeCaseData.end_date ?? ''),
     consecutivePeriodsCount: snakeCaseData.consecutive_periods_count ?? 0,
@@ -118,7 +123,9 @@ export const getAllRoutineTasksWithStats = async (): Promise<
         error
       );
       if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { status?: number; data?: unknown } };
+        const axiosError = error as {
+          response?: { status?: number; data?: unknown };
+        };
         if (axiosError.response) {
           console.error('レスポンスステータス:', axiosError.response.status);
           console.error('レスポンスデータ:', axiosError.response.data);
