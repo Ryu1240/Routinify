@@ -2,31 +2,21 @@ import axios from '@/lib/axios';
 import { AchievementStats, RoutineTaskWithStats } from '@/types/achievement';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
+// APIレスポンス型（バックエンドはsnake_caseで返す）
 type AchievementStatsApiResponse = {
   success: boolean;
-  data:
-    | AchievementStats
-    | {
-        totalCount?: number;
-        total_count?: number;
-        completedCount?: number;
-        completed_count?: number;
-        incompleteCount?: number;
-        incomplete_count?: number;
-        overdueCount?: number;
-        overdue_count?: number;
-        achievementRate?: number;
-        achievement_rate?: number;
-        period?: string;
-        startDate?: string;
-        start_date?: string;
-        endDate?: string;
-        end_date?: string;
-        consecutivePeriodsCount?: number;
-        consecutive_periods_count?: number;
-        averageCompletionDays?: number;
-        average_completion_days?: number;
-      };
+  data: {
+    total_count: number;
+    completed_count: number;
+    incomplete_count: number;
+    overdue_count: number;
+    achievement_rate: number;
+    period: string;
+    start_date: string | Date;
+    end_date: string | Date;
+    consecutive_periods_count: number;
+    average_completion_days: number;
+  };
 };
 
 /**
@@ -61,39 +51,25 @@ export const getAchievementStats = async (
   const response = await axios.get<AchievementStatsApiResponse>(url);
   const data = response.data.data;
 
-  // AchievementStats型の場合はそのまま返す
-  if ('totalCount' in data && typeof data.totalCount === 'number') {
-    return data as AchievementStats;
-  }
-
-  // バックエンドがsnake_caseで返す場合に備えてcamelCaseに変換
-  const snakeCaseData = data as {
-    total_count?: number;
-    completed_count?: number;
-    incomplete_count?: number;
-    overdue_count?: number;
-    achievement_rate?: number;
-    period?: string;
-    start_date?: string;
-    end_date?: string;
-    consecutive_periods_count?: number;
-    average_completion_days?: number;
+  // start_dateとend_dateを文字列に変換（Dateオブジェクトの可能性に対応）
+  const formatDate = (date: string | Date): string => {
+    if (typeof date === 'string') return date;
+    if (date instanceof Date) return date.toISOString().split('T')[0];
+    return String(date);
   };
 
+  // バックエンドがsnake_caseで返すため、camelCaseに変換
   return {
-    totalCount: snakeCaseData.total_count ?? 0,
-    completedCount: snakeCaseData.completed_count ?? 0,
-    incompleteCount: snakeCaseData.incomplete_count ?? 0,
-    overdueCount: snakeCaseData.overdue_count ?? 0,
-    achievementRate: snakeCaseData.achievement_rate ?? 0,
-    period: (snakeCaseData.period ?? 'weekly') as
-      | 'weekly'
-      | 'monthly'
-      | 'custom',
-    startDate: String(snakeCaseData.start_date ?? ''),
-    endDate: String(snakeCaseData.end_date ?? ''),
-    consecutivePeriodsCount: snakeCaseData.consecutive_periods_count ?? 0,
-    averageCompletionDays: snakeCaseData.average_completion_days ?? 0,
+    totalCount: data.total_count,
+    completedCount: data.completed_count,
+    incompleteCount: data.incomplete_count,
+    overdueCount: data.overdue_count,
+    achievementRate: data.achievement_rate,
+    period: data.period as 'weekly' | 'monthly' | 'custom',
+    startDate: formatDate(data.start_date),
+    endDate: formatDate(data.end_date),
+    consecutivePeriodsCount: data.consecutive_periods_count,
+    averageCompletionDays: data.average_completion_days,
   };
 };
 

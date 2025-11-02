@@ -21,8 +21,8 @@ class RoutineTaskAchievementService < BaseService
       overdue_count: stats[:overdue_count],
       achievement_rate: achievement_rate,
       period: @period,
-      start_date: @start_date,
-      end_date: @end_date,
+      start_date: @start_date.to_s,
+      end_date: @end_date.to_s,
       consecutive_periods_count: consecutive_periods_count,
       average_completion_days: average_completion_days
     }

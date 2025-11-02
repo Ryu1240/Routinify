@@ -184,8 +184,8 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
           expect(data[:total_count]).to eq(6)
           expect(data[:completed_count]).to eq(4)
           expect(data[:achievement_rate]).to eq(66.67)
-          expect(data[:start_date]).to eq(start_date)
-          expect(data[:end_date]).to eq(end_date)
+          expect(data[:start_date]).to eq(start_date.to_s)
+          expect(data[:end_date]).to eq(end_date.to_s)
         end
       end
     end
