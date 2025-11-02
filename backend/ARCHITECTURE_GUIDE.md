@@ -130,7 +130,8 @@ backend/
 │   │   │       ├── base_controller.rb # 共通コントローラー
 │   │   │       ├── tasks_controller.rb
 │   │   │       ├── categories_controller.rb
-│   │   │       └── routine_tasks_controller.rb
+│   │   │       ├── routine_tasks_controller.rb
+│   │   │       └── milestones_controller.rb
 │   │   ├── concerns/                   # 共通機能
 │   │   │   ├── secured.rb             # 認証・認可
 │   │   │   ├── error_handler.rb       # エラーハンドリング
@@ -144,6 +145,8 @@ backend/
 │   │   ├── task.rb
 │   │   ├── category.rb
 │   │   ├── routine_task.rb
+│   │   ├── milestone.rb
+│   │   ├── milestone_task.rb
 │   │   └── application_record.rb
 │   │
 │   ├── services/                       # サービス層
@@ -151,13 +154,16 @@ backend/
 │   │   ├── task_service.rb
 │   │   ├── category_service.rb
 │   │   ├── routine_task_service.rb
+│   │   ├── milestone_create_service.rb
+│   │   ├── milestone_update_service.rb
 │   │   └── auth_service.rb
 │   │
 │   ├── serializers/                    # シリアライザー層
 │   │   ├── base_serializer.rb         # 基底シリアライザー
 │   │   ├── task_serializer.rb
 │   │   ├── category_serializer.rb
-│   │   └── routine_task_serializer.rb
+│   │   ├── routine_task_serializer.rb
+│   │   └── milestone_serializer.rb
 │   │
 │   ├── validators/                     # カスタムバリデーター
 │   │   ├── future_date_validator.rb
@@ -206,7 +212,10 @@ backend/
     ├── seeds.rb                       # シードデータ
     └── schemas/                       # スキーマ定義
         ├── tasks.rb
-        └── categories.rb
+        ├── categories.rb
+        ├── routine_tasks.rb
+        ├── milestones.rb
+        └── milestone_tasks.rb
 ```
 
 ---

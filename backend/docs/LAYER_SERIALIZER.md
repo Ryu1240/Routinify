@@ -184,6 +184,37 @@ class RoutineTaskSerializer < BaseSerializer
 end
 ```
 
+### マイルストーンシリアライザーの例
+
+```ruby
+class MilestoneSerializer < BaseSerializer
+  def as_json
+    stats = @object.task_statistics
+    {
+      id: @object.id,
+      accountId: @object.account_id,
+      name: @object.name,
+      description: @object.description,
+      startDate: format_date(@object.start_date),
+      dueDate: format_date(@object.due_date),
+      status: @object.status,
+      completedAt: format_datetime(@object.completed_at),
+      progressPercentage: stats[:progress_percentage],
+      totalTasksCount: stats[:total_tasks_count],
+      completedTasksCount: stats[:completed_tasks_count],
+      createdAt: format_datetime(@object.created_at),
+      updatedAt: format_datetime(@object.updated_at),
+      tasks: @object.tasks.map { |task| TaskSerializer.new(task).as_json }
+    }
+  end
+end
+```
+
+**特徴**:
+- 進捗統計情報を`task_statistics`メソッドから取得
+- 関連するタスクも含めてシリアライズ
+- 計算された属性（progressPercentage）を含む
+
 ## 設計原則
 
 ### 1. **一貫性**

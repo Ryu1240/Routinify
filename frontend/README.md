@@ -25,6 +25,11 @@ Routinify Frontendは、以下の機能を提供するReact SPAです：
   - タスクの一括生成機能
   - 非同期ジョブのステータス監視
   - 頻度設定（日次・週次・月次・カスタム）
+- **マイルストーン**: 複数のタスクをグループ化し、進捗状況を追跡
+  - マイルストーンの作成・編集・削除
+  - タスクとの関連付け・解除
+  - 進捗率の表示
+  - ステータス管理とフィルタリング
 - **認証**: Auth0を使用したセキュアな認証
 - **レスポンシブデザイン**: モバイル・タブレット・デスクトップ対応
 - **リアルタイム更新**: 最新のタスク状態を即座に反映
@@ -191,6 +196,11 @@ frontend/
 │   │   │   ├── hooks/        # useRoutineTasks, useTaskGeneration
 │   │   │   ├── api/          # routineTasksApi
 │   │   │   └── index.ts      # 公開API
+│   │   ├── milestones/
+│   │   │   ├── components/   # マイルストーン専用コンポーネント
+│   │   │   ├── hooks/        # useMilestones, useMilestoneMutations
+│   │   │   ├── api/          # milestonesApi
+│   │   │   └── index.ts      # 公開API
 │   │   └── auth/
 │   ├── shared/               # 共通モジュール
 │   │   ├── components/       # Button, Modal等
@@ -203,12 +213,14 @@ frontend/
 │   ├── pages/                # ルートコンポーネント
 │   │   ├── tasks/
 │   │   ├── categories/
-│   │   └── routineTasks/
+│   │   ├── routineTasks/
+│   │   └── milestones/
 │   ├── types/                # グローバル型定義
 │   │   ├── index.ts
 │   │   ├── task.ts
 │   │   ├── category.ts
-│   │   └── routineTask.ts
+│   │   ├── routineTask.ts
+│   │   └── milestone.ts
 │   ├── App.tsx
 │   └── index.tsx
 ├── .env                      # 環境変数

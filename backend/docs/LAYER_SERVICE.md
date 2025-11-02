@@ -28,6 +28,8 @@ app/services/
 ├── base_service.rb           # 基底サービス
 ├── task_service.rb          # タスクサービス
 ├── category_service.rb      # カテゴリサービス
+├── milestone_create_service.rb  # マイルストーン作成サービス
+├── milestone_update_service.rb  # マイルストーン更新サービス
 └── notification_service.rb  # 通知サービス
 ```
 
@@ -300,6 +302,81 @@ def search_with_analytics(query, filters = {})
   tasks = Task.for_user(@user_id)  # モデル層の活用
   tasks = apply_advanced_filters(tasks, filters)
   # 処理...
+end
+```
+
+## 💻 実装例（マイルストーンサービス）
+
+### **マイルストーン作成サービス**
+```ruby
+class MilestoneCreateService < BaseService
+  def initialize(account_id:, milestone_params:)
+    @account_id = account_id
+    @milestone_params = milestone_params
+  end
+
+  def call
+    milestone = Milestone.new(milestone_params_with_defaults)
+
+    if milestone.save
+      ServiceResult.success(
+        data: milestone,
+        message: I18n.t('messages.milestone.created', default: 'マイルストーンが正常に作成されました'),
+        status: :created
+      )
+    else
+      ServiceResult.error(
+        errors: milestone.errors.full_messages,
+        status: :unprocessable_entity
+      )
+    end
+  rescue StandardError => e
+    log_error(e, { account_id: @account_id, milestone_params: @milestone_params })
+    ServiceResult.error(
+      errors: [ 'マイルストーンの作成に失敗しました' ],
+      status: :internal_server_error
+    )
+  end
+
+  private
+
+  def milestone_params_with_defaults
+    @milestone_params.merge(
+      account_id: @account_id,
+      status: @milestone_params[:status] || 'planning'
+    )
+  end
+end
+```
+
+### **マイルストーン更新サービス**
+```ruby
+class MilestoneUpdateService < BaseService
+  def initialize(milestone:, milestone_params:)
+    @milestone = milestone
+    @milestone_params = milestone_params
+  end
+
+  def call
+    if @milestone.update(@milestone_params)
+      ServiceResult.success(
+        data: @milestone,
+        message: I18n.t('messages.milestone.updated', default: 'マイルストーンが正常に更新されました'),
+        status: :ok
+      )
+    else
+      ServiceResult.error(
+        errors: @milestone.errors.full_messages,
+        status: :unprocessable_entity
+      )
+    end
+  rescue StandardError => e
+    log_error(e, { milestone_id: @milestone.id, milestone_params: @milestone_params })
+    ServiceResult.error(
+      errors: [ 'マイルストーンの更新に失敗しました' ],
+      status: :internal_server_error
+    )
+  end
 end
 ```
 

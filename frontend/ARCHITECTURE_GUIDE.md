@@ -413,12 +413,16 @@ src/
 ├── pages/                         # ルーティング専用（薄いレイヤー）
 │   ├── TasksPage.tsx             # TaskListContainerを配置するだけ
 │   ├── CategoriesPage.tsx
+│   ├── RoutineTasksPage.tsx
+│   ├── MilestonesPage.tsx
 │   └── index.ts
 │
 ├── types/                         # グローバルドメイン型
 │   ├── index.ts                  # 全型の再エクスポート
 │   ├── task.ts                   # Task, TaskStatus, TaskPriority
 │   ├── category.ts               # Category
+│   ├── routineTask.ts           # RoutineTask, RoutineTaskFrequency
+│   ├── milestone.ts             # Milestone, MilestoneStatus
 │   ├── user.ts                   # User, Account
 │   └── api.ts                    # ApiResponse<T>, ApiError
 │
