@@ -41,6 +41,11 @@ class RoutineTaskAchievementService < BaseService
     )
   end
 
+  # API層からの呼び出し用エイリアス
+  def calculate
+    call
+  end
+
   private
 
   def validate_period!

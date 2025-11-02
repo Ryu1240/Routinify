@@ -438,6 +438,67 @@ components:
           nullable: true
           description: ジョブ完了日時
 
+    AchievementStats:
+      type: object
+      description: 習慣化タスクの達成状況統計
+      properties:
+        totalCount:
+          type: integer
+          description: 期間内の総タスク数
+          example: 10
+        completedCount:
+          type: integer
+          description: 完了したタスク数
+          example: 7
+        incompleteCount:
+          type: integer
+          description: 未完了のタスク数
+          example: 3
+        overdueCount:
+          type: integer
+          description: 期限超過のタスク数
+          example: 2
+        achievementRate:
+          type: number
+          format: float
+          description: 達成率（0.0-100.0）
+          example: 70.0
+        period:
+          type: string
+          enum: [weekly, monthly, custom]
+          description: 集計期間の種類
+          example: "weekly"
+        startDate:
+          type: string
+          format: date
+          description: 集計開始日
+          example: "2025-01-06"
+        endDate:
+          type: string
+          format: date
+          description: 集計終了日
+          example: "2025-01-12"
+        consecutivePeriodsCount:
+          type: integer
+          description: 連続達成期間数（週次/月次のみ。カスタム期間の場合は0）
+          example: 3
+        averageCompletionDays:
+          type: number
+          format: float
+          description: 平均完了日数
+          example: 1.5
+      required:
+        - totalCount
+        - completedCount
+        - incompleteCount
+        - overdueCount
+        - achievementRate
+        - period
+        - startDate
+        - endDate
+        - consecutivePeriodsCount
+        - averageCompletionDays
+
     # HabitStatus:
     #   type: object
     #   properties:
@@ -1125,6 +1186,113 @@ paths:
                     items:
                       type: string
                     example: ["ジョブが見つかりません"]
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /routine-tasks/{id}/achievement-stats:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: 習慣化タスクID
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [weekly, monthly, custom]
+          default: weekly
+        description: 集計期間の種類（weekly: 週次、monthly: 月次、custom: 特定期間）
+      - name: start_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 集計開始日（periodがcustomの場合必須）
+        example: "2025-01-06"
+      - name: end_date
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+        description: 集計終了日（periodがcustomの場合必須）
+        example: "2025-01-12"
+    get:
+      tags:
+        - 習慣化タスク
+      summary: 習慣化タスクの達成状況取得
+      description: |
+        指定された習慣化タスクの達成状況を取得します。
+        - period: weekly（週次）、monthly（月次）、custom（特定期間）のいずれかを指定
+        - periodがcustomの場合、start_dateとend_dateが必須です
+        - start_dateはend_dateより前である必要があります
+      security:
+        - Auth0:
+            - read:routine-tasks
+      responses:
+        '200':
+          description: 達成状況の取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/AchievementStats'
+              example:
+                success: true
+                data:
+                  totalCount: 10
+                  completedCount: 7
+                  incompleteCount: 3
+                  overdueCount: 2
+                  achievementRate: 70.0
+                  period: "weekly"
+                  startDate: "2025-01-06"
+                  endDate: "2025-01-12"
+                  consecutivePeriodsCount: 3
+                  averageCompletionDays: 1.5
+        '400':
+          description: バリデーションエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["periodはweekly、monthly、customのいずれかである必要があります"]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          description: 習慣化タスクが見つからない
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["習慣化タスクが見つかりません"]
         '500':
           $ref: '#/components/responses/InternalServerError'
 
