@@ -840,7 +840,7 @@ achievement_monthly_rt = RoutineTask.find_or_create_by(
   rt.start_generation_at = 3.months.ago
   rt.next_generation_at = 1.day.ago
   rt.last_generated_at = 1.day.ago
-  rt.max_active_tasks = 10
+  rt.max_active_tasks = 20
   rt.category_id = categories_map['仕事']&.id
   rt.priority = 'medium'
   rt.is_active = true
@@ -849,12 +849,12 @@ achievement_monthly_rt = RoutineTask.find_or_create_by(
 end
 puts "RoutineTask created/updated: #{achievement_monthly_rt.title} (ID: #{achievement_monthly_rt.id})"
 
-# 過去2ヶ月分のタスクを生成（各月10タスク、75%完了 = 8タスク完了、2タスク未完了）
+# 過去2ヶ月分のタスクを生成（各月20タスク、75%完了 = 15タスク完了、5タスク未完了）
 2.times do |month_offset|
   month_start = Date.current.beginning_of_month - month_offset.months
   
-  # 月ごとに10タスクを生成
-  10.times do |day_offset|
+  # 月ごとに20タスクを生成（75% = 15個完了、5個未完了）
+  20.times do |day_offset|
     generated_at = month_start + day_offset.days
     due_date = generated_at + 3.days
     
@@ -873,8 +873,8 @@ puts "RoutineTask created/updated: #{achievement_monthly_rt.title} (ID: #{achiev
       t.status = 'pending'
     end
     
-    # 75%の達成率にするため、8つ目まで完了にする（10個中8個 = 80%）
-    if day_offset < 8
+    # 75%の達成率にするため、15個目まで完了にする（20個中15個 = 75%）
+    if day_offset < 15
       task.update!(status: 'completed', updated_at: generated_at + 1.day)
     end
   end
@@ -987,7 +987,7 @@ puts '    → 達成率: 0% (データなし)'
 puts "  - #{achievement_consecutive_rt.title} (ID: #{achievement_consecutive_rt.id})"
 puts '    → 達成率: 100% (良好)、連続5週間達成'
 puts "  - #{achievement_monthly_rt.title} (ID: #{achievement_monthly_rt.id})"
-puts '    → 達成率: 80% (良好)、月次データ'
+puts '    → 達成率: 75% (要改善)、月次データ'
 puts "  - #{achievement_overdue_rt.title} (ID: #{achievement_overdue_rt.id})"
 puts '    → 達成率: 50% (要改善)、期限切れタスクあり'
 puts "  - #{achievement_consecutive_monthly_rt.title} (ID: #{achievement_consecutive_monthly_rt.id})"
