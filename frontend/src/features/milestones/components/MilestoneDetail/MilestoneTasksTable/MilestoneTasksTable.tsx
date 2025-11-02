@@ -182,7 +182,6 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
                       onSave={handleSave}
                       onCancel={handleCancel}
                     />
-                    {onDissociateTask && <Table.Td></Table.Td>}
                   </>
                 ) : (
                   <>
