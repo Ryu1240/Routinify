@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { AchievementDetail } from './AchievementDetail';
 import { useAchievementStats } from '../../hooks/useAchievementStats';
 import { PeriodType } from '../PeriodSelector';
@@ -8,6 +8,7 @@ import { RoutineTask } from '@/types';
 
 export const AchievementDetailContainer: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const routineTaskId = id ? Number(id) : 0;
 
   // デフォルトの特定期間: 現在の日付から2週間前の期間
@@ -175,6 +176,10 @@ export const AchievementDetailContainer: React.FC = () => {
     );
   }
 
+  const handleBack = () => {
+    navigate('/achievements');
+  };
+
   return (
     <AchievementDetail
       routineTaskTitle={routineTask.title}
@@ -182,6 +187,7 @@ export const AchievementDetailContainer: React.FC = () => {
       stats={stats}
       isLoading={statsLoading}
       error={statsError}
+      onBack={handleBack}
       period={period}
       onPeriodChange={setPeriod}
       weeklyOffset={weeklyOffset}

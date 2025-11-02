@@ -8,10 +8,13 @@ import {
   Group,
   Badge,
   Divider,
+  ActionIcon,
 } from '@mantine/core';
+import { IconArrowLeft } from '@tabler/icons-react';
 import { AchievementProgressBar } from '../AchievementProgressBar';
 import { PeriodSelector, PeriodType } from '../PeriodSelector';
 import { AchievementStats } from '@/types/achievement';
+import { COLORS } from '@/shared/constants/colors';
 
 export interface AchievementDetailProps {
   routineTaskTitle: string;
@@ -19,6 +22,7 @@ export interface AchievementDetailProps {
   stats: AchievementStats | null;
   isLoading: boolean;
   error: string | null;
+  onBack: () => void;
   // 期間選択関連
   period: PeriodType;
   onPeriodChange: (period: PeriodType) => void;
@@ -40,6 +44,7 @@ export const AchievementDetail: React.FC<AchievementDetailProps> = ({
   stats,
   isLoading,
   error,
+  onBack,
   period,
   onPeriodChange,
   weeklyOffset,
@@ -86,16 +91,25 @@ export const AchievementDetail: React.FC<AchievementDetailProps> = ({
     <Box p="md">
       <Stack gap="md">
         {/* ヘッダー */}
-        <Box>
-          <Title order={2} mb="xs">
-            習慣化状況 &gt; {routineTaskTitle}
-          </Title>
-          {routineTaskCategoryName && (
-            <Text size="sm" c="dimmed">
-              カテゴリ: {routineTaskCategoryName}
-            </Text>
-          )}
-        </Box>
+        <Group mb="xs">
+          <ActionIcon
+            variant="subtle"
+            color={COLORS.PRIMARY}
+            onClick={onBack}
+          >
+            <IconArrowLeft size={20} />
+          </ActionIcon>
+          <Box style={{ flex: 1 }}>
+            <Title order={2} mb="xs">
+              習慣化状況 &gt; {routineTaskTitle}
+            </Title>
+            {routineTaskCategoryName && (
+              <Text size="sm" c="dimmed">
+                カテゴリ: {routineTaskCategoryName}
+              </Text>
+            )}
+          </Box>
+        </Group>
 
         {/* 期間選択タブ */}
         <PeriodSelector
