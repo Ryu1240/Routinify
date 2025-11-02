@@ -60,6 +60,7 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
   const handleDissociate = (taskId: number) => {
     if (window.confirm('このタスクの関連付けを解除してもよろしいですか？')) {
       onDissociateTask?.([taskId]);
+      setSelectedTaskIds((prev) => prev.filter((id) => id !== taskId));
     }
   };
 
