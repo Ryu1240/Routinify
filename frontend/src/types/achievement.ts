@@ -1,6 +1,6 @@
 // 達成状況関連の型定義
 
-export interface AchievementStats {
+export type AchievementStats = {
   totalCount: number;
   completedCount: number;
   incompleteCount: number;
@@ -11,18 +11,18 @@ export interface AchievementStats {
   endDate: string;
   consecutivePeriodsCount: number;
   averageCompletionDays: number;
-}
+};
 
-export interface RoutineTaskWithStats {
+export type RoutineTaskWithStats = {
   id: number;
   title: string;
   categoryName?: string | null;
   achievementStats: AchievementStats;
-}
+};
 
-export interface AchievementTrendData {
+export type AchievementTrendData = {
   period: string;
   achievementRate: number;
   totalCount: number;
   completedCount: number;
-}
+};
