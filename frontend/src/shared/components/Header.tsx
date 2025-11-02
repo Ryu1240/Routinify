@@ -9,8 +9,7 @@ import {
   Image,
   Loader,
 } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { IconLogout, IconRefresh, IconCheck } from '@tabler/icons-react';
+import { IconLogout, IconRefresh } from '@tabler/icons-react';
 import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
 import { useBatchTaskGeneration } from '@/features/routineTasks/hooks/useBatchTaskGeneration';
 
@@ -24,7 +23,6 @@ const Header: React.FC = () => {
     error,
     reset,
   } = useBatchTaskGeneration();
-  const hasShownCompletionNotificationRef = useRef(false);
   const resetTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // 完了状態から5秒後に自動的にリセット（一度だけ実行）
@@ -32,7 +30,6 @@ const Header: React.FC = () => {
     if (state === 'completed' && resetTimerRef.current === null) {
       resetTimerRef.current = setTimeout(() => {
         reset();
-        hasShownCompletionNotificationRef.current = false;
         resetTimerRef.current = null;
       }, 5000);
     }
@@ -52,39 +49,11 @@ const Header: React.FC = () => {
         clearTimeout(resetTimerRef.current);
         resetTimerRef.current = null;
       }
-      hasShownCompletionNotificationRef.current = false;
     }
   }, [state]);
 
   const handleBatchGenerate = async () => {
-    hasShownCompletionNotificationRef.current = false;
-
-    await generateAllActiveTasks(
-      // 全てのタスク生成完了時のコールバック
-      () => {
-        // 一度だけ完了通知を表示
-        // totalCountは最新のstateから取得するため、累積にならない
-        if (!hasShownCompletionNotificationRef.current) {
-          notifications.show({
-            title: '全てのタスク生成が完了しました',
-            message: `${totalCount}件の習慣化タスクの生成が完了しました`,
-            color: 'green',
-            icon: <IconCheck size={16} />,
-            autoClose: 5000,
-          });
-          hasShownCompletionNotificationRef.current = true;
-        }
-
-        // データベース反映の時間を考慮して少し遅延してからカスタムイベントを発火
-        // これにより、全てのタスクリストコンポーネントが最新データを取得できる
-        // 完了後のリフレッシュなので、静かに実行される（UIのチラつきを防ぐ）
-        setTimeout(() => {
-          window.dispatchEvent(
-            new CustomEvent('tasks-refresh', { detail: { silent: true } })
-          );
-        }, 1000);
-      }
-    );
+    await generateAllActiveTasks();
   };
 
   const isGenerating = state === 'generating';
