@@ -115,20 +115,21 @@ module Api
             return
           end
 
-          # 既に関連付けられているタスクを除外
-          existing_task_ids = milestone.tasks.where(id: task_ids).pluck(:id)
-          new_task_ids = task_ids - existing_task_ids
-
-          if new_task_ids.empty?
+          # モデルで重複チェック
+          if milestone.all_tasks_already_associated?(task_ids)
             render_error(errors: [ 'すべてのタスクは既にマイルストーンに関連付けられています' ], status: :unprocessable_entity)
             return
           end
 
-          # 新しいタスクを関連付け（重複を避けるため、個別に追加）
+          # 新しいタスクのみを関連付け
+          new_task_ids = milestone.not_associated_task_ids(task_ids)
           new_tasks = tasks.where(id: new_task_ids)
+          associated_count = 0
+
           new_tasks.each do |task|
             begin
               milestone.tasks << task unless milestone.tasks.exists?(task.id)
+              associated_count += 1
             rescue ActiveRecord::RecordNotUnique
               # 既に関連付けられている場合はスキップ
               next
@@ -137,7 +138,7 @@ module Api
 
           render_success(
             data: MilestoneSerializer.new(milestone.reload).as_json,
-            message: "#{new_task_ids.count}件のタスクをマイルストーンに関連付けました",
+            message: "#{associated_count}件のタスクをマイルストーンに関連付けました",
             status: :ok
           )
         end
@@ -174,21 +175,21 @@ module Api
             return
           end
 
-          # 関連付けられているタスクのみを取得
-          associated_tasks = milestone.tasks.where(id: task_ids)
-          associated_count = associated_tasks.count
+          # モデルで関連付けチェック
+          associated_task_ids = milestone.associated_task_ids(task_ids)
 
-          if associated_tasks.empty?
+          if associated_task_ids.empty?
             render_error(errors: [ 'すべてのタスクはマイルストーンに関連付けられていません' ], status: :unprocessable_entity)
             return
           end
 
           # タスクの関連付けを解除
+          associated_tasks = tasks.where(id: associated_task_ids)
           milestone.tasks.delete(associated_tasks)
 
           render_success(
             data: MilestoneSerializer.new(milestone.reload).as_json,
-            message: "#{associated_count}件のタスクの関連付けを解除しました",
+            message: "#{associated_tasks.count}件のタスクの関連付けを解除しました",
             status: :ok
           )
         end

@@ -70,6 +70,31 @@ class Milestone < ApplicationRecord
     (completed_tasks_count.to_f / total_tasks_count * 100).round
   end
 
+  # 指定されたタスクIDのうち、既に関連付けられているタスクIDを返す
+  def already_associated_task_ids(task_ids)
+    tasks.where(id: task_ids).pluck(:id)
+  end
+
+  # 指定されたタスクIDのうち、関連付けられていないタスクIDを返す
+  def not_associated_task_ids(task_ids)
+    task_ids - already_associated_task_ids(task_ids)
+  end
+
+  # 指定されたタスクIDがすべて既に関連付けられているかチェック
+  def all_tasks_already_associated?(task_ids)
+    task_ids.present? && already_associated_task_ids(task_ids).size == task_ids.size
+  end
+
+  # 指定されたタスクIDがすべて関連付けられていないかチェック
+  def all_tasks_not_associated?(task_ids)
+    task_ids.present? && already_associated_task_ids(task_ids).empty?
+  end
+
+  # 指定されたタスクIDのうち、関連付けられているタスクIDを返す（dissociate用）
+  def associated_task_ids(task_ids)
+    already_associated_task_ids(task_ids)
+  end
+
   private
 
   def set_completed_at
