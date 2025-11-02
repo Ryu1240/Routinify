@@ -508,24 +508,24 @@ components:
           format: date
           description: 期間の開始日（週次の場合: 月曜日、月次の場合: 1日）
           example: "2025-01-06"
-        achievement_rate:
+        achievementRate:
           type: number
           format: float
           description: 達成率（0.0-100.0）
           example: 70.0
-        total_count:
+        totalCount:
           type: integer
           description: 期間内の総タスク数
           example: 10
-        completed_count:
+        completedCount:
           type: integer
           description: 完了したタスク数
           example: 7
       required:
         - period
-        - achievement_rate
-        - total_count
-        - completed_count
+        - achievementRate
+        - totalCount
+        - completedCount
 
     # HabitStatus:
     #   type: object
@@ -1391,13 +1391,13 @@ paths:
                 success: true
                 data:
                   - period: "2025-01-06"
-                    achievement_rate: 70.0
-                    total_count: 10
-                    completed_count: 7
+                    achievementRate: 70.0
+                    totalCount: 10
+                    completedCount: 7
                   - period: "2024-12-30"
-                    achievement_rate: 100.0
-                    total_count: 10
-                    completed_count: 10
+                    achievementRate: 100.0
+                    totalCount: 10
+                    completedCount: 10
         '400':
           description: バリデーションエラー
           content:

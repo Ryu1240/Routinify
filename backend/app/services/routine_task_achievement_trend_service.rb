@@ -51,9 +51,9 @@ class RoutineTaskAchievementTrendService < BaseService
       # データを追加（新しい順なので、最新が先頭）
       data << {
         period: period_start.to_s,
-        achievement_rate: achievement_rate,
-        total_count: period_stats[:total_count],
-        completed_count: period_stats[:completed_count]
+        achievementRate: achievement_rate,
+        totalCount: period_stats[:total_count],
+        completedCount: period_stats[:completed_count]
       }
 
       # 前の期間に移動

@@ -142,15 +142,10 @@ export const getAllRoutineTasksWithStats = async (): Promise<
   return Promise.all(statsPromises);
 };
 
-// APIレスポンス型（バックエンドはsnake_caseで返す）
+// APIレスポンス型（バックエンドはcamelCaseで返す）
 type AchievementTrendApiResponse = {
   success: boolean;
-  data: {
-    period: string;
-    achievement_rate: number;
-    total_count: number;
-    completed_count: number;
-  }[];
+  data: AchievementTrendData[];
 };
 
 /**
@@ -180,11 +175,6 @@ export const getAchievementTrend = async (
 
   const response = await axios.get<AchievementTrendApiResponse>(url);
 
-  // バックエンドがsnake_caseで返すため、camelCaseに変換
-  return response.data.data.map((item) => ({
-    period: item.period,
-    achievementRate: item.achievement_rate,
-    totalCount: item.total_count,
-    completedCount: item.completed_count,
-  }));
+  // バックエンドからcamelCaseで返されるため、そのまま使用
+  return response.data.data;
 };
