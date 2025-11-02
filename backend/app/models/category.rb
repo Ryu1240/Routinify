@@ -1,5 +1,5 @@
 class Category < ApplicationRecord
-  has_many :tasks, dependent: :nullify
+  has_many :tasks, -> { active }, dependent: :nullify
   has_many :routine_tasks, dependent: :nullify
 
   validates :name, presence: true, length: { maximum: 255 }

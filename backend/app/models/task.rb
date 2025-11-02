@@ -12,22 +12,20 @@ class Task < ApplicationRecord
   validates :priority, inclusion: { in: %w[low medium high] }, allow_nil: true
   validates :due_date, future_date: { allow_past: true }, allow_nil: true
 
-  # デフォルトスコープ: 削除されていないタスクのみ
-  default_scope { where(deleted_at: nil) }
-
+  scope :active, -> { where(deleted_at: nil) }
   scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }
   scope :overdue, -> { where('due_date < ?', Time.current) }
   scope :due_today, -> { where(due_date: Date.current.beginning_of_day..Date.current.end_of_day) }
-  scope :with_deleted, -> { unscope(where: :deleted_at) }
-  scope :only_deleted, -> { unscope(where: :deleted_at).where.not(deleted_at: nil) }
+  scope :with_deleted, -> { all }
+  scope :only_deleted, -> { where.not(deleted_at: nil) }
 
   def self.for_user(user_id)
-    by_account(user_id)
+    active.by_account(user_id)
   end
 
   def self.search(query)
-    where('title ILIKE ?', "%#{query}%")
+    active.where('title ILIKE ?', "%#{query}%")
   end
 
   def overdue?

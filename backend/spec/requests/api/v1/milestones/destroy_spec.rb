@@ -74,8 +74,8 @@ RSpec.describe 'DELETE /api/v1/milestones/:id', type: :request do
         it 'タスク自体は削除されない' do
           delete "/api/v1/milestones/#{milestone_with_tasks.id}", headers: auth_headers
           expect(response).to have_http_status(:no_content)
-          expect(Task.find_by(id: task1.id)).to be_present
-          expect(Task.find_by(id: task2.id)).to be_present
+          expect(Task.active.find_by(id: task1.id)).to be_present
+          expect(Task.active.find_by(id: task2.id)).to be_present
         end
 
         it 'タスクとマイルストーンの関連付けが削除される' do

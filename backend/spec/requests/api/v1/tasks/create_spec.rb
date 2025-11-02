@@ -27,7 +27,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
       it 'creates a new task' do
         expect do
           post '/api/v1/tasks', params: valid_params, headers: auth_headers
-        end.to change(Task, :count).by(1)
+        end.to change(Task.active, :count).by(1)
       end
 
       it 'returns success message' do
@@ -42,7 +42,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
 
       it 'automatically sets account_id to current user' do
         post '/api/v1/tasks', params: valid_params, headers: auth_headers
-        created_task = Task.last
+        created_task = Task.active.last
         expect(created_task.account_id).to eq(user_id)
       end
 
@@ -56,7 +56,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
-        created_task = Task.last
+        created_task = Task.active.last
         expect(created_task.title).to eq('Minimal Task')
         expect(created_task.account_id).to eq(user_id)
       end
@@ -72,7 +72,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
           json_response = JSON.parse(response.body)
           expect(json_response['message']).to eq('タスクが正常に作成されました')
 
-          created_task = Task.last
+          created_task = Task.active.last
           expect(created_task.status).to eq(status)
         end
       end
@@ -143,7 +143,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
-        created_task = Task.last
+        created_task = Task.active.last
         expect(created_task.title).to eq('a' * 255)
       end
 
@@ -157,7 +157,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
-        created_task = Task.last
+        created_task = Task.active.last
         expect(created_task.title).to eq('タスク (重要) - 緊急対応が必要です！')
       end
 
@@ -171,7 +171,7 @@ RSpec.describe 'POST /api/v1/tasks', type: :request do
         expect(json_response['success']).to be true
         expect(json_response['message']).to eq('タスクが正常に作成されました')
 
-        created_task = Task.last
+        created_task = Task.active.last
         expect(created_task.due_date).to be_nil
       end
     end

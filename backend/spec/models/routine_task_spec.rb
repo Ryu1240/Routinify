@@ -344,7 +344,7 @@ RSpec.describe RoutineTask, type: :model do
 
         routine_task.destroy
 
-        expect(Task.find_by(id: task3_id)).to be_present
+        expect(Task.active.find_by(id: task3_id)).to be_present
       end
     end
   end

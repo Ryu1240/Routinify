@@ -145,7 +145,7 @@ RSpec.describe 'DELETE /api/v1/categories/:id', type: :request do
 
         task.reload
         expect(task.category_id).to be_nil
-        expect(Task.find_by(id: task.id)).not_to be_nil
+        expect(Task.active.find_by(id: task.id)).not_to be_nil
       end
     end
   end

@@ -277,13 +277,13 @@ RSpec.describe Task, type: :model do
     let(:routine_task) { create(:routine_task) }
     let(:routine_task_related_task) { create(:task, routine_task: routine_task, account_id: routine_task.account_id) }
 
-    describe 'デフォルトスコープ' do
+    describe '.active' do
       it '削除されていないタスクのみを返すこと' do
         task1 = create(:task)
         task2 = create(:task)
         task2.update_column(:deleted_at, Time.current)
 
-        expect(Task.all).to contain_exactly(task1)
+        expect(Task.active).to contain_exactly(task1)
       end
     end
 
@@ -312,9 +312,9 @@ RSpec.describe Task, type: :model do
         expect { task.soft_delete }.to change { Task.with_deleted.find(task.id).deleted_at }.from(nil).to(be_present)
       end
 
-      it '削除されたタスクはデフォルトスコープで取得できないこと' do
+      it '削除されたタスクはactiveスコープで取得できないこと' do
         task.soft_delete
-        expect(Task.find_by(id: task.id)).to be_nil
+        expect(Task.active.find_by(id: task.id)).to be_nil
       end
 
       it 'with_deletedスコープで取得できること' do

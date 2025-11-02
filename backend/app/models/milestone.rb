@@ -2,7 +2,7 @@ class Milestone < ApplicationRecord
   include AccountScoped
 
   has_many :milestone_tasks, dependent: :delete_all
-  has_many :tasks, through: :milestone_tasks
+  has_many :tasks, -> { active }, through: :milestone_tasks
 
   validates :name, presence: true, length: { maximum: 255 }
   validates :account_id, presence: true
