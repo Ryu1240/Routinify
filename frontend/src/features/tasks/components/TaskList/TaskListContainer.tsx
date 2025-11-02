@@ -33,15 +33,22 @@ export const TaskListContainer: React.FC = () => {
     createLoading: categoryCreateLoading,
   } = useCategories();
 
-  const { milestones, loading: milestonesLoading, refreshMilestones } = useFetchMilestones();
-  const { associateTask, dissociateTask, associateLoading, dissociateLoading } = useMilestoneMutations(() => {
-    refreshMilestones();
-  });
+  const {
+    milestones,
+    loading: milestonesLoading,
+    refreshMilestones,
+  } = useFetchMilestones();
+  const { associateTask, dissociateTask, associateLoading, dissociateLoading } =
+    useMilestoneMutations(() => {
+      refreshMilestones();
+    });
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<number | null>(null);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
-  const [editingTaskIdForMilestone, setEditingTaskIdForMilestone] = useState<number | null>(null);
+  const [editingTaskIdForMilestone, setEditingTaskIdForMilestone] = useState<
+    number | null
+  >(null);
   const [milestoneChangeLoading, setMilestoneChangeLoading] = useState(false);
 
   // タスクとマイルストーンの紐付けマップを作成（複数マイルストーン対応）
@@ -148,7 +155,6 @@ export const TaskListContainer: React.FC = () => {
     }
   };
 
-
   return (
     <>
       <TaskList
@@ -182,8 +188,12 @@ export const TaskListContainer: React.FC = () => {
           onClose={handleCloseMilestoneModal}
           onAssociate={handleAssociateMilestones}
           onDissociate={handleDissociateMilestones}
-          loading={milestoneChangeLoading || associateLoading || dissociateLoading}
-          currentMilestoneIds={taskMilestoneMap.get(editingTaskIdForMilestone) || []}
+          loading={
+            milestoneChangeLoading || associateLoading || dissociateLoading
+          }
+          currentMilestoneIds={
+            taskMilestoneMap.get(editingTaskIdForMilestone) || []
+          }
           milestones={milestones}
         />
       )}

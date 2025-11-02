@@ -37,8 +37,12 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
 }) => {
   const [filteredMilestones, setFilteredMilestones] = useState<Milestone[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMilestoneIds, setSelectedMilestoneIds] = useState<number[]>([]);
-  const [dissociateMilestoneIds, setDissociateMilestoneIds] = useState<number[]>([]);
+  const [selectedMilestoneIds, setSelectedMilestoneIds] = useState<number[]>(
+    []
+  );
+  const [dissociateMilestoneIds, setDissociateMilestoneIds] = useState<
+    number[]
+  >([]);
 
   useEffect(() => {
     if (opened) {
@@ -76,7 +80,9 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
           : [...prev, milestoneId]
       );
       // 選択リストからも削除
-      setSelectedMilestoneIds((prev) => prev.filter((id) => id !== milestoneId));
+      setSelectedMilestoneIds((prev) =>
+        prev.filter((id) => id !== milestoneId)
+      );
     } else {
       // まだ紐付けられていない場合は選択リストをトグル
       setSelectedMilestoneIds((prev) =>
@@ -85,7 +91,9 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
           : [...prev, milestoneId]
       );
       // 解除リストからも削除
-      setDissociateMilestoneIds((prev) => prev.filter((id) => id !== milestoneId));
+      setDissociateMilestoneIds((prev) =>
+        prev.filter((id) => id !== milestoneId)
+      );
     }
   };
 
@@ -191,9 +199,15 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
               </Table.Thead>
               <Table.Tbody>
                 {filteredMilestones.map((milestone) => {
-                  const isCurrentlyAssociated = currentMilestoneIds.includes(milestone.id);
-                  const isSelected = selectedMilestoneIds.includes(milestone.id);
-                  const isDissociateSelected = dissociateMilestoneIds.includes(milestone.id);
+                  const isCurrentlyAssociated = currentMilestoneIds.includes(
+                    milestone.id
+                  );
+                  const isSelected = selectedMilestoneIds.includes(
+                    milestone.id
+                  );
+                  const isDissociateSelected = dissociateMilestoneIds.includes(
+                    milestone.id
+                  );
 
                   return (
                     <Table.Tr
@@ -204,14 +218,17 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
                           isSelected || isDissociateSelected
                             ? COLORS.LIGHT + '20'
                             : isCurrentlyAssociated
-                            ? COLORS.PRIMARY + '10'
-                            : 'transparent',
+                              ? COLORS.PRIMARY + '10'
+                              : 'transparent',
                       }}
                       onClick={() => handleToggleMilestone(milestone.id)}
                     >
                       <Table.Td>
                         <Checkbox
-                          checked={isSelected || (isCurrentlyAssociated && !isDissociateSelected)}
+                          checked={
+                            isSelected ||
+                            (isCurrentlyAssociated && !isDissociateSelected)
+                          }
                           indeterminate={isDissociateSelected}
                           onChange={() => handleToggleMilestone(milestone.id)}
                           onClick={(e) => e.stopPropagation()}
@@ -234,20 +251,20 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
                             milestone.status === 'completed'
                               ? 'green'
                               : milestone.status === 'cancelled'
-                              ? 'gray'
-                              : milestone.status === 'in_progress'
-                              ? 'blue'
-                              : 'yellow'
+                                ? 'gray'
+                                : milestone.status === 'in_progress'
+                                  ? 'blue'
+                                  : 'yellow'
                           }
                           variant="light"
                         >
                           {milestone.status === 'planning'
                             ? '計画中'
                             : milestone.status === 'in_progress'
-                            ? '進行中'
-                            : milestone.status === 'completed'
-                            ? '完了'
-                            : 'キャンセル'}
+                              ? '進行中'
+                              : milestone.status === 'completed'
+                                ? '完了'
+                                : 'キャンセル'}
                         </Badge>
                       </Table.Td>
                       <Table.Td>
@@ -258,7 +275,8 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
                       <Table.Td>
                         <Text size="sm" c={COLORS.GRAY}>
                           {milestone.progressPercentage}% (
-                          {milestone.completedTasksCount}/{milestone.totalTasksCount})
+                          {milestone.completedTasksCount}/
+                          {milestone.totalTasksCount})
                         </Text>
                       </Table.Td>
                     </Table.Tr>
@@ -287,7 +305,8 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
             }
           >
             保存 (
-            {selectedMilestoneIds.length > 0 && `+${selectedMilestoneIds.length}`}
+            {selectedMilestoneIds.length > 0 &&
+              `+${selectedMilestoneIds.length}`}
             {dissociateMilestoneIds.length > 0 &&
               `${selectedMilestoneIds.length > 0 ? ' / ' : ''}-${dissociateMilestoneIds.length}`}
             )
@@ -297,4 +316,3 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
     </Modal>
   );
 };
-

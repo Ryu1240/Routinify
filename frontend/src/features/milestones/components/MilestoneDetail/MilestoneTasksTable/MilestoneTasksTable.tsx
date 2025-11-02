@@ -198,7 +198,10 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
                       <Text fw={500}>{task.title}</Text>
                     </Table.Td>
                     <Table.Td>
-                      <Badge color={getStatusColor(task.status)} variant="light">
+                      <Badge
+                        color={getStatusColor(task.status)}
+                        variant="light"
+                      >
                         {getStatusLabel(task.status)}
                       </Badge>
                     </Table.Td>

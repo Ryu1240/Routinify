@@ -18,11 +18,9 @@ type MilestoneTaskEditableRowProps = {
   onCancel: () => void;
 };
 
-export const MilestoneTaskEditableRow: React.FC<MilestoneTaskEditableRowProps> = ({
-  task,
-  onSave,
-  onCancel,
-}) => {
+export const MilestoneTaskEditableRow: React.FC<
+  MilestoneTaskEditableRowProps
+> = ({ task, onSave, onCancel }) => {
   const [formData, setFormData] = useState<UpdateTaskDto>({
     title: task.title,
     dueDate: task.dueDate || null,
@@ -156,4 +154,3 @@ export const MilestoneTaskEditableRow: React.FC<MilestoneTaskEditableRowProps> =
     </>
   );
 };
-
