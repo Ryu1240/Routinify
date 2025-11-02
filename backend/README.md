@@ -315,6 +315,36 @@ bundle exec rspec --parallel
 - **OpenAPI仕様**: `../api/openapi.yaml`（ルートディレクトリからの相対パス）
 - **Swagger UI**: http://localhost:8080（開発環境）
 
+#### データ形式の規約
+
+**重要**: バックエンドは、フロントエンド側に**キャメルケース（camelCase）**の状態でデータを返すことが必須です。
+
+- **データベース**: snake_case（`account_id`, `due_date`, `created_at`など）
+- **Rubyコード**: snake_case（変数名、メソッド名など）
+- **APIレスポンス**: camelCase（`accountId`, `dueDate`, `createdAt`など）
+
+この変換は**シリアライザー層**で実施します。
+
+**レスポンス例**:
+```json
+{
+  "data": {
+    "id": 1,
+    "accountId": "user-123",
+    "title": "タスクタイトル",
+    "dueDate": "2024-01-15T00:00:00.000Z",
+    "status": "未着手",
+    "priority": "medium",
+    "categoryId": 1,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  "message": "タスクが正常に作成されました"
+}
+```
+
+詳細は[コーディング規約](CODING_STANDARDS.md#レスポンス形式)を参照してください。
+
 #### 主要なAPIエンドポイント
 
 **タスク管理**
