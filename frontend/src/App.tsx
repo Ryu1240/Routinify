@@ -18,6 +18,7 @@ import {
   AchievementListPage,
   AchievementDetailPage,
 } from './pages/achievements';
+import { AccountManagementPage } from './pages/admin';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -123,6 +124,14 @@ const AppContent: React.FC = () => {
         element={
           <ProtectedRoute>
             <AchievementDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/accounts"
+        element={
+          <ProtectedRoute>
+            <AccountManagementPage />
           </ProtectedRoute>
         }
       />
