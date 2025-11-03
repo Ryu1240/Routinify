@@ -23,8 +23,8 @@ tags:
     description: マイルストーンの管理
   # - name: 習慣化
   #   description: 習慣化状況の管理
-  # - name: ユーザー管理
-  #   description: ユーザー管理（管理者用）
+  - name: ユーザー管理
+    description: ユーザー管理（管理者用）
 
 components:
   securitySchemes:
@@ -46,6 +46,8 @@ components:
             read:milestones: マイルストーンの読み取り
             write:milestones: マイルストーンの作成・更新
             delete:milestones: マイルストーンの削除
+            read:users: ユーザーの読み取り
+            delete:users: ユーザーの削除
 
   responses:
     Unauthorized:
@@ -617,6 +619,66 @@ components:
         - completedTasksCount
         - createdAt
         - updatedAt
+
+    User:
+      type: object
+      description: ユーザー情報（管理者用）
+      properties:
+        sub:
+          type: string
+          description: ユーザーID（Auth0）
+          example: "auth0|123456789"
+        name:
+          type: string
+          description: ユーザー名
+          example: "John Doe"
+          nullable: true
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+          example: "user@example.com"
+          nullable: true
+        picture:
+          type: string
+          format: uri
+          description: プロフィール画像URL
+          example: "https://example.com/pic.jpg"
+          nullable: true
+        nickname:
+          type: string
+          description: ニックネーム
+          example: "john"
+          nullable: true
+        emailVerified:
+          type: boolean
+          description: メール認証済みかどうか
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+          example: "2024-01-01T00:00:00.000Z"
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+          example: "2024-01-02T00:00:00.000Z"
+          nullable: true
+        lastLogin:
+          type: string
+          format: date-time
+          description: 最終ログイン日時
+          example: "2024-01-15T00:00:00.000Z"
+          nullable: true
+        loginsCount:
+          type: integer
+          description: ログイン回数
+          example: 10
+          nullable: true
+      required:
+        - sub
 
     MilestoneCreate:
       type: object
@@ -2056,78 +2118,164 @@ paths:
   #       '201':
   #         description: 記録成功
 
-  # /users:
-  #   get:
-  #     tags:
-  #       - ユーザー管理
-  #     summary: ユーザーの一覧取得（管理者権限必要）
-  #     security:
-  #       - Auth0: [read:users]
-  #     responses:
-  #       '200':
-  #         description: 成功
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: array
-  #               items:
-  #                 $ref: '#/components/schemas/User'
-  #   post:
-  #     tags:
-  #       - ユーザー管理
-  #     summary: 新しいユーザーの登録（管理者権限必要）
-  #     security:
-  #       - Auth0: [write:users]
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/User'
-  #     responses:
-  #       '201':
-  #         description: 作成成功
+  /admin/users:
+    get:
+      tags:
+        - ユーザー管理
+      summary: ユーザー一覧の取得（管理者権限必要）
+      description: |
+        ユーザーリストを取得します。
+        ページネーション、検索、ソートに対応しています。
+      security:
+        - Auth0:
+            - read:users
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: ページ番号（0から始まる）
+        - name: per_page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+          description: 1ページあたりの件数
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+          description: "検索クエリ（例: email:\"user@example.com\"）"
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+          description: ソートフィールド
+        - name: order
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+          description: ソート順
+      responses:
+        '200':
+          description: ユーザー一覧の取得に成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      users:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/User'
+                      total:
+                        type: integer
+                        description: 総件数
+                        example: 100
+                      start:
+                        type: integer
+                        description: 開始位置
+                        example: 0
+                      limit:
+                        type: integer
+                        description: 取得件数
+                        example: 50
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
-  # /users/{id}:
-  #   parameters:
-  #     - name: id
-  #       in: path
-  #       required: true
-  #       schema:
-  #         type: integer
-  #   get:
-  #     tags:
-  #       - ユーザー管理
-  #     summary: 特定のユーザーの詳細表示（管理者権限必要）
-  #     security:
-  #       - Auth0: [read:users]
-  #     responses:
-  #       '200':
-  #         description: 成功
-  #   put:
-  #     tags:
-  #       - ユーザー管理
-  #     summary: ユーザー情報の編集（管理者権限必要）
-  #     security:
-  #       - Auth0: [write:users]
-  #     requestBody:
-  #       required: true
-  #       content:
-  #         application/json:
-  #           schema:
-  #             $ref: '#/components/schemas/User'
-  #     responses:
-  #       '200':
-  #         description: 更新成功
-  #   delete:
-  #     tags:
-  #       - ユーザー管理
-  #     summary: ユーザーの削除（管理者権限必要）
-  #     security:
-  #       - Auth0: [delete:users]
-  #     responses:
-  #       '204':
-  #         description: 削除成功
+  /admin/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ユーザーID（Auth0のsub）
+        example: "auth0|123456789"
+    delete:
+      tags:
+        - ユーザー管理
+      summary: ユーザーの削除（管理者権限必要）
+      description: |
+        ユーザーを削除します。
+        自分自身のアカウントは削除できません。
+      security:
+        - Auth0:
+            - delete:users
+      responses:
+        '204':
+          description: 削除成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "アカウントが正常に削除されました"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: 権限エラーまたは自分自身の削除試行
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["自分自身のアカウントは削除できません"]
+                  message:
+                    type: string
+                    example: "自分自身のアカウントは削除できません"
+        '422':
+          description: 削除失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["アカウントの削除に失敗しました"]
+                  message:
+                    type: string
+                    example: "アカウントの削除に失敗しました"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   # /tasks/{id}/priority:
   #   parameters:
