@@ -26,15 +26,19 @@ export const useAdminUsers = (initialParams?: UserListParams) => {
         setHasPermission(true);
       } catch (err) {
         console.error('ユーザーリストの取得に失敗しました:', err);
-        
+
         // 403エラーの場合、権限がないと判定
         if (axios.isAxiosError(err) && err.response?.status === 403) {
-          setError('権限がありません。このページにアクセスするには管理者権限が必要です。');
+          setError(
+            '権限がありません。このページにアクセスするには管理者権限が必要です。'
+          );
           setHasPermission(false);
           setUsers([]);
           setTotal(0);
         } else {
-          setError('ユーザーリストの取得に失敗しました。しばらく時間をおいて再度お試しください。');
+          setError(
+            'ユーザーリストの取得に失敗しました。しばらく時間をおいて再度お試しください。'
+          );
         }
       } finally {
         setLoading(false);
@@ -43,19 +47,23 @@ export const useAdminUsers = (initialParams?: UserListParams) => {
     [params, hasPermission]
   );
 
-  const deleteUser = useCallback(async (userId: string) => {
-    try {
-      setError(null);
-      await adminUserApi.delete(userId);
-      // 削除後、リストを更新
-      await fetchUsers();
-    } catch (err) {
-      console.error('ユーザーの削除に失敗しました:', err);
-      const errorMessage = 'ユーザーの削除に失敗しました。しばらく時間をおいて再度お試しください。';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [fetchUsers]);
+  const deleteUser = useCallback(
+    async (userId: string) => {
+      try {
+        setError(null);
+        await adminUserApi.delete(userId);
+        // 削除後、リストを更新
+        await fetchUsers();
+      } catch (err) {
+        console.error('ユーザーの削除に失敗しました:', err);
+        const errorMessage =
+          'ユーザーの削除に失敗しました。しばらく時間をおいて再度お試しください。';
+        setError(errorMessage);
+        throw err;
+      }
+    },
+    [fetchUsers]
+  );
 
   useEffect(() => {
     fetchUsers();
@@ -72,4 +80,3 @@ export const useAdminUsers = (initialParams?: UserListParams) => {
     deleteUser,
   };
 };
-

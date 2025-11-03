@@ -72,20 +72,20 @@ const Sidebar: React.FC = () => {
       }}
     >
       {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            label={item.label}
-            description={item.description}
-            leftSection={item.icon}
-            active={location.pathname.startsWith(item.path)}
-            onClick={() => navigate(item.path)}
-            variant="filled"
-            style={{
-              borderRadius: 'var(--mantine-radius-sm)',
-              marginBottom: 'var(--mantine-spacing-xs)',
-            }}
-          />
-        ))}
+        <NavLink
+          key={item.path}
+          label={item.label}
+          description={item.description}
+          leftSection={item.icon}
+          active={location.pathname.startsWith(item.path)}
+          onClick={() => navigate(item.path)}
+          variant="filled"
+          style={{
+            borderRadius: 'var(--mantine-radius-sm)',
+            marginBottom: 'var(--mantine-spacing-xs)',
+          }}
+        />
+      ))}
     </Box>
   );
 };

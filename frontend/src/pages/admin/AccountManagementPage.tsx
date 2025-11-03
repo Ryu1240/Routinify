@@ -11,4 +11,3 @@ const AccountManagementPage: React.FC = () => {
 };
 
 export default AccountManagementPage;
-

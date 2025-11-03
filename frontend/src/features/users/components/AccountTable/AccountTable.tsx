@@ -38,11 +38,14 @@ export const AccountTable: React.FC<AccountTableProps> = ({
       <DataTable.Tbody emptyMessage="ユーザーがありません" colSpan={7}>
         {users.map((user) => (
           <DataTable.Tr key={user.sub}>
-            <AccountTableRow user={user} onDelete={onDelete} loading={loading} />
+            <AccountTableRow
+              user={user}
+              onDelete={onDelete}
+              loading={loading}
+            />
           </DataTable.Tr>
         ))}
       </DataTable.Tbody>
     </DataTable>
   );
 };
-

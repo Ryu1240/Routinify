@@ -61,4 +61,3 @@ export const AccountTableRow: React.FC<AccountTableRowProps> = ({
     </>
   );
 };
-

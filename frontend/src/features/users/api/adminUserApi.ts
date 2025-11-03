@@ -74,4 +74,3 @@ export const adminUserApi = {
     await axios.delete(`/api/v1/admin/users/${userId}`);
   },
 };
-

@@ -110,4 +110,3 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
     </Container>
   );
 };
-

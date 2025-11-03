@@ -9,17 +9,10 @@ export const AccountManagementPageContainer: React.FC = () => {
   );
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const {
-    users,
-    loading,
-    error,
-    total,
-    params,
-    setParams,
-    deleteUser,
-  } = useAdminUsers({
-    perPage: 50,
-  });
+  const { users, loading, error, total, params, setParams, deleteUser } =
+    useAdminUsers({
+      perPage: 50,
+    });
 
   const handleSearch = useCallback(() => {
     setParams({
@@ -74,4 +67,3 @@ export const AccountManagementPageContainer: React.FC = () => {
     />
   );
 };
-
