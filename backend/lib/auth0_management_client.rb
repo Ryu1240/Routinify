@@ -53,16 +53,53 @@ class Auth0ManagementClient
     JSON.parse(response.body)
   end
 
-  # Delete a user
-  def self.delete_user(user_id)
+  # Get a single user by ID
+  def self.get_user(user_id)
     token = access_token
 
-    response = HTTParty.delete(
-      "#{management_api_url}/users/#{user_id}",
+    # ユーザーIDをURLエンコード（|などの特殊文字に対応）
+    encoded_user_id = URI.encode_www_form_component(user_id)
+
+    response = HTTParty.get(
+      "#{management_api_url}/users/#{encoded_user_id}",
       headers: { 'Authorization' => "Bearer #{token}" }
     )
 
-    response.success?
+    return nil if response.code == 404
+    raise "Failed to get user: #{response.body}" unless response.success?
+
+    JSON.parse(response.body)
+  end
+
+  # Delete a user
+  # Returns:
+  #   true - 削除成功
+  #   false - 削除失敗（404以外のエラー）
+  #   :not_found - ユーザーが見つからない
+  def self.delete_user(user_id)
+    token = access_token
+
+    # ユーザーIDをURLエンコード（|などの特殊文字に対応）
+    encoded_user_id = URI.encode_www_form_component(user_id)
+
+    response = HTTParty.delete(
+      "#{management_api_url}/users/#{encoded_user_id}",
+      headers: { 'Authorization' => "Bearer #{token}" }
+    )
+
+    # 404 Not Found: ユーザーが見つからない
+    return :not_found if response.code == 404
+
+    # 204 No Content または 2xx の場合は成功
+    # Auth0 Management APIは削除成功時に204を返すことが多い
+    # 注: Auth0 Management APIは存在しないユーザーを削除しようとした場合も204を返す場合がある（冪等性）
+    return true if response.code == 204
+    return true if response.success?
+
+    # その他の失敗の場合はログを出力
+    Rails.logger.error "Failed to delete user: #{response.code} - #{response.body}" if defined?(Rails)
+
+    false
   end
 
   private
@@ -95,4 +132,3 @@ class Auth0ManagementClient
     query_params.map { |k, v| "#{k}=#{URI.encode_www_form_component(v.to_s)}" }.join('&')
   end
 end
-
