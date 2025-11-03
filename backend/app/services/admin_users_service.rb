@@ -9,11 +9,11 @@ class AdminUsersService < BaseService
     # Auth0 Management APIのレスポンス形式に応じてデータを取得
     users = if users_response.is_a?(Hash) && users_response['users']
               users_response['users']
-            elsif users_response.is_a?(Array)
+    elsif users_response.is_a?(Array)
               users_response
-            else
+    else
               []
-            end
+    end
 
     total = users_response.is_a?(Hash) ? users_response['total'] : nil
     start = users_response.is_a?(Hash) ? users_response['start'] : nil
@@ -91,4 +91,3 @@ class AdminUsersService < BaseService
     )
   end
 end
-

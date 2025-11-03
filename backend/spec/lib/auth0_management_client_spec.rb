@@ -261,6 +261,125 @@ RSpec.describe Auth0ManagementClient, type: :lib do
     end
   end
 
+  describe '.get_user_roles' do
+    let(:user_id) { 'auth0|123' }
+
+    before do
+      allow(described_class).to receive(:access_token).and_return(access_token)
+    end
+
+    context '正常系' do
+      it 'ロール情報を取得できること' do
+        roles_response_body = [
+          { 'name' => 'admin', 'id' => 'role1' },
+          { 'name' => 'user', 'id' => 'role2' }
+        ]
+
+        roles_response = double(
+          code: 200,
+          success?: true,
+          body: roles_response_body.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}/roles",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(roles_response)
+
+        result = described_class.get_user_roles(user_id)
+        expect(result).to eq([ 'admin', 'user' ])
+      end
+    end
+
+    context '異常系' do
+      it 'ユーザーが見つからない場合は空配列を返すこと' do
+        not_found_response = double(
+          code: 404,
+          success?: false,
+          body: { error: 'Not Found' }.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}/roles",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(not_found_response)
+
+        expect(Rails.logger).to receive(:error).with(/Failed to fetch user roles/) if defined?(Rails)
+
+        result = described_class.get_user_roles(user_id)
+        expect(result).to eq([])
+      end
+
+      it 'Management API呼び出し失敗時は空配列を返すこと' do
+        error_response = double(
+          code: 500,
+          success?: false,
+          body: { error: 'Internal Server Error' }.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}/roles",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(error_response)
+
+        expect(Rails.logger).to receive(:error).with(/Failed to fetch user roles/) if defined?(Rails)
+
+        result = described_class.get_user_roles(user_id)
+        expect(result).to eq([])
+      end
+
+      it 'ネットワークエラーが発生した場合は空配列を返すこと' do
+        expect(HTTParty).to receive(:get).and_raise(SocketError.new('Network error'))
+
+        expect(Rails.logger).to receive(:error).with(/Error fetching user roles/) if defined?(Rails)
+
+        result = described_class.get_user_roles(user_id)
+        expect(result).to eq([])
+      end
+
+      it 'JSON解析エラーが発生した場合は空配列を返すこと' do
+        error_response = double(
+          code: 200,
+          success?: true,
+          body: 'invalid json'
+        )
+
+        expect(HTTParty).to receive(:get).and_return(error_response)
+        expect(JSON).to receive(:parse).and_raise(JSON::ParserError.new('unexpected token'))
+
+        expect(Rails.logger).to receive(:error).with(/Error fetching user roles/) if defined?(Rails)
+
+        result = described_class.get_user_roles(user_id)
+        expect(result).to eq([])
+      end
+
+      it '設定エラー（AUTH0_DOMAIN未設定など）は例外を発生させること' do
+        expect(described_class).to receive(:access_token).and_raise('AUTH0_DOMAIN is not set')
+
+        expect { described_class.get_user_roles(user_id) }.to raise_error('AUTH0_DOMAIN is not set')
+      end
+    end
+
+    context '特殊文字を含むユーザーIDの場合' do
+      let(:user_id_with_special_chars) { 'auth0|user@domain|123' }
+
+      it 'URLエンコードされたIDでリクエストすること' do
+        roles_response = double(
+          code: 200,
+          success?: true,
+          body: [].to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id_with_special_chars)}/roles",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(roles_response)
+
+        described_class.get_user_roles(user_id_with_special_chars)
+      end
+    end
+  end
+
   describe '.delete_user' do
     let(:user_id) { 'auth0|123' }
 

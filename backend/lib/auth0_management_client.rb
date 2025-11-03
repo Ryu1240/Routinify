@@ -71,6 +71,39 @@ class Auth0ManagementClient
     JSON.parse(response.body)
   end
 
+  # Get user roles
+  # Returns:
+  #   Array of role names (e.g., ["admin", "user"])
+  #   Empty array if user not found or API call fails
+  def self.get_user_roles(user_id)
+    token = access_token
+
+    # ユーザーIDをURLエンコード（|などの特殊文字に対応）
+    encoded_user_id = URI.encode_www_form_component(user_id)
+
+    begin
+      response = HTTParty.get(
+        "#{management_api_url}/users/#{encoded_user_id}/roles",
+        headers: { 'Authorization' => "Bearer #{token}" }
+      )
+
+      if response.success?
+        roles = JSON.parse(response.body)
+        roles.map { |role| role['name'] }
+      else
+        Rails.logger.error("Failed to fetch user roles: #{response.code} - #{response.body}") if defined?(Rails)
+        []
+      end
+    # Rescue only network/HTTP/JSON parsing errors to allow configuration errors
+    # (like missing AUTH0_DOMAIN) to propagate and fail fast
+    rescue HTTParty::Error, Net::OpenTimeout, Net::ReadTimeout, SocketError,
+           Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH,
+           JSON::ParserError, Timeout::Error => e
+      Rails.logger.error("Error fetching user roles: #{e.message}") if defined?(Rails)
+      []
+    end
+  end
+
   # Delete a user
   # Returns:
   #   true - 削除成功
