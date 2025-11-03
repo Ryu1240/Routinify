@@ -7,11 +7,18 @@ class UserSerializer < BaseSerializer
       picture: @object['picture'],
       nickname: @object['nickname'],
       emailVerified: @object['email_verified'],
-      createdAt: format_datetime(@object['created_at']),
-      updatedAt: format_datetime(@object['updated_at']),
-      lastLogin: format_datetime(@object['last_login']),
+      createdAt: format_datetime_value(@object['created_at']),
+      updatedAt: format_datetime_value(@object['updated_at']),
+      lastLogin: format_datetime_value(@object['last_login']),
       loginsCount: @object['logins_count']
     }
   end
-end
 
+  private
+
+  def format_datetime_value(value)
+    return nil if value.nil?
+    return value if value.is_a?(String)
+    format_datetime(value)
+  end
+end

@@ -95,4 +95,3 @@ class Auth0ManagementClient
     query_params.map { |k, v| "#{k}=#{URI.encode_www_form_component(v.to_s)}" }.join('&')
   end
 end
-

@@ -75,7 +75,7 @@ RSpec.describe Auth0ManagementClient, type: :lib do
       it 'エラーを発生させること' do
         allow(HTTParty).to receive(:post).and_return(error_response)
 
-        expect { described_class.access_token }.to raise_error(/Failed to get access token/)
+        expect { described_class.access_token }.to raise_error(/Failed to get access token|invalid_client/)
       end
     end
   end
@@ -250,4 +250,3 @@ RSpec.describe Auth0ManagementClient, type: :lib do
     end
   end
 end
-

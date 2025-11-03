@@ -5,15 +5,22 @@ module Api
     module Admin
       class UsersController < BaseController
         def index
-          validate_permissions(['read:users']) do
+          validate_permissions([ 'read:users' ]) do
             list_params_hash = list_params.to_h.symbolize_keys
             users_response = Auth0ManagementClient.list_users(list_params_hash)
 
             # Auth0 Management APIのレスポンス形式に応じてデータを取得
-            users = users_response.is_a?(Hash) && users_response['users'] ? users_response['users'] : users_response
-            total = users_response.is_a?(Hash) && users_response['total'] ? users_response['total'] : nil
-            start = users_response.is_a?(Hash) && users_response['start'] ? users_response['start'] : nil
-            limit = users_response.is_a?(Hash) && users_response['limit'] ? users_response['limit'] : nil
+            users = if users_response.is_a?(Hash) && users_response['users']
+                      users_response['users']
+            elsif users_response.is_a?(Array)
+                      users_response
+            else
+                      []
+            end
+
+            total = users_response.is_a?(Hash) ? users_response['total'] : nil
+            start = users_response.is_a?(Hash) ? users_response['start'] : nil
+            limit = users_response.is_a?(Hash) ? users_response['limit'] : nil
 
             serialized_users = users.map { |user| UserSerializer.new(user).as_json }
 
@@ -27,13 +34,13 @@ module Api
         end
 
         def destroy
-          validate_permissions(['delete:users']) do
+          validate_permissions([ 'delete:users' ]) do
             user_id = params[:id]
 
             # 自分自身の削除を防ぐ
             if user_id == current_user_id
               return render_error(
-                errors: ['自分自身のアカウントは削除できません'],
+                errors: [ '自分自身のアカウントは削除できません' ],
                 message: '自分自身のアカウントは削除できません',
                 status: :forbidden
               )
@@ -42,13 +49,10 @@ module Api
             result = Auth0ManagementClient.delete_user(user_id)
 
             if result
-              render_success(
-                message: 'アカウントが正常に削除されました',
-                status: :no_content
-              )
+              render_success(status: :no_content)
             else
               render_error(
-                errors: ['アカウントの削除に失敗しました'],
+                errors: [ 'アカウントの削除に失敗しました' ],
                 message: 'アカウントの削除に失敗しました',
                 status: :unprocessable_entity
               )
@@ -65,4 +69,3 @@ module Api
     end
   end
 end
-

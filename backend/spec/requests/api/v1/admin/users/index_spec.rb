@@ -44,10 +44,10 @@ RSpec.describe 'GET /api/v1/admin/users', type: :request do
 
       before do
         allow(Auth0ManagementClient).to receive(:list_users).and_return(mock_users_response)
-        
+
         # read:users権限があることをモック
         decoded_token = double('decoded_token')
-        allow(decoded_token).to receive(:validate_permissions).with(['read:users']).and_return(true)
+        allow(decoded_token).to receive(:validate_permissions).with([ 'read:users' ]).and_return(true)
         allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
           controller.instance_variable_set(:@decoded_token, decoded_token)
         end
@@ -123,7 +123,7 @@ RSpec.describe 'GET /api/v1/admin/users', type: :request do
         it '権限が不足している場合、403エラーを返すこと' do
           # read:users権限がないことをモック
           decoded_token = double('decoded_token')
-          allow(decoded_token).to receive(:validate_permissions).with(['read:users']).and_return(false)
+          allow(decoded_token).to receive(:validate_permissions).with([ 'read:users' ]).and_return(false)
           allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
             controller.instance_variable_set(:@decoded_token, decoded_token)
           end
@@ -138,18 +138,21 @@ RSpec.describe 'GET /api/v1/admin/users', type: :request do
       end
 
       context 'Auth0 Management API エラー' do
-        it 'API呼び出しが失敗した場合、エラーを返すこと' do
+        it 'API呼び出しが失敗した場合、500エラーを返すこと' do
           decoded_token = double('decoded_token')
-          allow(decoded_token).to receive(:validate_permissions).with(['read:users']).and_return(true)
+          allow(decoded_token).to receive(:validate_permissions).with([ 'read:users' ]).and_return(true)
           allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
             controller.instance_variable_set(:@decoded_token, decoded_token)
           end
 
           allow(Auth0ManagementClient).to receive(:list_users).and_raise(StandardError, 'API Error')
 
-          expect do
-            get '/api/v1/admin/users', headers: auth_headers
-          end.to raise_error(StandardError, 'API Error')
+          get '/api/v1/admin/users', headers: auth_headers
+
+          expect(response).to have_http_status(:internal_server_error)
+          json_response = JSON.parse(response.body)
+          expect(json_response['success']).to be false
+          expect(json_response['errors']).to include('内部サーバーエラーが発生しました')
         end
       end
     end
@@ -157,7 +160,7 @@ RSpec.describe 'GET /api/v1/admin/users', type: :request do
     context 'エッジケース' do
       before do
         decoded_token = double('decoded_token')
-        allow(decoded_token).to receive(:validate_permissions).with(['read:users']).and_return(true)
+        allow(decoded_token).to receive(:validate_permissions).with([ 'read:users' ]).and_return(true)
         allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
           controller.instance_variable_set(:@decoded_token, decoded_token)
         end
@@ -199,4 +202,3 @@ RSpec.describe 'GET /api/v1/admin/users', type: :request do
     end
   end
 end
-
