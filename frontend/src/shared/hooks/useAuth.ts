@@ -37,7 +37,13 @@ export const useAuth = () => {
     };
 
     getToken();
-  }, [isAuthenticated, isLoading, accessToken, getAccessTokenSilently, auth0Logout]);
+  }, [
+    isAuthenticated,
+    isLoading,
+    accessToken,
+    getAccessTokenSilently,
+    auth0Logout,
+  ]);
 
   // Auth0認証完了後、ロール情報を取得
   useEffect(() => {
