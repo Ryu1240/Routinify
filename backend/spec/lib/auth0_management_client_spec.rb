@@ -328,13 +328,35 @@ RSpec.describe Auth0ManagementClient, type: :lib do
         expect(result).to eq([])
       end
 
-      it '例外が発生した場合は空配列を返すこと' do
-        expect(HTTParty).to receive(:get).and_raise(StandardError.new('Network error'))
+      it 'ネットワークエラーが発生した場合は空配列を返すこと' do
+        expect(HTTParty).to receive(:get).and_raise(SocketError.new('Network error'))
 
         expect(Rails.logger).to receive(:error).with(/Error fetching user roles/) if defined?(Rails)
 
         result = described_class.get_user_roles(user_id)
         expect(result).to eq([])
+      end
+
+      it 'JSON解析エラーが発生した場合は空配列を返すこと' do
+        error_response = double(
+          code: 200,
+          success?: true,
+          body: 'invalid json'
+        )
+
+        expect(HTTParty).to receive(:get).and_return(error_response)
+        expect(JSON).to receive(:parse).and_raise(JSON::ParserError.new('unexpected token'))
+
+        expect(Rails.logger).to receive(:error).with(/Error fetching user roles/) if defined?(Rails)
+
+        result = described_class.get_user_roles(user_id)
+        expect(result).to eq([])
+      end
+
+      it '設定エラー（AUTH0_DOMAIN未設定など）は例外を発生させること' do
+        expect(described_class).to receive(:access_token).and_raise('AUTH0_DOMAIN is not set')
+
+        expect { described_class.get_user_roles(user_id) }.to raise_error('AUTH0_DOMAIN is not set')
       end
     end
 
