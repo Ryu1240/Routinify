@@ -287,7 +287,7 @@ RSpec.describe Auth0ManagementClient, type: :lib do
         ).and_return(roles_response)
 
         result = described_class.get_user_roles(user_id)
-        expect(result).to eq(['admin', 'user'])
+        expect(result).to eq([ 'admin', 'user' ])
       end
     end
 
