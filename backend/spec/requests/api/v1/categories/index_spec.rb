@@ -99,9 +99,6 @@ RSpec.describe 'GET /api/v1/categories', type: :request do
       end
 
       it '大量のカテゴリがある場合でも正常に動作すること' do
-        # 認証を再設定（他のテストで認証が変更された可能性があるため）
-        mock_request_authentication(user_id: user_id)
-
         create_list(:category, 100, account_id: user_id)
 
         get '/api/v1/categories', headers: auth_headers
