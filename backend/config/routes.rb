@@ -1,6 +1,9 @@
 Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
+      # 認証エンドポイント
+      post 'auth/login', to: 'auth#login'
+
       resources :tasks, only: [ :index, :show, :create, :update, :destroy ]
       resources :categories, only: [ :index, :create, :update, :destroy ]
       resources :routine_tasks, only: [ :index, :show, :create, :update, :destroy ] do
