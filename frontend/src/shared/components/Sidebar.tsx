@@ -6,6 +6,7 @@ import {
   IconRepeat,
   IconFlag,
   IconChartBar,
+  IconUsers,
 } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
@@ -45,6 +46,12 @@ const Sidebar: React.FC = () => {
       path: '/achievements',
       description: '習慣化タスクの達成状況',
     },
+    {
+      label: 'アカウント管理',
+      icon: <IconUsers size={16} />,
+      path: '/admin/accounts',
+      description: 'ユーザーアカウントの管理',
+    },
   ];
 
   return (
@@ -65,20 +72,20 @@ const Sidebar: React.FC = () => {
       }}
     >
       {navItems.map((item) => (
-        <NavLink
-          key={item.path}
-          label={item.label}
-          description={item.description}
-          leftSection={item.icon}
-          active={location.pathname.startsWith(item.path)}
-          onClick={() => navigate(item.path)}
-          variant="filled"
-          style={{
-            borderRadius: 'var(--mantine-radius-sm)',
-            marginBottom: 'var(--mantine-spacing-xs)',
-          }}
-        />
-      ))}
+          <NavLink
+            key={item.path}
+            label={item.label}
+            description={item.description}
+            leftSection={item.icon}
+            active={location.pathname.startsWith(item.path)}
+            onClick={() => navigate(item.path)}
+            variant="filled"
+            style={{
+              borderRadius: 'var(--mantine-radius-sm)',
+              marginBottom: 'var(--mantine-spacing-xs)',
+            }}
+          />
+        ))}
     </Box>
   );
 };
