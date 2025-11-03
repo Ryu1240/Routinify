@@ -110,7 +110,25 @@ describe('useAuth', () => {
 
     await waitFor(() => {
       expect(result.current.accessToken).toBe('mock-access-token');
+      expect(result.current.hasAccessToken).toBe(true);
+      expect(result.current.isAuthenticated).toBe(true);
     });
+  });
+
+  it('isAuthenticated reflects Auth0 state even when token is not available', () => {
+    mockUseAuth0.mockReturnValue({
+      isAuthenticated: true,
+      isLoading: false,
+      user: { name: 'Test User' },
+      getAccessTokenSilently: vi.fn().mockResolvedValue(null),
+      loginWithRedirect: vi.fn(),
+      logout: vi.fn(),
+    });
+
+    const { result } = renderHook(() => useAuth());
+
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.hasAccessToken).toBe(false);
   });
 
   it('fetches user roles when authenticated', async () => {
@@ -214,6 +232,9 @@ describe('useAuth', () => {
 
     await waitFor(() => {
       expect(result.current.accessToken).toBeNull();
+      expect(result.current.hasAccessToken).toBe(false);
+      // isAuthenticated should still reflect Auth0 state even if token fetch fails
+      expect(result.current.isAuthenticated).toBe(true);
     });
   });
 

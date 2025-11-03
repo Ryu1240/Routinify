@@ -4,7 +4,7 @@ import { Task } from '@/types';
 import { tasksApi } from '../api/tasksApi';
 
 export const useFetchTasks = () => {
-  const { isAuthenticated, accessToken } = useAuth();
+  const { isAuthenticated, hasAccessToken } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,14 +43,14 @@ export const useFetchTasks = () => {
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && accessToken) {
+    if (hasAccessToken) {
       fetchTasks();
     } else if (!isAuthenticated) {
       setLoading(false);
       setTasks([]);
       setError(null);
     }
-  }, [isAuthenticated, accessToken]);
+  }, [isAuthenticated, hasAccessToken]);
 
   // カスタムイベントをリッスンしてタスクリストを更新
   useEffect(() => {

@@ -114,7 +114,8 @@ export const useAuth = () => {
   }, [accessToken, auth0Logout]);
 
   return {
-    isAuthenticated: isAuthenticated && !!accessToken,
+    isAuthenticated, // Auth0の認証状態のみを反映
+    hasAccessToken: !!accessToken, // トークンが存在するかどうか
     isLoading: isLoading || tokenLoading,
     user,
     accessToken,

@@ -31,6 +31,7 @@ describe('useTasks', () => {
   it('returns initial state', () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: false,
+      hasAccessToken: false,
       accessToken: null,
     });
 
@@ -48,6 +49,7 @@ describe('useTasks', () => {
   it('fetches tasks when authenticated', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -70,6 +72,7 @@ describe('useTasks', () => {
   it('handles fetch error', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -90,6 +93,7 @@ describe('useTasks', () => {
   it('filters tasks based on search term', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -117,6 +121,7 @@ describe('useTasks', () => {
   it('sorts tasks when sortBy is set', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -144,6 +149,7 @@ describe('useTasks', () => {
   it('toggles sort direction when same field is clicked', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -180,6 +186,7 @@ describe('useTasks', () => {
   it('refreshes tasks when refreshTasks is called', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -217,6 +224,7 @@ describe('useTasks', () => {
   it('does not fetch tasks when not authenticated', () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: false,
+      hasAccessToken: false,
       accessToken: null,
     });
 
@@ -229,6 +237,7 @@ describe('useTasks', () => {
   it('creates task successfully', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 
@@ -299,6 +308,7 @@ describe('useTasks', () => {
   it('handles create task error', async () => {
     mockUseAuth.mockReturnValue({
       isAuthenticated: true,
+      hasAccessToken: true,
       accessToken: 'mock-token',
     });
 

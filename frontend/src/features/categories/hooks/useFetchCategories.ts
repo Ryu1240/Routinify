@@ -4,7 +4,7 @@ import { Category } from '@/types/category';
 import { categoriesApi } from '../api/categoriesApi';
 
 export const useFetchCategories = () => {
-  const { isAuthenticated, accessToken } = useAuth();
+  const { isAuthenticated, hasAccessToken } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,14 +26,14 @@ export const useFetchCategories = () => {
   };
 
   useEffect(() => {
-    if (isAuthenticated && accessToken) {
+    if (hasAccessToken) {
       fetchCategories();
     } else if (!isAuthenticated) {
       setLoading(false);
       setCategories([]);
       setError(null);
     }
-  }, [isAuthenticated, accessToken]);
+  }, [isAuthenticated, hasAccessToken]);
 
   const refreshCategories = () => {
     fetchCategories();
