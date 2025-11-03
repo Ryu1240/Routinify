@@ -11,8 +11,8 @@ servers:
     description: 本番環境
 
 tags:
-  # - name: 認証
-  #   description: ユーザー認証関連のエンドポイント
+  - name: 認証
+    description: ユーザー認証関連のエンドポイント
   - name: タスク
     description: タスクの基本操作（作成、取得、更新、削除）
   - name: カテゴリ
@@ -680,6 +680,30 @@ components:
       required:
         - sub
 
+    AuthUser:
+      type: object
+      description: 認証API用ユーザー情報
+      properties:
+        id:
+          type: string
+          description: ユーザーID（Auth0）
+          example: "auth0|user123"
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+          example: "user@example.com"
+        roles:
+          type: array
+          description: ユーザーのロール一覧
+          items:
+            type: string
+          example: ["admin", "user"]
+      required:
+        - id
+        - email
+        - roles
+
     MilestoneCreate:
       type: object
       properties:
@@ -736,6 +760,160 @@ components:
           enum: [planning, in_progress, completed, cancelled]
 
 paths:
+  /auth/login:
+    post:
+      tags:
+        - 認証
+      summary: ユーザーログイン
+      description: |
+        Auth0トークンを検証し、ユーザー情報とロール情報を返します。
+        **重要**: カスタムJWTは返しません。Auth0トークンは既存通りフロントエンドで管理します。
+      security: []  # 認証不要
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                auth0_token:
+                  type: string
+                  description: Auth0アクセストークン
+                  example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+              required:
+                - auth0_token
+      responses:
+        '200':
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/AuthUser'
+              example:
+                success: true
+                data:
+                  user:
+                    id: "auth0|user123"
+                    email: "user@example.com"
+                    roles: ["admin", "user"]
+        '400':
+          description: リクエストパラメータエラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["auth0_token is required"]
+                  message:
+                    type: string
+                    example: "auth0_token is required"
+        '401':
+          description: 認証エラー（無効なトークン）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  errors:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Invalid Auth0 token"]
+                  message:
+                    type: string
+                    example: "Invalid Auth0 token"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/logout:
+    post:
+      tags:
+        - 認証
+      summary: ユーザーログアウト
+      description: |
+        ログアウト処理を行います。
+        **注**: Auth0トークンを使用して認証します。実際のログアウト処理はフロントエンド側でAuth0トークンを無効化します。
+      security:
+        - Auth0: []
+      responses:
+        '200':
+          description: ログアウト成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Logged out successfully"
+              example:
+                success: true
+                message: "Logged out successfully"
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /auth/me:
+    get:
+      tags:
+        - 認証
+      summary: 現在のユーザー情報取得
+      description: |
+        認証済みユーザーの情報（ID、メールアドレス、ロール）を取得します。
+        **注**: Auth0トークンを使用して認証します。ロール情報はManagement APIから取得します。
+      security:
+        - Auth0: []
+      responses:
+        '200':
+          description: ユーザー情報の取得成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/AuthUser'
+              example:
+                success: true
+                data:
+                  user:
+                    id: "auth0|user123"
+                    email: "user@example.com"
+                    roles: ["admin", "user"]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   # /auth/signin:
   #   post:
   #     tags:
