@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { notifications } from '@mantine/notifications';
 import { authApi } from '@/features/auth/api/authApi';
+import { getPermissionsFromToken, hasPermissions } from '@/shared/utils/tokenUtils';
 
 export const useAuth = () => {
   const {
@@ -17,6 +18,7 @@ export const useAuth = () => {
   const [tokenLoading, setTokenLoading] = useState(false);
   const [userRoles, setUserRoles] = useState<string[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
   // Auth0トークンを取得
   useEffect(() => {
@@ -28,6 +30,10 @@ export const useAuth = () => {
           setAccessToken(token);
           // localStorageにも保存（axios設定との互換性のため）
           localStorage.setItem('access_token', token);
+          
+          // トークンからパーミッション（スコープ）を取得
+          const permissions = getPermissionsFromToken(token);
+          setUserPermissions(permissions);
         } catch (error) {
           console.error('トークンの取得に失敗しました:', error);
           // トークン取得に失敗した場合は再ログインを促す
@@ -109,9 +115,22 @@ export const useAuth = () => {
       setAccessToken(null);
       setUserRoles([]);
       setIsAdmin(false);
+      setUserPermissions([]);
       await auth0Logout({ logoutParams: { returnTo: window.location.origin } });
     }
   }, [accessToken, auth0Logout]);
+
+  /**
+   * 特定のパーミッションを持っているかチェック
+   * @param requiredPermissions 必要なパーミッションの配列
+   * @returns すべてのパーミッションを持っている場合true
+   */
+  const checkPermissions = useCallback(
+    (requiredPermissions: string[]): boolean => {
+      return hasPermissions(accessToken, requiredPermissions);
+    },
+    [accessToken]
+  );
 
   return {
     isAuthenticated, // Auth0の認証状態のみを反映
@@ -121,6 +140,8 @@ export const useAuth = () => {
     accessToken,
     userRoles,
     isAdmin,
+    userPermissions, // パーミッション（スコープ）の配列
+    checkPermissions, // パーミッションチェック関数
     login,
     logout: handleLogout,
   };
