@@ -152,7 +152,8 @@ RSpec.describe 'GET /api/v1/admin/users', type: :request do
           expect(response).to have_http_status(:internal_server_error)
           json_response = JSON.parse(response.body)
           expect(json_response['success']).to be false
-          expect(json_response['errors']).to include('内部サーバーエラーが発生しました')
+          expect(json_response['errors']).to include('ユーザーリストの取得に失敗しました')
+          expect(json_response['message']).to eq('ユーザーリストの取得に失敗しました')
         end
       end
     end
