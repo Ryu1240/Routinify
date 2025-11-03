@@ -104,6 +104,45 @@ class Auth0ManagementClient
     end
   end
 
+  # Revoke refresh token
+  # Auth0のリフレッシュトークンを無効化します
+  # Returns:
+  #   true - 無効化成功
+  #   false - 無効化失敗
+  def self.revoke_refresh_token(refresh_token)
+    require 'dotenv'
+    Dotenv.load
+
+    domain = ENV.fetch('AUTH0_DOMAIN', nil)
+    client_id = ENV.fetch('AUTH0_CLIENT_ID', nil) || ENV.fetch('REACT_APP_AUTH0_CLIENT_ID', nil)
+    client_secret = ENV.fetch('AUTH0_CLIENT_SECRET', nil)
+
+    raise 'AUTH0_DOMAIN is not set' if domain.nil?
+    raise 'AUTH0_CLIENT_ID is not set' if client_id.nil?
+    raise 'AUTH0_CLIENT_SECRET is not set' if client_secret.nil?
+
+    # Auth0のToken Revocationエンドポイントを使用
+    response = HTTParty.post(
+      "https://#{domain}/oauth/revoke",
+      body: {
+        client_id: client_id,
+        client_secret: client_secret,
+        token: refresh_token
+      }.to_json,
+      headers: { 'Content-Type' => 'application/json' }
+    )
+
+    if response.success? || response.code == 200
+      true
+    else
+      Rails.logger.error("Failed to revoke refresh token: #{response.code} - #{response.body}") if defined?(Rails)
+      false
+    end
+  rescue StandardError => e
+    Rails.logger.error("Error revoking refresh token: #{e.message}") if defined?(Rails)
+    false
+  end
+
   # Delete a user
   # Returns:
   #   true - 削除成功

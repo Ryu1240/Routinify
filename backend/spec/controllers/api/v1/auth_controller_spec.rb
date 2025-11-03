@@ -105,4 +105,147 @@ RSpec.describe Api::V1::AuthController, type: :controller do
       end
     end
   end
+
+  describe 'POST #logout' do
+    let(:user_id) { 'auth0|user123' }
+    let(:email) { 'test@example.com' }
+    let(:roles) { [ 'admin' ] }
+
+    let(:decoded_token_data) do
+      [
+        {
+          'sub' => user_id,
+          'email' => email
+        },
+        { 'alg' => 'RS256' }
+      ]
+    end
+
+    context '正常系' do
+      before do
+        token_object = Auth0Client::Token.new(decoded_token_data)
+        allow(controller).to receive(:authorize) do
+          controller.instance_variable_set(:@decoded_token, token_object)
+        end
+      end
+
+      it 'ログアウト成功メッセージを返す' do
+        post :logout
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['success']).to be true
+        expect(json['message']).to eq('Logged out successfully')
+      end
+    end
+
+    context '異常系: 認証なし' do
+      before do
+        allow(controller).to receive(:authorize).and_call_original
+      end
+
+      it '401エラーを返す' do
+        post :logout
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+  end
+
+  describe 'GET #me' do
+    let(:user_id) { 'auth0|user123' }
+    let(:email) { 'test@example.com' }
+    let(:roles) { [ 'admin' ] }
+
+    let(:decoded_token_data) do
+      [
+        {
+          'sub' => user_id,
+          'email' => email
+        },
+        { 'alg' => 'RS256' }
+      ]
+    end
+
+    context '正常系' do
+      before do
+        token_object = Auth0Client::Token.new(decoded_token_data)
+        allow(controller).to receive(:authorize) do
+          controller.instance_variable_set(:@decoded_token, token_object)
+        end
+        allow(Auth0ManagementClient).to receive(:get_user_roles).with(user_id).and_return(roles)
+      end
+
+      it 'ユーザー情報を返す' do
+        get :me
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['success']).to be true
+        expect(json['data']['user']['id']).to eq(user_id)
+        expect(json['data']['user']['email']).to eq(email)
+        expect(json['data']['user']['roles']).to eq(roles)
+      end
+    end
+
+    context '正常系: emailがカスタムクレームにある場合' do
+      let(:custom_email) { 'custom@example.com' }
+
+      let(:decoded_token_data) do
+        [
+          {
+            'sub' => user_id,
+            'https://routinify.com/email' => custom_email
+          },
+          { 'alg' => 'RS256' }
+        ]
+      end
+
+      before do
+        token_object = Auth0Client::Token.new(decoded_token_data)
+        allow(controller).to receive(:authorize) do
+          controller.instance_variable_set(:@decoded_token, token_object)
+        end
+        allow(Auth0ManagementClient).to receive(:get_user_roles).with(user_id).and_return(roles)
+      end
+
+      it 'カスタムクレームからemailを取得する' do
+        get :me
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['data']['user']['email']).to eq(custom_email)
+      end
+    end
+
+    context '異常系: 認証なし' do
+      before do
+        allow(controller).to receive(:authorize).and_call_original
+      end
+
+      it '401エラーを返す' do
+        get :me
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context '異常系: ロール取得失敗' do
+      before do
+        token_object = Auth0Client::Token.new(decoded_token_data)
+        allow(controller).to receive(:authorize) do
+          controller.instance_variable_set(:@decoded_token, token_object)
+        end
+        allow(Auth0ManagementClient).to receive(:get_user_roles).with(user_id).and_return([])
+      end
+
+      it '空配列のロールでレスポンスを返す（フォールバック）' do
+        get :me
+
+        expect(response).to have_http_status(:ok)
+        json = JSON.parse(response.body)
+        expect(json['data']['user']['roles']).to eq([])
+      end
+    end
+  end
 end
