@@ -7,7 +7,8 @@ class AuthService
       auth0_response = Auth0Client.validate_token(auth0_token)
 
       unless auth0_response.decoded_token
-        return error_response('Invalid Auth0 token')
+        status = auth0_response.error&.status || :unauthorized
+        return error_response('Invalid Auth0 token', status)
       end
 
       # デコードされたトークンデータを取得
@@ -29,7 +30,7 @@ class AuthService
     rescue StandardError => e
       Rails.logger.error("Authentication error: #{e.message}")
       Rails.logger.error(e.backtrace.join("\n"))
-      error_response('Authentication failed')
+      error_response('Authentication failed', :internal_server_error)
     end
 
     private
@@ -48,10 +49,11 @@ class AuthService
       }
     end
 
-    def error_response(message)
+    def error_response(message, status = :unauthorized)
       {
         success: false,
-        error: message
+        error: message,
+        status: status
       }
     end
   end

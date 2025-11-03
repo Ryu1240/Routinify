@@ -24,7 +24,7 @@ module Api
           render_error(
             errors: [ result[:error] ],
             message: result[:error],
-            status: :unauthorized
+            status: result[:status] || :unauthorized
           )
         end
       end

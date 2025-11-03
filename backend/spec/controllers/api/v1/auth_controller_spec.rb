@@ -74,7 +74,47 @@ RSpec.describe Api::V1::AuthController, type: :controller do
       end
     end
 
-    context '異常系: 認証失敗' do
+    context '異常系: 認証失敗（unauthorized）' do
+      before do
+        allow(AuthService).to receive(:authenticate).with(auth0_token).and_return(
+          success: false,
+          error: 'Invalid Auth0 token',
+          status: :unauthorized
+        )
+      end
+
+      it '401エラーを返す' do
+        post :login, params: { auth0_token: auth0_token }
+
+        expect(response).to have_http_status(:unauthorized)
+        json = JSON.parse(response.body)
+        expect(json['success']).to be false
+        expect(json['message']).to eq('Invalid Auth0 token')
+        expect(json['errors']).to include('Invalid Auth0 token')
+      end
+    end
+
+    context '異常系: 認証失敗（internal_server_error）' do
+      before do
+        allow(AuthService).to receive(:authenticate).with(auth0_token).and_return(
+          success: false,
+          error: 'Authentication failed',
+          status: :internal_server_error
+        )
+      end
+
+      it '500エラーを返す（Auth0Clientからのエラー、例: JWKS取得失敗）' do
+        post :login, params: { auth0_token: auth0_token }
+
+        expect(response).to have_http_status(:internal_server_error)
+        json = JSON.parse(response.body)
+        expect(json['success']).to be false
+        expect(json['message']).to eq('Authentication failed')
+        expect(json['errors']).to include('Authentication failed')
+      end
+    end
+
+    context '異常系: 認証失敗（statusが指定されていない場合のフォールバック）' do
       before do
         allow(AuthService).to receive(:authenticate).with(auth0_token).and_return(
           success: false,
@@ -82,7 +122,7 @@ RSpec.describe Api::V1::AuthController, type: :controller do
         )
       end
 
-      it '401エラーを返す' do
+      it 'デフォルトで401エラーを返す' do
         post :login, params: { auth0_token: auth0_token }
 
         expect(response).to have_http_status(:unauthorized)

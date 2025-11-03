@@ -103,6 +103,7 @@ RSpec.describe AuthService do
 
         expect(result[:success]).to be false
         expect(result[:error]).to eq('Invalid Auth0 token')
+        expect(result[:status]).to eq(:unauthorized)
       end
     end
 
@@ -140,6 +141,7 @@ RSpec.describe AuthService do
 
         expect(result[:success]).to be false
         expect(result[:error]).to eq('Authentication failed')
+        expect(result[:status]).to eq(:internal_server_error)
       end
     end
   end
