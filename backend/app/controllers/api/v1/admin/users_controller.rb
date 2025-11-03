@@ -46,15 +46,46 @@ module Api
               )
             end
 
-            result = Auth0ManagementClient.delete_user(user_id)
+            begin
+              # 削除前にユーザーの存在確認
+              user = Auth0ManagementClient.get_user(user_id)
+              unless user
+                return render_error(
+                  errors: [ '指定されたユーザーが見つかりません' ],
+                  message: '指定されたユーザーが見つかりません',
+                  status: :not_found
+                )
+              end
 
-            if result
-              render_success(status: :no_content)
-            else
+              result = Auth0ManagementClient.delete_user(user_id)
+
+              case result
+              when true
+                # 削除成功
+                render_success(status: :no_content)
+              when :not_found
+                # ユーザーが見つからない（削除時にも404が返った場合）
+                render_error(
+                  errors: [ '指定されたユーザーが見つかりません' ],
+                  message: '指定されたユーザーが見つかりません',
+                  status: :not_found
+                )
+              else
+                # その他のエラー
+                render_error(
+                  errors: [ 'アカウントの削除に失敗しました' ],
+                  message: 'アカウントの削除に失敗しました',
+                  status: :unprocessable_entity
+                )
+              end
+            rescue StandardError => e
+              Rails.logger.error "Error deleting user #{user_id}: #{e.class} - #{e.message}"
+              Rails.logger.error e.backtrace.join("\n")
+
               render_error(
-                errors: [ 'アカウントの削除に失敗しました' ],
-                message: 'アカウントの削除に失敗しました',
-                status: :unprocessable_entity
+                errors: [ 'アカウントの削除中にエラーが発生しました' ],
+                message: 'アカウントの削除中にエラーが発生しました',
+                status: :internal_server_error
               )
             end
           end

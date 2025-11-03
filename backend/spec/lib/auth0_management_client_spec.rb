@@ -75,7 +75,95 @@ RSpec.describe Auth0ManagementClient, type: :lib do
       it 'エラーを発生させること' do
         allow(HTTParty).to receive(:post).and_return(error_response)
 
-        expect { described_class.access_token }.to raise_error(/Failed to get access token|invalid_client/)
+        expect { described_class.access_token }.to raise_error(/Failed to get access token/)
+      end
+    end
+  end
+
+  describe '.get_user' do
+    let(:user_id) { 'auth0|123' }
+    let(:user_data) do
+      {
+        user_id: user_id,
+        email: 'user@example.com',
+        name: 'Test User'
+      }
+    end
+
+    before do
+      allow(described_class).to receive(:access_token).and_return(access_token)
+    end
+
+    context 'ユーザーが存在する場合' do
+      it 'ユーザー情報を取得できること' do
+        user_response = double(
+          code: 200,
+          success?: true,
+          body: user_data.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(user_response)
+
+        result = described_class.get_user(user_id)
+        expect(result['user_id']).to eq(user_id)
+        expect(result['email']).to eq('user@example.com')
+      end
+    end
+
+    context 'ユーザーが存在しない場合' do
+      it 'nilを返すこと' do
+        not_found_response = double(
+          code: 404,
+          success?: false,
+          body: { error: 'Not Found' }.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(not_found_response)
+
+        result = described_class.get_user(user_id)
+        expect(result).to be_nil
+      end
+    end
+
+    context 'APIリクエストが失敗した場合（404以外）' do
+      it 'エラーを発生させること' do
+        error_response = double(
+          code: 500,
+          success?: false,
+          body: { error: 'Internal Server Error' }.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(error_response)
+
+        expect { described_class.get_user(user_id) }.to raise_error(/Failed to get user/)
+      end
+    end
+
+    context '特殊文字を含むユーザーIDの場合' do
+      let(:user_id_with_special_chars) { 'auth0|user@domain|123' }
+
+      it 'URLエンコードされたIDでリクエストすること' do
+        user_response = double(
+          code: 200,
+          success?: true,
+          body: user_data.to_json
+        )
+
+        expect(HTTParty).to receive(:get).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id_with_special_chars)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(user_response)
+
+        described_class.get_user(user_id_with_special_chars)
       end
     end
   end
@@ -180,12 +268,15 @@ RSpec.describe Auth0ManagementClient, type: :lib do
       allow(described_class).to receive(:access_token).and_return(access_token)
     end
 
-    context '削除が成功した場合' do
+    context '削除が成功した場合（204 No Content）' do
       it 'trueを返すこと' do
-        success_response = double(success?: true)
+        success_response = double(
+          code: 204,
+          success?: true
+        )
 
         expect(HTTParty).to receive(:delete).with(
-          "#{management_api_url}/users/#{user_id}",
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
           headers: { 'Authorization' => "Bearer #{access_token}" }
         ).and_return(success_response)
 
@@ -193,16 +284,71 @@ RSpec.describe Auth0ManagementClient, type: :lib do
       end
     end
 
-    context '削除が失敗した場合' do
-      it 'falseを返すこと' do
-        error_response = double(success?: false)
+    context '削除が成功した場合（その他の2xx）' do
+      it 'trueを返すこと' do
+        success_response = double(
+          code: 200,
+          success?: true
+        )
 
         expect(HTTParty).to receive(:delete).with(
-          "#{management_api_url}/users/#{user_id}",
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(success_response)
+
+        expect(described_class.delete_user(user_id)).to be true
+      end
+    end
+
+    context 'ユーザーが見つからない場合（404）' do
+      it ':not_foundを返すこと' do
+        not_found_response = double(
+          code: 404,
+          success?: false,
+          body: { error: 'Not Found' }.to_json
+        )
+
+        expect(HTTParty).to receive(:delete).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(not_found_response)
+
+        expect(described_class.delete_user(user_id)).to eq(:not_found)
+      end
+    end
+
+    context '削除が失敗した場合（404以外のエラー）' do
+      it 'falseを返すこと' do
+        error_response = double(
+          code: 500,
+          success?: false,
+          body: { error: 'Internal Server Error' }.to_json
+        )
+
+        expect(HTTParty).to receive(:delete).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id)}",
           headers: { 'Authorization' => "Bearer #{access_token}" }
         ).and_return(error_response)
 
         expect(described_class.delete_user(user_id)).to be false
+      end
+    end
+
+    context '特殊文字を含むユーザーIDの場合' do
+      let(:user_id_with_special_chars) { 'auth0|user@domain|123' }
+
+      it 'URLエンコードされたIDでリクエストすること' do
+        success_response = double(
+          code: 204,
+          success?: true
+        )
+
+        expect(HTTParty).to receive(:delete).with(
+          "#{management_api_url}/users/#{URI.encode_www_form_component(user_id_with_special_chars)}",
+          headers: { 'Authorization' => "Bearer #{access_token}" }
+        ).and_return(success_response)
+
+        described_class.delete_user(user_id_with_special_chars)
       end
     end
   end

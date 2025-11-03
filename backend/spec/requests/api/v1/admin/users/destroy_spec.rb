@@ -11,7 +11,9 @@ RSpec.describe 'DELETE /api/v1/admin/users/:id', type: :request do
   describe 'DELETE /api/v1/admin/users/:id' do
     context '正常系' do
       before do
-        allow(Auth0ManagementClient).to receive(:delete_user).and_return(true)
+        # get_userとdelete_userの両方をモック
+        allow(Auth0ManagementClient).to receive(:get_user).with(target_user_id).and_return({ user_id: target_user_id })
+        allow(Auth0ManagementClient).to receive(:delete_user).with(target_user_id).and_return(true)
 
         # delete:users権限があることをモック
         decoded_token = double('decoded_token')
@@ -34,15 +36,15 @@ RSpec.describe 'DELETE /api/v1/admin/users/:id', type: :request do
         if response.body.present?
           json_response = JSON.parse(response.body)
           expect(json_response['success']).to be true
-          expect(json_response['message']).to eq('アカウントが正常に削除されました')
         else
           # 204 No Contentでボディが空の場合も正常
           expect(response.body).to be_empty
         end
       end
 
-      it 'calls Auth0ManagementClient with correct user_id' do
+      it 'calls Auth0ManagementClient.get_user and delete_user with correct user_id' do
         delete "/api/v1/admin/users/#{target_user_id}", headers: auth_headers
+        expect(Auth0ManagementClient).to have_received(:get_user).with(target_user_id)
         expect(Auth0ManagementClient).to have_received(:delete_user).with(target_user_id)
       end
     end
@@ -106,9 +108,41 @@ RSpec.describe 'DELETE /api/v1/admin/users/:id', type: :request do
         end
       end
 
+      context 'ユーザーが見つからない場合' do
+        before do
+          # get_userがnilを返す（ユーザーが存在しない）
+          allow(Auth0ManagementClient).to receive(:get_user).with(target_user_id).and_return(nil)
+
+          decoded_token = double('decoded_token')
+          allow(decoded_token).to receive(:validate_permissions).with([ 'delete:users' ]).and_return(true)
+          allow_any_instance_of(ApplicationController).to receive(:authorize) do |controller|
+            controller.instance_variable_set(:@decoded_token, decoded_token)
+          end
+          allow_any_instance_of(ApplicationController).to receive(:current_user_id).and_return(user_id)
+        end
+
+        it '404エラーを返すこと' do
+          delete "/api/v1/admin/users/#{target_user_id}", headers: auth_headers
+
+          expect(response).to have_http_status(:not_found)
+          json_response = JSON.parse(response.body)
+          expect(json_response['success']).to be false
+          expect(json_response['errors']).to include('指定されたユーザーが見つかりません')
+          expect(json_response['message']).to eq('指定されたユーザーが見つかりません')
+        end
+
+        it 'delete_userを呼ばないこと' do
+          allow(Auth0ManagementClient).to receive(:delete_user)
+          delete "/api/v1/admin/users/#{target_user_id}", headers: auth_headers
+          expect(Auth0ManagementClient).not_to have_received(:delete_user)
+        end
+      end
+
       context '削除失敗' do
         before do
-          allow(Auth0ManagementClient).to receive(:delete_user).and_return(false)
+          # get_userは成功するが、delete_userが失敗する
+          allow(Auth0ManagementClient).to receive(:get_user).with(target_user_id).and_return({ user_id: target_user_id })
+          allow(Auth0ManagementClient).to receive(:delete_user).with(target_user_id).and_return(false)
 
           decoded_token = double('decoded_token')
           allow(decoded_token).to receive(:validate_permissions).with([ 'delete:users' ]).and_return(true)
@@ -140,14 +174,15 @@ RSpec.describe 'DELETE /api/v1/admin/users/:id', type: :request do
         end
 
         it 'API呼び出しが失敗した場合、500エラーを返すこと' do
-          allow(Auth0ManagementClient).to receive(:delete_user).and_raise(StandardError, 'API Error')
+          allow(Auth0ManagementClient).to receive(:get_user).with(target_user_id).and_raise(StandardError, 'API Error')
 
           delete "/api/v1/admin/users/#{target_user_id}", headers: auth_headers
 
           expect(response).to have_http_status(:internal_server_error)
           json_response = JSON.parse(response.body)
           expect(json_response['success']).to be false
-          expect(json_response['errors']).to include('内部サーバーエラーが発生しました')
+          expect(json_response['errors']).to include('アカウントの削除中にエラーが発生しました')
+          expect(json_response['message']).to eq('アカウントの削除中にエラーが発生しました')
         end
       end
     end
@@ -162,12 +197,32 @@ RSpec.describe 'DELETE /api/v1/admin/users/:id', type: :request do
         allow_any_instance_of(ApplicationController).to receive(:current_user_id).and_return(user_id)
       end
 
-      it '存在しないユーザーIDでもエラーを返さない（Auth0側で処理）' do
-        allow(Auth0ManagementClient).to receive(:delete_user).and_return(true)
+      it '存在しないユーザーIDの場合、404エラーを返すこと' do
+        non_existent_user_id = 'non-existent-user'
+        allow(Auth0ManagementClient).to receive(:get_user).with(non_existent_user_id).and_return(nil)
+        allow(Auth0ManagementClient).to receive(:delete_user) # スパイとして設定
 
-        delete '/api/v1/admin/users/non-existent-user', headers: auth_headers
-        expect(response).to have_http_status(:no_content)
-        expect(Auth0ManagementClient).to have_received(:delete_user).with('non-existent-user')
+        delete "/api/v1/admin/users/#{non_existent_user_id}", headers: auth_headers
+        expect(response).to have_http_status(:not_found)
+        json_response = JSON.parse(response.body)
+        expect(json_response['success']).to be false
+        expect(json_response['errors']).to include('指定されたユーザーが見つかりません')
+        expect(Auth0ManagementClient).not_to have_received(:delete_user)
+      end
+
+      context 'delete_userが:not_foundを返した場合' do
+        before do
+          allow(Auth0ManagementClient).to receive(:get_user).with(target_user_id).and_return({ user_id: target_user_id })
+          allow(Auth0ManagementClient).to receive(:delete_user).with(target_user_id).and_return(:not_found)
+        end
+
+        it '404エラーを返すこと' do
+          delete "/api/v1/admin/users/#{target_user_id}", headers: auth_headers
+          expect(response).to have_http_status(:not_found)
+          json_response = JSON.parse(response.body)
+          expect(json_response['success']).to be false
+          expect(json_response['errors']).to include('指定されたユーザーが見つかりません')
+        end
       end
     end
   end
