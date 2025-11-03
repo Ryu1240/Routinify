@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { notifications } from '@mantine/notifications';
 
 // APIのベースURLを設定
 const API_BASE_URL =
@@ -29,11 +30,31 @@ axios.interceptors.response.use(
     return response;
   },
   (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url;
+
     // 401エラーの場合はログインページにリダイレクト
-    if (error.response?.status === 401) {
+    if (status === 401) {
       localStorage.removeItem('access_token');
       window.location.href = '/login';
+      return Promise.reject(error);
     }
+
+    // 500/503エラーはサーバーエラーとして通知
+    // ただし、ログインAPIの場合は個別に処理するため通知をスキップ
+    if ((status === 500 || status === 503) && !url?.includes('/auth/login')) {
+      const message =
+        error.response?.data?.message ||
+        'サーバーエラーが発生しました。しばらく時間をおいて再度お試しください。';
+
+      notifications.show({
+        title: 'サーバーエラー',
+        message: message,
+        color: 'red',
+        autoClose: 5000,
+      });
+    }
+
     return Promise.reject(error);
   }
 );
