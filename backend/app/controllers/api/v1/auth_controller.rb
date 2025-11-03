@@ -31,15 +31,15 @@ module Api
 
       def logout
         # Auth0 JWT検証は authorize で完了（既存のSecuredモジュールを使用）
-        
+
         # リフレッシュトークンが提供されている場合は無効化を試行
         refresh_token = params[:refresh_token]
-        
+
         if refresh_token.present?
           begin
             # Auth0のリフレッシュトークンを無効化
             revoked = Auth0ManagementClient.revoke_refresh_token(refresh_token)
-            
+
             if revoked
               Rails.logger.info("Refresh token revoked successfully for user: #{current_user_id}")
             else
@@ -55,11 +55,11 @@ module Api
         else
           Rails.logger.info("Logout requested without refresh token for user: #{current_user_id}")
         end
-        
+
         # 注意: JWTアクセストークン自体は無効化できません（JWTはステートレス）
         # ただし、リフレッシュトークンを無効化することで、新しいトークンの取得を防げます
         # アクセストークンは期限切れまで有効ですが、期限は通常短い（例: 1時間）です
-        
+
         render_success(message: 'Logged out successfully')
       end
 
