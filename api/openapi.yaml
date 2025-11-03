@@ -2224,18 +2224,7 @@ paths:
             - delete:users
       responses:
         '204':
-          description: 削除成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                    example: true
-                  message:
-                    type: string
-                    example: "アカウントが正常に削除されました"
+          description: 削除成功（レスポンスボディなし）
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':

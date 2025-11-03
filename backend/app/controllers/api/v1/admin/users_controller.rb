@@ -28,7 +28,12 @@ module Api
             )
 
             if result.success?
-              render_success(data: result.data, status: result.status)
+              # 204 No Contentの場合はレスポンスボディなし
+              if result.status == :no_content
+                head :no_content
+              else
+                render_success(data: result.data, status: result.status)
+              end
             else
               render_error(
                 errors: result.errors,
