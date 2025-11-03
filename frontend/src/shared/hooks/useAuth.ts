@@ -24,8 +24,8 @@ export const useAuth = () => {
     const stored = localStorage.getItem('user_roles');
     return stored ? JSON.parse(stored) : [];
   });
-  // デフォルトでは常にfalse（APIからロール情報が取得されるまでは非表示）
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  // userRolesから自動的に計算する（初期化時もlocalStorageから復元された値を反映）
+  const isAdmin = userRoles.includes('admin');
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
   // Auth0トークンを取得
@@ -66,6 +66,18 @@ export const useAuth = () => {
     auth0Logout,
   ]);
 
+  // 認証が解除された時にlocalStorageをクリア
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      // 認証が解除された場合、localStorageからすべての認証関連データを削除
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('user_roles');
+      setAccessToken(null);
+      setUserRoles([]);
+      setUserPermissions([]);
+    }
+  }, [isAuthenticated, isLoading]);
+
   // Auth0認証完了後、ロール情報を取得
   useEffect(() => {
     const fetchRoles = async () => {
@@ -74,15 +86,13 @@ export const useAuth = () => {
           const response = await authApi.login(accessToken);
           const roles = response.user.roles;
           setUserRoles(roles);
-          const adminStatus = roles.includes('admin');
-          setIsAdmin(adminStatus);
           // localStorageにロール情報を永続化
           localStorage.setItem('user_roles', JSON.stringify(roles));
           console.log(
             'ロール情報を取得しました:',
             roles,
             'isAdmin:',
-            adminStatus
+            roles.includes('admin')
           );
         } catch (error) {
           console.error('Failed to get role info:', error);
@@ -105,7 +115,6 @@ export const useAuth = () => {
               if (stored) {
                 const roles = JSON.parse(stored) as string[];
                 setUserRoles(roles);
-                setIsAdmin(roles.includes('admin'));
               }
             } else if (status === 401) {
               // 認証エラー: トークンが無効
@@ -121,7 +130,6 @@ export const useAuth = () => {
               localStorage.removeItem('user_roles');
               setAccessToken(null);
               setUserRoles([]);
-              setIsAdmin(false);
               auth0Logout();
             }
           }
@@ -146,11 +154,11 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout API error:', error);
     } finally {
+      // ログアウト時は必ずlocalStorageから認証関連データを削除
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_roles');
       setAccessToken(null);
       setUserRoles([]);
-      setIsAdmin(false);
       setUserPermissions([]);
       await auth0Logout({ logoutParams: { returnTo: window.location.origin } });
     }
