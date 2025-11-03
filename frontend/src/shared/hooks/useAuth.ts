@@ -3,7 +3,10 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { notifications } from '@mantine/notifications';
 import { authApi } from '@/features/auth/api/authApi';
-import { getPermissionsFromToken, hasPermissions } from '@/shared/utils/tokenUtils';
+import {
+  getPermissionsFromToken,
+  hasPermissions,
+} from '@/shared/utils/tokenUtils';
 
 export const useAuth = () => {
   const {
@@ -16,8 +19,13 @@ export const useAuth = () => {
   } = useAuth0();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
-  const [userRoles, setUserRoles] = useState<string[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [userRoles, setUserRoles] = useState<string[]>(() => {
+    // localStorageからロール情報を復元
+    const stored = localStorage.getItem('user_roles');
+    return stored ? JSON.parse(stored) : [];
+  });
+  // デフォルトでは常にfalse（APIからロール情報が取得されるまでは非表示）
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
 
   // Auth0トークンを取得
@@ -30,10 +38,15 @@ export const useAuth = () => {
           setAccessToken(token);
           // localStorageにも保存（axios設定との互換性のため）
           localStorage.setItem('access_token', token);
-          
+
           // トークンからパーミッション（スコープ）を取得
-          const permissions = getPermissionsFromToken(token);
-          setUserPermissions(permissions);
+          // トークンが無効な場合は空配列を返す
+          if (token) {
+            const permissions = getPermissionsFromToken(token);
+            setUserPermissions(permissions);
+          } else {
+            setUserPermissions([]);
+          }
         } catch (error) {
           console.error('トークンの取得に失敗しました:', error);
           // トークン取得に失敗した場合は再ログインを促す
@@ -59,8 +72,18 @@ export const useAuth = () => {
       if (isAuthenticated && !isLoading && accessToken) {
         try {
           const response = await authApi.login(accessToken);
-          setUserRoles(response.user.roles);
-          setIsAdmin(response.user.roles.includes('admin'));
+          const roles = response.user.roles;
+          setUserRoles(roles);
+          const adminStatus = roles.includes('admin');
+          setIsAdmin(adminStatus);
+          // localStorageにロール情報を永続化
+          localStorage.setItem('user_roles', JSON.stringify(roles));
+          console.log(
+            'ロール情報を取得しました:',
+            roles,
+            'isAdmin:',
+            adminStatus
+          );
         } catch (error) {
           console.error('Failed to get role info:', error);
 
@@ -77,6 +100,13 @@ export const useAuth = () => {
                 color: 'red',
                 autoClose: 5000,
               });
+              // サーバーエラーの場合、localStorageから復元したロール情報を使用
+              const stored = localStorage.getItem('user_roles');
+              if (stored) {
+                const roles = JSON.parse(stored) as string[];
+                setUserRoles(roles);
+                setIsAdmin(roles.includes('admin'));
+              }
             } else if (status === 401) {
               // 認証エラー: トークンが無効
               notifications.show({
@@ -86,14 +116,19 @@ export const useAuth = () => {
                 color: 'red',
                 autoClose: 5000,
               });
-              // トークンをクリアして再ログインを促す
+              // トークンとロール情報をクリアして再ログインを促す
               localStorage.removeItem('access_token');
+              localStorage.removeItem('user_roles');
               setAccessToken(null);
+              setUserRoles([]);
+              setIsAdmin(false);
               auth0Logout();
             }
           }
         }
       }
+      // トークンがまだない場合は、localStorageから復元しない
+      // APIから確実にロール情報を取得するまで待つ
     };
 
     fetchRoles();
@@ -112,6 +147,7 @@ export const useAuth = () => {
       console.error('Logout API error:', error);
     } finally {
       localStorage.removeItem('access_token');
+      localStorage.removeItem('user_roles');
       setAccessToken(null);
       setUserRoles([]);
       setIsAdmin(false);

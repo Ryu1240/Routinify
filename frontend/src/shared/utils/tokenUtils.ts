@@ -20,6 +20,11 @@ interface JwtPayload {
  */
 export const decodeJwtToken = (token: string): JwtPayload | null => {
   try {
+    // トークンが空またはnullの場合はnullを返す
+    if (!token || typeof token !== 'string') {
+      return null;
+    }
+
     // JWTは base64url エンコードされた3つの部分で構成されている: header.payload.signature
     const parts = token.split('.');
     if (parts.length !== 3) {
@@ -28,10 +33,17 @@ export const decodeJwtToken = (token: string): JwtPayload | null => {
 
     // ペイロード部分をデコード（base64urlデコード）
     const payload = parts[1];
+    if (!payload) {
+      return null;
+    }
+
     // base64urlデコード: - を + に、_ を / に変換
     const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+
     // パディングを追加（必要に応じて）
-    const paddedBase64 = base64 + '==='.slice((base64.length % 4) || 0);
+    const paddingLength = (4 - (base64.length % 4)) % 4;
+    const paddedBase64 = base64 + '='.repeat(paddingLength);
+
     // base64デコード
     const decodedPayload = atob(paddedBase64);
     return JSON.parse(decodedPayload);
@@ -53,10 +65,9 @@ export const getPermissionsFromToken = (token: string): string[] => {
   }
 
   // スコープはスペース区切りの文字列
-  const scopes = typeof decoded.scope === 'string' 
-    ? decoded.scope.split(' ') 
-    : [];
-  
+  const scopes =
+    typeof decoded.scope === 'string' ? decoded.scope.split(' ') : [];
+
   // openid, profile, email などの標準スコープを除外し、カスタムパーミッションのみを返す
   const customPermissions = scopes.filter((scope: string) => {
     const standardScopes = ['openid', 'profile', 'email', 'offline_access'];
@@ -90,4 +101,3 @@ export const hasPermissions = (
     userPermissions.includes(permission)
   );
 };
-
