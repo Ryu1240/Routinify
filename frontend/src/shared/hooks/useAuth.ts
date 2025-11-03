@@ -75,7 +75,8 @@ export const useAuth = () => {
               // 認証エラー: トークンが無効
               notifications.show({
                 title: '認証エラー',
-                message: '認証に失敗しました。もう一度ログインをお試しください。',
+                message:
+                  '認証に失敗しました。もう一度ログインをお試しください。',
                 color: 'red',
                 autoClose: 5000,
               });
