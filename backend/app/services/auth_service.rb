@@ -19,7 +19,13 @@ class AuthService
       # 2. ロール情報を取得
       roles = fetch_user_roles(user_id)
 
-      # 3. レスポンスデータを構築（カスタムJWTは発行しない）
+      # 3. ロールがない場合、デフォルトで"user"ロールを付与（新規サインアップユーザー用）
+      if roles.empty?
+        assign_default_role(user_id)
+        roles = fetch_user_roles(user_id)
+      end
+
+      # 4. レスポンスデータを構築（カスタムJWTは発行しない）
       success_response(
         user: {
           id: user_id,
@@ -40,6 +46,18 @@ class AuthService
     rescue StandardError => e
       Rails.logger.warn("Failed to fetch user roles: #{e.message}")
       [] # フォールバック: 空配列
+    end
+
+    def assign_default_role(user_id)
+      default_role = 'user'
+      success = Auth0ManagementClient.assign_role_to_user(user_id, default_role)
+      if success
+        Rails.logger.info("Assigned default role '#{default_role}' to user #{user_id}")
+      else
+        Rails.logger.warn("Failed to assign default role '#{default_role}' to user #{user_id}")
+      end
+    rescue StandardError => e
+      Rails.logger.error("Error assigning default role: #{e.message}")
     end
 
     def success_response(data)

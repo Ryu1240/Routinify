@@ -104,6 +104,76 @@ class Auth0ManagementClient
     end
   end
 
+  # Get role ID by role name
+  # Returns:
+  #   Role ID string, or nil if role not found
+  def self.get_role_id_by_name(role_name)
+    token = access_token
+
+    begin
+      response = HTTParty.get(
+        "#{management_api_url}/roles?name_filter=#{URI.encode_www_form_component(role_name)}",
+        headers: { 'Authorization' => "Bearer #{token}" }
+      )
+
+      if response.success?
+        roles = JSON.parse(response.body)
+        role = roles.find { |r| r['name'] == role_name }
+        role ? role['id'] : nil
+      else
+        Rails.logger.error("Failed to fetch role by name: #{response.code} - #{response.body}") if defined?(Rails)
+        nil
+      end
+    rescue HTTParty::Error, Net::OpenTimeout, Net::ReadTimeout, SocketError,
+           Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH,
+           JSON::ParserError, Timeout::Error => e
+      Rails.logger.error("Error fetching role by name: #{e.message}") if defined?(Rails)
+      nil
+    end
+  end
+
+  # Assign role to user
+  # Returns:
+  #   true - ロール付与成功
+  #   false - ロール付与失敗
+  def self.assign_role_to_user(user_id, role_name)
+    token = access_token
+
+    # ユーザーIDをURLエンコード
+    encoded_user_id = URI.encode_www_form_component(user_id)
+
+    # ロール名からロールIDを取得
+    role_id = get_role_id_by_name(role_name)
+    unless role_id
+      Rails.logger.error("Role '#{role_name}' not found") if defined?(Rails)
+      return false
+    end
+
+    begin
+      response = HTTParty.post(
+        "#{management_api_url}/users/#{encoded_user_id}/roles",
+        body: { roles: [role_id] }.to_json,
+        headers: {
+          'Authorization' => "Bearer #{token}",
+          'Content-Type' => 'application/json'
+        }
+      )
+
+      if response.success? || response.code == 204
+        Rails.logger.info("Successfully assigned role '#{role_name}' to user #{user_id}") if defined?(Rails)
+        true
+      else
+        Rails.logger.error("Failed to assign role to user: #{response.code} - #{response.body}") if defined?(Rails)
+        false
+      end
+    rescue HTTParty::Error, Net::OpenTimeout, Net::ReadTimeout, SocketError,
+           Errno::ECONNREFUSED, Errno::ECONNRESET, Errno::EHOSTUNREACH,
+           JSON::ParserError, Timeout::Error => e
+      Rails.logger.error("Error assigning role to user: #{e.message}") if defined?(Rails)
+      false
+    end
+  end
+
   # Revoke refresh token
   # Auth0のリフレッシュトークンを無効化します
   # Returns:
