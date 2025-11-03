@@ -1,0 +1,58 @@
+# frozen_string_literal: true
+
+class AuthService
+  class << self
+    def authenticate(auth0_token)
+      # 1. Auth0トークンを検証
+      auth0_response = Auth0Client.validate_token(auth0_token)
+
+      unless auth0_response.decoded_token
+        return error_response('Invalid Auth0 token')
+      end
+
+      # デコードされたトークンデータを取得
+      token_data = auth0_response.decoded_token.token[0]
+      user_id = token_data['sub']
+      email = token_data['email'] || token_data['https://routinify.com/email']
+
+      # 2. ロール情報を取得
+      roles = fetch_user_roles(user_id)
+
+      # 3. レスポンスデータを構築（カスタムJWTは発行しない）
+      success_response(
+        user: {
+          id: user_id,
+          email: email,
+          roles: roles
+        }
+      )
+    rescue StandardError => e
+      Rails.logger.error("Authentication error: #{e.message}")
+      Rails.logger.error(e.backtrace.join("\n"))
+      error_response('Authentication failed')
+    end
+
+    private
+
+    def fetch_user_roles(user_id)
+      Auth0ManagementClient.get_user_roles(user_id)
+    rescue StandardError => e
+      Rails.logger.warn("Failed to fetch user roles: #{e.message}")
+      [] # フォールバック: 空配列
+    end
+
+    def success_response(data)
+      {
+        success: true,
+        data: data
+      }
+    end
+
+    def error_response(message)
+      {
+        success: false,
+        error: message
+      }
+    end
+  end
+end
