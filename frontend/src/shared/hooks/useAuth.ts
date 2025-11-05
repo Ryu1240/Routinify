@@ -142,7 +142,10 @@ export const useAuth = () => {
                   }
                 } catch (error) {
                   // JSON.parseエラーなど、何らかのエラーが発生した場合はスキップ
-                  console.error('Failed to restore user roles from localStorage:', error);
+                  console.error(
+                    'Failed to restore user roles from localStorage:',
+                    error
+                  );
                 }
               }
             } else if (status === 401) {
@@ -191,7 +194,9 @@ export const useAuth = () => {
       // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
       if (typeof window !== 'undefined') {
         localStorage.removeItem('user_roles');
-        await auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+        await auth0Logout({
+          logoutParams: { returnTo: window.location.origin },
+        });
       } else {
         await auth0Logout();
       }
