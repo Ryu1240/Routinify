@@ -20,14 +20,32 @@ export const useAuth = () => {
   } = useAuth0();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
-  const [userRoles, setUserRoles] = useState<string[]>(() => {
-    // localStorageからロール情報を復元
-    const stored = localStorage.getItem('user_roles');
-    return stored ? JSON.parse(stored) : [];
-  });
-  // userRolesから自動的に計算する（初期化時もlocalStorageから復元された値を反映）
+  // SSR/テスト環境での安全性のため、初期値は空配列
+  // クライアント側でのみlocalStorageから復元する（useEffect参照）
+  const [userRoles, setUserRoles] = useState<string[]>([]);
+  // userRolesから自動的に計算する
   const isAdmin = userRoles.includes('admin');
   const [userPermissions, setUserPermissions] = useState<string[]>([]);
+
+  // クライアント側でのみlocalStorageからロール情報を復元（SSR/テスト対応）
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return; // SSR環境では実行しない
+    }
+
+    try {
+      const stored = localStorage.getItem('user_roles');
+      if (stored) {
+        const roles = JSON.parse(stored) as string[];
+        setUserRoles(roles);
+      }
+    } catch (error) {
+      // JSON.parseエラーなど、何らかのエラーが発生した場合は空配列を維持
+      console.error('Failed to parse user roles from localStorage:', error);
+      // 不正なデータを削除
+      localStorage.removeItem('user_roles');
+    }
+  }, []); // マウント時に1回だけ実行
 
   // Auth0トークンを取得
   useEffect(() => {
@@ -77,7 +95,9 @@ export const useAuth = () => {
       setMemoryToken(null); // メモリ内のトークンもクリア
       // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
       // ただし、user_rolesは手動で削除
-      localStorage.removeItem('user_roles');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user_roles');
+      }
       setAccessToken(null);
       setUserRoles([]);
       setUserPermissions([]);
@@ -92,8 +112,10 @@ export const useAuth = () => {
           const response = await authApi.login(accessToken);
           const roles = response.user.roles;
           setUserRoles(roles);
-          // localStorageにロール情報を永続化
-          localStorage.setItem('user_roles', JSON.stringify(roles));
+          // localStorageにロール情報を永続化（クライアント側のみ）
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('user_roles', JSON.stringify(roles));
+          }
         } catch (error) {
           console.error('Failed to get role info:', error);
 
@@ -111,10 +133,17 @@ export const useAuth = () => {
                 autoClose: 5000,
               });
               // サーバーエラーの場合、localStorageから復元したロール情報を使用
-              const stored = localStorage.getItem('user_roles');
-              if (stored) {
-                const roles = JSON.parse(stored) as string[];
-                setUserRoles(roles);
+              if (typeof window !== 'undefined') {
+                try {
+                  const stored = localStorage.getItem('user_roles');
+                  if (stored) {
+                    const roles = JSON.parse(stored) as string[];
+                    setUserRoles(roles);
+                  }
+                } catch (error) {
+                  // JSON.parseエラーなど、何らかのエラーが発生した場合はスキップ
+                  console.error('Failed to restore user roles from localStorage:', error);
+                }
               }
             } else if (status === 401) {
               // 認証エラー: トークンが無効
@@ -128,7 +157,9 @@ export const useAuth = () => {
               // トークンとロール情報をクリアして再ログインを促す
               setMemoryToken(null); // メモリ内のトークンもクリア
               // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
-              localStorage.removeItem('user_roles');
+              if (typeof window !== 'undefined') {
+                localStorage.removeItem('user_roles');
+              }
               setAccessToken(null);
               setUserRoles([]);
               auth0Logout();
@@ -158,11 +189,15 @@ export const useAuth = () => {
       // ログアウト時は必ず認証関連データを削除
       setMemoryToken(null); // メモリ内のトークンもクリア
       // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
-      localStorage.removeItem('user_roles');
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user_roles');
+        await auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+      } else {
+        await auth0Logout();
+      }
       setAccessToken(null);
       setUserRoles([]);
       setUserPermissions([]);
-      await auth0Logout({ logoutParams: { returnTo: window.location.origin } });
     }
   }, [accessToken, auth0Logout]);
 
