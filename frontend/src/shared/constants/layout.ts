@@ -5,7 +5,6 @@ export const LAYOUT_CONSTANTS = {
 
   // ヘッダー
   HEADER_HEIGHT: 60,
-  ADMIN_BAR_HEIGHT: 36,
 
   // レスポンシブブレークポイント
   MOBILE_BREAKPOINT: 768,
