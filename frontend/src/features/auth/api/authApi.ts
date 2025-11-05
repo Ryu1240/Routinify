@@ -21,10 +21,17 @@ export const authApi = {
    * ログイン: Auth0トークンを送信してロール情報を取得
    */
   login: async (auth0Token: string): Promise<LoginResponse> => {
-    const response = await axios.post<LoginResponse>('/api/v1/auth/login', {
+    const response = await axios.post<{
+      success: boolean;
+      data: LoginResponse;
+    }>('/api/v1/auth/login', {
       auth0_token: auth0Token,
     });
-    return response.data;
+    // バックエンドは { success: true, data: { user: {...} } } を返す
+    if (!response.data.data || !response.data.data.user) {
+      throw new Error('Invalid response structure from login API');
+    }
+    return response.data.data;
   },
 
   /**

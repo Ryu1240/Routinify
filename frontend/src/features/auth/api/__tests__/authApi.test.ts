@@ -14,10 +14,13 @@ describe('authApi', () => {
       const auth0Token = 'auth0_token';
       const mockResponse = {
         data: {
-          user: {
-            id: 'auth0|user123',
-            email: 'test@example.com',
-            roles: ['admin'],
+          success: true,
+          data: {
+            user: {
+              id: 'auth0|user123',
+              email: 'test@example.com',
+              roles: ['admin'],
+            },
           },
         },
       };
@@ -29,7 +32,7 @@ describe('authApi', () => {
       expect(axios.post).toHaveBeenCalledWith('/api/v1/auth/login', {
         auth0_token: auth0Token,
       });
-      expect(result).toEqual(mockResponse.data);
+      expect(result).toEqual(mockResponse.data.data);
     });
 
     it('エラーが発生した場合、エラーをスローすること', async () => {

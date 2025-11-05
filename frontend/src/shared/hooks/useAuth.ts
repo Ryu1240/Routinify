@@ -3,6 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { notifications } from '@mantine/notifications';
 import { authApi } from '@/features/auth/api/authApi';
+import {
+  getPermissionsFromToken,
+  hasPermissions,
+} from '@/shared/utils/tokenUtils';
+import { setMemoryToken } from '@/lib/axios';
 
 export const useAuth = () => {
   const {
@@ -15,8 +20,32 @@ export const useAuth = () => {
   } = useAuth0();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
+  // SSR/テスト環境での安全性のため、初期値は空配列
+  // クライアント側でのみlocalStorageから復元する（useEffect参照）
   const [userRoles, setUserRoles] = useState<string[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+  // userRolesから自動的に計算する
+  const isAdmin = userRoles.includes('admin');
+  const [userPermissions, setUserPermissions] = useState<string[]>([]);
+
+  // クライアント側でのみlocalStorageからロール情報を復元（SSR/テスト対応）
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return; // SSR環境では実行しない
+    }
+
+    try {
+      const stored = localStorage.getItem('user_roles');
+      if (stored) {
+        const roles = JSON.parse(stored) as string[];
+        setUserRoles(roles);
+      }
+    } catch (error) {
+      // JSON.parseエラーなど、何らかのエラーが発生した場合は空配列を維持
+      console.error('Failed to parse user roles from localStorage:', error);
+      // 不正なデータを削除
+      localStorage.removeItem('user_roles');
+    }
+  }, []); // マウント時に1回だけ実行
 
   // Auth0トークンを取得
   useEffect(() => {
@@ -24,10 +53,22 @@ export const useAuth = () => {
       if (isAuthenticated && !isLoading && !accessToken) {
         try {
           setTokenLoading(true);
+          // Auth0 SDKが自動的にリフレッシュトークンを使用してトークンを取得・更新
+          // ページリロード後もAuth0 SDKがlocalStorageからトークンを復元し、必要に応じてリフレッシュ
           const token = await getAccessTokenSilently();
           setAccessToken(token);
-          // localStorageにも保存（axios設定との互換性のため）
-          localStorage.setItem('access_token', token);
+          // メモリ内に保存（axiosインターセプターで使用）
+          // Auth0 SDKはlocalStorageにトークンを保存（内部管理）
+          setMemoryToken(token);
+
+          // トークンからパーミッション（スコープ）を取得
+          // トークンが無効な場合は空配列を返す
+          if (token) {
+            const permissions = getPermissionsFromToken(token);
+            setUserPermissions(permissions);
+          } else {
+            setUserPermissions([]);
+          }
         } catch (error) {
           console.error('トークンの取得に失敗しました:', error);
           // トークン取得に失敗した場合は再ログインを促す
@@ -47,14 +88,34 @@ export const useAuth = () => {
     auth0Logout,
   ]);
 
+  // 認証が解除された時に状態をクリア
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      // 認証が解除された場合、すべての認証関連データを削除
+      setMemoryToken(null); // メモリ内のトークンもクリア
+      // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
+      // ただし、user_rolesは手動で削除
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user_roles');
+      }
+      setAccessToken(null);
+      setUserRoles([]);
+      setUserPermissions([]);
+    }
+  }, [isAuthenticated, isLoading]);
+
   // Auth0認証完了後、ロール情報を取得
   useEffect(() => {
     const fetchRoles = async () => {
       if (isAuthenticated && !isLoading && accessToken) {
         try {
           const response = await authApi.login(accessToken);
-          setUserRoles(response.user.roles);
-          setIsAdmin(response.user.roles.includes('admin'));
+          const roles = response.user.roles;
+          setUserRoles(roles);
+          // localStorageにロール情報を永続化（クライアント側のみ）
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('user_roles', JSON.stringify(roles));
+          }
         } catch (error) {
           console.error('Failed to get role info:', error);
 
@@ -71,6 +132,22 @@ export const useAuth = () => {
                 color: 'red',
                 autoClose: 5000,
               });
+              // サーバーエラーの場合、localStorageから復元したロール情報を使用
+              if (typeof window !== 'undefined') {
+                try {
+                  const stored = localStorage.getItem('user_roles');
+                  if (stored) {
+                    const roles = JSON.parse(stored) as string[];
+                    setUserRoles(roles);
+                  }
+                } catch (error) {
+                  // JSON.parseエラーなど、何らかのエラーが発生した場合はスキップ
+                  console.error(
+                    'Failed to restore user roles from localStorage:',
+                    error
+                  );
+                }
+              }
             } else if (status === 401) {
               // 認証エラー: トークンが無効
               notifications.show({
@@ -80,14 +157,21 @@ export const useAuth = () => {
                 color: 'red',
                 autoClose: 5000,
               });
-              // トークンをクリアして再ログインを促す
-              localStorage.removeItem('access_token');
+              // トークンとロール情報をクリアして再ログインを促す
+              setMemoryToken(null); // メモリ内のトークンもクリア
+              // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
+              if (typeof window !== 'undefined') {
+                localStorage.removeItem('user_roles');
+              }
               setAccessToken(null);
+              setUserRoles([]);
               auth0Logout();
             }
           }
         }
       }
+      // トークンがまだない場合は、localStorageから復元しない
+      // APIから確実にロール情報を取得するまで待つ
     };
 
     fetchRoles();
@@ -105,13 +189,34 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout API error:', error);
     } finally {
-      localStorage.removeItem('access_token');
+      // ログアウト時は必ず認証関連データを削除
+      setMemoryToken(null); // メモリ内のトークンもクリア
+      // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('user_roles');
+        await auth0Logout({
+          logoutParams: { returnTo: window.location.origin },
+        });
+      } else {
+        await auth0Logout();
+      }
       setAccessToken(null);
       setUserRoles([]);
-      setIsAdmin(false);
-      await auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+      setUserPermissions([]);
     }
   }, [accessToken, auth0Logout]);
+
+  /**
+   * 特定のパーミッションを持っているかチェック
+   * @param requiredPermissions 必要なパーミッションの配列
+   * @returns すべてのパーミッションを持っている場合true
+   */
+  const checkPermissions = useCallback(
+    (requiredPermissions: string[]): boolean => {
+      return hasPermissions(accessToken, requiredPermissions);
+    },
+    [accessToken]
+  );
 
   return {
     isAuthenticated, // Auth0の認証状態のみを反映
@@ -121,6 +226,8 @@ export const useAuth = () => {
     accessToken,
     userRoles,
     isAdmin,
+    userPermissions, // パーミッション（スコープ）の配列
+    checkPermissions, // パーミッションチェック関数
     login,
     logout: handleLogout,
   };

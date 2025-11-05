@@ -12,8 +12,6 @@ const checkEnvironmentVariable = (
       `   .env ファイルまたは環境変数で ${name} を設定してください。`;
     throw new Error(errorMessage);
   }
-  // eslint-disable-next-line no-console
-  console.log(`✅ 環境変数 ${name} が正常に設定されています。`);
   return value;
 };
 
@@ -41,6 +39,8 @@ export const auth0Config: Auth0ProviderOptions = {
     scope:
       'openid profile email read:tasks write:tasks delete:tasks read:routine-tasks write:routine-tasks delete:routine-tasks read:milestones write:milestones delete:milestones read:users delete:users ',
   },
+  // Auth0 SDKがトークンを内部的に管理（リフレッシュトークンのローテーション対応）
+  // ページリロード後もセッションを維持しつつ、Auth0 SDKがセキュアにトークンを管理
   cacheLocation: 'localstorage',
   useRefreshTokens: true,
   // Arcブラウザ対応

@@ -19,6 +19,8 @@ import {
   AchievementDetailPage,
 } from './pages/achievements';
 import { AccountManagementPage } from './pages/admin';
+import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
+import { useAuth } from '@/shared/hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -38,6 +40,26 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Admin権限保護用のラッパーコンポーネント
+const AdminRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const hasAdminRole = useHasAdminRole();
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
+
+  if (!hasAdminRole) {
+    return <Navigate to="/" replace />;
   }
 
   return <>{children}</>;
@@ -131,7 +153,9 @@ const AppContent: React.FC = () => {
         path="/admin/accounts"
         element={
           <ProtectedRoute>
-            <AccountManagementPage />
+            <AdminRoute>
+              <AccountManagementPage />
+            </AdminRoute>
           </ProtectedRoute>
         }
       />
@@ -146,8 +170,6 @@ const App: React.FC = () => {
       {...auth0Config}
       onRedirectCallback={(appState) => {
         // リダイレクト後の処理をカスタマイズ
-        // eslint-disable-next-line no-console
-        console.log('Redirect callback:', appState);
         // ユーザーを意図したページにリダイレクト
         window.history.replaceState(
           {},
