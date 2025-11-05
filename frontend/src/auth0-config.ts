@@ -12,8 +12,6 @@ const checkEnvironmentVariable = (
       `   .env ファイルまたは環境変数で ${name} を設定してください。`;
     throw new Error(errorMessage);
   }
-  // eslint-disable-next-line no-console
-  console.log(`✅ 環境変数 ${name} が正常に設定されています。`);
   return value;
 };
 

@@ -88,12 +88,6 @@ export const useAuth = () => {
           setUserRoles(roles);
           // localStorageにロール情報を永続化
           localStorage.setItem('user_roles', JSON.stringify(roles));
-          console.log(
-            'ロール情報を取得しました:',
-            roles,
-            'isAdmin:',
-            roles.includes('admin')
-          );
         } catch (error) {
           console.error('Failed to get role info:', error);
 
