@@ -28,7 +28,7 @@
 4. 以下の情報を入力:
    - Name: "Assign User Role on Signup"
    - Trigger: "Post User Registration"
-5. `auth0-action-assign-user-role.js` の内容をコピー＆ペースト
+5. `auth0-action-assign-user-role-post-login.js` の内容をコピー＆ペースト
 6. 「Deploy」をクリック
 
 ### 3. 環境変数の設定
