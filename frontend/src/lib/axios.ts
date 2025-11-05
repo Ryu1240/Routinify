@@ -9,11 +9,33 @@ const API_BASE_URL =
 axios.defaults.baseURL = API_BASE_URL;
 axios.defaults.timeout = 10000;
 
+// トークンをメモリ内に保存（axiosインターセプターで使用）
+// Auth0 SDKがlocalStorageにトークンを保存・管理（内部管理）
+// このメモリ内トークンはuseAuthフックによってAuth0 SDKから取得したトークンで更新される
+let memoryToken: string | null = null;
+
+/**
+ * メモリ内のトークンを設定（useAuthフックから呼び出される）
+ * @param token アクセストークン
+ */
+export const setMemoryToken = (token: string | null): void => {
+  memoryToken = token;
+};
+
+/**
+ * メモリ内のトークンを取得
+ * @returns アクセストークン
+ */
+export const getMemoryToken = (): string | null => {
+  return memoryToken;
+};
+
 // リクエストインターセプター
 axios.interceptors.request.use(
   (config) => {
-    // アクセストークンがある場合は自動的に追加
-    const token = localStorage.getItem('access_token');
+    // メモリ内のトークンを使用（useAuthフックがAuth0 SDKから取得したトークンを設定）
+    // Auth0 SDKはlocalStorageにトークンを保存・管理（リフレッシュトークンのローテーション対応）
+    const token = getMemoryToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,7 +57,9 @@ axios.interceptors.response.use(
 
     // 401エラーの場合はログインページにリダイレクト
     if (status === 401) {
-      localStorage.removeItem('access_token');
+      // メモリ内のトークンをクリア
+      // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
+      setMemoryToken(null);
       window.location.href = '/login';
       return Promise.reject(error);
     }

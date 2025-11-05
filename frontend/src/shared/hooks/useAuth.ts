@@ -7,6 +7,7 @@ import {
   getPermissionsFromToken,
   hasPermissions,
 } from '@/shared/utils/tokenUtils';
+import { setMemoryToken } from '@/lib/axios';
 
 export const useAuth = () => {
   const {
@@ -34,10 +35,13 @@ export const useAuth = () => {
       if (isAuthenticated && !isLoading && !accessToken) {
         try {
           setTokenLoading(true);
+          // Auth0 SDKが自動的にリフレッシュトークンを使用してトークンを取得・更新
+          // ページリロード後もAuth0 SDKがlocalStorageからトークンを復元し、必要に応じてリフレッシュ
           const token = await getAccessTokenSilently();
           setAccessToken(token);
-          // localStorageにも保存（axios設定との互換性のため）
-          localStorage.setItem('access_token', token);
+          // メモリ内に保存（axiosインターセプターで使用）
+          // Auth0 SDKはlocalStorageにトークンを保存（内部管理）
+          setMemoryToken(token);
 
           // トークンからパーミッション（スコープ）を取得
           // トークンが無効な場合は空配列を返す
@@ -66,11 +70,13 @@ export const useAuth = () => {
     auth0Logout,
   ]);
 
-  // 認証が解除された時にlocalStorageをクリア
+  // 認証が解除された時に状態をクリア
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      // 認証が解除された場合、localStorageからすべての認証関連データを削除
-      localStorage.removeItem('access_token');
+      // 認証が解除された場合、すべての認証関連データを削除
+      setMemoryToken(null); // メモリ内のトークンもクリア
+      // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
+      // ただし、user_rolesは手動で削除
       localStorage.removeItem('user_roles');
       setAccessToken(null);
       setUserRoles([]);
@@ -120,7 +126,8 @@ export const useAuth = () => {
                 autoClose: 5000,
               });
               // トークンとロール情報をクリアして再ログインを促す
-              localStorage.removeItem('access_token');
+              setMemoryToken(null); // メモリ内のトークンもクリア
+              // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
               localStorage.removeItem('user_roles');
               setAccessToken(null);
               setUserRoles([]);
@@ -148,8 +155,9 @@ export const useAuth = () => {
     } catch (error) {
       console.error('Logout API error:', error);
     } finally {
-      // ログアウト時は必ずlocalStorageから認証関連データを削除
-      localStorage.removeItem('access_token');
+      // ログアウト時は必ず認証関連データを削除
+      setMemoryToken(null); // メモリ内のトークンもクリア
+      // Auth0 SDKがlocalStorage内のトークンを自動的にクリアするため、手動で削除する必要はない
       localStorage.removeItem('user_roles');
       setAccessToken(null);
       setUserRoles([]);
