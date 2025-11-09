@@ -20,7 +20,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Box
         style={{
           marginLeft: LAYOUT_CONSTANTS.SIDEBAR_WIDTH,
-          marginTop: LAYOUT_CONSTANTS.HEADER_HEIGHT,
           padding: 'var(--mantine-spacing-md)',
           minHeight: `calc(100vh - ${LAYOUT_CONSTANTS.HEADER_HEIGHT}px)`,
           backgroundColor: 'var(--mantine-color-gray-0)',

@@ -4,7 +4,7 @@ import { Milestone } from '@/types/milestone';
 import { milestonesApi } from '../api/milestonesApi';
 
 export const useFetchMilestones = () => {
-  const { isAuthenticated, accessToken } = useAuth();
+  const { isAuthenticated, hasAccessToken } = useAuth();
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -29,14 +29,14 @@ export const useFetchMilestones = () => {
   );
 
   useEffect(() => {
-    if (isAuthenticated && accessToken) {
+    if (hasAccessToken) {
       fetchMilestones();
     } else if (!isAuthenticated) {
       setLoading(false);
       setMilestones([]);
       setError(null);
     }
-  }, [isAuthenticated, accessToken, fetchMilestones]);
+  }, [isAuthenticated, hasAccessToken, fetchMilestones]);
 
   const refreshMilestones = useCallback(
     async (filters?: Parameters<typeof milestonesApi.getAll>[0]) => {

@@ -1,12 +1,16 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Group, Button, Text, Container, rem, Image } from '@mantine/core';
-import { IconLogout } from '@tabler/icons-react';
+import { IconLogout, IconUsers } from '@tabler/icons-react';
+import { useNavigate } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
 import { BatchTaskGenerationButton } from './BatchTaskGenerationButton';
+import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
 
 const Header: React.FC = () => {
   const { logout } = useAuth0();
+  const navigate = useNavigate();
+  const hasAdminRole = useHasAdminRole();
 
   return (
     <header
@@ -45,6 +49,17 @@ const Header: React.FC = () => {
 
           {/* 右側: ボタン群 */}
           <Group gap="xs">
+            {/* 管理者の場合のみ表示: アカウント管理ボタン */}
+            {hasAdminRole && (
+              <Button
+                variant="subtle"
+                leftSection={<IconUsers size={16} />}
+                onClick={() => navigate('/admin/accounts')}
+                color="blue"
+              >
+                アカウント管理
+              </Button>
+            )}
             {/* バッチ処理ボタン */}
             <BatchTaskGenerationButton />
 
