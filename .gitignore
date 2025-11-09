@@ -55,3 +55,9 @@ backend/log/development.log
 .pnpm-store/
 .claude/develper-log
 frontend/test-results/results.xml
+frontend/MIGRATION_ISSUES.md
+.gitignore
+frontend/scripts/create-labels.sh
+frontend/MIGRATION_PLAN.md
+frontend/scripts/README.md
+frontend/scripts/create-migration-issues.sh
