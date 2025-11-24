@@ -82,7 +82,9 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   <% if ENV["DATABASE_URL"].present? %>
   # DATABASE_URLが設定されている場合は優先的に使用（Render環境など）
   # render.yamlのdatabaseName: routinify_productionと一致するデータベース名が含まれます
@@ -90,6 +92,7 @@ production:
   <% else %>
   # DATABASE_URLが設定されていない場合のフォールバック
   # render.yamlのdatabaseName: routinify_productionと一致する必要があります
+  host: <%= ENV.fetch("DATABASE_HOST") { "localhost" } %>
   database: routinify_production
   username: <%= ENV["DATABASE_USERNAME"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
