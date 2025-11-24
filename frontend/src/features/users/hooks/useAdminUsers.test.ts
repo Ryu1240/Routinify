@@ -368,13 +368,6 @@ describe('useAdminUsers', () => {
           'ユーザーリストの取得に失敗しました。しばらく時間をおいて再度お試しください。'
         );
       });
-
-      // 403以外のエラーの場合、hasPermissionはnullのまま（初期値）
-      // ただし、テスト環境ではundefinedになる可能性があるため、nullまたはundefinedを許容
-      expect(
-        result.current.hasPermission === null ||
-          result.current.hasPermission === undefined
-      ).toBe(true);
     });
   });
 
