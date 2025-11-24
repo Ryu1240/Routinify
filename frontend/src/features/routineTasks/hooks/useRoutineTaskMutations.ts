@@ -30,13 +30,14 @@ export const useRoutineTaskMutations = (onRefresh: () => void) => {
 
   const updateRoutineTask = async (
     routineTaskId: number,
-    routineTaskData: UpdateRoutineTaskDto
+    routineTaskData: UpdateRoutineTaskDto,
+    options?: { isGenerated?: boolean }
   ) => {
     try {
       setUpdateLoading(true);
       setError(null);
 
-      await routineTasksApi.update(routineTaskId, routineTaskData);
+      await routineTasksApi.update(routineTaskId, routineTaskData, options);
 
       // 更新後に習慣化タスクリストを再取得
       onRefresh();

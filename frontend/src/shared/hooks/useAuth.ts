@@ -6,7 +6,9 @@ import { authApi } from '@/features/auth/api/authApi';
 import {
   getPermissionsFromToken,
   hasPermissions,
+  getRolesFromToken,
 } from '@/shared/utils/tokenUtils';
+import { auth0Config } from '@/auth0-config';
 import { setMemoryToken } from '@/lib/axios';
 
 export const useAuth = () => {
@@ -20,6 +22,7 @@ export const useAuth = () => {
   } = useAuth0();
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [tokenLoading, setTokenLoading] = useState(false);
+  const [rolesLoading, setRolesLoading] = useState(false);
   // SSR/テスト環境での安全性のため、初期値は空配列
   // クライアント側でのみlocalStorageから復元する（useEffect参照）
   const [userRoles, setUserRoles] = useState<string[]>([]);
@@ -66,6 +69,17 @@ export const useAuth = () => {
           if (token) {
             const permissions = getPermissionsFromToken(token);
             setUserPermissions(permissions);
+
+            // トークンからロール情報を取得（API呼び出しを待たずに即座に利用可能にするため）
+            const tokenRoles = getRolesFromToken(token, auth0Config.domain);
+            if (tokenRoles.length > 0) {
+              // トークンから取得したロール情報を設定（API呼び出しの結果で上書きされる可能性がある）
+              setUserRoles(tokenRoles);
+              // localStorageにも保存（API呼び出しが失敗した場合のフォールバック）
+              if (typeof window !== 'undefined') {
+                localStorage.setItem('user_roles', JSON.stringify(tokenRoles));
+              }
+            }
           } else {
             setUserPermissions([]);
           }
@@ -104,13 +118,15 @@ export const useAuth = () => {
     }
   }, [isAuthenticated, isLoading]);
 
-  // Auth0認証完了後、ロール情報を取得
+  // Auth0認証完了後、ロール情報を取得（APIから取得、トークンから取得したものより優先）
   useEffect(() => {
     const fetchRoles = async () => {
       if (isAuthenticated && !isLoading && accessToken) {
         try {
+          setRolesLoading(true);
           const response = await authApi.login(accessToken);
           const roles = response.user.roles;
+          // APIから取得したロール情報を設定（トークンから取得したものより優先）
           setUserRoles(roles);
           // localStorageにロール情報を永続化（クライアント側のみ）
           if (typeof window !== 'undefined') {
@@ -168,7 +184,12 @@ export const useAuth = () => {
               auth0Logout();
             }
           }
+        } finally {
+          setRolesLoading(false);
         }
+      } else {
+        // トークンがまだない場合は、ロール情報の取得を待機しない
+        setRolesLoading(false);
       }
       // トークンがまだない場合は、localStorageから復元しない
       // APIから確実にロール情報を取得するまで待つ
@@ -221,7 +242,8 @@ export const useAuth = () => {
   return {
     isAuthenticated, // Auth0の認証状態のみを反映
     hasAccessToken: !!accessToken, // トークンが存在するかどうか
-    isLoading: isLoading || tokenLoading,
+    isLoading: isLoading || tokenLoading || rolesLoading,
+    rolesLoading, // ロール情報の取得状態
     user,
     accessToken,
     userRoles,

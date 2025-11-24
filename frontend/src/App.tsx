@@ -19,8 +19,8 @@ import {
   AchievementDetailPage,
 } from './pages/achievements';
 import { AccountManagementPage } from './pages/admin';
+import { ForbiddenPage } from './pages/errors';
 import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
-import { useAuth } from '@/shared/hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -46,10 +46,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 };
 
 // Admin権限保護用のラッパーコンポーネント
+// ベストプラクティス: 権限がない場合は403エラーページを表示（リダイレクトではなく）
 const AdminRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const hasAdminRole = useHasAdminRole();
-  const { isLoading } = useAuth();
+  const { hasAdminRole, isLoading } = useHasAdminRole();
 
+  // ローディング中はローディング表示を出す（権限チェック完了を待つ）
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -58,8 +59,11 @@ const AdminRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     );
   }
 
+  // ローディング完了後に権限チェックを実行
+  // ベストプラクティス: リダイレクトではなく、403エラーページを表示
+  // これにより、ユーザーに理由を明確に伝えることができる
   if (!hasAdminRole) {
-    return <Navigate to="/" replace />;
+    return <ForbiddenPage />;
   }
 
   return <>{children}</>;

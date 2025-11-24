@@ -1,6 +1,11 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// テスト環境用の環境変数を設定
+process.env.REACT_APP_AUTH0_DOMAIN = 'test-domain.auth0.com';
+process.env.REACT_APP_AUTH0_CLIENT_ID = 'test-client-id';
+process.env.REACT_APP_AUTH0_AUDIENCE = 'test-audience';
+
 // React Routerの警告を抑制
 const originalError = console.error;
 beforeAll(() => {

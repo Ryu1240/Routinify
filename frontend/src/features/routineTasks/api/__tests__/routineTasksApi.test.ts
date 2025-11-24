@@ -83,4 +83,86 @@ describe('routineTasksApi', () => {
       ).rejects.toThrow('Job not found');
     });
   });
+
+  describe('update', () => {
+    it('PUT /api/v1/routine_tasks/:id を呼び出すこと', async () => {
+      const mockRoutineTask = {
+        id: 123,
+        title: 'Updated Task',
+        frequency: 'daily',
+        isActive: true,
+      };
+
+      (axios.put as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: {
+          data: mockRoutineTask,
+        },
+      });
+
+      const updateData = {
+        title: 'Updated Task',
+        startGenerationAt: '2025-11-01T00:00:00Z',
+      };
+
+      const result = await routineTasksApi.update(123, updateData);
+
+      expect(axios.put).toHaveBeenCalledWith(
+        '/api/v1/routine_tasks/123',
+        expect.objectContaining({
+          routine_task: expect.objectContaining({
+            title: 'Updated Task',
+            start_generation_at: '2025-11-01T00:00:00Z',
+          }),
+        })
+      );
+      expect(result).toEqual(mockRoutineTask);
+    });
+
+    it('一度でも生成が行われた場合、start_generation_atを送信しないこと', async () => {
+      const mockRoutineTask = {
+        id: 123,
+        title: 'Updated Task',
+        frequency: 'daily',
+        isActive: true,
+      };
+
+      (axios.put as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: {
+          data: mockRoutineTask,
+        },
+      });
+
+      const updateData = {
+        title: 'Updated Task',
+        startGenerationAt: '2025-11-01T00:00:00Z',
+      };
+
+      const result = await routineTasksApi.update(123, updateData, {
+        isGenerated: true,
+      });
+
+      expect(axios.put).toHaveBeenCalledWith(
+        '/api/v1/routine_tasks/123',
+        expect.objectContaining({
+          routine_task: expect.not.objectContaining({
+            start_generation_at: expect.anything(),
+          }),
+        })
+      );
+      expect(result).toEqual(mockRoutineTask);
+    });
+
+    it('エラーが発生した場合、エラーをスローすること', async () => {
+      (axios.put as ReturnType<typeof vi.fn>).mockRejectedValue(
+        new Error('Update failed')
+      );
+
+      await expect(
+        routineTasksApi.update(123, {
+          title: 'Updated Task',
+          startGenerationAt: '2025-11-01T00:00:00Z',
+        })
+      ).rejects.toThrow('Update failed');
+    });
+  });
 });
