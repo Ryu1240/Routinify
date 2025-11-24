@@ -8,9 +8,14 @@ let apiBaseUrl =
   process.env.REACT_APP_API_BASE_URL || 
   'http://localhost:3000';
 
-// ホスト名のみの場合（例: routinify-backend.onrender.com）、https://を追加
+// ホスト名のみの場合（例: routinify-backend）、完全なURLを構築
 if (apiBaseUrl && !apiBaseUrl.startsWith('http://') && !apiBaseUrl.startsWith('https://')) {
-  apiBaseUrl = `https://${apiBaseUrl}`;
+  // .onrender.comが含まれていない場合は追加（Render環境の場合）
+  if (!apiBaseUrl.includes('.onrender.com') && !apiBaseUrl.includes('localhost')) {
+    apiBaseUrl = `https://${apiBaseUrl}.onrender.com`;
+  } else {
+    apiBaseUrl = `https://${apiBaseUrl}`;
+  }
 }
 
 const API_BASE_URL = apiBaseUrl;

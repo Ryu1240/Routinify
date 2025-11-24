@@ -92,6 +92,8 @@ services:
           type: web
           name: routinify-backend
           property: host
+        # 注意: hostプロパティがホスト名のみを返す場合、手動で完全なURLを設定してください
+        # 例: https://routinify-backend.onrender.com
 
 # List Render Postgres databases here
 databases:
