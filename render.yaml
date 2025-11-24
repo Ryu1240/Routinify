@@ -65,7 +65,7 @@ services:
   - type: web
     name: routinify-frontend
     runtime: static
-    plan: free
+    # 静的サイトはデフォルトで無料プランです（planフィールドは不要）
     buildCommand: cd frontend && npm install -g pnpm && pnpm install && pnpm run build
     staticPublishPath: ./frontend/build
     envVars:
