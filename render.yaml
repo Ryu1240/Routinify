@@ -2,14 +2,14 @@ services:
   # Redis（オプション - 必要に応じて有効化）
   - type: redis
     name: routinify-redis
-    plan: starter
+    plan: free
     maxmemoryPolicy: allkeys-lru
 
   # Railsバックエンドサービス
   - type: web
     name: routinify-backend
     runtime: docker
-    plan: starter
+    plan: free
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     envVars:
@@ -60,7 +60,7 @@ services:
   # Reactフロントエンド（静的サイトとして）
   - type: static
     name: routinify-frontend
-    plan: starter
+    plan: free
     buildCommand: cd frontend && npm install -g pnpm && pnpm install && pnpm run build
     staticPublishPath: ./frontend/build
     envVars:
@@ -81,4 +81,4 @@ databases:
   - name: routinify-db
     databaseName: routinify_production
     user: routinify_user
-    plan: starter
+    plan: free
