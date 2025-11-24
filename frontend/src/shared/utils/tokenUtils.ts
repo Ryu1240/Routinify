@@ -101,3 +101,63 @@ export const hasPermissions = (
     userPermissions.includes(permission)
   );
 };
+
+/**
+ * JWTトークンからロール情報を取得
+ * Auth0では、ロール情報はカスタムクレームとして含まれることがあります
+ * 通常は `https://your-namespace/roles` または `https://your-domain/roles` 形式
+ * @param token JWTトークン文字列
+ * @param domain Auth0ドメイン（カスタムクレーム名を構築するために使用）
+ * @returns ロール名の配列、または空配列
+ */
+export const getRolesFromToken = (
+  token: string | null,
+  domain?: string
+): string[] => {
+  if (!token) {
+    return [];
+  }
+
+  const decoded = decodeJwtToken(token);
+  if (!decoded) {
+    return [];
+  }
+
+  // Auth0のカスタムクレーム形式を試行
+  // 1. https://domain/roles 形式
+  // 2. https://domain/role 形式（単数形）
+  // 3. roles 形式（直接）
+  const possibleClaimNames: string[] = [];
+
+  if (domain) {
+    // domainからnamespaceを抽出（例: dev-xxx.auth0.com -> https://dev-xxx.auth0.com）
+    const namespace = domain.startsWith('https://')
+      ? domain
+      : `https://${domain}`;
+    possibleClaimNames.push(`${namespace}/roles`);
+    possibleClaimNames.push(`${namespace}/role`);
+  }
+
+  // 一般的な形式も試行
+  possibleClaimNames.push('https://routinify.com/roles');
+  possibleClaimNames.push('https://routinify.com/role');
+  possibleClaimNames.push('roles');
+  possibleClaimNames.push('role');
+
+  // カスタムクレームからロール情報を取得
+  for (const claimName of possibleClaimNames) {
+    const roles = decoded[claimName];
+    if (roles) {
+      // 配列の場合はそのまま返す
+      if (Array.isArray(roles)) {
+        return roles.filter((role): role is string => typeof role === 'string');
+      }
+      // 文字列の場合は配列に変換
+      if (typeof roles === 'string') {
+        return [roles];
+      }
+    }
+  }
+
+  return [];
+};

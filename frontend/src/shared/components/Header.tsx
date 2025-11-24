@@ -10,7 +10,7 @@ import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
 const Header: React.FC = () => {
   const { logout } = useAuth0();
   const navigate = useNavigate();
-  const hasAdminRole = useHasAdminRole();
+  const { hasAdminRole, isLoading } = useHasAdminRole();
 
   return (
     <header
@@ -50,7 +50,7 @@ const Header: React.FC = () => {
           {/* 右側: ボタン群 */}
           <Group gap="xs">
             {/* 管理者の場合のみ表示: アカウント管理ボタン */}
-            {hasAdminRole && (
+            {hasAdminRole && !isLoading && (
               <Button
                 variant="subtle"
                 leftSection={<IconUsers size={16} />}
