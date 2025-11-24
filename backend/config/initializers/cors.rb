@@ -18,7 +18,14 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     frontend_url = ENV['FRONTEND_URL']
     if frontend_url.present?
       # https://プレフィックスがない場合は追加
-      frontend_url = "https://#{frontend_url}" unless frontend_url.start_with?('http://', 'https://')
+      unless frontend_url.start_with?('http://', 'https://')
+        # .onrender.comドメインがない場合は追加（Render環境の場合）
+        if frontend_url.include?('.onrender.com')
+          frontend_url = "https://#{frontend_url}"
+        else
+          frontend_url = "https://#{frontend_url}.onrender.com"
+        end
+      end
       origins_list << frontend_url
       
       # デバッグ用ログ（本番環境では削除可能）
