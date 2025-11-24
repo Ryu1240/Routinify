@@ -68,6 +68,11 @@ services:
     # 静的サイトはデフォルトで無料プランです（planフィールドは不要）
     buildCommand: cd frontend && npm install -g pnpm && pnpm install && pnpm run build
     staticPublishPath: ./frontend/build
+    # SPAのルーティング対応：すべてのパスをindex.htmlにリライト
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: REACT_APP_AUTH0_DOMAIN
         sync: false
