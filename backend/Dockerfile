@@ -26,7 +26,11 @@ COPY . .
 # tmp/pidsディレクトリの作成
 RUN mkdir -p /app/tmp/pids
 
+# 起動スクリプトに実行権限を付与
+RUN chmod +x /app/bin/start.sh
+
 # USER切り替え（必要なら）
 # USER app
 
-CMD ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+# 起動スクリプトを実行（マイグレーション + サーバー起動）
+CMD ["/app/bin/start.sh"]
