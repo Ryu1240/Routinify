@@ -41,7 +41,7 @@ type UpdateRoutineTaskRequestBody = {
     is_active?: boolean;
     due_date_offset_days?: number | null;
     due_date_offset_hour?: number | null;
-    start_generation_at: string;
+    start_generation_at?: string; // 一度でも生成が行われた場合は送信しない
   };
 };
 
@@ -109,13 +109,9 @@ export const routineTasksApi = {
 
   update: async (
     id: number,
-    routineTaskData: UpdateRoutineTaskDto
+    routineTaskData: UpdateRoutineTaskDto,
+    options?: { isGenerated?: boolean }
   ): Promise<RoutineTask> => {
-    // start_generation_atは必須なので、undefinedの場合はエラー
-    if (!routineTaskData.startGenerationAt) {
-      throw new Error('startGenerationAt is required');
-    }
-
     const body: UpdateRoutineTaskRequestBody = {
       routine_task: {
         ...(routineTaskData.title !== undefined && {
@@ -148,7 +144,12 @@ export const routineTasksApi = {
         ...(routineTaskData.dueDateOffsetHour !== undefined && {
           due_date_offset_hour: routineTaskData.dueDateOffsetHour,
         }),
-        start_generation_at: routineTaskData.startGenerationAt, // 必須
+        // 一度でも生成が行われた場合はstart_generation_atを送信しない
+        // これにより、バックエンドで変更チェックが行われない
+        ...(!options?.isGenerated &&
+          routineTaskData.startGenerationAt !== undefined && {
+            start_generation_at: routineTaskData.startGenerationAt,
+          }),
       },
     };
     const response = await axios.put<SingleRoutineTaskResponse>(

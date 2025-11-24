@@ -56,9 +56,11 @@ export const RoutineTaskFormContainer: React.FC = () => {
       const routineTaskData = getSubmitData();
 
       if (isEditMode && id) {
+        // 一度でも生成が行われた場合は、start_generation_atを送信しない
         await updateRoutineTask(
           Number(id),
-          routineTaskData as UpdateRoutineTaskDto
+          routineTaskData as UpdateRoutineTaskDto,
+          { isGenerated }
         );
       } else {
         await createRoutineTask(routineTaskData);
