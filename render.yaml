@@ -58,12 +58,9 @@ services:
       - key: RAILS_LOG_LEVEL
         value: info
       - key: FRONTEND_URL
-        fromService:
-          type: web
-          name: routinify-frontend
-          property: host
-        # 注意: hostプロパティがホスト名のみを返す場合、手動で完全なURLを設定してください
-        # 例: https://routinify-frontend.onrender.com
+        # 循環依存を避けるため、固定値を使用（カスタムドメインの場合は手動で変更）
+        # sync: falseにしてRender Dashboardで手動設定することも可能
+        value: https://routinify-frontend.onrender.com
     buildCommand: bundle install && bundle exec rails assets:precompile
     # 無料プランではpreDeployCommandは使用できません。
     # 起動スクリプト（bin/start.sh）でマイグレーションとサーバー起動を実行します。
@@ -88,12 +85,9 @@ services:
       - key: REACT_APP_AUTH0_AUDIENCE
         sync: false
       - key: REACT_APP_API_URL
-        fromService:
-          type: web
-          name: routinify-backend
-          property: host
-        # 注意: hostプロパティがホスト名のみを返す場合、手動で完全なURLを設定してください
-        # 例: https://routinify-backend.onrender.com
+        # 循環依存を避けるため、固定値を使用（カスタムドメインの場合は手動で変更）
+        # sync: falseにしてRender Dashboardで手動設定することも可能
+        value: https://routinify-backend.onrender.com
 
 # List Render Postgres databases here
 databases:
