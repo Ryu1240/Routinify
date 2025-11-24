@@ -2,8 +2,12 @@ import axios from 'axios';
 import { notifications } from '@mantine/notifications';
 
 // APIのベースURLを設定
+// render.yamlで完全なURL（https://routinify-backend.onrender.com）を設定しているため、
+// 追加のURL構築ロジックは不要
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
+  process.env.REACT_APP_API_URL ||
+  process.env.REACT_APP_API_BASE_URL ||
+  'http://localhost:3000';
 
 // axiosのデフォルト設定
 axios.defaults.baseURL = API_BASE_URL;

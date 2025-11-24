@@ -1,0 +1,97 @@
+services:
+  # Redis（オプション - 必要に応じて有効化）
+  - type: keyvalue
+    name: routinify-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: # Required for Key Value
+      - source: 0.0.0.0/0
+        description: everywhere
+
+  # Railsバックエンドサービス
+  - type: web
+    name: routinify-backend
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: routinify-db
+          property: connectionString
+      # DATABASE_URLがあればRailsは自動的に接続できますが、
+      # 個別の環境変数が必要な場合は以下を使用できます
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: routinify-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: routinify-db
+          property: password
+      # DATABASE_HOSTはfromDatabaseでは利用できないため、
+      # DATABASE_URLから自動的に取得されます
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: routinify-redis
+          property: connectionString
+      - key: AUTH0_DOMAIN
+        sync: false
+      - key: AUTH0_AUDIENCE
+        sync: false
+      - key: AUTH0_MANAGEMENT_API_CLIENT_ID
+        sync: false
+      - key: AUTH0_MANAGEMENT_API_CLIENT_SECRET
+        sync: false
+      - key: AUTH0_CLIENT_ID
+        sync: false
+      - key: AUTH0_CLIENT_SECRET
+        sync: false
+      - key: RAILS_MAX_THREADS
+        value: 5
+      - key: RAILS_LOG_LEVEL
+        value: info
+      - key: FRONTEND_URL
+        # 循環依存を避けるため、固定値を使用（カスタムドメインの場合は手動で変更）
+        # sync: falseにしてRender Dashboardで手動設定することも可能
+        value: https://routinify-frontend.onrender.com
+    buildCommand: bundle install && bundle exec rails assets:precompile
+    # 無料プランではpreDeployCommandは使用できません。
+    # 起動スクリプト（bin/start.sh）でマイグレーションとサーバー起動を実行します。
+
+  # Reactフロントエンド（静的サイトとして）
+  - type: web
+    name: routinify-frontend
+    runtime: static
+    # 静的サイトはデフォルトで無料プランです（planフィールドは不要）
+    buildCommand: cd frontend && npm install -g pnpm && pnpm install && pnpm run build
+    staticPublishPath: ./frontend/build
+    # SPAのルーティング対応：すべてのパスをindex.htmlにリライト
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_AUTH0_DOMAIN
+        sync: false
+      - key: REACT_APP_AUTH0_CLIENT_ID
+        sync: false
+      - key: REACT_APP_AUTH0_AUDIENCE
+        sync: false
+      - key: REACT_APP_API_URL
+        # 循環依存を避けるため、固定値を使用（カスタムドメインの場合は手動で変更）
+        # sync: falseにしてRender Dashboardで手動設定することも可能
+        value: https://routinify-backend.onrender.com
+
+# List Render Postgres databases here
+databases:
+  - name: routinify-db
+    databaseName: routinify_production
+    user: routinify_user
+    plan: free
