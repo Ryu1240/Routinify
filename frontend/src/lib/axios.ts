@@ -2,28 +2,25 @@ import axios from 'axios';
 import { notifications } from '@mantine/notifications';
 
 // APIのベースURLを設定
-// REACT_APP_API_URL または REACT_APP_API_BASE_URL のどちらかを使用
-let apiBaseUrl = 
-  process.env.REACT_APP_API_URL || 
-  process.env.REACT_APP_API_BASE_URL || 
-  'http://localhost:3000';
-
-// ホスト名のみの場合（例: routinify-backend）、完全なURLを構築
-if (apiBaseUrl && !apiBaseUrl.startsWith('http://') && !apiBaseUrl.startsWith('https://')) {
-  // .onrender.comが含まれていない場合は追加（Render環境の場合）
-  if (!apiBaseUrl.includes('.onrender.com') && !apiBaseUrl.includes('localhost')) {
-    apiBaseUrl = `https://${apiBaseUrl}.onrender.com`;
-  } else {
-    apiBaseUrl = `https://${apiBaseUrl}`;
+const getApiBaseUrl = (): string => {
+  const url = process.env.REACT_APP_API_URL || 
+              process.env.REACT_APP_API_BASE_URL || 
+              'http://localhost:3000';
+  
+  // 完全なURLの場合はそのまま返す
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
   }
-}
+  
+  // ホスト名のみの場合、Render環境のURLを構築
+  if (!url.includes('localhost')) {
+    return `https://${url}.onrender.com`;
+  }
+  
+  return `http://${url}`;
+};
 
-const API_BASE_URL = apiBaseUrl;
-
-// デバッグ用: 使用されているAPI URLをログに出力（本番環境では削除可能）
-if (process.env.NODE_ENV === 'development') {
-  console.log('API Base URL:', API_BASE_URL);
-}
+const API_BASE_URL = getApiBaseUrl();
 
 // axiosのデフォルト設定
 axios.defaults.baseURL = API_BASE_URL;

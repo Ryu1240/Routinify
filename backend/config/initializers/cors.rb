@@ -7,29 +7,20 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    # 開発環境用のオリジン
     origins_list = [
       'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:8080'
     ]
     
-    # 本番環境用のオリジン（環境変数から取得、存在する場合のみ追加）
-    frontend_url = ENV['FRONTEND_URL']
-    if frontend_url.present?
-      # https://プレフィックスがない場合は追加
+    # 本番環境用のオリジン（環境変数から取得）
+    if (frontend_url = ENV['FRONTEND_URL']).present?
       unless frontend_url.start_with?('http://', 'https://')
-        # .onrender.comドメインがない場合は追加（Render環境の場合）
-        if frontend_url.include?('.onrender.com')
-          frontend_url = "https://#{frontend_url}"
-        else
-          frontend_url = "https://#{frontend_url}.onrender.com"
-        end
+        frontend_url = frontend_url.include?('.onrender.com') ? 
+                       "https://#{frontend_url}" : 
+                       "https://#{frontend_url}.onrender.com"
       end
       origins_list << frontend_url
-      
-      # デバッグ用ログ（本番環境では削除可能）
-      Rails.logger.info "CORS: Allowing origin: #{frontend_url}"
     end
     
     origins(*origins_list)
