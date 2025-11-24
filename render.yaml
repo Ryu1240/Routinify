@@ -1,9 +1,12 @@
 services:
   # Redis（オプション - 必要に応じて有効化）
-  - type: redis
+  - type: keyvalue
     name: routinify-redis
     plan: free
     maxmemoryPolicy: allkeys-lru
+    ipAllowList: # Required for Key Value
+      - source: 0.0.0.0/0
+        description: everywhere
 
   # Railsバックエンドサービス
   - type: web
@@ -35,7 +38,7 @@ services:
       # DATABASE_URLから自動的に取得されます
       - key: REDIS_URL
         fromService:
-          type: redis
+          type: keyvalue
           name: routinify-redis
           property: connectionString
       - key: AUTH0_DOMAIN
@@ -58,8 +61,9 @@ services:
     startCommand: bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply && bundle exec rails server -p $PORT -b 0.0.0.0
 
   # Reactフロントエンド（静的サイトとして）
-  - type: static
+  - type: web
     name: routinify-frontend
+    runtime: static
     plan: free
     buildCommand: cd frontend && npm install -g pnpm && pnpm install && pnpm run build
     staticPublishPath: ./frontend/build
