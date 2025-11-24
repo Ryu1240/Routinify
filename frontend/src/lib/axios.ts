@@ -3,20 +3,21 @@ import { notifications } from '@mantine/notifications';
 
 // APIのベースURLを設定
 const getApiBaseUrl = (): string => {
-  const url = process.env.REACT_APP_API_URL || 
-              process.env.REACT_APP_API_BASE_URL || 
-              'http://localhost:3000';
-  
+  const url =
+    process.env.REACT_APP_API_URL ||
+    process.env.REACT_APP_API_BASE_URL ||
+    'http://localhost:3000';
+
   // 完全なURLの場合はそのまま返す
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  
+
   // ホスト名のみの場合、Render環境のURLを構築
   if (!url.includes('localhost')) {
     return `https://${url}.onrender.com`;
   }
-  
+
   return `http://${url}`;
 };
 
