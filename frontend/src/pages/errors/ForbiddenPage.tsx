@@ -35,4 +35,3 @@ export const ForbiddenPage: React.FC = () => {
     </Container>
   );
 };
-
