@@ -58,7 +58,9 @@ services:
       - key: RAILS_LOG_LEVEL
         value: info
     buildCommand: bundle install && bundle exec rails assets:precompile
-    startCommand: bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply && bundle exec rails server -p $PORT -b 0.0.0.0
+    preDeployCommand: bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+    # DockerランタイムではstartCommandは使用できません。dockerCommandでDockerfileのCMDを上書きします。
+    dockerCommand: bundle exec rails server -p $PORT -b 0.0.0.0
 
   # Reactフロントエンド（静的サイトとして）
   - type: web
