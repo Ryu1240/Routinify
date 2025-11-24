@@ -16,8 +16,9 @@ echo "Running database migrations..."
 echo "RAILS_ENV for Ridgepole: ${RAILS_ENV}"
 echo "DATABASE_URL check: ${DATABASE_URL:+SET}" # SET または空文字列を表示
 
-# Ridgepoleを実行（RAILS_ENVを明示的に設定）
-RAILS_ENV=${RAILS_ENV} bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply
+# Ridgepoleを実行（環境を明示的に指定）
+# -E オプションでproduction環境を明示的に指定
+bundle exec ridgepole --config ./config/database.yml -E production --file ./db/Schemafile --apply
 
 # Railsサーバーを起動
 echo "Starting Rails server..."
