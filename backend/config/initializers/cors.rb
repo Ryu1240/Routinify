@@ -15,8 +15,14 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     ]
     
     # 本番環境用のオリジン（環境変数から取得、存在する場合のみ追加）
-    if ENV['FRONTEND_URL'].present?
-      origins_list << ENV['FRONTEND_URL']
+    frontend_url = ENV['FRONTEND_URL']
+    if frontend_url.present?
+      # https://プレフィックスがない場合は追加
+      frontend_url = "https://#{frontend_url}" unless frontend_url.start_with?('http://', 'https://')
+      origins_list << frontend_url
+      
+      # デバッグ用ログ（本番環境では削除可能）
+      Rails.logger.info "CORS: Allowing origin: #{frontend_url}"
     end
     
     origins(*origins_list)

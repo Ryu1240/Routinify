@@ -62,6 +62,8 @@ services:
           type: web
           name: routinify-frontend
           property: host
+        # 注意: hostプロパティがホスト名のみを返す場合、手動で完全なURLを設定してください
+        # 例: https://routinify-frontend.onrender.com
     buildCommand: bundle install && bundle exec rails assets:precompile
     # 無料プランではpreDeployCommandは使用できません。
     # 起動スクリプト（bin/start.sh）でマイグレーションとサーバー起動を実行します。
