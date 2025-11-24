@@ -57,6 +57,11 @@ services:
         value: 5
       - key: RAILS_LOG_LEVEL
         value: info
+      - key: FRONTEND_URL
+        fromService:
+          type: web
+          name: routinify-frontend
+          property: host
     buildCommand: bundle install && bundle exec rails assets:precompile
     # 無料プランではpreDeployCommandは使用できません。
     # 起動スクリプト（bin/start.sh）でマイグレーションとサーバー起動を実行します。

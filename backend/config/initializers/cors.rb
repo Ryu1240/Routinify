@@ -7,7 +7,14 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080'
+    # 開発環境用のオリジン
+    origins(
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8080',
+      # 本番環境用のオリジン（環境変数から取得）
+      ENV['FRONTEND_URL']
+    ).compact
 
     resource '*',
       headers: :any,
