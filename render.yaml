@@ -1,0 +1,87 @@
+services:
+  # PostgreSQLデータベース
+  - type: pspg
+    name: routinify-db
+    plan: starter
+    databaseName: routinify_production
+    user: routinify_user
+    # PostgreSQL 15を使用
+    postgresMajorVersion: 15
+
+  # Redis（オプション - 必要に応じて有効化）
+  - type: redis
+    name: routinify-redis
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+
+  # Railsバックエンドサービス
+  - type: web
+    name: routinify-backend
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: routinify-db
+          property: connectionString
+      - key: DATABASE_HOST
+        fromDatabase:
+          name: routinify-db
+          property: host
+      - key: DATABASE_USERNAME
+        fromDatabase:
+          name: routinify-db
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: routinify-db
+          property: password
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: routinify-redis
+          property: connectionString
+      - key: AUTH0_DOMAIN
+        sync: false
+      - key: AUTH0_AUDIENCE
+        sync: false
+      - key: AUTH0_MANAGEMENT_API_CLIENT_ID
+        sync: false
+      - key: AUTH0_MANAGEMENT_API_CLIENT_SECRET
+        sync: false
+      - key: AUTH0_CLIENT_ID
+        sync: false
+      - key: AUTH0_CLIENT_SECRET
+        sync: false
+      - key: RAILS_MAX_THREADS
+        value: 5
+      - key: RAILS_LOG_LEVEL
+        value: info
+    buildCommand: bundle install && bundle exec rails assets:precompile
+    startCommand: bundle exec ridgepole --config ./config/database.yml --file ./db/Schemafile --apply && bundle exec rails server -p $PORT -b 0.0.0.0
+
+  # Reactフロントエンド（静的サイトとして）
+  - type: static
+    name: routinify-frontend
+    plan: starter
+    buildCommand: cd frontend && npm install -g pnpm && pnpm install && pnpm run build
+    staticPublishPath: ./frontend/build
+    envVars:
+      - key: REACT_APP_AUTH0_DOMAIN
+        sync: false
+      - key: REACT_APP_AUTH0_CLIENT_ID
+        sync: false
+      - key: REACT_APP_AUTH0_AUDIENCE
+        sync: false
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: routinify-backend
+          property: host
+
