@@ -85,7 +85,7 @@ production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  <% if ENV["DATABASE_URL"].present? %>
+  <% if ENV["DATABASE_URL"] && !ENV["DATABASE_URL"].empty? %>
   # DATABASE_URLが設定されている場合は優先的に使用（Render環境など）
   # render.yamlのdatabaseName: routinify_productionと一致するデータベース名が含まれます
   url: <%= ENV["DATABASE_URL"] %>
