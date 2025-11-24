@@ -83,9 +83,17 @@ test:
 #
 production:
   <<: *default
+  <% if ENV["DATABASE_URL"].present? %>
+  # DATABASE_URLが設定されている場合は優先的に使用（Render環境など）
+  # render.yamlのdatabaseName: routinify_productionと一致するデータベース名が含まれます
+  url: <%= ENV["DATABASE_URL"] %>
+  <% else %>
+  # DATABASE_URLが設定されていない場合のフォールバック
+  # render.yamlのdatabaseName: routinify_productionと一致する必要があります
   database: routinify_production
   username: <%= ENV["DATABASE_USERNAME"] %>
   password: <%= ENV["DATABASE_PASSWORD"] %>
+  <% end %>
   cache:
     database: app_production_cache
     migrations_paths: db/cache_migrate
