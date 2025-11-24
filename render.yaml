@@ -1,13 +1,4 @@
 services:
-  # PostgreSQLデータベース
-  - type: pspg
-    name: routinify-db
-    plan: starter
-    databaseName: routinify_production
-    user: routinify_user
-    # PostgreSQL 15を使用
-    postgresMajorVersion: 15
-
   # Redis（オプション - 必要に応じて有効化）
   - type: redis
     name: routinify-redis
@@ -30,10 +21,8 @@ services:
         fromDatabase:
           name: routinify-db
           property: connectionString
-      - key: DATABASE_HOST
-        fromDatabase:
-          name: routinify-db
-          property: host
+      # DATABASE_URLがあればRailsは自動的に接続できますが、
+      # 個別の環境変数が必要な場合は以下を使用できます
       - key: DATABASE_USERNAME
         fromDatabase:
           name: routinify-db
@@ -42,6 +31,8 @@ services:
         fromDatabase:
           name: routinify-db
           property: password
+      # DATABASE_HOSTはfromDatabaseでは利用できないため、
+      # DATABASE_URLから自動的に取得されます
       - key: REDIS_URL
         fromService:
           type: redis
@@ -85,3 +76,9 @@ services:
           name: routinify-backend
           property: host
 
+# List Render Postgres databases here
+databases:
+  - name: routinify-db
+    databaseName: routinify_production
+    user: routinify_user
+    plan: starter
