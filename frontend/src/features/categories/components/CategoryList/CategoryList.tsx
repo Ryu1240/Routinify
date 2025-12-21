@@ -7,11 +7,14 @@ import {
   Title,
   Group,
   Text,
+  Stack,
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Category } from '@/types/category';
 import { CategoryTable } from '@/features/categories/components/CategoryTable';
+import { CategoryCard } from '@/features/categories/components/CategoryCard';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 type CategoryListProps = {
   isAuthenticated: boolean;
@@ -34,6 +37,8 @@ export const CategoryList: React.FC<CategoryListProps> = ({
   onDelete,
   onAddCategory,
 }) => {
+  const isMobile = useIsMobile();
+
   if (authLoading || loading) {
     return (
       <Container size="xl" py="xl">
@@ -84,11 +89,24 @@ export const CategoryList: React.FC<CategoryListProps> = ({
         </Button>
       </Group>
 
-      <CategoryTable
-        categories={categories}
-        onEdit={onEdit}
-        onDelete={onDelete}
-      />
+      {isMobile ? (
+        <Stack gap="md">
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.id}
+              category={category}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+        </Stack>
+      ) : (
+        <CategoryTable
+          categories={categories}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
+      )}
 
       {categories.length > 0 && (
         <Text size="sm" c={COLORS.GRAY} ta="center" mt="sm">
