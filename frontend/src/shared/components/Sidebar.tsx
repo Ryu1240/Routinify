@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, NavLink, rem } from '@mantine/core';
+import { Box, NavLink, rem, Drawer, Stack } from '@mantine/core';
 import {
   IconChecklist,
   IconCategory,
@@ -9,10 +9,20 @@ import {
 } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
-const Sidebar: React.FC = () => {
+interface SidebarProps {
+  drawerOpened?: boolean;
+  onDrawerClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({
+  drawerOpened = false,
+  onDrawerClose,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useIsMobile();
 
   const navItems = [
     {
@@ -47,11 +57,51 @@ const Sidebar: React.FC = () => {
     },
   ];
 
+  const handleNavClick = (path: string) => {
+    navigate(path);
+    if (isMobile && onDrawerClose) {
+      onDrawerClose();
+    }
+  };
+
+  const sidebarContent = (
+    <Stack gap="xs" p="md">
+      {navItems.map((item) => (
+        <NavLink
+          key={item.path}
+          label={item.label}
+          description={item.description}
+          leftSection={item.icon}
+          active={location.pathname.startsWith(item.path)}
+          onClick={() => handleNavClick(item.path)}
+          variant="filled"
+          style={{
+            borderRadius: 'var(--mantine-radius-sm)',
+          }}
+        />
+      ))}
+    </Stack>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer
+        opened={drawerOpened}
+        onClose={onDrawerClose || (() => {})}
+        title="メニュー"
+        position="left"
+        size="sm"
+        zIndex={1000}
+      >
+        {sidebarContent}
+      </Drawer>
+    );
+  }
+
   return (
     <Box
       component="nav"
       aria-label="Task management navigation"
-      p="md"
       style={{
         borderRight: `${rem(1)} solid var(--mantine-color-gray-3)`,
         backgroundColor: 'var(--mantine-color-gray-0)',
@@ -64,21 +114,7 @@ const Sidebar: React.FC = () => {
         overflowY: 'auto',
       }}
     >
-      {navItems.map((item) => (
-        <NavLink
-          key={item.path}
-          label={item.label}
-          description={item.description}
-          leftSection={item.icon}
-          active={location.pathname.startsWith(item.path)}
-          onClick={() => navigate(item.path)}
-          variant="filled"
-          style={{
-            borderRadius: 'var(--mantine-radius-sm)',
-            marginBottom: 'var(--mantine-spacing-xs)',
-          }}
-        />
-      ))}
+      {sidebarContent}
     </Box>
   );
 };
