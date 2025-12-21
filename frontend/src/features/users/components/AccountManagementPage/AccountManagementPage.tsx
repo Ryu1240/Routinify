@@ -8,12 +8,15 @@ import {
   Alert,
   Text,
   Loader,
+  Stack,
 } from '@mantine/core';
 import { IconSearch, IconAlertCircle } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { AdminUser } from '../../api/adminUserApi';
 import { AccountTable } from '../AccountTable';
+import { AccountCard } from '../AccountCard';
 import { DeleteConfirmModal } from '../DeleteConfirmModal';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 type AccountManagementPageProps = {
   users: AdminUser[];
@@ -46,6 +49,8 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
   onDeleteConfirm,
   deleteLoading,
 }) => {
+  const isMobile = useIsMobile();
+
   if (loading && users.length === 0) {
     return (
       <Container size="xl" py="xl">
@@ -87,11 +92,30 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
         <Button onClick={onSearch}>検索</Button>
       </Group>
 
-      <AccountTable
-        users={users}
-        onDelete={onDeleteClick}
-        loading={deleteLoading}
-      />
+      {isMobile ? (
+        users.length > 0 ? (
+          <Stack gap="md">
+            {users.map((user) => (
+              <AccountCard
+                key={user.sub}
+                user={user}
+                onDelete={onDeleteClick}
+                loading={deleteLoading}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Text ta="center" c={COLORS.GRAY} py="xl">
+            ユーザーがありません
+          </Text>
+        )
+      ) : (
+        <AccountTable
+          users={users}
+          onDelete={onDeleteClick}
+          loading={deleteLoading}
+        />
+      )}
 
       {total > 0 && (
         <Text size="sm" c="dimmed" ta="center" mt="sm">

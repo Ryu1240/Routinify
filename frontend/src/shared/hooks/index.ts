@@ -3,3 +3,4 @@ export { useHasAdminRole } from './useHasAdminRole';
 export { useCategories } from './useCategories';
 export { useTasks } from './useTasks';
 export { useRoutineTasks } from './useRoutineTasks';
+export { useIsMobile, useIsTablet } from './useMediaQuery';

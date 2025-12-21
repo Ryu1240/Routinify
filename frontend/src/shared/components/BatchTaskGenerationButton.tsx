@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { Button, Loader } from '@mantine/core';
+import { Button, Loader, ActionIcon, Tooltip } from '@mantine/core';
 import { IconRefresh } from '@tabler/icons-react';
 import { useBatchTaskGeneration } from '@/features/routineTasks/hooks/useBatchTaskGeneration';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 export const BatchTaskGenerationButton: React.FC = () => {
   const {
@@ -49,6 +50,34 @@ export const BatchTaskGenerationButton: React.FC = () => {
   const isGenerating = state === 'generating';
   const isCompleted = state === 'completed';
   const isFailed = state === 'failed';
+  const isMobile = useIsMobile();
+
+  const buttonText =
+    isGenerating && totalCount > 0
+      ? '処理中'
+      : isCompleted
+        ? `完了 - ${totalGeneratedTasksCount}件生成`
+        : isFailed
+          ? 'エラー'
+          : 'タスク生成';
+
+  const tooltipText = error || buttonText;
+
+  if (isMobile) {
+    return (
+      <Tooltip label={tooltipText} withArrow>
+        <ActionIcon
+          variant="subtle"
+          onClick={handleBatchGenerate}
+          disabled={isGenerating}
+          color={isFailed ? 'red' : isCompleted ? 'green' : 'blue'}
+          size="lg"
+        >
+          {isGenerating ? <Loader size={18} /> : <IconRefresh size={18} />}
+        </ActionIcon>
+      </Tooltip>
+    );
+  }
 
   return (
     <Button
@@ -60,14 +89,9 @@ export const BatchTaskGenerationButton: React.FC = () => {
       disabled={isGenerating}
       color={isFailed ? 'red' : isCompleted ? 'green' : 'blue'}
       title={error || undefined}
+      size="sm"
     >
-      {isGenerating && totalCount > 0
-        ? '処理中'
-        : isCompleted
-          ? `完了 - ${totalGeneratedTasksCount}件生成`
-          : isFailed
-            ? 'エラー'
-            : 'タスク生成'}
+      {buttonText}
     </Button>
   );
 };
