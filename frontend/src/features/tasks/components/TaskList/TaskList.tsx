@@ -154,7 +154,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           taskMilestoneMap={taskMilestoneMap}
           onOpenMilestoneModal={onOpenMilestoneModal}
         />
-      ) : (
+      ) : tasks.length > 0 ? (
         <Stack gap="md">
           {tasks.map((task) => (
             <TaskCard
@@ -169,6 +169,10 @@ export const TaskList: React.FC<TaskListProps> = ({
             />
           ))}
         </Stack>
+      ) : (
+        <Text ta="center" c={COLORS.GRAY} py="xl">
+          タスクがありません
+        </Text>
       )}
 
       {tasks.length > 0 && (

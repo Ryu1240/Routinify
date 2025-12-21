@@ -101,7 +101,7 @@ const Header: React.FC<HeaderProps> = ({
                       アカウント管理
                     </Menu.Item>
                   )}
-                  <Menu.Divider />
+                  {hasAdminRole && !isLoading && <Menu.Divider />}
                   <Menu.Item
                     leftSection={<IconLogout size={16} />}
                     onClick={() =>

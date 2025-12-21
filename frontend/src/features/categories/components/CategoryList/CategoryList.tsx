@@ -90,16 +90,22 @@ export const CategoryList: React.FC<CategoryListProps> = ({
       </Group>
 
       {isMobile ? (
-        <Stack gap="md">
-          {categories.map((category) => (
-            <CategoryCard
-              key={category.id}
-              category={category}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          ))}
-        </Stack>
+        categories.length > 0 ? (
+          <Stack gap="md">
+            {categories.map((category) => (
+              <CategoryCard
+                key={category.id}
+                category={category}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Text ta="center" c={COLORS.GRAY} py="xl">
+            カテゴリがありません
+          </Text>
+        )
       ) : (
         <CategoryTable
           categories={categories}

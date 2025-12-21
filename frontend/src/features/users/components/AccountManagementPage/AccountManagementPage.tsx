@@ -93,16 +93,22 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
       </Group>
 
       {isMobile ? (
-        <Stack gap="md">
-          {users.map((user) => (
-            <AccountCard
-              key={user.sub}
-              user={user}
-              onDelete={onDeleteClick}
-              loading={deleteLoading}
-            />
-          ))}
-        </Stack>
+        users.length > 0 ? (
+          <Stack gap="md">
+            {users.map((user) => (
+              <AccountCard
+                key={user.sub}
+                user={user}
+                onDelete={onDeleteClick}
+                loading={deleteLoading}
+              />
+            ))}
+          </Stack>
+        ) : (
+          <Text ta="center" c={COLORS.GRAY} py="xl">
+            ユーザーがありません
+          </Text>
+        )
       ) : (
         <AccountTable
           users={users}
