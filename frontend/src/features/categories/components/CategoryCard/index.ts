@@ -1,2 +1,1 @@
 export { CategoryCard } from './CategoryCard';
-

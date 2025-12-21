@@ -1,5 +1,13 @@
 import React from 'react';
-import { Card, Text, Group, ActionIcon, Tooltip, Stack, Divider } from '@mantine/core';
+import {
+  Card,
+  Text,
+  Group,
+  ActionIcon,
+  Tooltip,
+  Stack,
+  Divider,
+} from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Category } from '@/types/category';
@@ -76,4 +84,3 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
     </Card>
   );
 };
-

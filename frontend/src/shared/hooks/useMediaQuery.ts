@@ -6,9 +6,7 @@ import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
  * @returns モバイル端末の場合true
  */
 export const useIsMobile = () => {
-  return useMediaQuery(
-    `(max-width: ${LAYOUT_CONSTANTS.MOBILE_BREAKPOINT}px)`
-  );
+  return useMediaQuery(`(max-width: ${LAYOUT_CONSTANTS.MOBILE_BREAKPOINT}px)`);
 };
 
 /**
@@ -16,8 +14,5 @@ export const useIsMobile = () => {
  * @returns タブレット端末の場合true
  */
 export const useIsTablet = () => {
-  return useMediaQuery(
-    `(max-width: ${LAYOUT_CONSTANTS.TABLET_BREAKPOINT}px)`
-  );
+  return useMediaQuery(`(max-width: ${LAYOUT_CONSTANTS.TABLET_BREAKPOINT}px)`);
 };
-

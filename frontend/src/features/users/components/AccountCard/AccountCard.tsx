@@ -1,5 +1,14 @@
 import React from 'react';
-import { Card, Text, Avatar, Button, Stack, Group, Badge, Divider } from '@mantine/core';
+import {
+  Card,
+  Text,
+  Avatar,
+  Button,
+  Stack,
+  Group,
+  Badge,
+  Divider,
+} from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { AdminUser } from '../../api/adminUserApi';
@@ -106,4 +115,3 @@ export const AccountCard: React.FC<AccountCardProps> = ({
     </Card>
   );
 };
-

@@ -1,5 +1,14 @@
 import React from 'react';
-import { Card, Text, Badge, Group, ActionIcon, Tooltip, Stack, Divider } from '@mantine/core';
+import {
+  Card,
+  Text,
+  Badge,
+  Group,
+  ActionIcon,
+  Tooltip,
+  Stack,
+  Divider,
+} from '@mantine/core';
 import { IconEdit, IconTrash, IconFlag } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import {
@@ -155,4 +164,3 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     </Card>
   );
 };
-

@@ -1,6 +1,17 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import { Group, Button, Text, Container, rem, Image, Burger, ActionIcon, Tooltip, Menu } from '@mantine/core';
+import {
+  Group,
+  Button,
+  Text,
+  Container,
+  rem,
+  Image,
+  Burger,
+  ActionIcon,
+  Tooltip,
+  Menu,
+} from '@mantine/core';
 import { IconLogout, IconUsers, IconDots } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';

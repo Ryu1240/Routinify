@@ -23,16 +23,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <Box style={{ minHeight: '100vh' }}>
       {/* ヘッダー */}
-      <Header
-        drawerOpened={drawerOpened}
-        onDrawerToggle={handleDrawerToggle}
-      />
+      <Header drawerOpened={drawerOpened} onDrawerToggle={handleDrawerToggle} />
 
       {/* サイドバー */}
-      <Sidebar
-        drawerOpened={drawerOpened}
-        onDrawerClose={handleDrawerClose}
-      />
+      <Sidebar drawerOpened={drawerOpened} onDrawerClose={handleDrawerClose} />
 
       {/* メインコンテンツ */}
       <Box
