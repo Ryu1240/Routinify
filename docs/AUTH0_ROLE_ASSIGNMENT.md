@@ -231,3 +231,4 @@ Auth0の公式ドキュメントでは、**Post User Registrationアクション
 - [Auth0 Management API - Assign Roles to User](https://auth0.com/docs/api/management/v2#!/Users/post_user_roles)
 - [Auth0 Actions - Post User Registration Trigger](https://auth0.com/docs/customize/actions/flows-and-triggers/sign-up-flow/post-user-registration-trigger)
 
+
