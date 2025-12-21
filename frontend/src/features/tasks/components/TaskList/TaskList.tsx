@@ -8,6 +8,7 @@ import {
   Alert,
   Button,
   Title,
+  Stack,
 } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
@@ -15,6 +16,8 @@ import { Task, UpdateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
 import { Milestone } from '@/types/milestone';
 import { TaskTable } from '@/features/tasks/components/TaskTable';
+import { TaskCard } from '@/features/tasks/components/TaskCard';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 type TaskListProps = {
   isAuthenticated: boolean;
@@ -65,6 +68,8 @@ export const TaskList: React.FC<TaskListProps> = ({
   taskMilestoneMap,
   onOpenMilestoneModal,
 }) => {
+  const isMobile = useIsMobile();
+
   if (authLoading || loading) {
     return (
       <Container size="xl" py="xl">
@@ -130,23 +135,41 @@ export const TaskList: React.FC<TaskListProps> = ({
         </Button>
       </Group>
 
-      <TaskTable
-        tasks={tasks}
-        sortBy={sortBy}
-        reverseSortDirection={reverseSortDirection}
-        onSort={onSort}
-        editingTaskId={editingTaskId}
-        onEdit={onEdit}
-        onSave={onSave}
-        onCancel={onCancel}
-        onDelete={onDelete}
-        categories={categories}
-        onCreateCategory={onCreateCategory}
-        createCategoryLoading={createCategoryLoading}
-        milestones={milestones}
-        taskMilestoneMap={taskMilestoneMap}
-        onOpenMilestoneModal={onOpenMilestoneModal}
-      />
+      {/* 編集モード中またはデスクトップ時はテーブル表示 */}
+      {editingTaskId !== null || !isMobile ? (
+        <TaskTable
+          tasks={tasks}
+          sortBy={sortBy}
+          reverseSortDirection={reverseSortDirection}
+          onSort={onSort}
+          editingTaskId={editingTaskId}
+          onEdit={onEdit}
+          onSave={onSave}
+          onCancel={onCancel}
+          onDelete={onDelete}
+          categories={categories}
+          onCreateCategory={onCreateCategory}
+          createCategoryLoading={createCategoryLoading}
+          milestones={milestones}
+          taskMilestoneMap={taskMilestoneMap}
+          onOpenMilestoneModal={onOpenMilestoneModal}
+        />
+      ) : (
+        <Stack gap="md">
+          {tasks.map((task) => (
+            <TaskCard
+              key={task.id}
+              task={task}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              categories={categories}
+              milestones={milestones}
+              taskMilestoneIds={taskMilestoneMap?.get(task.id) ?? []}
+              onOpenMilestoneModal={onOpenMilestoneModal}
+            />
+          ))}
+        </Stack>
+      )}
 
       {tasks.length > 0 && (
         <Text size="sm" c={COLORS.GRAY} ta="center" mt="sm">
