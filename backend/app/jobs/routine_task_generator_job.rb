@@ -14,21 +14,12 @@ class RoutineTaskGeneratorJob < ApplicationJob
       return
     end
 
-    # Step 1: 現在の未完了タスク数を取得
-    current_active_count = routine_task.active_tasks_count
-
-    # Step 2: 生成すべきタスク数を計算
+    # Step 1: 生成すべきタスク数を計算（上限に関係なく）
     tasks_to_generate = routine_task.tasks_to_generate_count(current_time)
 
-    # Step 3: 利用可能なスロット数を計算
-    available_slots = routine_task.max_active_tasks - current_active_count
-
-    # Step 4: 実際に生成するタスク数を決定
-    actual_generate_count = [ tasks_to_generate, available_slots ].min.clamp(0, Float::INFINITY)
-
-    # Step 5: タスクを生成
+    # Step 2: タスクを生成（上限に関係なく全て生成）
     generated_tasks_count = 0
-    if actual_generate_count > 0
+    if tasks_to_generate > 0
       # 基準日時の決定
       # 最初の生成時：start_generation_atを使用
       # 2回目以降：last_generated_atを使用
@@ -37,7 +28,7 @@ class RoutineTaskGeneratorJob < ApplicationJob
       # 最初のタスク生成かどうかを判定
       is_first_generation = routine_task.last_generated_at.nil?
 
-      actual_generate_count.times do |i|
+      tasks_to_generate.times do |i|
         # 生成日時を計算（基準日時から間隔日数を加算）
         generation_date = base_time + ((i + 1) * routine_task.interval_days).days
 
@@ -66,13 +57,13 @@ class RoutineTaskGeneratorJob < ApplicationJob
       end
     end
 
-    # Step 6: last_generated_atとnext_generation_atを更新
+    # Step 3: last_generated_atとnext_generation_atを更新
     routine_task.update!(
       last_generated_at: current_time,
       next_generation_at: routine_task.calculate_next_generation_at(current_time)
     )
 
-    # Step 7: max_active_tasksを超えている場合、古いタスクを削除
+    # Step 4: max_active_tasksを超えている場合、古いタスクを削除
     cleanup_excess_tasks(routine_task)
 
     # ジョブ完了ステータスを更新
