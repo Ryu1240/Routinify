@@ -48,7 +48,7 @@ class RoutineTask < ApplicationRecord
     end
   end
 
-  # 現在時刻に基づいて生成すべきタスク数を計算
+  # 現在時刻に基づいて生成すべきタスク数を計算（上限に関係なく）
   def tasks_to_generate_count(current_time = Time.current)
     # 次回生成日時がまだ到来していない場合は0
     return 0 if next_generation_at > current_time
@@ -59,8 +59,8 @@ class RoutineTask < ApplicationRecord
     # 前回生成日時から現在までの経過日数を計算
     days_elapsed = ((current_time - last_generated_at) / 1.day).floor
 
-    # 頻度に応じて生成すべきタスク数を計算
-    (days_elapsed.to_f / interval_days).floor.clamp(0, max_active_tasks)
+    # 頻度に応じて生成すべきタスク数を計算（上限に関係なく）
+    (days_elapsed.to_f / interval_days).floor
   end
 
   # 次回生成日時を計算

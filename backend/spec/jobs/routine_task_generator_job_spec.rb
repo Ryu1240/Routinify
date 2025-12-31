@@ -1,5 +1,16 @@
 require 'rails_helper'
 
+# 習慣化タスク生成ジョブのテスト
+#
+# テストケースの分類:
+# 1. 正常系: 基本的な生成機能のテスト
+# 2. 異常系: エラーハンドリングのテスト
+# 3. エッジケース: 境界値や特殊なケースのテスト
+# 4. 期限オフセット: 期限計算のテスト
+# 5. 開始期限: 開始期限チェックのテスト
+# 6. 期限超過タスクの削除: 上限超過時の削除ロジックのテスト（現状の仕様では期限超過タスクが優先的に削除されない）
+#
+# 仕様詳細: backend/docs/ROUTINE_TASK_GENERATION_SPEC.md
 RSpec.describe RoutineTaskGeneratorJob, type: :job do
   let(:job_id) { SecureRandom.uuid }
   let(:redis) { Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0')) }
@@ -124,6 +135,207 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         routine_task.reload
         expect(routine_task.active_tasks_count).to be <= routine_task.max_active_tasks
       end
+    end
+
+    context '期限超過タスクの削除' do
+      it '期限超過タスクが優先的に削除されること' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 1.day.ago,
+                              start_generation_at: 2.days.ago,
+                              next_generation_at: 1.hour.ago,
+                              max_active_tasks: 3)
+
+        # 期限超過タスク（新しいが期限切れ）
+        overdue_task = create(:task,
+                              routine_task: routine_task,
+                              account_id: routine_task.account_id,
+                              status: 'pending',
+                              due_date: 2.days.ago,
+                              created_at: 1.day.ago)
+
+        # 期限前タスク（古いが期限前）
+        future_task = create(:task,
+                             routine_task: routine_task,
+                             account_id: routine_task.account_id,
+                             status: 'pending',
+                             due_date: 1.day.from_now,
+                             created_at: 5.days.ago)
+
+        # もう1つ期限前タスク
+        future_task2 = create(:task,
+                              routine_task: routine_task,
+                              account_id: routine_task.account_id,
+                              status: 'pending',
+                              due_date: 2.days.from_now,
+                              created_at: 4.days.ago)
+
+        # 新規タスクが1つ生成される（合計4つになる）
+        described_class.perform_now(routine_task.id, job_id)
+
+        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
+        
+        # 期限超過タスクが優先的に削除されることを確認
+        expect(remaining_tasks.pluck(:id)).not_to include(overdue_task.id)
+        expect(remaining_tasks.pluck(:id)).to include(future_task.id)
+        expect(remaining_tasks.pluck(:id)).to include(future_task2.id)
+      end
+
+      it '期限超過タスクが複数ある場合、作成順に削除されること' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 1.day.ago,
+                              start_generation_at: 2.days.ago,
+                              next_generation_at: 1.hour.ago,
+                              max_active_tasks: 3)
+
+        # 期限超過タスク（最も古い作成日時）
+        oldest_overdue = create(:task,
+                                routine_task: routine_task,
+                                account_id: routine_task.account_id,
+                                status: 'pending',
+                                due_date: 5.days.ago,
+                                created_at: 5.days.ago)
+
+        # 期限超過タスク（2番目に古い作成日時）
+        second_overdue = create(:task,
+                                routine_task: routine_task,
+                                account_id: routine_task.account_id,
+                                status: 'pending',
+                                due_date: 3.days.ago,
+                                created_at: 3.days.ago)
+
+        # 期限超過タスク（最も新しい作成日時）
+        newest_overdue = create(:task,
+                                 routine_task: routine_task,
+                                 account_id: routine_task.account_id,
+                                 status: 'pending',
+                                 due_date: 1.day.ago,
+                                 created_at: 1.day.ago)
+
+        # 期限前タスク
+        future_task = create(:task,
+                             routine_task: routine_task,
+                             account_id: routine_task.account_id,
+                             status: 'pending',
+                             due_date: 1.day.from_now,
+                             created_at: 4.days.ago)
+
+        initial_task_ids = [oldest_overdue.id, second_overdue.id, newest_overdue.id, future_task.id]
+
+        # 新規タスクが1つ生成される（合計5つになる）
+        # max_active_tasks=3なので、2つ削除される
+        # 期限超過タスクが優先的に削除され、作成順に削除される
+        described_class.perform_now(routine_task.id, job_id)
+
+        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
+        
+        # 期限超過タスクが作成順に削除されることを確認
+        # 最も古い作成日時のタスク（oldest_overdue）と2番目に古いタスク（second_overdue）が削除される
+        remaining_initial_task_ids = remaining_tasks.pluck(:id) & initial_task_ids
+        expect(remaining_initial_task_ids).not_to include(oldest_overdue.id)
+        expect(remaining_initial_task_ids).not_to include(second_overdue.id)
+        expect(remaining_initial_task_ids).to include(newest_overdue.id)
+        expect(remaining_initial_task_ids).to include(future_task.id)
+      end
+
+      it '期限超過タスクがない場合、created_atが古い順に削除されること' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 2.days.ago,
+                              start_generation_at: 3.days.ago,
+                              next_generation_at: 1.hour.ago,
+                              max_active_tasks: 3)
+
+        oldest_task = create(:task,
+                             routine_task: routine_task,
+                             account_id: routine_task.account_id,
+                             status: 'pending',
+                             due_date: 1.day.from_now,
+                             created_at: 5.days.ago)
+
+        second_oldest_task = create(:task,
+                                    routine_task: routine_task,
+                                    account_id: routine_task.account_id,
+                                    status: 'pending',
+                                    due_date: 2.days.from_now,
+                                    created_at: 3.days.ago)
+
+        newest_task = create(:task,
+                             routine_task: routine_task,
+                             account_id: routine_task.account_id,
+                             status: 'pending',
+                             due_date: 3.days.from_now,
+                             created_at: 1.day.ago)
+
+        initial_task_ids = [oldest_task.id, second_oldest_task.id, newest_task.id]
+        
+        # 新しいロジックでは、上限に関係なくタスクを生成する
+        # last_generated_atが2日前なので、2日分のタスクが生成される
+        # 既存タスク3つ + 新規タスク2つ = 合計5つ
+        # max_active_tasks=3なので、2つ削除される
+        # 期限超過タスクがないため、created_atが古い順に削除される
+        # 新規タスクのcreated_atは現在時刻なので、既存タスクより新しい
+        # したがって、既存タスクの中で最も古いタスクが削除される
+        # ただし、新規タスクのgenerated_atが過去の日付に設定されるため、
+        # 新規タスクのcreated_atが既存タスクより古くなる可能性がある
+        # そのため、削除されるタスクは既存タスクの中で最も古いタスクと、新規タスクのうち1つ
+        described_class.perform_now(routine_task.id, job_id)
+
+        # created_atが古いタスクが削除されることを確認
+        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
+        
+        # 最も古いタスク（oldest_task）が削除されることを確認
+        # 新規タスクのcreated_atは現在時刻だが、generated_atが過去の日付に設定されるため、
+        # 削除順序に影響する可能性がある
+        remaining_initial_task_ids = remaining_tasks.pluck(:id) & initial_task_ids
+        expect(remaining_initial_task_ids).not_to include(oldest_task.id)
+        # 新規タスクが2つ生成されるため、削除されるのは1つの既存タスクと1つの新規タスク
+        # したがって、second_oldest_taskとnewest_taskのどちらかが残る
+        expect(remaining_initial_task_ids.length).to be >= 1
+      end
+
+      it '期限が設定されていないタスクは、期限超過タスクより後に削除されること' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 1.day.ago,
+                              start_generation_at: 2.days.ago,
+                              next_generation_at: 1.hour.ago,
+                              max_active_tasks: 3)
+
+        # 期限超過タスク
+        overdue_task = create(:task,
+                               routine_task: routine_task,
+                               account_id: routine_task.account_id,
+                               status: 'pending',
+                               due_date: 2.days.ago,
+                               created_at: 1.day.ago)
+
+        # 期限なしタスク（古い）
+        no_due_date_task = create(:task,
+                                   routine_task: routine_task,
+                                   account_id: routine_task.account_id,
+                                   status: 'pending',
+                                   due_date: nil,
+                                   created_at: 5.days.ago)
+
+        # 期限前タスク
+        future_task = create(:task,
+                             routine_task: routine_task,
+                             account_id: routine_task.account_id,
+                             status: 'pending',
+                             due_date: 1.day.from_now,
+                             created_at: 3.days.ago)
+
+        # 新規タスクが1つ生成される（合計4つになる）
+        described_class.perform_now(routine_task.id, job_id)
+
+        # 期限超過タスクが優先的に削除され、期限なしタスクが残ることを確認
+        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
+        expect(remaining_tasks.pluck(:id)).not_to include(overdue_task.id)
+        expect(remaining_tasks.pluck(:id)).to include(no_due_date_task.id)
+        expect(remaining_tasks.pluck(:id)).to include(future_task.id)
+      end
 
       it '完了タスクは削除対象にならないこと' do
         routine_task = create(:routine_task, :daily,
@@ -195,7 +407,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         end.to change(Task.active, :count).by(1)
       end
 
-      it 'max_active_tasksに達している場合、新しいタスクを生成しないこと' do
+      it 'max_active_tasksに達している場合でも、新しいタスクを生成し、上限に収まるように削除すること' do
         routine_task = create(:routine_task, :daily,
                               last_generated_at: 5.days.ago,
                               start_generation_at: 6.days.ago,
@@ -203,18 +415,25 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
                               max_active_tasks: 3)
 
         # 既にmax_active_tasks分のタスクが存在
-        create_list(:task, 3,
-                    routine_task: routine_task,
-                    account_id: routine_task.account_id,
-                    status: 'pending')
+        existing_tasks = create_list(:task, 3,
+                                    routine_task: routine_task,
+                                    account_id: routine_task.account_id,
+                                    status: 'pending',
+                                    created_at: 10.days.ago)
 
+        # 新しいロジックでは、上限に関係なくタスクを生成する
+        # last_generated_atが5日前なので、5日分のタスクが生成される
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.not_to change(Task, :count)
+        end.to change(Task, :count).by(5)
+
+        # 生成後、上限に収まるように削除される
+        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
 
         job_status_json = redis.get("job_status:#{job_id}")
         job_status = JSON.parse(job_status_json, symbolize_names: true)
-        expect(job_status[:generatedTasksCount]).to eq(0)
+        expect(job_status[:generatedTasksCount]).to eq(5)
       end
 
       it 'weekly頻度で正しくタスクを生成すること' do
