@@ -411,6 +411,57 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
           described_class.perform_now(routine_task.id, job_id)
         end.to change(Task.active, :count).by(3)
       end
+
+      it '長期間停止した場合、生成数が上限で制限されること（max_active_tasks * 5が上限）' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 1.year.ago,
+                              start_generation_at: 1.year.ago,
+                              next_generation_at: 1.year.ago,
+                              max_active_tasks: 10)
+
+        # 1年間の日次タスクは365個になるが、上限は min(10 * 5, 100) = 50 となる
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task, :count).by(50)
+
+        job_status_json = redis.get("job_status:#{job_id}")
+        job_status = JSON.parse(job_status_json, symbolize_names: true)
+        expect(job_status[:generatedTasksCount]).to eq(50)
+      end
+
+      it '長期間停止した場合、生成数が上限で制限されること（100が上限）' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 1.year.ago,
+                              start_generation_at: 1.year.ago,
+                              next_generation_at: 1.year.ago,
+                              max_active_tasks: 30)
+
+        # 1年間の日次タスクは365個になるが、上限は min(30 * 5, 100) = 100 となる
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task, :count).by(100)
+
+        job_status_json = redis.get("job_status:#{job_id}")
+        job_status = JSON.parse(job_status_json, symbolize_names: true)
+        expect(job_status[:generatedTasksCount]).to eq(100)
+      end
+
+      it '通常のケースでは上限に達しないこと' do
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 5.days.ago,
+                              start_generation_at: 6.days.ago,
+                              next_generation_at: 4.days.ago,
+                              max_active_tasks: 10)
+
+        # 5日分のタスクを生成（上限50より少ない）
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task, :count).by(5)
+
+        job_status_json = redis.get("job_status:#{job_id}")
+        job_status = JSON.parse(job_status_json, symbolize_names: true)
+        expect(job_status[:generatedTasksCount]).to eq(5)
+      end
     end
 
     context '期限オフセットが設定されている場合' do
