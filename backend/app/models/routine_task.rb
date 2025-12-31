@@ -49,6 +49,7 @@ class RoutineTask < ApplicationRecord
   end
 
   # 現在時刻に基づいて生成すべきタスク数を計算
+  # システム障害やジョブ失敗による長期間の停止を考慮し、合理的な上限を設定
   def tasks_to_generate_count(current_time = Time.current)
     # 次回生成日時がまだ到来していない場合は0
     return 0 if next_generation_at > current_time
@@ -60,7 +61,13 @@ class RoutineTask < ApplicationRecord
     days_elapsed = ((current_time - last_generated_at) / 1.day).floor
 
     # 頻度に応じて生成すべきタスク数を計算
-    (days_elapsed.to_f / interval_days).floor.clamp(0, max_active_tasks)
+    calculated_count = (days_elapsed.to_f / interval_days).floor
+
+    # 合理的な上限を設定（max_active_tasks * 5 と 100 の最小値）
+    # これにより、システム障害後の大量生成を防ぎつつ、通常のケースでは十分なタスクを生成できる
+    max_generation_limit = [max_active_tasks * 5, 100].min
+
+    [calculated_count, max_generation_limit].min
   end
 
   # 次回生成日時を計算

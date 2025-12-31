@@ -157,10 +157,19 @@ RSpec.describe RoutineTask, type: :model do
       end
     end
 
-    context 'max_active_tasksを超える場合' do
-      it 'max_active_tasksで上限を設定すること' do
-        routine_task = create(:routine_task, :daily, max_active_tasks: 5, last_generated_at: 10.days.ago, start_generation_at: 11.days.ago, next_generation_at: 9.days.ago)
+    context '上限が適用される場合' do
+      it 'max_active_tasks * 5と100の最小値で上限を設定すること' do
+        # max_active_tasks: 1の場合、上限は min(1 * 5, 100) = 5
+        # 10日経過しているので、計算上は10個だが、上限5で制限される
+        routine_task = create(:routine_task, :daily, max_active_tasks: 1, last_generated_at: 10.days.ago, start_generation_at: 11.days.ago, next_generation_at: 9.days.ago)
         expect(routine_task.tasks_to_generate_count(current_time)).to eq(5)
+      end
+
+      it '100が上限として適用されること' do
+        # max_active_tasks: 30の場合、上限は min(30 * 5, 100) = 100
+        # 200日経過しているので、計算上は200個だが、上限100で制限される
+        routine_task = create(:routine_task, :daily, max_active_tasks: 30, last_generated_at: 200.days.ago, start_generation_at: 201.days.ago, next_generation_at: 199.days.ago)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(100)
       end
     end
   end
