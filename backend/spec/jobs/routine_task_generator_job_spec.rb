@@ -204,7 +204,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
                              due_date: 1.day.from_now,
                              created_at: 4.days.ago)
 
-        initial_task_ids = [oldest_overdue.id, second_overdue.id, newest_overdue.id, future_task.id]
+        initial_task_ids = [ oldest_overdue.id, second_overdue.id, newest_overdue.id, future_task.id ]
 
         described_class.perform_now(routine_task.id, job_id)
 
@@ -245,7 +245,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
                              due_date: 3.days.from_now,
                              created_at: 1.day.ago)
 
-        initial_task_ids = [oldest_task.id, second_oldest_task.id, newest_task.id]
+        initial_task_ids = [ oldest_task.id, second_oldest_task.id, newest_task.id ]
 
         described_class.perform_now(routine_task.id, job_id)
 

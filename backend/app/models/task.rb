@@ -15,10 +15,14 @@ class Task < ApplicationRecord
   scope :active, -> { where(deleted_at: nil) }
   scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }
+  scope :by_statuses, ->(statuses) { where(status: statuses) if statuses.present? }
   scope :overdue, -> { where('due_date < ?', Time.current) }
   scope :due_today, -> { where(due_date: Date.current.beginning_of_day..Date.current.end_of_day) }
   scope :with_deleted, -> { all }
   scope :only_deleted, -> { where.not(deleted_at: nil) }
+  scope :order_by_due_date, ->(order = :asc) {
+    order(Arel.sql('CASE WHEN due_date IS NULL THEN 1 ELSE 0 END'), due_date: order)
+  }
 
   def self.for_user(user_id)
     active.by_account(user_id)
