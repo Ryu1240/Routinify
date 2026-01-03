@@ -104,13 +104,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <Title order={2} mb="md">
                 習慣化タスクの達成状況
                 {routineTasks.length > 0 && (
-                  <Text
-                    component="span"
-                    size="sm"
-                    c="dimmed"
-                    fw={400}
-                    ml="xs"
-                  >
+                  <Text component="span" size="sm" c="dimmed" fw={400} ml="xs">
                     ({routineTasks.length}件)
                   </Text>
                 )}
@@ -127,7 +121,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         padding="sm"
                         radius="md"
                         withBorder
-                        style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}
+                        style={{
+                          backgroundColor: 'var(--mantine-color-gray-0)',
+                        }}
                       >
                         <Group justify="space-between" align="center">
                           <Text fw={500} size="sm" style={{ flex: 1 }}>
