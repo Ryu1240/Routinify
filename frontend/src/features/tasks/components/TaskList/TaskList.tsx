@@ -12,7 +12,7 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
-import { Task, UpdateTaskDto } from '@/types';
+import { Task, UpdateTaskDto, TaskStatus } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
 import { Milestone } from '@/types/milestone';
 import { TaskTable } from '@/features/tasks/components/TaskTable';
@@ -42,6 +42,10 @@ type TaskListProps = {
   milestones?: Milestone[];
   taskMilestoneMap?: Map<number, number[]>;
   onOpenMilestoneModal?: (taskId: number) => void;
+  onToggleStatus?: (
+    taskId: number,
+    currentStatus: TaskStatus | null
+  ) => Promise<void>;
 };
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -67,6 +71,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   milestones = [],
   taskMilestoneMap,
   onOpenMilestoneModal,
+  onToggleStatus,
 }) => {
   const isMobile = useIsMobile();
 
@@ -153,6 +158,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           milestones={milestones}
           taskMilestoneMap={taskMilestoneMap}
           onOpenMilestoneModal={onOpenMilestoneModal}
+          onToggleStatus={onToggleStatus}
         />
       ) : tasks.length > 0 ? (
         <Stack gap="md">
@@ -166,6 +172,7 @@ export const TaskList: React.FC<TaskListProps> = ({
               milestones={milestones}
               taskMilestoneIds={taskMilestoneMap?.get(task.id) ?? []}
               onOpenMilestoneModal={onOpenMilestoneModal}
+              onToggleStatus={onToggleStatus}
             />
           ))}
         </Stack>

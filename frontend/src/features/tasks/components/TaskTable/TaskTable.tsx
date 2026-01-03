@@ -3,6 +3,7 @@ import { DataTable } from '@/shared/components/DataTable/index';
 import { TaskTableProps } from './types';
 import { Category, CreateCategoryDto } from '@/types/category';
 import { Milestone } from '@/types/milestone';
+import { TaskStatus } from '@/types/task';
 import { TaskEditableRow } from './TaskEditableRow';
 import { TaskTableRow } from './TaskTableRow';
 import { createTableColumns } from './taskTableColumns';
@@ -14,6 +15,10 @@ type ExtendedTaskTableProps = TaskTableProps & {
   milestones?: Milestone[];
   taskMilestoneMap?: Map<number, number[]>; // タスクID -> マイルストーンIDの配列のマップ
   onOpenMilestoneModal?: (taskId: number) => void;
+  onToggleStatus?: (
+    taskId: number,
+    currentStatus: TaskStatus | null
+  ) => Promise<void>;
 };
 
 export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
@@ -32,6 +37,7 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
   milestones = [],
   taskMilestoneMap,
   onOpenMilestoneModal,
+  onToggleStatus,
 }) => {
   const tableColumns = createTableColumns(categories);
 
@@ -66,6 +72,7 @@ export const TaskTable: React.FC<ExtendedTaskTableProps> = ({
                 milestones={milestones}
                 taskMilestoneIds={taskMilestoneMap?.get(task.id) ?? []}
                 onOpenMilestoneModal={onOpenMilestoneModal}
+                onToggleStatus={onToggleStatus}
               />
             )}
           </DataTable.Tr>

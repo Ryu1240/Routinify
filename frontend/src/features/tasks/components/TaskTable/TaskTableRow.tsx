@@ -1,6 +1,12 @@
 import React from 'react';
 import { Text, Badge, Group, ActionIcon, Tooltip, Stack } from '@mantine/core';
-import { IconEdit, IconTrash, IconFlag } from '@tabler/icons-react';
+import {
+  IconEdit,
+  IconTrash,
+  IconFlag,
+  IconCheck,
+  IconPlayerPlay,
+} from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import {
   getPriorityColor,
@@ -11,7 +17,7 @@ import {
   formatDate,
 } from '@/shared/utils/taskUtils';
 import { DataTable } from '@/shared/components/DataTable/index';
-import { Task } from '@/types/task';
+import { Task, TaskStatus } from '@/types/task';
 import { Category } from '@/types/category';
 import { Milestone } from '@/types/milestone';
 
@@ -23,6 +29,10 @@ interface TaskTableRowProps {
   milestones?: Milestone[];
   taskMilestoneIds?: number[]; // このタスクが紐づいているマイルストーンIDの配列
   onOpenMilestoneModal?: (taskId: number) => void;
+  onToggleStatus?: (
+    taskId: number,
+    currentStatus: TaskStatus | null
+  ) => Promise<void>;
 }
 
 export const TaskTableRow: React.FC<TaskTableRowProps> = ({
@@ -33,6 +43,7 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
   milestones = [],
   taskMilestoneIds = [],
   onOpenMilestoneModal,
+  onToggleStatus,
 }) => {
   const categoryName = task.categoryId
     ? categories.find((cat) => cat.id === task.categoryId)?.name
@@ -94,6 +105,30 @@ export const TaskTableRow: React.FC<TaskTableRowProps> = ({
       </DataTable.Td>
       <DataTable.Td>
         <Group gap="xs" justify="center">
+          {onToggleStatus && (
+            <Tooltip
+              label={
+                task.status === 'completed'
+                  ? '進行中に変更'
+                  : task.status === 'in_progress'
+                    ? '完了に変更'
+                    : '進行中に変更'
+              }
+            >
+              <ActionIcon
+                size="sm"
+                variant="subtle"
+                color={task.status === 'completed' ? 'blue' : 'green'}
+                onClick={() => onToggleStatus(task.id, task.status)}
+              >
+                {task.status === 'completed' ? (
+                  <IconPlayerPlay size={16} />
+                ) : (
+                  <IconCheck size={16} />
+                )}
+              </ActionIcon>
+            </Tooltip>
+          )}
           <Tooltip label="編集">
             <ActionIcon
               size="sm"

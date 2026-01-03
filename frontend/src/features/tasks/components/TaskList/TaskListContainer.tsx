@@ -4,7 +4,7 @@ import { useCategories } from '@/shared/hooks/useCategories';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useFetchMilestones } from '@/features/milestones/hooks/useFetchMilestones';
 import { useMilestoneMutations } from '@/features/milestones/hooks/useMilestoneMutations';
-import { UpdateTaskDto, CreateTaskDto, Task } from '@/types';
+import { UpdateTaskDto, CreateTaskDto, Task, TaskStatus } from '@/types';
 import { CreateCategoryDto } from '@/types/category';
 import { TaskList } from './TaskList';
 import { CreateTaskModal } from '@/features/tasks/components/CreateTaskModal';
@@ -91,6 +91,28 @@ export const TaskListContainer: React.FC = () => {
       } catch (error) {
         console.error('タスク削除に失敗:', error);
       }
+    }
+  };
+
+  const handleToggleStatus = async (
+    taskId: number,
+    currentStatus: TaskStatus | null
+  ) => {
+    try {
+      // 完了と進行中を切り替え
+      let newStatus: TaskStatus;
+      if (currentStatus === 'completed') {
+        newStatus = 'in_progress';
+      } else if (currentStatus === 'in_progress') {
+        newStatus = 'completed';
+      } else {
+        // その他の状態（pending, on_hold）の場合は進行中に
+        newStatus = 'in_progress';
+      }
+
+      await updateTask(taskId, { status: newStatus });
+    } catch (error) {
+      console.error('タスク状態の更新に失敗:', error);
     }
   };
 
@@ -182,6 +204,7 @@ export const TaskListContainer: React.FC = () => {
         milestones={milestones}
         taskMilestoneMap={taskMilestoneMap}
         onOpenMilestoneModal={handleOpenMilestoneModal}
+        onToggleStatus={handleToggleStatus}
       />
 
       {editingTaskIdForMilestone !== null && (
