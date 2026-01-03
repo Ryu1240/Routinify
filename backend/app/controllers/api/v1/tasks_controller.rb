@@ -73,15 +73,44 @@ module Api
       end
 
       def search_params
-        params.permit(:status, :overdue, :due_today, :q, :page, :per_page)
+        params.permit(:status, :statuses, :overdue, :due_today, :q, :page, :per_page, :sort_by, :sort_order)
       end
 
       def apply_filters(tasks, filters)
-        tasks = tasks.by_status(filters[:status]) if filters[:status].present?
+        # 複数ステータスフィルタリング（statusesパラメータが優先）
+        if filters[:statuses].present?
+          statuses = filters[:statuses].split(',').map(&:strip)
+          tasks = tasks.by_statuses(statuses)
+        elsif filters[:status].present?
+          # 既存のstatusパラメータとの互換性を維持
+          tasks = tasks.by_status(filters[:status])
+        end
+
         tasks = tasks.overdue if filters[:overdue] == 'true'
         tasks = tasks.due_today if filters[:due_today] == 'true'
         tasks = tasks.search(filters[:q]) if filters[:q].present?
+
+        # ソート処理
+        tasks = apply_sort(tasks, filters)
+
         tasks
+      end
+
+      def apply_sort(tasks, filters)
+        sort_by = filters[:sort_by]
+        sort_order = filters[:sort_order]&.to_sym || :asc
+
+        case sort_by
+        when 'due_date'
+          tasks.order_by_due_date(sort_order)
+        when 'created_at'
+          tasks.order(created_at: sort_order)
+        when 'updated_at'
+          tasks.order(updated_at: sort_order)
+        else
+          # デフォルトはcreated_atの降順
+          tasks.order(created_at: :desc)
+        end
       end
     end
   end

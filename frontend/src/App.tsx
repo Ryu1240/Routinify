@@ -20,6 +20,7 @@ import {
 } from './pages/achievements';
 import { AccountManagementPage } from './pages/admin';
 import { ForbiddenPage } from './pages/errors';
+import { DashboardPage } from './pages/dashboard';
 import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
 
 interface ProtectedRouteProps {
@@ -83,6 +84,7 @@ const AppContent: React.FC = () => {
       if (returnTo) {
         // 相対パスかつ許可されたパスのみリダイレクト
         const allowedPaths = [
+          '/dashboard',
           '/tasks',
           '/categories',
           '/routine-tasks',
@@ -112,6 +114,14 @@ const AppContent: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/tasks"
         element={

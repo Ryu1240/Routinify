@@ -75,7 +75,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     try {
       setTasksLoading(true);
       setError(null);
-      const allTasks = await tasksApi.fetchAll(true);
+      const allTasks = await tasksApi.fetchAll(undefined, true);
       // 既に関連付けられているタスクを除外
       const availableTasks = allTasks.filter(
         (task) => !associatedTaskIds.includes(task.id)

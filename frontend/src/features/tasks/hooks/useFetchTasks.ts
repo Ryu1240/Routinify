@@ -29,7 +29,7 @@ export const useFetchTasks = () => {
     try {
       setLoading(true);
       // リフレッシュ時はキャッシュを無効化して最新データを取得
-      const data = await tasksApi.fetchAll(true);
+      const data = await tasksApi.fetchAll(undefined, true);
       setTasks(data);
       setError(null);
     } catch (err) {
@@ -60,7 +60,7 @@ export const useFetchTasks = () => {
       if (customEvent.detail?.silent) {
         // 静かに更新（ローディング状態を変更しない）
         tasksApi
-          .fetchAll(true)
+          .fetchAll(undefined, true)
           .then((data) => {
             setTasks(data);
             setError(null);
