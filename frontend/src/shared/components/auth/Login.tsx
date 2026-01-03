@@ -12,6 +12,7 @@ import {
 } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
 import styles from './Login.module.css';
+import routinifyLogo from '@/assets/images/Routinify-Logo.png';
 
 interface LoginProps {}
 
@@ -52,7 +53,7 @@ const Login: React.FC<LoginProps> = () => {
     >
       <div className={styles.logoCircle}>
         <Image
-          src="/Routinify-Logo.png"
+          src={routinifyLogo}
           alt="Routinify Logo"
           width={450}
           height={450}

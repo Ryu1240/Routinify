@@ -138,31 +138,46 @@ Connecting to '<URL>' violates the following Content Security Policy directive: 
 - Dockerボリュームマウントとwebpack-dev-serverのファイル監視の不整合
 - ファイルが変更中にリクエストされた
 - Content-Lengthヘッダーと実際のファイルサイズが一致しない
+- webpack-dev-serverの圧縮機能が原因でContent-Lengthが正しく計算されない
 
 **解決方法:**
 
-1. **環境変数の設定（既に設定済み）**
+1. **画像をimportする方法（推奨・既に実装済み）**
+   - 画像を`frontend/src/assets/images/`に配置し、コンポーネントでimportする
+   - これにより、webpackが画像をバンドルに含め、Content-Lengthの問題を完全に回避できます
+   - `Header.tsx`と`Login.tsx`で既に実装済み
+   - 例：
+     ```typescript
+     import routinifyLogo from '@/assets/images/Routinify-Logo.png';
+     <Image src={routinifyLogo} alt="Routinify Logo" />
+     ```
+
+2. **webpack-dev-serverの設定（既に設定済み）**
+   - `frontend/craco.config.js`に静的ファイルの監視設定を追加
+   - Docker環境でのファイル監視を改善
+
+3. **環境変数の設定（既に設定済み）**
    - `CHOKIDAR_USEPOLLING=true` が `docker-compose.yml` と `package.json` に設定されています
    - これにより、Docker環境でのファイル監視が改善されます
 
-2. **フロントエンドコンテナの再起動**
+4. **フロントエンドコンテナの再起動**
    ```bash
    docker-compose restart frontend
    ```
 
-3. **完全な再起動（問題が続く場合）**
+5. **完全な再起動（問題が続く場合）**
    ```bash
    docker-compose down
    docker-compose up -d
    ```
 
-4. **ブラウザのキャッシュをクリア**
+6. **ブラウザのキャッシュをクリア**
    - ブラウザの開発者ツールで「Disable cache」を有効にする
    - または、シークレットモードでアクセス
 
-5. **画像ファイルの確認**
+7. **画像ファイルの確認**
    ```bash
-   ls -lh frontend/public/Routinify-Logo.png
+   ls -lh frontend/src/assets/images/Routinify-Logo.png
    ```
    ファイルが存在し、サイズが正常であることを確認してください
 
