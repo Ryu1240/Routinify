@@ -7,7 +7,7 @@ type TaskResponse = {
 
 type TaskRequestBody = {
   task: {
-    title: string;
+    title?: string;
     due_date?: string | null;
     status?: string | null;
     priority?: string | null;
@@ -15,8 +15,33 @@ type TaskRequestBody = {
   };
 };
 
+type FetchAllParams = {
+  statuses?: string;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
+  status?: string;
+  overdue?: boolean;
+  due_today?: boolean;
+  q?: string;
+};
+
 export const tasksApi = {
-  fetchAll: async (skipCache = false): Promise<Task[]> => {
+  fetchAll: async (
+    params?: FetchAllParams,
+    skipCache = false
+  ): Promise<Task[]> => {
+    const requestParams: Record<string, string | number> = {};
+    if (params) {
+      if (params.statuses) requestParams.statuses = params.statuses;
+      if (params.sort_by) requestParams.sort_by = params.sort_by;
+      if (params.sort_order) requestParams.sort_order = params.sort_order;
+      if (params.status) requestParams.status = params.status;
+      if (params.overdue) requestParams.overdue = params.overdue.toString();
+      if (params.due_today)
+        requestParams.due_today = params.due_today.toString();
+      if (params.q) requestParams.q = params.q;
+    }
+
     const config = skipCache
       ? {
           headers: {
@@ -24,10 +49,13 @@ export const tasksApi = {
             Pragma: 'no-cache',
           },
           params: {
+            ...requestParams,
             _t: Date.now(), // キャッシュ回避のためのタイムスタンプ
           },
         }
-      : undefined;
+      : {
+          params: requestParams,
+        };
     const response = await axios.get<TaskResponse>('/api/v1/tasks', config);
     return response.data.data;
   },
@@ -48,11 +76,13 @@ export const tasksApi = {
   update: async (taskId: number, taskData: UpdateTaskDto): Promise<void> => {
     const body: TaskRequestBody = {
       task: {
-        title: taskData.title || '',
-        due_date: taskData.dueDate,
-        status: taskData.status,
-        priority: taskData.priority,
-        category_id: taskData.categoryId,
+        ...(taskData.title !== undefined && { title: taskData.title }),
+        ...(taskData.dueDate !== undefined && { due_date: taskData.dueDate }),
+        ...(taskData.status !== undefined && { status: taskData.status }),
+        ...(taskData.priority !== undefined && { priority: taskData.priority }),
+        ...(taskData.categoryId !== undefined && {
+          category_id: taskData.categoryId,
+        }),
       },
     };
     await axios.put(`/api/v1/tasks/${taskId}`, body);
