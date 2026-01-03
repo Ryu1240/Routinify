@@ -82,16 +82,19 @@ class RoutineTaskGeneratorJob < ApplicationJob
     excess_count = incomplete_tasks.count - routine_task.max_active_tasks
 
     if excess_count > 0
+      # 現在日時を取得（日付比較用にDate型も用意）
       current_time = Time.current
+      current_date = Date.current
 
       # 期限超過タスクを優先的に取得（作成順）
-      overdue_tasks = incomplete_tasks.where('due_date < ?', current_time)
+      # due_dateはDATE型なので、Date型と比較する方が安全
+      overdue_tasks = incomplete_tasks.where('due_date < ?', current_date)
                                       .order(created_at: :asc)
 
       # 期限超過タスクが不足する場合、期限前タスクも取得（作成順）
       if overdue_tasks.count < excess_count
         remaining_count = excess_count - overdue_tasks.count
-        future_tasks = incomplete_tasks.where('due_date >= ? OR due_date IS NULL', current_time)
+        future_tasks = incomplete_tasks.where('due_date >= ? OR due_date IS NULL', current_date)
                                        .order(created_at: :asc)
                                        .limit(remaining_count)
         tasks_to_delete = overdue_tasks.to_a + future_tasks.to_a
