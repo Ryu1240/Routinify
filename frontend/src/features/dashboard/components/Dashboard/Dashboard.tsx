@@ -12,6 +12,7 @@ import {
   ActionIcon,
   Tooltip,
   Button,
+  Collapse,
 } from '@mantine/core';
 import {
   IconAlertCircle,
@@ -25,6 +26,8 @@ import { RoutineTaskStatsCard } from '../RoutineTaskStatsCard';
 import { RoutineTaskWithStats } from '@/types/achievement';
 import { Task, TaskStatus } from '@/types';
 import dayjs from 'dayjs';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
+import { AchievementBadge } from '@/features/achievements/components/AchievementBadge';
 
 interface DashboardProps {
   routineTasks: RoutineTaskWithStats[];
@@ -50,6 +53,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
 }) => {
   const [showAllPending, setShowAllPending] = useState(false);
   const [showAllInProgress, setShowAllInProgress] = useState(false);
+  const [isRoutineTasksExpanded, setIsRoutineTasksExpanded] = useState(false);
+  const isMobile = useIsMobile();
 
   const pendingTasks = useMemo(
     () =>
@@ -94,22 +99,102 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <Stack gap="xl">
         {/* 習慣化タスク達成状況セクション */}
         <div>
-          <Title order={2} mb="md">
-            習慣化タスクの達成状況
-          </Title>
-          {routineTasks.length === 0 ? (
-            <Text c="dimmed">習慣化タスクがありません</Text>
+          {isMobile ? (
+            <>
+              <Title order={2} mb="md">
+                習慣化タスクの達成状況
+                {routineTasks.length > 0 && (
+                  <Text
+                    component="span"
+                    size="sm"
+                    c="dimmed"
+                    fw={400}
+                    ml="xs"
+                  >
+                    ({routineTasks.length}件)
+                  </Text>
+                )}
+              </Title>
+              {/* 折りたたまれた状態での簡易表示 */}
+              {!isRoutineTasksExpanded && routineTasks.length > 0 && (
+                <Stack gap="xs" mb="md">
+                  {routineTasks.map((routineTask) => {
+                    const { title, achievementStats } = routineTask;
+                    const { achievementRate } = achievementStats;
+                    return (
+                      <Card
+                        key={routineTask.id}
+                        padding="sm"
+                        radius="md"
+                        withBorder
+                        style={{ backgroundColor: 'var(--mantine-color-gray-0)' }}
+                      >
+                        <Group justify="space-between" align="center">
+                          <Text fw={500} size="sm" style={{ flex: 1 }}>
+                            {title}
+                          </Text>
+                          <AchievementBadge achievementRate={achievementRate} />
+                        </Group>
+                      </Card>
+                    );
+                  })}
+                  <Button
+                    variant="light"
+                    fullWidth
+                    onClick={() => setIsRoutineTasksExpanded(true)}
+                    rightSection={<IconChevronDown size={16} />}
+                    mt="xs"
+                  >
+                    詳細を見る
+                  </Button>
+                </Stack>
+              )}
+              <Collapse in={isRoutineTasksExpanded}>
+                {routineTasks.length === 0 ? (
+                  <Text c="dimmed" mt="md">
+                    習慣化タスクがありません
+                  </Text>
+                ) : (
+                  <Stack gap="md">
+                    <Grid>
+                      {routineTasks.map((routineTask) => (
+                        <Grid.Col key={routineTask.id} span={12}>
+                          <RoutineTaskStatsCard routineTask={routineTask} />
+                        </Grid.Col>
+                      ))}
+                    </Grid>
+                    <Button
+                      variant="subtle"
+                      fullWidth
+                      onClick={() => setIsRoutineTasksExpanded(false)}
+                      rightSection={<IconChevronUp size={16} />}
+                    >
+                      折りたたむ
+                    </Button>
+                  </Stack>
+                )}
+              </Collapse>
+            </>
           ) : (
-            <Grid>
-              {routineTasks.map((routineTask) => (
-                <Grid.Col
-                  key={routineTask.id}
-                  span={{ base: 12, sm: 6, md: 4 }}
-                >
-                  <RoutineTaskStatsCard routineTask={routineTask} />
-                </Grid.Col>
-              ))}
-            </Grid>
+            <>
+              <Title order={2} mb="md">
+                習慣化タスクの達成状況
+              </Title>
+              {routineTasks.length === 0 ? (
+                <Text c="dimmed">習慣化タスクがありません</Text>
+              ) : (
+                <Grid>
+                  {routineTasks.map((routineTask) => (
+                    <Grid.Col
+                      key={routineTask.id}
+                      span={{ base: 12, sm: 6, md: 4 }}
+                    >
+                      <RoutineTaskStatsCard routineTask={routineTask} />
+                    </Grid.Col>
+                  ))}
+                </Grid>
+              )}
+            </>
           )}
         </div>
 
