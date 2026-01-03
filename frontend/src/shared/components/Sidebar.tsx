@@ -6,6 +6,7 @@ import {
   IconRepeat,
   IconFlag,
   IconChartBar,
+  IconHome,
 } from '@tabler/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { LAYOUT_CONSTANTS } from '@/shared/constants';
@@ -25,6 +26,12 @@ const Sidebar: React.FC<SidebarProps> = ({
   const isMobile = useIsMobile();
 
   const navItems = [
+    {
+      label: 'ダッシュボード',
+      icon: <IconHome size={16} />,
+      path: '/dashboard',
+      description: 'タスクと習慣化の概要を表示',
+    },
     {
       label: 'タスク一覧',
       icon: <IconChecklist size={16} />,
