@@ -65,9 +65,9 @@ class RoutineTask < ApplicationRecord
 
     # 合理的な上限を設定（max_active_tasks * 5 と 100 の最小値）
     # これにより、システム障害後の大量生成を防ぎつつ、通常のケースでは十分なタスクを生成できる
-    max_generation_limit = [max_active_tasks * 5, 100].min
+    max_generation_limit = [ max_active_tasks * 5, 100 ].min
 
-    [calculated_count, max_generation_limit].min
+    [ calculated_count, max_generation_limit ].min
   end
 
   # 次回生成日時を計算
@@ -117,8 +117,10 @@ class RoutineTask < ApplicationRecord
     # メモリ上でステータスごとの集計
     status_counts = tasks.group_by(&:status).transform_values(&:count)
 
-    # メモリ上で期限超過タスク数を計算
-    overdue_count = tasks.count { |task| task.due_date && task.due_date < current_time }
+    # メモリ上で期限超過タスク数を計算（完了状態のタスクは除外）
+    overdue_count = tasks.count do |task|
+      task.due_date && task.due_date < current_time && task.status != 'completed'
+    end
 
     total_count = tasks.count
     completed_count = status_counts['completed'] || 0

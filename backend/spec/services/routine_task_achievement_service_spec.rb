@@ -232,6 +232,19 @@ RSpec.describe RoutineTaskAchievementService, type: :service do
         data = result.data
         expect(data[:overdue_count]).to eq(1)
       end
+
+      it '完了状態のタスクは期限超過に含まれないこと' do
+        # 完了状態で期限超過のタスクを追加
+        create(:task, account_id: account_id, routine_task: routine_task,
+               generated_at: week_start + 3.days, status: 'completed',
+               due_date: Date.current - 2.days) # 期限超過だが完了済み
+
+        result = service.call
+        expect(result.success?).to be true
+        data = result.data
+        # 完了状態のタスクは期限超過に含まれないため、カウントは1のまま
+        expect(data[:overdue_count]).to eq(1)
+      end
     end
 
     describe '連続達成週数/月数の計算' do
