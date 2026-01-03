@@ -18,6 +18,7 @@ import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
 import { BatchTaskGenerationButton } from './BatchTaskGenerationButton';
 import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
 import { useIsMobile } from '@/shared/hooks/useMediaQuery';
+import routinifyLogo from '@/assets/images/Routinify-Logo.png';
 
 interface HeaderProps {
   drawerOpened?: boolean;
@@ -56,7 +57,7 @@ const Header: React.FC<HeaderProps> = ({
               />
             )}
             <Image
-              src="/Routinify-Logo.png"
+              src={routinifyLogo}
               alt="Routinify Logo"
               w={rem(36)}
               h={rem(36)}

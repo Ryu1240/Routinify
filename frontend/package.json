@@ -21,7 +21,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "WDS_SOCKET_PORT=0 craco start",
+    "start": "WDS_SOCKET_PORT=0 CHOKIDAR_USEPOLLING=true craco start",
     "build": "craco build",
     "test": "vitest --config vitest.config.ts",
     "test:ui": "vitest --ui --config vitest.config.ts",
