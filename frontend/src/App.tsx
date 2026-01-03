@@ -78,8 +78,31 @@ const AppContent: React.FC = () => {
     const handleRedirect = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const returnTo = urlParams.get('returnTo');
+
+      // セキュリティ: Open Redirect脆弱性を防ぐため、内部パスのみ許可
       if (returnTo) {
-        navigate(returnTo);
+        // 相対パスかつ許可されたパスのみリダイレクト
+        const allowedPaths = [
+          '/tasks',
+          '/categories',
+          '/routine-tasks',
+          '/milestones',
+          '/achievements',
+          '/admin/accounts',
+        ];
+        const isInternalPath =
+          returnTo.startsWith('/') && !returnTo.startsWith('//');
+        const isAllowedPath = allowedPaths.some((path) =>
+          returnTo.startsWith(path)
+        );
+
+        if (isInternalPath && isAllowedPath) {
+          navigate(returnTo);
+        } else {
+          // 不正なパスの場合はデフォルトのタスク一覧へ
+          console.warn('Invalid redirect path blocked:', returnTo);
+          navigate('/tasks');
+        }
       }
     };
 

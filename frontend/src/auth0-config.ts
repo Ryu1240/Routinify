@@ -43,6 +43,8 @@ export const auth0Config: Auth0ProviderOptions = {
   // ページリロード後もセッションを維持しつつ、Auth0 SDKがセキュアにトークンを管理
   cacheLocation: 'localstorage',
   useRefreshTokens: true,
+  // セキュリティ: フォールバック機能でトークン更新の信頼性を向上
+  useRefreshTokensFallback: true,
   // Arcブラウザ対応
   skipRedirectCallback: false,
 };
