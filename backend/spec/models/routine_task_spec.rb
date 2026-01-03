@@ -118,16 +118,42 @@ RSpec.describe RoutineTask, type: :model do
     let(:current_time) { Time.current }
 
     context '次回生成日時がまだ到来していない場合' do
-      it '0を返すこと' do
-        routine_task = create(:routine_task, next_generation_at: 1.hour.from_now)
+      it '0を返すこと（2回目以降の場合）' do
+        routine_task = create(:routine_task, :with_last_generation, next_generation_at: 1.hour.from_now)
         expect(routine_task.tasks_to_generate_count(current_time)).to eq(0)
+      end
+
+      it '最初の生成時はnext_generation_atのチェックをスキップすること' do
+        # next_generation_atが未来でも、最初の生成時はstart_generation_atから計算する（開始日を含める）
+        routine_task = create(:routine_task, :daily, last_generated_at: nil, start_generation_at: 3.days.ago, next_generation_at: 1.hour.from_now)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(4)
       end
     end
 
-    context '前回生成日時が未設定の場合' do
-      it '1を返すこと' do
-        routine_task = create(:routine_task, last_generated_at: nil, next_generation_at: 1.hour.ago)
-        expect(routine_task.tasks_to_generate_count(current_time)).to eq(1)
+    context '前回生成日時が未設定の場合（最初の生成時）' do
+      it 'start_generation_atから現在時刻までのタスク数を計算すること（開始日を含める）' do
+        # daily頻度で3日前から開始している場合、開始日を含めて4個のタスクを生成すべき（3日前、2日前、1日前、今日）
+        routine_task = create(:routine_task, :daily, last_generated_at: nil, start_generation_at: 3.days.ago, next_generation_at: 1.hour.ago)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(4)
+      end
+
+      it '1日経過していれば2を返すこと（開始日を含める）' do
+        # daily頻度で1日前から開始している場合、開始日を含めて2個のタスクを生成すべき（1日前、今日）
+        routine_task = create(:routine_task, :daily, last_generated_at: nil, start_generation_at: 1.day.ago, next_generation_at: 1.hour.ago)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(2)
+      end
+
+      it 'weekly頻度で14日経過していれば3を返すこと（開始日を含める）' do
+        # weekly頻度で14日前から開始している場合、開始日を含めて3個のタスクを生成すべき（14日前、7日前、今日）
+        routine_task = create(:routine_task, :weekly, last_generated_at: nil, start_generation_at: 14.days.ago, next_generation_at: 1.hour.ago)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(3)
+      end
+
+      it '上限が適用されること' do
+        # max_active_tasks: 1の場合、上限は min(1 * 5, 100) = 5
+        # 10日前から開始しているので、計算上は10個だが、上限5で制限される
+        routine_task = create(:routine_task, :daily, max_active_tasks: 1, last_generated_at: nil, start_generation_at: 10.days.ago, next_generation_at: 1.hour.ago)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(5)
       end
     end
 

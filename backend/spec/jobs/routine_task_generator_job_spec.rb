@@ -348,7 +348,29 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
     end
 
     context 'エッジケース' do
-      it '前回生成日時が未設定の場合、1つのタスクを生成すること' do
+      it '前回生成日時が未設定の場合、start_generation_atから現在時刻までのタスクを生成すること（開始日を含める）' do
+        # daily頻度で3日前から開始している場合、開始日を含めて4個のタスクを生成すべき（3日前、2日前、1日前、今日）
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: nil,
+                              start_generation_at: 3.days.ago,
+                              next_generation_at: 1.hour.ago,
+                              due_date_offset_days: 2)
+
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task.active, :count).by(4)
+
+        # 生成されたタスクの生成日時を確認（開始日を含める）
+        generated_tasks = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc)
+        expect(generated_tasks.count).to eq(4)
+        expect(generated_tasks.first.generated_at).to be_within(1.second).of(3.days.ago)
+        expect(generated_tasks.second.generated_at).to be_within(1.second).of(3.days.ago + 1.day)
+        expect(generated_tasks.third.generated_at).to be_within(1.second).of(3.days.ago + 2.days)
+        expect(generated_tasks.fourth.generated_at).to be_within(1.second).of(3.days.ago + 3.days)
+      end
+
+      it '前回生成日時が未設定で1日経過している場合、2つのタスクを生成すること（開始日を含める）' do
+        # daily頻度で1日前から開始している場合、開始日を含めて2個のタスクを生成すべき（1日前、今日）
         routine_task = create(:routine_task, :daily,
                               last_generated_at: nil,
                               start_generation_at: 1.day.ago,
@@ -357,7 +379,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task.active, :count).by(1)
+        end.to change(Task.active, :count).by(2)
       end
 
       it 'max_active_tasksに達している場合でも、新しいタスクを生成し、上限に収まるように削除すること' do
@@ -491,7 +513,8 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.active.where(routine_task_id: routine_task.id).last
+        # 最初のタスクを取得（generated_atでソートして最初のもの）
+        generated_task = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc).first
         expect(generated_task.due_date).to be_present
         expected_due_date = (start_time.to_date + 3.days)
         expect(generated_task.due_date).to eq(expected_due_date)
@@ -530,19 +553,20 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         expect(job_status[:generatedTasksCount]).to eq(0)
       end
 
-      it '開始期限に達している場合はタスクを生成すること' do
+      it '開始期限に達している場合はタスクを生成すること（開始日を含める）' do
         routine_task = create(:routine_task, :daily,
                               start_generation_at: 2.days.ago,
                               last_generated_at: nil,
                               next_generation_at: 1.hour.ago,
                               due_date_offset_days: 3)
 
+        # start_generation_atから現在時刻まで（2日前から）なので、開始日を含めて3個のタスクが生成される（2日前、1日前、今日）
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task.active, :count).by(1)
+        end.to change(Task.active, :count).by(3)
       end
 
-      it '開始期限が設定されている場合、start_generation_atを基準にタスクを生成すること' do
+      it '開始期限が設定されている場合、start_generation_atを基準にタスクを生成すること（開始日を含める）' do
         start_time = 2.days.ago
         routine_task = create(:routine_task, :daily,
                               start_generation_at: start_time,
@@ -552,8 +576,10 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        generated_task = Task.active.where(routine_task_id: routine_task.id).last
-        expect(generated_task.generated_at).to be_within(1.second).of(start_time + 1.day)
+        # 最初のタスクを取得（generated_atでソートして最初のもの）
+        # 開始日を含めるため、最初のタスクは開始日そのもの
+        generated_task = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc).first
+        expect(generated_task.generated_at).to be_within(1.second).of(start_time)
       end
     end
   end

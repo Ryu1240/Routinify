@@ -51,17 +51,26 @@ class RoutineTask < ApplicationRecord
   # 現在時刻に基づいて生成すべきタスク数を計算
   # システム障害やジョブ失敗による長期間の停止を考慮し、合理的な上限を設定
   def tasks_to_generate_count(current_time = Time.current)
-    # 次回生成日時がまだ到来していない場合は0
-    return 0 if next_generation_at > current_time
+    # 基準日時を決定（前回生成日時が未設定の場合は開始日時を使用）
+    base_time = last_generated_at.present? ? last_generated_at : start_generation_at
 
-    # 前回生成日時が未設定の場合は1つだけ生成
-    return 1 if last_generated_at.nil?
+    # 最初の生成時（last_generated_atが未設定）は、next_generation_atのチェックをスキップ
+    # 2回目以降は、次回生成日時がまだ到来していない場合は0を返す
+    unless last_generated_at.nil?
+      return 0 if next_generation_at > current_time
+    end
 
-    # 前回生成日時から現在までの経過日数を計算
-    days_elapsed = ((current_time - last_generated_at) / 1.day).floor
+    # 基準日時から現在までの経過日数を計算
+    days_elapsed = ((current_time - base_time) / 1.day).floor
 
     # 頻度に応じて生成すべきタスク数を計算
     calculated_count = (days_elapsed.to_f / interval_days).floor
+
+    # 最初の生成時（last_generated_atが未設定）は、開始日を含めるため、計算結果に1を加算
+    # 例: 1/1から1/3まで（2日経過）の場合、1/1, 1/2, 1/3の3つのタスクを生成すべき
+    if last_generated_at.nil?
+      calculated_count += 1
+    end
 
     # 合理的な上限を設定（max_active_tasks * 5 と 100 の最小値）
     # これにより、システム障害後の大量生成を防ぎつつ、通常のケースでは十分なタスクを生成できる

@@ -30,7 +30,8 @@ class RoutineTaskGeneratorJob < ApplicationJob
 
       tasks_to_generate.times do |i|
         # 生成日時を計算（基準日時から間隔日数を加算）
-        generation_date = base_time + ((i + 1) * routine_task.interval_days).days
+        # 最初の生成時は開始日を含めるため、i=0のときは開始日そのものが生成される
+        generation_date = base_time + (i * routine_task.interval_days).days
 
         # 期限日時を計算
         # 最初のタスク生成時：開始日（start_generation_at）を基準
