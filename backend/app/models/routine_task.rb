@@ -61,15 +61,23 @@ class RoutineTask < ApplicationRecord
     end
 
     # 基準日時から現在までの経過日数を計算
-    days_elapsed = ((current_time - base_time) / 1.day).floor
+    # 開始日と現在日を含めるため、日付の差を計算（日付のみで比較）
+    base_date = base_time.to_date
+    current_date = current_time.to_date
+    days_elapsed = (current_date - base_date).to_i
 
     # 頻度に応じて生成すべきタスク数を計算
     calculated_count = (days_elapsed.to_f / interval_days).floor
 
-    # 最初の生成時（last_generated_atが未設定）は、開始日を含めるため、計算結果に1を加算
-    # 例: 1/1から1/3まで（2日経過）の場合、1/1, 1/2, 1/3の3つのタスクを生成すべき
+    # 最初の生成時（last_generated_atが未設定）は、開始日と現在日を含めるため、計算結果に1を加算
+    # 例: 1/1から1/4まで（3日経過）の場合、1/1, 1/2, 1/3, 1/4の4つのタスクを生成すべき
+    # 例: 3日前から現在まで（3日経過）の場合、3日前、2日前、1日前、今日の4つのタスクを生成すべき
+    # 例: 14日前から現在まで（weekly頻度）の場合、14日前、7日前、今日の3つのタスクを生成すべき
     if last_generated_at.nil?
-      calculated_count += 1
+      # 開始日と現在日を含めるため、計算後に1を加算
+      # 例: 1/1から1/4まで（3日経過、daily）の場合、(3/1).floor + 1 = 4個のタスクを生成
+      # 例: 14日前から現在まで（14日経過、weekly）の場合、(14/7).floor + 1 = 3個のタスクを生成
+      calculated_count = (days_elapsed.to_f / interval_days).floor + 1
     end
 
     # 合理的な上限を設定（max_active_tasks * 5 と 100 の最小値）

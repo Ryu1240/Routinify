@@ -42,10 +42,10 @@
 - 例: 1/1を開始日として1/3に初生成する場合、1/1, 1/2, 1/3の3つのタスクが生成される
 
 #### 期限日時の計算
-- 最初のタスク生成時（`is_first_generation && i == 0`）：
-  - `due_date = calculate_due_date(start_generation_at) || generation_date`
-- 2回目以降：
-  - `due_date = calculate_due_date(generation_date) || generation_date`
+- すべてのタスクで生成日時（`generation_date`）を基準に期限を計算
+- `due_date = calculate_due_date(generation_date) || generation_date`
+- **開始日を含めるように変更したため、最初のタスクも生成日時を基準にする**
+  - 最初のタスクの`generation_date`は開始日（`start_generation_at`）そのものなので、開始日を基準に計算したのと同じ結果になる
 
 #### タスクの作成
 - `account_id`: `routine_task.account_id` を継承

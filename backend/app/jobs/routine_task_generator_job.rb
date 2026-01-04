@@ -34,15 +34,9 @@ class RoutineTaskGeneratorJob < ApplicationJob
         generation_date = base_time + (i * routine_task.interval_days).days
 
         # 期限日時を計算
-        # 最初のタスク生成時：開始日（start_generation_at）を基準
-        # 2回目以降：生成日時を基準
-        if is_first_generation && i == 0
-          # 最初のタスクの場合は開始日を基準にする
-          due_date = routine_task.calculate_due_date(routine_task.start_generation_at) || generation_date
-        else
-          # 2回目以降は生成日時を基準にする
-          due_date = routine_task.calculate_due_date(generation_date) || generation_date
-        end
+        # すべてのタスクで生成日時（generation_date）を基準に期限を計算
+        # 開始日を含めるように変更したため、最初のタスクも生成日時を基準にする
+        due_date = routine_task.calculate_due_date(generation_date) || generation_date
 
         Task.create!(
           account_id: routine_task.account_id,
@@ -79,6 +73,8 @@ class RoutineTaskGeneratorJob < ApplicationJob
 
   def cleanup_excess_tasks(routine_task)
     # 未完了タスクを取得（論理削除済みを除く）
+    # 新しく生成されたタスクも含めるため、routine_taskをリロードしてアソシエーションキャッシュをクリア
+    routine_task.reload
     incomplete_tasks = routine_task.tasks.where.not(status: 'completed')
     excess_count = incomplete_tasks.count - routine_task.max_active_tasks
 
