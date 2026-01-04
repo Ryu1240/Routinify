@@ -62,8 +62,9 @@ class RoutineTask < ApplicationRecord
 
     # 基準日時から現在までの経過日数を計算
     # 開始日と現在日を含めるため、日付の差を計算（日付のみで比較）
-    base_date = base_time.to_date
-    current_date = current_time.to_date
+    # JSTの日付を使用してタイムゾーンの問題を回避
+    base_date = base_time.in_time_zone('Tokyo').to_date
+    current_date = current_time.in_time_zone('Tokyo').to_date
     days_elapsed = (current_date - base_date).to_i
 
     # 頻度に応じて生成すべきタスク数を計算
@@ -102,7 +103,9 @@ class RoutineTask < ApplicationRecord
   def calculate_due_date(base_date)
     return nil unless base_date
 
-    due_date = base_date.to_date.beginning_of_day
+    # JSTの日付として扱ってタイムゾーンの問題を回避
+    base_date_jst = base_date.is_a?(Time) ? base_date.in_time_zone('Tokyo') : base_date
+    due_date = base_date_jst.to_date.beginning_of_day
 
     if due_date_offset_days.present?
       due_date += due_date_offset_days.days
@@ -119,7 +122,10 @@ class RoutineTask < ApplicationRecord
   # @param start_date [Date] 開始日
   # @param end_date [Date] 終了日
   def tasks_in_period(start_date, end_date)
-    tasks_with_deleted.where(generated_at: start_date.beginning_of_day..end_date.end_of_day)
+    # JSTの日付として範囲を指定してタイムゾーンの問題を回避
+    start_datetime = start_date.beginning_of_day.in_time_zone('Tokyo')
+    end_datetime = end_date.end_of_day.in_time_zone('Tokyo')
+    tasks_with_deleted.where(generated_at: start_datetime..end_datetime)
   end
 
   # 期間内のタスク統計情報を一括で取得（1クエリでレコードを取得し、メモリ上で集計）

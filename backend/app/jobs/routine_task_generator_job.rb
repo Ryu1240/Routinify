@@ -31,7 +31,12 @@ class RoutineTaskGeneratorJob < ApplicationJob
       tasks_to_generate.times do |i|
         # 生成日時を計算（基準日時から間隔日数を加算）
         # 最初の生成時は開始日を含めるため、i=0のときは開始日そのものが生成される
-        generation_date = base_time + (i * routine_task.interval_days).days
+        # JSTの日付として計算してタイムゾーンの問題を回避
+        base_time_jst = base_time.in_time_zone('Tokyo')
+        base_date_jst = base_time_jst.to_date
+        generation_date_jst = base_date_jst + (i * routine_task.interval_days).days
+        # 生成日時はJSTの00:00:00として保存（元の時刻情報は保持しない）
+        generation_date = generation_date_jst.beginning_of_day.in_time_zone('Tokyo')
 
         # 期限日時を計算
         # すべてのタスクで生成日時（generation_date）を基準に期限を計算

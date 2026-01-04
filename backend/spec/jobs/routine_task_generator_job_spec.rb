@@ -615,8 +615,10 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         # 最初のタスクを取得（generated_atでソートして最初のもの）
         # 開始日を含めるため、最初のタスクは開始日そのもの
+        # 修正後のロジックでは、generated_atはJSTの00:00:00として保存される
         generated_task = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc).first
-        expect(generated_task.generated_at).to be_within(1.second).of(start_time)
+        expected_generated_at = start_time.in_time_zone('Tokyo').to_date.beginning_of_day.in_time_zone('Tokyo')
+        expect(generated_task.generated_at).to be_within(1.second).of(expected_generated_at)
       end
     end
   end
