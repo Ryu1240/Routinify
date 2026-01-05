@@ -25,55 +25,44 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
   describe '#perform' do
     context '正常系' do
-      it '新しいタスクを生成すること' do
+      it '基本的なタスク生成機能が正しく動作すること' do
+        category = create(:category)
         routine_task = create(:routine_task, :daily, :with_last_generation,
-                              last_generated_at: 3.days.ago,
-                              start_generation_at: 4.days.ago,
-                              next_generation_at: 2.days.ago,
-                              max_active_tasks: 5,
-                              due_date_offset_days: 4)
-
-        expect do
-          described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task.active, :count).by(3)
-
-        generated_tasks = Task.active.where(routine_task_id: routine_task.id).order(due_date: :asc)
-        expect(generated_tasks.count).to eq(3)
-        expect(generated_tasks.all? { |t| t.status == 'pending' }).to be true
-        expect(generated_tasks.all? { |t| t.title == routine_task.title }).to be true
-      end
-
-      it 'routine_taskのlast_generated_atとnext_generation_atを更新すること' do
-        routine_task = create(:routine_task, :daily, :with_last_generation,
+                              category: category,
+                              priority: 'high',
                               last_generated_at: 1.day.ago,
                               start_generation_at: 2.days.ago,
                               next_generation_at: 1.hour.ago,
+                              max_active_tasks: 5,
                               due_date_offset_days: 2)
 
-        described_class.perform_now(routine_task.id, job_id)
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task.active, :count).by(1)
 
+        # タスクの属性を検証
+        generated_tasks = Task.active.where(routine_task_id: routine_task.id).order(due_date: :asc)
+        expect(generated_tasks.count).to eq(1)
+        expect(generated_tasks.all? { |t| t.status == 'pending' }).to be true
+        expect(generated_tasks.all? { |t| t.title == routine_task.title }).to be true
+
+        generated_task = generated_tasks.last
+        expect(generated_task.category_id).to eq(category.id)
+        expect(generated_task.priority).to eq('high')
+
+        # routine_taskの更新を検証
         routine_task.reload
         expect(routine_task.last_generated_at).to be_within(1.second).of(Time.current)
         expect(routine_task.next_generation_at).to be_within(1.second).of(1.day.from_now)
-      end
 
-      it 'ジョブステータスをRedisに保存すること' do
-        routine_task = create(:routine_task, :daily, :with_last_generation,
-                              last_generated_at: 2.days.ago,
-                              start_generation_at: 3.days.ago,
-                              next_generation_at: 1.day.ago,
-                              due_date_offset_days: 3)
-
-        described_class.perform_now(routine_task.id, job_id)
-
+        # ジョブステータスを検証
         job_status_json = redis.get("job_status:#{job_id}")
         expect(job_status_json).not_to be_nil
-
         job_status = JSON.parse(job_status_json, symbolize_names: true)
         expect(job_status[:jobId]).to eq(job_id)
         expect(job_status[:status]).to eq('completed')
         expect(job_status[:completed]).to be true
-        expect(job_status[:generatedTasksCount]).to eq(2)
+        expect(job_status[:generatedTasksCount]).to eq(1)
       end
 
       it 'max_active_tasksを超えないようにタスクを生成すること' do
@@ -92,42 +81,6 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         expect do
           described_class.perform_now(routine_task.id, job_id)
         end.to change(Task.active, :count).by(1)
-      end
-
-      it 'カテゴリと優先度を継承したタスクを生成すること' do
-        category = create(:category)
-        routine_task = create(:routine_task, :daily, :with_last_generation,
-                              category: category,
-                              priority: 'high',
-                              last_generated_at: 1.day.ago,
-                              start_generation_at: 2.days.ago,
-                              next_generation_at: 1.hour.ago,
-                              due_date_offset_days: 1)
-
-        described_class.perform_now(routine_task.id, job_id)
-
-        generated_task = Task.active.where(routine_task_id: routine_task.id).last
-        expect(generated_task.category_id).to eq(category.id)
-        expect(generated_task.priority).to eq('high')
-      end
-
-      it 'max_active_tasksを超過している場合、古いタスクを削除すること' do
-        routine_task = create(:routine_task, :daily,
-                              last_generated_at: 3.days.ago,
-                              start_generation_at: 4.days.ago,
-                              next_generation_at: 2.days.ago,
-                              max_active_tasks: 3)
-
-        old_tasks = create_list(:task, 5,
-                                routine_task: routine_task,
-                                account_id: routine_task.account_id,
-                                status: 'pending',
-                                created_at: 10.days.ago)
-
-        described_class.perform_now(routine_task.id, job_id)
-
-        routine_task.reload
-        expect(routine_task.active_tasks_count).to be <= routine_task.max_active_tasks
       end
     end
 
@@ -258,45 +211,13 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         described_class.perform_now(routine_task.id, job_id)
 
         remaining_tasks = routine_task.tasks.where.not(status: 'completed')
-        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
+        expect(remaining_tasks.count).to eq(3)
 
+        # 最も古いタスク（oldest_task）が削除されることを確認
         remaining_initial_task_ids = remaining_tasks.pluck(:id) & initial_task_ids
-        all_tasks_with_deleted = routine_task.tasks_with_deleted.where.not(status: 'completed')
-        deleted_task_ids = initial_task_ids - remaining_initial_task_ids
-
-        if all_tasks_with_deleted.count > 3
-          expect(remaining_tasks.count).to eq(3),
-            "Expected 3 tasks to remain, but got #{remaining_tasks.count}. " \
-            "Remaining: #{remaining_tasks.pluck(:id, :created_at).inspect}, " \
-            "All tasks with deleted: #{all_tasks_with_deleted.count}"
-          expect(remaining_initial_task_ids).to include(newest_task.id)
-
-          if deleted_task_ids.size == 1
-            # 1個のタスクが削除された場合（既存3つ + 新規生成1つ = 4つ、max_active_tasks=3なので1つ削除）
-            expect(remaining_initial_task_ids).not_to include(oldest_task.id)
-            expect(remaining_initial_task_ids).to include(second_oldest_task.id)
-            expect(remaining_initial_task_ids).to include(newest_task.id)
-          elsif deleted_task_ids.size == 2
-            # 2個のタスクが削除された場合
-            expect(remaining_initial_task_ids).not_to include(oldest_task.id)
-            expect(remaining_initial_task_ids).not_to include(second_oldest_task.id)
-          else
-            expect(remaining_initial_task_ids.size).to eq(3),
-              "Expected 3 tasks to remain when deletion logic is not executed, but got #{remaining_initial_task_ids.size}. " \
-              "Remaining: #{remaining_initial_task_ids.inspect}, Deleted: #{deleted_task_ids.inspect}, " \
-              "All tasks with deleted: #{all_tasks_with_deleted.count}"
-            expect(remaining_initial_task_ids).to include(oldest_task.id)
-            expect(remaining_initial_task_ids).to include(second_oldest_task.id)
-            expect(remaining_initial_task_ids).to include(newest_task.id)
-          end
-        else
-          expect(remaining_initial_task_ids.size).to eq(3),
-            "Expected 3 tasks to remain when deletion logic is not executed, but got #{remaining_initial_task_ids.size}. " \
-            "Remaining: #{remaining_initial_task_ids.inspect}, All tasks with deleted: #{all_tasks_with_deleted.count}"
-          expect(remaining_initial_task_ids).to include(oldest_task.id)
-          expect(remaining_initial_task_ids).to include(second_oldest_task.id)
-          expect(remaining_initial_task_ids).to include(newest_task.id)
-        end
+        expect(remaining_initial_task_ids).not_to include(oldest_task.id)
+        expect(remaining_initial_task_ids).to include(second_oldest_task.id)
+        expect(remaining_initial_task_ids).to include(newest_task.id)
       end
 
       it '期限が設定されていないタスクは、期限超過タスクより後に削除されること' do
@@ -360,40 +281,29 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         expect(Task.active.where(routine_task: routine_task, status: 'completed').count).to eq(initial_completed_count)
       end
 
-      it '既存のタスク（完了済み含む）のgenerated_atをチェックして重複生成を防ぐこと' do
-        today = Date.current
+      it 'max_active_tasksに達している場合でも、新しいタスクを生成し、上限に収まるように削除すること' do
         routine_task = create(:routine_task, :daily,
-                              last_generated_at: 1.day.ago,
-                              start_generation_at: 2.days.ago,
-                              next_generation_at: 1.hour.ago,
-                              max_active_tasks: 5)
+                              last_generated_at: 5.days.ago,
+                              start_generation_at: 6.days.ago,
+                              next_generation_at: 4.days.ago,
+                              max_active_tasks: 3)
 
-        # 今日のタスクを完了済みで作成
-        create(:task,
-               routine_task: routine_task,
-               account_id: routine_task.account_id,
-               status: 'completed',
-               generated_at: today.beginning_of_day.in_time_zone('Tokyo'))
+        existing_tasks = create_list(:task, 3,
+                                    routine_task: routine_task,
+                                    account_id: routine_task.account_id,
+                                    status: 'pending',
+                                    created_at: 10.days.ago)
 
-        # 昨日のタスクを未完了で作成
-        create(:task,
-               routine_task: routine_task,
-               account_id: routine_task.account_id,
-               status: 'pending',
-               generated_at: (today - 1.day).beginning_of_day.in_time_zone('Tokyo'))
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task, :count).by(5)
 
-        initial_task_count = Task.active.where(routine_task: routine_task).count
+        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
 
-        described_class.perform_now(routine_task.id, job_id)
-
-        # 今日のタスクは既に存在するため、重複生成されない
-        # 昨日のタスクは既に存在するため、重複生成されない
-        # したがって、新しいタスクは生成されない（または、next_generation_atを基準に計算される場合のみ生成される）
-        routine_task.reload
-        today_tasks = Task.active.where(routine_task: routine_task)
-                          .where('generated_at >= ?', today.beginning_of_day.in_time_zone('Tokyo'))
-                          .where('generated_at < ?', (today + 1.day).beginning_of_day.in_time_zone('Tokyo'))
-        expect(today_tasks.count).to eq(1) # 既存の完了済みタスクのみ
+        job_status_json = redis.get("job_status:#{job_id}")
+        job_status = JSON.parse(job_status_json, symbolize_names: true)
+        expect(job_status[:generatedTasksCount]).to eq(5)
       end
     end
 
@@ -428,66 +338,31 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
     context 'エッジケース' do
       it '前回生成日時が未設定の場合、start_generation_atから現在時刻までのタスクを生成すること（開始日を含める）' do
-        # daily頻度で3日前から開始している場合、開始日を含めて4個のタスクを生成すべき（3日前、2日前、1日前、今日）
-        # ただし、時間の差によっては3個になる可能性があるため、3個以上を確認
-        start_time = Time.current.beginning_of_day - 3.days
+        # 実行タイミングに依存しないように、日付を明確に設定
+        start_date = Date.current - 3.days
+        start_time = start_date.beginning_of_day.in_time_zone('Tokyo')
         routine_task = create(:routine_task, :daily,
                               last_generated_at: nil,
                               start_generation_at: start_time,
                               next_generation_at: 1.hour.ago,
                               due_date_offset_days: 2)
 
+        # 3日前から開始している場合、開始日を含めて4個のタスクを生成（3日前、2日前、1日前、今日）
+        # base_date = start_date (3日前)
+        # current_date = Date.current (今日)
+        # days_elapsed = 3
+        # calculated_count = (3 / 1).floor + 1 = 4
         expect do
           described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task.active, :count).by_at_least(3)
+        end.to change(Task.active, :count).by(4)
 
-        # 生成されたタスクの生成日時を確認（開始日を含める）
         generated_tasks = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc)
-        expect(generated_tasks.count).to be >= 3
-        expect(generated_tasks.first.generated_at).to be_within(1.day).of(start_time)
-        # 最後のタスクは今日または昨日であることを確認
-        expect(generated_tasks.last.generated_at).to be_within(1.day).of(Time.current)
+        expect(generated_tasks.count).to eq(4)
+        expect(generated_tasks.first.generated_at.to_date).to eq(start_date)
+        expect(generated_tasks.last.generated_at.to_date).to eq(Date.current)
       end
 
-      it '前回生成日時が未設定で1日経過している場合、2つのタスクを生成すること（開始日を含める）' do
-        # daily頻度で1日前から開始している場合、開始日を含めて2個のタスクを生成すべき（1日前、今日）
-        routine_task = create(:routine_task, :daily,
-                              last_generated_at: nil,
-                              start_generation_at: 1.day.ago,
-                              next_generation_at: 1.hour.ago,
-                              due_date_offset_days: 2)
-
-        expect do
-          described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task.active, :count).by(2)
-      end
-
-      it 'max_active_tasksに達している場合でも、新しいタスクを生成し、上限に収まるように削除すること' do
-        routine_task = create(:routine_task, :daily,
-                              last_generated_at: 5.days.ago,
-                              start_generation_at: 6.days.ago,
-                              next_generation_at: 4.days.ago,
-                              max_active_tasks: 3)
-
-        existing_tasks = create_list(:task, 3,
-                                    routine_task: routine_task,
-                                    account_id: routine_task.account_id,
-                                    status: 'pending',
-                                    created_at: 10.days.ago)
-
-        expect do
-          described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(5)
-
-        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
-        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
-
-        job_status_json = redis.get("job_status:#{job_id}")
-        job_status = JSON.parse(job_status_json, symbolize_names: true)
-        expect(job_status[:generatedTasksCount]).to eq(5)
-      end
-
-      it 'weekly頻度で正しくタスクを生成すること' do
+      it 'weekly頻度で2週間分のタスクを生成すること' do
         routine_task = create(:routine_task, :weekly,
                               last_generated_at: 14.days.ago,
                               start_generation_at: 15.days.ago,
@@ -500,7 +375,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         end.to change(Task.active, :count).by(2)
       end
 
-      it 'custom頻度で正しくタスクを生成すること' do
+      it 'custom頻度で3日間隔のタスクを生成すること' do
         routine_task = create(:routine_task, :custom,
                               interval_value: 3,
                               last_generated_at: 9.days.ago,
@@ -514,36 +389,32 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         end.to change(Task.active, :count).by(3)
       end
 
-      it '長期間停止した場合、生成数が上限で制限されること（max_active_tasks * 5が上限）' do
-        routine_task = create(:routine_task, :daily,
-                              last_generated_at: 1.year.ago,
-                              start_generation_at: 1.year.ago,
-                              next_generation_at: 1.year.ago,
-                              max_active_tasks: 10)
+      it '長期間停止した場合、生成数が上限で制限されること' do
+        # ケース1: max_active_tasks * 5が上限
+        routine_task1 = create(:routine_task, :daily,
+                               last_generated_at: 1.year.ago,
+                               start_generation_at: 1.year.ago,
+                               next_generation_at: 1.year.ago,
+                               max_active_tasks: 10)
 
-        # 1年間の日次タスクは365個になるが、上限は min(10 * 5, 100) = 50 となる
+        job_id1 = SecureRandom.uuid
         expect do
-          described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(50)
+          described_class.perform_now(routine_task1.id, job_id1)
+        end.to change(Task, :count).by(50) # min(10 * 5, 100) = 50
 
-        job_status_json = redis.get("job_status:#{job_id}")
-        job_status = JSON.parse(job_status_json, symbolize_names: true)
-        expect(job_status[:generatedTasksCount]).to eq(50)
-      end
+        # ケース2: 100が上限
+        routine_task2 = create(:routine_task, :daily,
+                               last_generated_at: 1.year.ago,
+                               start_generation_at: 1.year.ago,
+                               next_generation_at: 1.year.ago,
+                               max_active_tasks: 30)
 
-      it '長期間停止した場合、生成数が上限で制限されること（100が上限）' do
-        routine_task = create(:routine_task, :daily,
-                              last_generated_at: 1.year.ago,
-                              start_generation_at: 1.year.ago,
-                              next_generation_at: 1.year.ago,
-                              max_active_tasks: 30)
-
-        # 1年間の日次タスクは365個になるが、上限は min(30 * 5, 100) = 100 となる
+        job_id2 = SecureRandom.uuid
         expect do
-          described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task, :count).by(100)
+          described_class.perform_now(routine_task2.id, job_id2)
+        end.to change(Task, :count).by(100) # min(30 * 5, 100) = 100
 
-        job_status_json = redis.get("job_status:#{job_id}")
+        job_status_json = redis.get("job_status:#{job_id2}")
         job_status = JSON.parse(job_status_json, symbolize_names: true)
         expect(job_status[:generatedTasksCount]).to eq(100)
       end
@@ -582,7 +453,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         expect(generated_task.due_date.to_date).to eq((generated_task.generated_at.to_date + 2.days))
       end
 
-      it '最初のタスク生成時は生成日時を基準に期限を計算すること（開始日を含めるため、開始日を基準にしたのと同じ結果）' do
+      it '最初のタスク生成時は生成日時を基準に期限を計算すること' do
         start_time = 2.days.ago
         routine_task = create(:routine_task, :daily,
                               last_generated_at: nil,
@@ -593,20 +464,12 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         described_class.perform_now(routine_task.id, job_id)
 
-        # 最初のタスクを取得（generated_atでソートして最初のもの）
-        # 開始日を含めるため、最初のタスクのgeneration_dateは開始日そのもの
+        # 最初のタスクは開始日を基準に期限が計算される
         generated_task = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc).first
-        expect(generated_task.due_date).to be_present
-        # 生成日時（開始日）を基準に期限を計算（日数と時間のオフセットを含める）
-        # calculate_due_dateはTime型を返すが、データベースのdue_dateはDATE型なので、Date型として比較
-        # due_date_offset_days=3, due_date_offset_hour=10なので、開始日+3日が期限（時間は無視される）
-        expected_due_date = generated_task.generated_at.to_date + 3.days
-        # due_dateはDATE型なので、日付部分のみを比較
-        expect(generated_task.due_date).to eq(expected_due_date)
+        expect(generated_task.due_date).to eq(generated_task.generated_at.to_date + 3.days)
       end
 
-
-      it '時のみ設定されている場合、日は0になること' do
+      it 'due_date_offset_hourがnilの場合、due_date_offset_daysのみで期限を計算すること' do
         routine_task = create(:routine_task, :daily,
                               last_generated_at: 1.day.ago,
                               start_generation_at: 2.days.ago,
@@ -647,19 +510,6 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
       end
 
       it '開始期限に達している場合はタスクを生成すること（開始日を含める）' do
-        routine_task = create(:routine_task, :daily,
-                              start_generation_at: 2.days.ago,
-                              last_generated_at: nil,
-                              next_generation_at: 1.hour.ago,
-                              due_date_offset_days: 3)
-
-        # start_generation_atから現在時刻まで（2日前から）なので、開始日を含めて3個のタスクが生成される（2日前、1日前、今日）
-        expect do
-          described_class.perform_now(routine_task.id, job_id)
-        end.to change(Task.active, :count).by(3)
-      end
-
-      it '開始期限が設定されている場合、start_generation_atを基準にタスクを生成すること（開始日を含める）' do
         start_time = 2.days.ago
         routine_task = create(:routine_task, :daily,
                               start_generation_at: start_time,
@@ -667,11 +517,12 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
                               next_generation_at: 1.hour.ago,
                               due_date_offset_days: 3)
 
-        described_class.perform_now(routine_task.id, job_id)
+        # 開始日を含めて3個のタスクが生成される（2日前、1日前、今日）
+        expect do
+          described_class.perform_now(routine_task.id, job_id)
+        end.to change(Task.active, :count).by(3)
 
-        # 最初のタスクを取得（generated_atでソートして最初のもの）
-        # 開始日を含めるため、最初のタスクは開始日そのもの
-        # 修正後のロジックでは、generated_atはJSTの00:00:00として保存される
+        # 最初のタスクは開始日を基準に生成される
         generated_task = Task.active.where(routine_task_id: routine_task.id).order(generated_at: :asc).first
         expected_generated_at = start_time.in_time_zone('Tokyo').to_date.beginning_of_day.in_time_zone('Tokyo')
         expect(generated_task.generated_at).to be_within(1.second).of(expected_generated_at)

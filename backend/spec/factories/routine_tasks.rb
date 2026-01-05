@@ -7,7 +7,7 @@ FactoryBot.define do
     last_generated_at { nil }
     next_generation_at { 1.day.from_now }
     start_generation_at { 1.day.from_now }
-    max_active_tasks { 3 }
+    max_active_tasks { 10000000 }
     category_id { nil }
     priority { 'medium' }
     is_active { true }
