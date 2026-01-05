@@ -69,5 +69,15 @@ namespace :db do
 
       load Rails.root.join('db', 'seeds_batch_generation.rb')
     end
+
+    desc '習慣化タスク生成ロジック検証用のテストデータを作成'
+    task generation_logic_test: :environment do
+      if Rails.env.production?
+        puts 'エラー: 本番環境ではこのタスクを実行できません。'
+        exit 1
+      end
+
+      load Rails.root.join('db', 'seeds_generation_logic_test.rb')
+    end
   end
 end

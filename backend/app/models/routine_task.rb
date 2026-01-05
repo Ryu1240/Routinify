@@ -48,44 +48,45 @@ class RoutineTask < ApplicationRecord
     end
   end
 
-  # 現在時刻に基づいて生成すべきタスク数を計算
-  # システム障害やジョブ失敗による長期間の停止を考慮し、合理的な上限を設定
-  def tasks_to_generate_count(current_time = Time.current)
-    # 基準日時を決定（前回生成日時が未設定の場合は開始日時を使用）
-    base_time = last_generated_at.present? ? last_generated_at : start_generation_at
-
-    # 最初の生成時（last_generated_atが未設定）は、next_generation_atのチェックをスキップ
-    # 2回目以降は、次回生成日時がまだ到来していない場合は0を返す
-    unless last_generated_at.nil?
-      return 0 if next_generation_at > current_time
+  # 基準日時を計算（生成ロジックで共通使用）
+  def calculate_base_time_for_generation(current_time = Time.current)
+    if last_generated_at.present? && next_generation_at <= current_time
+      next_generation_at.in_time_zone('Tokyo').beginning_of_day
+    elsif last_generated_at.present?
+      last_generated_at
+    else
+      start_generation_at
     end
+  end
 
-    # 基準日時から現在までの経過日数を計算
-    # 開始日と現在日を含めるため、日付の差を計算（日付のみで比較）
-    # JSTの日付を使用してタイムゾーンの問題を回避
+  # 現在時刻に基づいて生成すべきタスク数を計算
+  def tasks_to_generate_count(current_time = Time.current)
+    return 0 if last_generated_at.present? && next_generation_at > current_time
+
+    base_time = calculate_base_time_for_generation(current_time)
     base_date = base_time.in_time_zone('Tokyo').to_date
     current_date = current_time.in_time_zone('Tokyo').to_date
     days_elapsed = (current_date - base_date).to_i
 
-    # 頻度に応じて生成すべきタスク数を計算
-    calculated_count = (days_elapsed.to_f / interval_days).floor
+    # 基準日を含めるため、計算結果に1を加算
+    calculated_count = (days_elapsed.to_f / interval_days).floor + 1
 
-    # 最初の生成時（last_generated_atが未設定）は、開始日と現在日を含めるため、計算結果に1を加算
-    # 例: 1/1から1/4まで（3日経過）の場合、1/1, 1/2, 1/3, 1/4の4つのタスクを生成すべき
-    # 例: 3日前から現在まで（3日経過）の場合、3日前、2日前、1日前、今日の4つのタスクを生成すべき
-    # 例: 14日前から現在まで（weekly頻度）の場合、14日前、7日前、今日の3つのタスクを生成すべき
-    if last_generated_at.nil?
-      # 開始日と現在日を含めるため、計算後に1を加算
-      # 例: 1/1から1/4まで（3日経過、daily）の場合、(3/1).floor + 1 = 4個のタスクを生成
-      # 例: 14日前から現在まで（14日経過、weekly）の場合、(14/7).floor + 1 = 3個のタスクを生成
-      calculated_count = (days_elapsed.to_f / interval_days).floor + 1
-    end
+    # 既存のタスク（完了済み含む）のgenerated_atをチェックして、重複生成を防ぐ
+    existing_dates = tasks_with_deleted
+      .where.not(generated_at: nil)
+      .pluck(:generated_at)
+      .map { |dt| dt.in_time_zone('Tokyo').to_date }
+      .uniq
 
-    # 合理的な上限を設定（max_active_tasks * 5 と 100 の最小値）
-    # これにより、システム障害後の大量生成を防ぎつつ、通常のケースでは十分なタスクを生成できる
-    max_generation_limit = [ max_active_tasks * 5, 100 ].min
+    # 生成予定の日付を計算し、既存の日付を除外
+    planned_dates = calculated_count.times.map { |i| base_date + (i * interval_days).days }
+      .select { |date| date <= current_date }
+      .reject { |date| existing_dates.include?(date) }
 
-    [ calculated_count, max_generation_limit ].min
+    calculated_count = planned_dates.count
+    max_generation_limit = [max_active_tasks * 5, 100].min
+
+    [calculated_count, max_generation_limit].min
   end
 
   # 次回生成日時を計算

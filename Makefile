@@ -102,6 +102,9 @@ seed-cleanup: ## シードデータを削除（開発環境・テスト環境の
 seed-batch-generation: ## バッチタスク生成テスト用の大量データを作成
 	docker compose exec backend bundle exec rails db:seed:batch_generation
 
+seed-generation-logic-test: ## 習慣化タスク生成ロジック検証用のテストデータを作成
+	docker compose exec backend bundle exec rails db:seed:generation_logic_test
+
 # ヘルプ表示
 help: ## このヘルプを表示
 	@echo "使用可能なコマンド:"

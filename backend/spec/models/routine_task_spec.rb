@@ -158,12 +158,20 @@ RSpec.describe RoutineTask, type: :model do
     end
 
     context 'daily頻度の場合' do
-      it '3日経過していれば3を返すこと' do
+      it 'next_generation_atが過去の場合、その日付を基準に計算すること' do
+        # next_generation_atが1日前（過去）の場合、基準日は1日前になり、今日までのタスク数は2（1日前と今日）
         routine_task = create(:routine_task, :daily, last_generated_at: 3.days.ago, start_generation_at: 4.days.ago, next_generation_at: 1.day.ago)
-        expect(routine_task.tasks_to_generate_count(current_time)).to eq(3)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(2)
       end
 
-      it '1日経過していれば1を返すこと' do
+      it 'next_generation_atが未来の場合、0を返すこと' do
+        # next_generation_atが未来の場合、次回の生成日時がまだ来ていないため、タスクを生成すべきではない
+        routine_task = create(:routine_task, :daily, last_generated_at: 1.day.ago, start_generation_at: 2.days.ago, next_generation_at: 1.hour.from_now)
+        expect(routine_task.tasks_to_generate_count(current_time)).to eq(0)
+      end
+
+      it 'next_generation_atが過去で1時間前の場合、今日のタスクを1個生成すること' do
+        # next_generation_atが1時間前（過去）の場合、基準日は今日になり、今日のタスクを1個生成
         routine_task = create(:routine_task, :daily, last_generated_at: 1.day.ago, start_generation_at: 2.days.ago, next_generation_at: 1.hour.ago)
         expect(routine_task.tasks_to_generate_count(current_time)).to eq(1)
       end
