@@ -213,25 +213,25 @@ RSpec.describe RoutineTask, type: :model do
 
     it 'daily頻度の場合、base_timeから1日後を返すこと' do
       routine_task = build(:routine_task, :daily)
-      expected_time = base_time + 1.day
+      expected_time = (base_time.to_date + 1.day).beginning_of_day
       expect(routine_task.calculate_next_generation_at(base_time)).to be_within(1.second).of(expected_time)
     end
 
     it 'weekly頻度の場合、base_timeから7日後を返すこと' do
       routine_task = build(:routine_task, :weekly)
-      expected_time = base_time + 7.days
+      expected_time = (base_time.to_date + 7.days).beginning_of_day
       expect(routine_task.calculate_next_generation_at(base_time)).to be_within(1.second).of(expected_time)
     end
 
     it 'monthly頻度の場合、base_timeから30日後を返すこと' do
       routine_task = build(:routine_task, :monthly)
-      expected_time = base_time + 30.days
+      expected_time = (base_time.to_date + 30.days).beginning_of_day
       expect(routine_task.calculate_next_generation_at(base_time)).to be_within(1.second).of(expected_time)
     end
 
     it 'custom頻度の場合、base_timeからinterval_value日後を返すこと' do
       routine_task = build(:routine_task, :custom, interval_value: 5)
-      expected_time = base_time + 5.days
+      expected_time = (base_time.to_date + 5.days).beginning_of_day
       expect(routine_task.calculate_next_generation_at(base_time)).to be_within(1.second).of(expected_time)
     end
   end

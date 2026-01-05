@@ -54,7 +54,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
         routine_task.reload
         expect(routine_task.last_generated_at).to be_within(1.second).of(Time.current)
-        expect(routine_task.next_generation_at).to be_within(1.second).of(1.day.from_now)
+        expect(routine_task.next_generation_at).to be_within(1.second).of(1.day.from_now.to_date.beginning_of_day)
       end
 
       it 'ジョブステータスをRedisに保存すること' do
