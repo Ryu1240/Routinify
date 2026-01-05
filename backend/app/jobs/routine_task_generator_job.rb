@@ -20,27 +20,11 @@ class RoutineTaskGeneratorJob < ApplicationJob
     # Step 2: タスクを生成（上限に関係なく全て生成）
     generated_tasks_count = 0
     if tasks_to_generate > 0
-      # 基準日時の決定
-      # 最初の生成時：start_generation_atを使用
-      # 2回目以降：last_generated_atを使用
-      base_time = routine_task.last_generated_at.present? ? routine_task.last_generated_at : routine_task.start_generation_at
-
-      # 最初のタスク生成かどうかを判定
-      is_first_generation = routine_task.last_generated_at.nil?
+      base_time = routine_task.calculate_base_time_for_generation(current_time)
+      base_date = base_time.in_time_zone('Tokyo').to_date
 
       tasks_to_generate.times do |i|
-        # 生成日時を計算（基準日時から間隔日数を加算）
-        # 最初の生成時は開始日を含めるため、i=0のときは開始日そのものが生成される
-        # JSTの日付として計算してタイムゾーンの問題を回避
-        base_time_jst = base_time.in_time_zone('Tokyo')
-        base_date_jst = base_time_jst.to_date
-        generation_date_jst = base_date_jst + (i * routine_task.interval_days).days
-        # 生成日時はJSTの00:00:00として保存（元の時刻情報は保持しない）
-        generation_date = generation_date_jst.beginning_of_day.in_time_zone('Tokyo')
-
-        # 期限日時を計算
-        # すべてのタスクで生成日時（generation_date）を基準に期限を計算
-        # 開始日を含めるように変更したため、最初のタスクも生成日時を基準にする
+        generation_date = (base_date + (i * routine_task.interval_days).days).beginning_of_day.in_time_zone('Tokyo')
         due_date = routine_task.calculate_due_date(generation_date) || generation_date
 
         Task.create!(
@@ -50,18 +34,18 @@ class RoutineTaskGeneratorJob < ApplicationJob
           due_date: due_date,
           priority: routine_task.priority,
           category_id: routine_task.category_id,
-          status: 'pending', # 習慣化タスクから生成されたタスクは常に未着手ステータス
+          status: 'pending',
           generated_at: generation_date
         )
         generated_tasks_count += 1
       end
-    end
 
-    # Step 3: last_generated_atとnext_generation_atを更新
-    routine_task.update!(
-      last_generated_at: current_time,
-      next_generation_at: routine_task.calculate_next_generation_at(current_time)
-    )
+      # Step 3: タスクが生成された場合のみ、last_generated_atとnext_generation_atを更新
+      routine_task.update!(
+        last_generated_at: current_time,
+        next_generation_at: routine_task.calculate_next_generation_at(current_time)
+      )
+    end
 
     # Step 4: max_active_tasksを超えている場合、古いタスクを削除
     cleanup_excess_tasks(routine_task)
@@ -77,37 +61,24 @@ class RoutineTaskGeneratorJob < ApplicationJob
   private
 
   def cleanup_excess_tasks(routine_task)
-    # 未完了タスクを取得（論理削除済みを除く）
-    # 新しく生成されたタスクも含めるため、routine_taskをリロードしてアソシエーションキャッシュをクリア
     routine_task.reload
     incomplete_tasks = routine_task.tasks.where.not(status: 'completed')
     excess_count = incomplete_tasks.count - routine_task.max_active_tasks
+    return unless excess_count > 0
 
-    if excess_count > 0
-      # 現在日時を取得（日付比較用にDate型も用意）
-      current_time = Time.current
-      current_date = Date.current
+    current_date = Date.current
+    overdue_tasks = incomplete_tasks.where('due_date < ?', current_date).order(created_at: :asc)
 
-      # 期限超過タスクを優先的に取得（作成順）
-      # due_dateはDATE型なので、Date型と比較する方が安全
-      overdue_tasks = incomplete_tasks.where('due_date < ?', current_date)
-                                      .order(created_at: :asc)
-
-      # 期限超過タスクが不足する場合、期限前タスクも取得（作成順）
-      if overdue_tasks.count < excess_count
-        remaining_count = excess_count - overdue_tasks.count
-        future_tasks = incomplete_tasks.where('due_date >= ? OR due_date IS NULL', current_date)
-                                       .order(created_at: :asc)
-                                       .limit(remaining_count)
-        tasks_to_delete = overdue_tasks.to_a + future_tasks.to_a
-      else
-        tasks_to_delete = overdue_tasks.limit(excess_count).to_a
-      end
-
-      tasks_to_delete_ids = tasks_to_delete.map(&:id)
-      # 一括で論理削除（クエリを1回にまとめる）
-      Task.unscoped.where(id: tasks_to_delete_ids).update_all(deleted_at: Time.current)
+    tasks_to_delete = if overdue_tasks.count < excess_count
+      remaining = incomplete_tasks.where('due_date >= ? OR due_date IS NULL', current_date)
+                                  .order(created_at: :asc)
+                                  .limit(excess_count - overdue_tasks.count)
+      overdue_tasks.to_a + remaining.to_a
+    else
+      overdue_tasks.limit(excess_count).to_a
     end
+
+    Task.unscoped.where(id: tasks_to_delete.map(&:id)).update_all(deleted_at: Time.current)
   end
 
   def update_job_status(job_id, status, completed, additional_data = {})

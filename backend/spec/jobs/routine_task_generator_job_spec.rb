@@ -218,6 +218,7 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
       end
 
       it '期限超過タスクがない場合、created_atが古い順に削除されること' do
+        today = Date.current
         routine_task = create(:routine_task, :daily,
                               last_generated_at: 2.days.ago,
                               start_generation_at: 3.days.ago,
@@ -229,25 +230,30 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
                              account_id: routine_task.account_id,
                              status: 'pending',
                              due_date: 1.day.from_now,
-                             created_at: 5.days.ago)
+                             created_at: 5.days.ago,
+                             generated_at: (today - 5.days).beginning_of_day.in_time_zone('Tokyo'))
 
         second_oldest_task = create(:task,
                                     routine_task: routine_task,
                                     account_id: routine_task.account_id,
                                     status: 'pending',
                                     due_date: 2.days.from_now,
-                                    created_at: 3.days.ago)
+                                    created_at: 3.days.ago,
+                                    generated_at: (today - 3.days).beginning_of_day.in_time_zone('Tokyo'))
 
         newest_task = create(:task,
                              routine_task: routine_task,
                              account_id: routine_task.account_id,
                              status: 'pending',
                              due_date: 3.days.from_now,
-                             created_at: 1.day.ago)
+                             created_at: 1.day.ago,
+                             generated_at: (today - 1.day).beginning_of_day.in_time_zone('Tokyo'))
 
         initial_task_ids = [ oldest_task.id, second_oldest_task.id, newest_task.id ]
 
-        # 既存3つ + 新規生成2つ = 5つ、max_active_tasks=3なので2つ削除される
+        # next_generation_atが1時間前（過去）なので、基準日は今日
+        # 今日のタスクは既に存在しないため、今日のタスクを1個生成
+        # 既存3つ + 新規生成1つ = 4つ、max_active_tasks=3なので1つ削除される
         # 削除ロジックはcreated_atでソートしているため、最も古いタスクから削除される
         described_class.perform_now(routine_task.id, job_id)
 
@@ -265,7 +271,13 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
             "All tasks with deleted: #{all_tasks_with_deleted.count}"
           expect(remaining_initial_task_ids).to include(newest_task.id)
 
-          if deleted_task_ids.size == 2
+          if deleted_task_ids.size == 1
+            # 1個のタスクが削除された場合（既存3つ + 新規生成1つ = 4つ、max_active_tasks=3なので1つ削除）
+            expect(remaining_initial_task_ids).not_to include(oldest_task.id)
+            expect(remaining_initial_task_ids).to include(second_oldest_task.id)
+            expect(remaining_initial_task_ids).to include(newest_task.id)
+          elsif deleted_task_ids.size == 2
+            # 2個のタスクが削除された場合
             expect(remaining_initial_task_ids).not_to include(oldest_task.id)
             expect(remaining_initial_task_ids).not_to include(second_oldest_task.id)
           else
@@ -346,6 +358,42 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
         described_class.perform_now(routine_task.id, job_id)
 
         expect(Task.active.where(routine_task: routine_task, status: 'completed').count).to eq(initial_completed_count)
+      end
+
+      it '既存のタスク（完了済み含む）のgenerated_atをチェックして重複生成を防ぐこと' do
+        today = Date.current
+        routine_task = create(:routine_task, :daily,
+                              last_generated_at: 1.day.ago,
+                              start_generation_at: 2.days.ago,
+                              next_generation_at: 1.hour.ago,
+                              max_active_tasks: 5)
+
+        # 今日のタスクを完了済みで作成
+        create(:task,
+               routine_task: routine_task,
+               account_id: routine_task.account_id,
+               status: 'completed',
+               generated_at: today.beginning_of_day.in_time_zone('Tokyo'))
+
+        # 昨日のタスクを未完了で作成
+        create(:task,
+               routine_task: routine_task,
+               account_id: routine_task.account_id,
+               status: 'pending',
+               generated_at: (today - 1.day).beginning_of_day.in_time_zone('Tokyo'))
+
+        initial_task_count = Task.active.where(routine_task: routine_task).count
+
+        described_class.perform_now(routine_task.id, job_id)
+
+        # 今日のタスクは既に存在するため、重複生成されない
+        # 昨日のタスクは既に存在するため、重複生成されない
+        # したがって、新しいタスクは生成されない（または、next_generation_atを基準に計算される場合のみ生成される）
+        routine_task.reload
+        today_tasks = Task.active.where(routine_task: routine_task)
+                          .where('generated_at >= ?', today.beginning_of_day.in_time_zone('Tokyo'))
+                          .where('generated_at < ?', (today + 1.day).beginning_of_day.in_time_zone('Tokyo'))
+        expect(today_tasks.count).to eq(1) # 既存の完了済みタスクのみ
       end
     end
 
@@ -577,13 +625,21 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
 
     context '開始期限が設定されている場合' do
       it '開始期限に達していない場合はタスクを生成しないこと' do
+        original_last_generated_at = 1.day.ago
+        original_next_generation_at = 1.hour.ago
         routine_task = create(:routine_task, :daily,
                               start_generation_at: 1.day.from_now,
-                              next_generation_at: 1.hour.ago)
+                              last_generated_at: original_last_generated_at,
+                              next_generation_at: original_next_generation_at)
 
         expect do
           described_class.perform_now(routine_task.id, job_id)
         end.not_to change(Task, :count)
+
+        # タスクが生成されなかった場合、last_generated_atとnext_generation_atは更新されない
+        routine_task.reload
+        expect(routine_task.last_generated_at).to be_within(1.second).of(original_last_generated_at)
+        expect(routine_task.next_generation_at).to be_within(1.second).of(original_next_generation_at)
 
         job_status_json = redis.get("job_status:#{job_id}")
         job_status = JSON.parse(job_status_json, symbolize_names: true)
