@@ -84,14 +84,14 @@ class RoutineTask < ApplicationRecord
       .reject { |date| existing_dates.include?(date) }
 
     calculated_count = planned_dates.count
-    max_generation_limit = [max_active_tasks * 5, 100].min
+    max_generation_limit = [ max_active_tasks * 5, 100 ].min
 
-    [calculated_count, max_generation_limit].min
+    [ calculated_count, max_generation_limit ].min
   end
 
   # 次回生成日時を計算
   def calculate_next_generation_at(base_time = Time.current)
-    base_time + interval_days.days
+    (base_time.to_date + interval_days.days).beginning_of_day
   end
 
   # 生成済みかどうかをチェック（一度でも生成が行われたか）
