@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { adminUserApi, AdminUser, UserListParams } from '../api/adminUserApi';
 
 export const useAdminUsers = (initialParams?: UserListParams) => {
@@ -25,9 +26,7 @@ export const useAdminUsers = (initialParams?: UserListParams) => {
         setTotal(response.total);
         setHasPermission(true);
       } catch (err) {
-        console.error('ユーザーリストの取得に失敗しました:', err);
-
-        // 403エラーの場合、権限がないと判定
+        // 403エラーの場合、権限がないと判定（通知は出さず画面上の setError のみ）
         if (axios.isAxiosError(err) && err.response?.status === 403) {
           setError(
             '権限がありません。このページにアクセスするには管理者権限が必要です。'
@@ -36,6 +35,10 @@ export const useAdminUsers = (initialParams?: UserListParams) => {
           setUsers([]);
           setTotal(0);
         } else {
+          handleApiError(err, {
+            defaultMessage:
+              'ユーザーリストの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+          });
           setError(
             'ユーザーリストの取得に失敗しました。しばらく時間をおいて再度お試しください。'
           );
@@ -55,7 +58,10 @@ export const useAdminUsers = (initialParams?: UserListParams) => {
         // 削除後、リストを更新
         await fetchUsers();
       } catch (err) {
-        console.error('ユーザーの削除に失敗しました:', err);
+        handleApiError(err, {
+          defaultMessage:
+            'ユーザーの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
         const errorMessage =
           'ユーザーの削除に失敗しました。しばらく時間をおいて再度お試しください。';
         setError(errorMessage);

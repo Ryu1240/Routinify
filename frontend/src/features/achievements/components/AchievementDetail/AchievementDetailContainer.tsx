@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 import { RoutineTask } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import {
   getWeekRangeStrings,
   getMonthRangeStrings,
@@ -94,7 +95,9 @@ export const AchievementDetailContainer: React.FC = () => {
         setRoutineTask(task);
       })
       .catch((err) => {
-        console.error('習慣化タスクの取得に失敗しました:', err);
+        handleApiError(err, {
+          defaultMessage: '習慣化タスクの取得に失敗しました。',
+        });
         setRoutineTaskError('習慣化タスクの取得に失敗しました。');
       })
       .finally(() => {

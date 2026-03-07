@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CreateTaskDto, UpdateTaskDto } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { tasksApi } from '../api/tasksApi';
 
 export const useTaskMutations = (onRefresh: () => void) => {
@@ -18,7 +19,10 @@ export const useTaskMutations = (onRefresh: () => void) => {
       // 作成後にタスクリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('タスクの作成に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -38,7 +42,10 @@ export const useTaskMutations = (onRefresh: () => void) => {
       // 更新後にタスクリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('タスクの更新に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -58,7 +65,10 @@ export const useTaskMutations = (onRefresh: () => void) => {
       // 削除後にタスクリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('タスクの削除に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。'
       );

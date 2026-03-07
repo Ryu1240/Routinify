@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useTasks } from '@/shared/hooks/useTasks';
 import { useCategories } from '@/shared/hooks/useCategories';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { useFetchMilestones } from '@/features/milestones/hooks/useFetchMilestones';
 import { useMilestoneMutations } from '@/features/milestones/hooks/useMilestoneMutations';
 import { UpdateTaskDto, CreateTaskDto, Task, TaskStatus } from '@/types';
@@ -77,7 +78,10 @@ export const TaskListContainer: React.FC = () => {
       await updateTask(taskId, taskData);
       setEditingTaskId(null);
     } catch (error) {
-      console.error('タスク更新に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -90,7 +94,10 @@ export const TaskListContainer: React.FC = () => {
       try {
         await deleteTask(taskId);
       } catch (error) {
-        console.error('タスク削除に失敗:', error);
+        handleApiError(error, {
+          defaultMessage:
+            'タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
       }
     }
   };
@@ -113,7 +120,10 @@ export const TaskListContainer: React.FC = () => {
 
       await updateTask(taskId, { status: newStatus });
     } catch (error) {
-      console.error('タスク状態の更新に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -126,7 +136,10 @@ export const TaskListContainer: React.FC = () => {
       await createTask(taskData);
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error('タスク作成に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -156,7 +169,10 @@ export const TaskListContainer: React.FC = () => {
       );
       await refreshMilestones();
     } catch (error) {
-      console.error('マイルストーンの紐付けに失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'マイルストーンの紐付けに失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       throw error;
     } finally {
       setMilestoneChangeLoading(false);
@@ -173,7 +189,10 @@ export const TaskListContainer: React.FC = () => {
       }
       await refreshMilestones();
     } catch (error) {
-      console.error('マイルストーンの解除に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'マイルストーンの解除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       throw error;
     } finally {
       setMilestoneChangeLoading(false);

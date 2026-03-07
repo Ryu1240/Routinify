@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Milestone } from '@/types/milestone';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { milestonesApi } from '../api/milestonesApi';
 
 export const useFetchMilestone = (id: number | null) => {
@@ -23,7 +24,10 @@ export const useFetchMilestone = (id: number | null) => {
       const data = await milestonesApi.getById(id);
       setMilestone(data);
     } catch (err) {
-      console.error('マイルストーンの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'マイルストーンの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'マイルストーンの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );

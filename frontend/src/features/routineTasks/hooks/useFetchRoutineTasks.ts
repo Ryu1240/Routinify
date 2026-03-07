@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RoutineTask } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { routineTasksApi } from '../api/routineTasksApi';
 
 export const useFetchRoutineTasks = () => {
@@ -15,7 +16,9 @@ export const useFetchRoutineTasks = () => {
       const data = await routineTasksApi.fetchAll();
       setRoutineTasks(data);
     } catch (err) {
-      console.error('習慣化タスクの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage: '習慣化タスクの取得に失敗しました。',
+      });
       setError('習慣化タスクの取得に失敗しました。');
     } finally {
       setLoading(false);

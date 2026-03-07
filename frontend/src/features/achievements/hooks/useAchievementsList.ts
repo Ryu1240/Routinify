@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { RoutineTaskWithStats } from '@/types/achievement';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { getAllRoutineTasksWithStats } from '../api/achievementsApi';
 
 export const useAchievementsList = () => {
@@ -17,7 +18,9 @@ export const useAchievementsList = () => {
       const data = await getAllRoutineTasksWithStats();
       setRoutineTasksWithStats(data);
     } catch (err) {
-      console.error('達成状況一覧の取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage: '達成状況一覧の取得に失敗しました。',
+      });
       setError('達成状況一覧の取得に失敗しました。');
     } finally {
       setLoading(false);

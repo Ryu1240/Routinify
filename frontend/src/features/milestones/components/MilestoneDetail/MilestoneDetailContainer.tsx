@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Alert } from '@mantine/core';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { ListPageState } from '@/shared/components';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { useFetchMilestone } from '../../hooks/useFetchMilestone';
 import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
 import { UpdateMilestoneDto } from '@/types/milestone';
@@ -62,7 +63,10 @@ export const MilestoneDetailContainer: React.FC = () => {
     try {
       await dissociateTask(milestoneId, taskIds);
     } catch (error) {
-      console.error('タスクの関連付け解除に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの関連付け解除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -75,7 +79,10 @@ export const MilestoneDetailContainer: React.FC = () => {
     try {
       await associateTask(milestoneId, taskIds);
     } catch (error) {
-      console.error('タスクの関連付けに失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの関連付けに失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       throw error;
     }
   };
@@ -87,7 +94,10 @@ export const MilestoneDetailContainer: React.FC = () => {
         refreshMilestone();
       }
     } catch (error) {
-      console.error('タスク更新に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       throw error;
     }
   };

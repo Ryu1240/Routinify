@@ -9,6 +9,7 @@ import {
   Loader,
 } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { Category, UpdateCategoryDto } from '@/types/category';
 
 type EditCategoryModalProps = {
@@ -54,7 +55,10 @@ export const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
       await onSubmit(category.id, { name: name.trim() });
       handleClose();
     } catch (error) {
-      console.error('カテゴリ更新エラー:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'カテゴリの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError('カテゴリの更新に失敗しました');
     }
   };

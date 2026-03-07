@@ -9,6 +9,7 @@ import {
   Loader,
 } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { CreateCategoryDto } from '@/types/category';
 
 type CreateCategoryModalProps = {
@@ -39,7 +40,10 @@ export const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
       await onSubmit({ name: name.trim() });
       handleClose();
     } catch (error) {
-      console.error('カテゴリ作成エラー:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'カテゴリの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError('カテゴリの作成に失敗しました');
     }
   };

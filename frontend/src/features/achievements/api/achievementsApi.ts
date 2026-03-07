@@ -4,6 +4,7 @@ import {
   RoutineTaskWithStats,
   AchievementTrendData,
 } from '@/types/achievement';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
 // APIレスポンス型（バックエンドはcamelCaseで返す）
@@ -71,19 +72,10 @@ export const getAllRoutineTasksWithStats = async (): Promise<
         achievementStats: stats,
       };
     } catch (error: unknown) {
-      console.error(
-        `習慣化タスク ${task.id} (${task.title}) の達成状況取得に失敗しました:`,
-        error
-      );
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as {
-          response?: { status?: number; data?: unknown };
-        };
-        if (axiosError.response) {
-          console.error('レスポンスステータス:', axiosError.response.status);
-          console.error('レスポンスデータ:', axiosError.response.data);
-        }
-      }
+      handleApiError(error, {
+        defaultMessage: `習慣化タスク ${task.title} の達成状況取得に失敗しました。`,
+        notify: false,
+      });
       // エラーが発生した場合はデフォルト値を返す
       return {
         id: task.id,

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { notifications } from '@mantine/notifications';
 import { IconCheck } from '@tabler/icons-react';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { routineTasksApi, TaskGenerationJob } from '../api/routineTasksApi';
 import { RoutineTask } from '@/types';
 
@@ -292,6 +293,9 @@ export const useBatchTaskGeneration = (): UseBatchTaskGenerationReturn => {
         handleAllComplete();
       }
     } catch (err) {
+      handleApiError(err, {
+        defaultMessage: 'バッチ処理の開始に失敗しました',
+      });
       setState('failed');
       setError(
         err instanceof Error ? err.message : 'バッチ処理の開始に失敗しました'

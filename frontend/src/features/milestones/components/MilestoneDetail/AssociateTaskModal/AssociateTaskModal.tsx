@@ -17,6 +17,7 @@ import { IconPlus, IconSearch } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Task } from '@/types/task';
 import { tasksApi } from '@/features/tasks/api/tasksApi';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import {
   getPriorityColor,
   getPriorityLabel,
@@ -59,7 +60,10 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
       const availableTasks = allTasks.filter((task) => !ids.includes(task.id));
       setTasks(availableTasks);
     } catch (err) {
-      console.error('タスクの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -115,7 +119,10 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
       await onAssociate(selectedTaskIds);
       onClose();
     } catch (err) {
-      console.error('タスクの関連付けに失敗:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの関連付けに失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

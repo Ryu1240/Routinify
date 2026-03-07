@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Task } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { tasksApi } from '../api/tasksApi';
 
 export const useFetchTasks = () => {
@@ -16,7 +17,10 @@ export const useFetchTasks = () => {
       setTasks(data);
       setError(null);
     } catch (err) {
-      console.error('タスクの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -33,7 +37,10 @@ export const useFetchTasks = () => {
       setTasks(data);
       setError(null);
     } catch (err) {
-      console.error('タスクの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -66,7 +73,10 @@ export const useFetchTasks = () => {
             setError(null);
           })
           .catch((err) => {
-            console.error('タスクの取得に失敗しました:', err);
+            handleApiError(err, {
+              defaultMessage:
+                'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+            });
             setError(
               'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
             );

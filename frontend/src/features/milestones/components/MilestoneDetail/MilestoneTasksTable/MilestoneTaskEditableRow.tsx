@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { IconCheck, IconX } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { Task, UpdateTaskDto } from '@/types/task';
 import { statusOptions, priorityOptions } from '@/features/tasks/constants';
 
@@ -41,7 +42,10 @@ export const MilestoneTaskEditableRow: React.FC<
       setSaving(true);
       await onSave(task.id, formData);
     } catch (error) {
-      console.error('保存エラー:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     } finally {
       setSaving(false);
     }

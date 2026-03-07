@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AchievementStats } from '@/types/achievement';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { getAchievementStats } from '../api/achievementsApi';
 import { PeriodType } from '../components/PeriodSelector';
 
@@ -47,7 +48,9 @@ export const useAchievementStats = (
       const data = await getAchievementStats(routineTaskId, params);
       setStats(data);
     } catch (err) {
-      console.error('達成状況の取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage: '達成状況の取得に失敗しました。',
+      });
       setError('達成状況の取得に失敗しました。');
       setStats(null);
     } finally {

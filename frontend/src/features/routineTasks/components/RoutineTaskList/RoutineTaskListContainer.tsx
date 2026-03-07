@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRoutineTasks } from '@/shared/hooks';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { RoutineTaskList } from './RoutineTaskList';
 
 export const RoutineTaskListContainer: React.FC = () => {
@@ -15,7 +16,10 @@ export const RoutineTaskListContainer: React.FC = () => {
     try {
       await deleteRoutineTask(id);
     } catch (error) {
-      console.error('習慣化タスク削除に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          '習慣化タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

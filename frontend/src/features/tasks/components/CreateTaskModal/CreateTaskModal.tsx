@@ -13,6 +13,7 @@ import {
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { CreateTaskDto } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
 import { statusOptions, priorityOptions } from '@/features/tasks/constants';
@@ -61,7 +62,10 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       resetForm();
       onClose();
     } catch (error) {
-      console.error('タスク作成エラー:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

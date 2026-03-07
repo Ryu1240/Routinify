@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CreateCategoryDto, UpdateCategoryDto } from '@/types/category';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { categoriesApi } from '../api/categoriesApi';
 
 export const useCategoryMutations = (onRefresh: () => void) => {
@@ -18,7 +19,10 @@ export const useCategoryMutations = (onRefresh: () => void) => {
       // 作成後にカテゴリリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('カテゴリの作成に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'カテゴリの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'カテゴリの作成に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -41,7 +45,10 @@ export const useCategoryMutations = (onRefresh: () => void) => {
       // 更新後にカテゴリリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('カテゴリの更新に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'カテゴリの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'カテゴリの更新に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -61,7 +68,10 @@ export const useCategoryMutations = (onRefresh: () => void) => {
       // 削除後にカテゴリリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('カテゴリの削除に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'カテゴリの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'カテゴリの削除に失敗しました。しばらく時間をおいて再度お試しください。'
       );

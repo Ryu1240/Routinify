@@ -8,6 +8,7 @@ import {
   Title,
   Loader,
 } from '@mantine/core';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 
 type DeleteMilestoneConfirmModalProps = {
   opened: boolean;
@@ -25,8 +26,11 @@ export const DeleteMilestoneConfirmModal: React.FC<
       await onConfirm();
       onClose();
     } catch (error) {
-      // エラーは親コンポーネントで処理される
-      console.error('削除に失敗しました:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'マイルストーンの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
+      throw error;
     }
   };
 
