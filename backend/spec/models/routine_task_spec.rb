@@ -115,6 +115,13 @@ RSpec.describe RoutineTask, type: :model do
   end
 
   describe '#tasks_to_generate_count' do
+    include ActiveSupport::Testing::TimeHelpers
+
+    # 日付境界（JST 0時台）で実行すると next_generation_at の「今日」判定がずれて失敗するため、時刻を固定する
+    around do |example|
+      travel_to(Time.zone.parse('2025-03-08 12:00:00')) { example.run }
+    end
+
     let(:current_time) { Time.current }
 
     context '次回生成日時がまだ到来していない場合' do

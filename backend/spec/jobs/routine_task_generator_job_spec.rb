@@ -12,6 +12,8 @@ require 'rails_helper'
 #
 # 仕様詳細: backend/docs/ROUTINE_TASK_GENERATION_SPEC.md
 RSpec.describe RoutineTaskGeneratorJob, type: :job do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:job_id) { SecureRandom.uuid }
   let(:redis) { Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0')) }
 
@@ -170,51 +172,54 @@ RSpec.describe RoutineTaskGeneratorJob, type: :job do
       end
 
       it '期限超過タスクが複数ある場合、作成順に削除されること' do
-        routine_task = create(:routine_task, :daily,
-                              last_generated_at: 1.day.ago,
-                              start_generation_at: 2.days.ago,
-                              next_generation_at: 1.hour.ago,
-                              max_active_tasks: 3)
+        # 日付境界で実行すると tasks_to_generate_count が 2 になり、削除数が変わるため時刻を固定する
+        travel_to(Time.zone.parse('2025-03-08 12:00:00')) do
+          routine_task = create(:routine_task, :daily,
+                                last_generated_at: 1.day.ago,
+                                start_generation_at: 2.days.ago,
+                                next_generation_at: 1.hour.ago,
+                                max_active_tasks: 3)
 
-        oldest_overdue = create(:task,
-                                routine_task: routine_task,
-                                account_id: routine_task.account_id,
-                                status: 'pending',
-                              due_date: 5.days.ago,
-                              created_at: 5.days.ago)
+          oldest_overdue = create(:task,
+                                  routine_task: routine_task,
+                                  account_id: routine_task.account_id,
+                                  status: 'pending',
+                                  due_date: 5.days.ago,
+                                  created_at: 5.days.ago)
 
-        second_overdue = create(:task,
-                                routine_task: routine_task,
-                                account_id: routine_task.account_id,
-                                status: 'pending',
-                              due_date: 3.days.ago,
-                              created_at: 3.days.ago)
+          second_overdue = create(:task,
+                                  routine_task: routine_task,
+                                  account_id: routine_task.account_id,
+                                  status: 'pending',
+                                  due_date: 3.days.ago,
+                                  created_at: 3.days.ago)
 
-        newest_overdue = create(:task,
-                                 routine_task: routine_task,
-                                 account_id: routine_task.account_id,
-                                 status: 'pending',
-                              due_date: 1.day.ago,
-                              created_at: 1.day.ago)
+          newest_overdue = create(:task,
+                                  routine_task: routine_task,
+                                  account_id: routine_task.account_id,
+                                  status: 'pending',
+                                  due_date: 1.day.ago,
+                                  created_at: 1.day.ago)
 
-        future_task = create(:task,
-                             routine_task: routine_task,
-                             account_id: routine_task.account_id,
-                             status: 'pending',
-                             due_date: 1.day.from_now,
-                             created_at: 4.days.ago)
+          future_task = create(:task,
+                               routine_task: routine_task,
+                               account_id: routine_task.account_id,
+                               status: 'pending',
+                               due_date: 1.day.from_now,
+                               created_at: 4.days.ago)
 
-        initial_task_ids = [ oldest_overdue.id, second_overdue.id, newest_overdue.id, future_task.id ]
+          initial_task_ids = [oldest_overdue.id, second_overdue.id, newest_overdue.id, future_task.id]
 
-        described_class.perform_now(routine_task.id, job_id)
+          described_class.perform_now(routine_task.id, job_id)
 
-        remaining_tasks = routine_task.tasks.where.not(status: 'completed')
-        expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
-        remaining_initial_task_ids = remaining_tasks.pluck(:id) & initial_task_ids
-        expect(remaining_initial_task_ids).not_to include(oldest_overdue.id)
-        expect(remaining_initial_task_ids).not_to include(second_overdue.id)
-        expect(remaining_initial_task_ids).to include(newest_overdue.id)
-        expect(remaining_initial_task_ids).to include(future_task.id)
+          remaining_tasks = routine_task.tasks.where.not(status: 'completed')
+          expect(remaining_tasks.count).to be <= routine_task.max_active_tasks
+          remaining_initial_task_ids = remaining_tasks.pluck(:id) & initial_task_ids
+          expect(remaining_initial_task_ids).not_to include(oldest_overdue.id)
+          expect(remaining_initial_task_ids).not_to include(second_overdue.id)
+          expect(remaining_initial_task_ids).to include(newest_overdue.id)
+          expect(remaining_initial_task_ids).to include(future_task.id)
+        end
       end
 
       it '期限超過タスクがない場合、created_atが古い順に削除されること' do
