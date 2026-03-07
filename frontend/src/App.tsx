@@ -13,17 +13,57 @@ import { PageLoader } from '@/shared/components/PageLoader';
 import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
 
 // Lazy load pages
-const TaskListPage = React.lazy(() => import('./pages/tasks').then(module => ({ default: module.TaskListPage })));
-const CategoryListPage = React.lazy(() => import('./pages/categories').then(module => ({ default: module.CategoryListPage })));
-const RoutineTaskListPage = React.lazy(() => import('./pages/routineTasks').then(module => ({ default: module.RoutineTaskListPage })));
-const RoutineTaskFormPage = React.lazy(() => import('./pages/routineTasks').then(module => ({ default: module.RoutineTaskFormPage })));
-const MilestonesPage = React.lazy(() => import('./pages/milestones').then(module => ({ default: module.MilestonesPage })));
-const MilestoneDetailPage = React.lazy(() => import('./pages/milestones').then(module => ({ default: module.MilestoneDetailPage })));
-const AchievementListPage = React.lazy(() => import('./pages/achievements').then(module => ({ default: module.AchievementListPage })));
-const AchievementDetailPage = React.lazy(() => import('./pages/achievements').then(module => ({ default: module.AchievementDetailPage })));
-const AccountManagementPage = React.lazy(() => import('./pages/admin').then(module => ({ default: module.AccountManagementPage })));
-const ForbiddenPage = React.lazy(() => import('./pages/errors').then(module => ({ default: module.ForbiddenPage })));
-const DashboardPage = React.lazy(() => import('./pages/dashboard').then(module => ({ default: module.DashboardPage })));
+const TaskListPage = React.lazy(() =>
+  import('./pages/tasks').then((module) => ({ default: module.TaskListPage }))
+);
+const CategoryListPage = React.lazy(() =>
+  import('./pages/categories').then((module) => ({
+    default: module.CategoryListPage,
+  }))
+);
+const RoutineTaskListPage = React.lazy(() =>
+  import('./pages/routineTasks').then((module) => ({
+    default: module.RoutineTaskListPage,
+  }))
+);
+const RoutineTaskFormPage = React.lazy(() =>
+  import('./pages/routineTasks').then((module) => ({
+    default: module.RoutineTaskFormPage,
+  }))
+);
+const MilestonesPage = React.lazy(() =>
+  import('./pages/milestones').then((module) => ({
+    default: module.MilestonesPage,
+  }))
+);
+const MilestoneDetailPage = React.lazy(() =>
+  import('./pages/milestones').then((module) => ({
+    default: module.MilestoneDetailPage,
+  }))
+);
+const AchievementListPage = React.lazy(() =>
+  import('./pages/achievements').then((module) => ({
+    default: module.AchievementListPage,
+  }))
+);
+const AchievementDetailPage = React.lazy(() =>
+  import('./pages/achievements').then((module) => ({
+    default: module.AchievementDetailPage,
+  }))
+);
+const AccountManagementPage = React.lazy(() =>
+  import('./pages/admin').then((module) => ({
+    default: module.AccountManagementPage,
+  }))
+);
+const ForbiddenPage = React.lazy(() =>
+  import('./pages/errors').then((module) => ({ default: module.ForbiddenPage }))
+);
+const DashboardPage = React.lazy(() =>
+  import('./pages/dashboard').then((module) => ({
+    default: module.DashboardPage,
+  }))
+);
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
