@@ -2,7 +2,7 @@ import React from 'react';
 import { TaskListContainer } from '@/features/tasks/components/TaskList';
 import { Layout } from '@/shared/components';
 
-const TaskList: React.FC = () => {
+const TaskListPage: React.FC = () => {
   return (
     <Layout>
       <TaskListContainer />
@@ -10,4 +10,4 @@ const TaskList: React.FC = () => {
   );
 };
 
-export default TaskList;
+export default TaskListPage;
