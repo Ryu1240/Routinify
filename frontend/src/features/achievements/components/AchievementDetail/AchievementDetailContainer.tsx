@@ -110,6 +110,7 @@ export const AchievementDetailContainer: React.FC = () => {
     stats,
     loading: statsLoading,
     error: statsError,
+    refetch: refetchStats,
   } = useAchievementStats(routineTaskId, period, startDate, endDate);
 
   // 達成率推移データを取得（グラフタブがアクティブな場合のみ）
@@ -117,11 +118,26 @@ export const AchievementDetailContainer: React.FC = () => {
     data: trendData,
     loading: trendLoading,
     error: trendError,
+    refetch: refetchTrend,
   } = useAchievementTrend(
     activeTab === 'graph' ? routineTaskId : 0,
     trendChartPeriod,
     trendChartCount
   );
+
+  // タスク更新時に達成状況を再取得
+  React.useEffect(() => {
+    const handleTasksRefresh = () => {
+      refetchStats();
+      refetchTrend();
+    };
+
+    window.addEventListener('tasks-refresh', handleTasksRefresh);
+
+    return () => {
+      window.removeEventListener('tasks-refresh', handleTasksRefresh);
+    };
+  }, [refetchStats, refetchTrend]);
 
   const handleCustomDateChange = (start: string | null, end: string | null) => {
     setCustomStartDate(start);

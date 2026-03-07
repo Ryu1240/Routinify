@@ -10,10 +10,12 @@ export const useAchievementsList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAchievementsList = useCallback(async () => {
+  const fetchAchievementsList = useCallback(async (silent?: boolean) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!silent) {
+        setLoading(true);
+        setError(null);
+      }
 
       const data = await getAllRoutineTasksWithStats();
       setRoutineTasksWithStats(data);
@@ -23,12 +25,32 @@ export const useAchievementsList = () => {
       });
       setError('達成状況一覧の取得に失敗しました。');
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     fetchAchievementsList();
+  }, [fetchAchievementsList]);
+
+  // カスタムイベントをリッスンして達成状況一覧を更新
+  useEffect(() => {
+    const handleTasksRefresh = (event: Event) => {
+      const customEvent = event as CustomEvent<{ silent?: boolean }>;
+      if (customEvent.detail?.silent) {
+        fetchAchievementsList(true);
+      } else {
+        fetchAchievementsList();
+      }
+    };
+
+    window.addEventListener('tasks-refresh', handleTasksRefresh);
+
+    return () => {
+      window.removeEventListener('tasks-refresh', handleTasksRefresh);
+    };
   }, [fetchAchievementsList]);
 
   return {

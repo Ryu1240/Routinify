@@ -77,6 +77,9 @@ export const TaskListContainer: React.FC = () => {
     try {
       await updateTask(taskId, taskData);
       setEditingTaskId(null);
+      window.dispatchEvent(
+        new CustomEvent('tasks-refresh', { detail: { silent: true } })
+      );
     } catch (error) {
       handleApiError(error, {
         defaultMessage:
@@ -93,6 +96,9 @@ export const TaskListContainer: React.FC = () => {
     if (window.confirm('このタスクを削除してもよろしいですか？')) {
       try {
         await deleteTask(taskId);
+        window.dispatchEvent(
+          new CustomEvent('tasks-refresh', { detail: { silent: true } })
+        );
       } catch (error) {
         handleApiError(error, {
           defaultMessage:
@@ -119,6 +125,9 @@ export const TaskListContainer: React.FC = () => {
       }
 
       await updateTask(taskId, { status: newStatus });
+      window.dispatchEvent(
+        new CustomEvent('tasks-refresh', { detail: { silent: true } })
+      );
     } catch (error) {
       handleApiError(error, {
         defaultMessage:

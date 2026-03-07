@@ -50,6 +50,10 @@ export const useDashboardTasks = () => {
         await tasksApi.update(taskId, taskData);
         // タスクを再取得
         await fetchTasks();
+        // 達成状況など他画面のデータも再取得させる
+        window.dispatchEvent(
+          new CustomEvent('tasks-refresh', { detail: { silent: true } })
+        );
       } catch (err) {
         handleApiError(err, {
           defaultMessage:
