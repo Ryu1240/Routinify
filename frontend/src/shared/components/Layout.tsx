@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Box } from '@mantine/core';
+import { Box, Container } from '@mantine/core';
 import { Header, Sidebar } from './';
-import { LAYOUT_CONSTANTS } from '@/shared/constants/layout';
+import {
+  LAYOUT_CONSTANTS,
+  PAGE_CONTAINER_PROPS,
+} from '@/shared/constants/layout';
 import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 interface LayoutProps {
@@ -37,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           backgroundColor: 'var(--mantine-color-gray-0)',
         }}
       >
-        {children}
+        <Container {...PAGE_CONTAINER_PROPS}>{children}</Container>
       </Box>
     </Box>
   );

@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  Container,
-  Group,
-  Stack,
-  Loader,
-  Text,
-  Alert,
-  Button,
-} from '@mantine/core';
+import { Group, Stack, Loader, Text, Alert, Button } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
 
 export type ListPageStateProps = {
@@ -27,41 +19,35 @@ export const ListPageState: React.FC<ListPageStateProps> = ({
 }) => {
   if (variant === 'loading') {
     return (
-      <Container size="xl" py="xl">
-        <Group justify="center">
-          <Loader size="lg" color={COLORS.PRIMARY} />
-          <Text c={COLORS.MEDIUM}>{loadingMessage}</Text>
-        </Group>
-      </Container>
+      <Group justify="center">
+        <Loader size="lg" color={COLORS.PRIMARY} />
+        <Text c={COLORS.MEDIUM}>{loadingMessage}</Text>
+      </Group>
     );
   }
 
   if (variant === 'unauthenticated') {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="認証が必要" color={COLORS.PRIMARY} variant="light">
-          {unauthenticatedMessage}
-        </Alert>
-      </Container>
+      <Alert title="認証が必要" color={COLORS.PRIMARY} variant="light">
+        {unauthenticatedMessage}
+      </Alert>
     );
   }
 
   if (variant === 'error') {
     return (
-      <Container size="xl" py="xl">
-        <Stack gap="md">
-          <Alert title="エラー" color={COLORS.PRIMARY} variant="light">
-            {errorMessage}
-          </Alert>
-          {onRetry && (
-            <Group justify="center">
-              <Button color={COLORS.PRIMARY} onClick={onRetry}>
-                再取得
-              </Button>
-            </Group>
-          )}
-        </Stack>
-      </Container>
+      <Stack gap="md">
+        <Alert title="エラー" color={COLORS.PRIMARY} variant="light">
+          {errorMessage}
+        </Alert>
+        {onRetry && (
+          <Group justify="center">
+            <Button color={COLORS.PRIMARY} onClick={onRetry}>
+              再取得
+            </Button>
+          </Group>
+        )}
+      </Stack>
     );
   }
 

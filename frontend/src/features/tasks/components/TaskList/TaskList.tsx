@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  TextInput,
-  Group,
-  Text,
-  Container,
-  Button,
-  Title,
-  Stack,
-} from '@mantine/core';
+import { TextInput, Group, Text, Button, Title, Stack } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { ListPageState } from '@/shared/components';
@@ -103,7 +95,7 @@ export const TaskList: React.FC<TaskListProps> = ({
   }
 
   return (
-    <Container size="xl" py="xl">
+    <>
       <Title order={2} mb="lg">
         タスク一覧
       </Title>
@@ -181,6 +173,6 @@ export const TaskList: React.FC<TaskListProps> = ({
           {tasks.length}件のタスクを表示中
         </Text>
       )}
-    </Container>
+    </>
   );
 };

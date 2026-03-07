@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Group, Title, Stack, Button } from '@mantine/core';
+import { Group, Title, Stack, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { ListPageState } from '@/shared/components';
@@ -68,7 +68,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
   }
 
   return (
-    <Container size="xl" py="xl">
+    <>
       <Group justify="space-between" mb="lg">
         <Title order={2}>マイルストーン一覧</Title>
         {onCreate && (
@@ -100,6 +100,6 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
       )}
 
       <MilestoneListFooter count={milestones.length} />
-    </Container>
+    </>
   );
 };

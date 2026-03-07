@@ -19,5 +19,11 @@ export const LAYOUT_CONSTANTS = {
   SHADOW_SIZE: 'sm',
 } as const;
 
+// ページメインコンテンツ用 Container の共通 props（Layout で使用）
+export const PAGE_CONTAINER_PROPS = {
+  size: 'xl' as const,
+  py: 'xl' as const,
+} as const;
+
 // 型定義
 export type LayoutConstants = typeof LAYOUT_CONSTANTS;
