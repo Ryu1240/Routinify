@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Category } from '@/types/category';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { categoriesApi } from '../api/categoriesApi';
 
 export const useFetchCategories = () => {
@@ -16,7 +17,10 @@ export const useFetchCategories = () => {
       setCategories(data);
       setError(null);
     } catch (err) {
-      console.error('カテゴリの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'カテゴリの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'カテゴリの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );

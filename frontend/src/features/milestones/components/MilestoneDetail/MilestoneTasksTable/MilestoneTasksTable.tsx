@@ -13,6 +13,7 @@ import {
 } from '@mantine/core';
 import { IconTrash, IconPlus, IconEdit } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { Task, UpdateTaskDto } from '@/types/task';
 import {
   getPriorityColor,
@@ -86,7 +87,10 @@ export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
         await onEditTask(taskId, taskData);
         setEditingTaskId(null);
       } catch (error) {
-        console.error('タスク更新に失敗:', error);
+        handleApiError(error, {
+          defaultMessage:
+            'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
       }
     }
   };

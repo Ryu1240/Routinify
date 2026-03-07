@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { useFetchMilestones } from '../../hooks';
 import { useMilestoneMutations } from '../../hooks/useMilestoneMutations';
 import {
@@ -86,7 +87,10 @@ export const MilestoneListContainer: React.FC = () => {
       setIsEditMode(true);
       setIsModalOpen(true);
     } catch (error) {
-      console.error('マイルストーンの更新に失敗しました:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'マイルストーンの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -106,7 +110,10 @@ export const MilestoneListContainer: React.FC = () => {
       setDeletingMilestoneName(milestone.name);
       setIsDeleteModalOpen(true);
     } catch (error) {
-      console.error('マイルストーンの削除に失敗しました:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'マイルストーンの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

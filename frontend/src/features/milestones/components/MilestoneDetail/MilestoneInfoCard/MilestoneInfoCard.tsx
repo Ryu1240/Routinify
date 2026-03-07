@@ -11,6 +11,7 @@ import {
 } from '@mantine/core';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { Milestone, UpdateMilestoneDto } from '@/types/milestone';
 import {
   getStatusColor,
@@ -48,7 +49,10 @@ export const MilestoneInfoCard: React.FC<MilestoneInfoCardProps> = ({
         await onEdit(milestoneData);
         setIsEditing(false);
       } catch (error) {
-        console.error('マイルストーン更新エラー:', error);
+        handleApiError(error, {
+          defaultMessage:
+            'マイルストーンの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
         throw error;
       }
     }

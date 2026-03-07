@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRoutineTasks, useCategories } from '@/shared/hooks';
 import { UpdateRoutineTaskDto } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { routineTasksApi } from '../../api/routineTasksApi';
 import { useRoutineTaskForm } from './useRoutineTaskForm';
 import { RoutineTaskForm } from './RoutineTaskForm';
@@ -38,8 +39,9 @@ export const RoutineTaskFormContainer: React.FC = () => {
           setRoutineTask(task);
         })
         .catch((error) => {
-          console.error('習慣化タスクの取得に失敗:', error);
-          alert('習慣化タスクの取得に失敗しました');
+          handleApiError(error, {
+            defaultMessage: '習慣化タスクの取得に失敗しました。',
+          });
           navigate('/routine-tasks');
         })
         .finally(() => {
@@ -67,12 +69,10 @@ export const RoutineTaskFormContainer: React.FC = () => {
       }
       navigate('/routine-tasks');
     } catch (error) {
-      console.error('習慣化タスクの保存に失敗:', error);
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert('習慣化タスクの保存に失敗しました');
-      }
+      handleApiError(error, {
+        defaultMessage:
+          '習慣化タスクの保存に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

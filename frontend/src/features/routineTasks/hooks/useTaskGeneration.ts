@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { routineTasksApi, TaskGenerationJob } from '../api';
 
 type GenerationState = 'idle' | 'generating' | 'completed' | 'failed';
@@ -65,6 +66,9 @@ export const useTaskGeneration = (): UseTaskGenerationReturn => {
           }
           // pending または running の場合は継続してポーリング
         } catch (err) {
+          handleApiError(err, {
+            defaultMessage: 'ステータスの取得に失敗しました',
+          });
           setState('failed');
           setError(
             err instanceof Error
@@ -99,6 +103,9 @@ export const useTaskGeneration = (): UseTaskGenerationReturn => {
         // ポーリング開始
         startPolling(routineTaskId, job.jobId);
       } catch (err) {
+        handleApiError(err, {
+          defaultMessage: 'タスク生成の開始に失敗しました',
+        });
         setState('failed');
         setError(
           err instanceof Error ? err.message : 'タスク生成の開始に失敗しました'

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { getAllRoutineTasksWithStats } from '@/features/achievements/api/achievementsApi';
 import { RoutineTaskWithStats } from '@/types/achievement';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 
 export const useDashboard = () => {
   const { hasAccessToken } = useAuth();
@@ -28,7 +29,10 @@ export const useDashboard = () => {
       setRoutineTasks(topThree);
       setError(null);
     } catch (err) {
-      console.error('習慣化タスクの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          '習慣化タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         '習慣化タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );

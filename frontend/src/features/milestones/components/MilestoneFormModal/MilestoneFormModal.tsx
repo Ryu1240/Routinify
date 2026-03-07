@@ -10,6 +10,7 @@ import {
   Loader,
 } from '@mantine/core';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import {
   CreateMilestoneDto,
   MilestoneStatus,
@@ -74,12 +75,12 @@ export const MilestoneFormModal: React.FC<MilestoneFormModalProps> = ({
       resetForm();
       onClose();
     } catch (error) {
-      console.error(
-        mode === 'create'
-          ? 'マイルストーン作成エラー:'
-          : 'マイルストーン更新エラー:',
-        error
-      );
+      handleApiError(error, {
+        defaultMessage:
+          mode === 'create'
+            ? 'マイルストーンの作成に失敗しました。しばらく時間をおいて再度お試しください。'
+            : 'マイルストーンの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

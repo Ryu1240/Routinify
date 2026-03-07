@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { CreateRoutineTaskDto, UpdateRoutineTaskDto } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { routineTasksApi } from '../api/routineTasksApi';
 
 export const useRoutineTaskMutations = (onRefresh: () => void) => {
@@ -18,7 +19,10 @@ export const useRoutineTaskMutations = (onRefresh: () => void) => {
       // 作成後に習慣化タスクリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('習慣化タスクの作成に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          '習慣化タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         '習慣化タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -42,7 +46,10 @@ export const useRoutineTaskMutations = (onRefresh: () => void) => {
       // 更新後に習慣化タスクリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('習慣化タスクの更新に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          '習慣化タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         '習慣化タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -62,7 +69,10 @@ export const useRoutineTaskMutations = (onRefresh: () => void) => {
       // 削除後に習慣化タスクリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('習慣化タスクの削除に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          '習慣化タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         '習慣化タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。'
       );

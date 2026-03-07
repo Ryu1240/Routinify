@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { IconFlag, IconSearch } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { Milestone } from '@/types/milestone';
 
 type TaskMilestoneModalProps = {
@@ -120,7 +121,10 @@ export const TaskMilestoneModal: React.FC<TaskMilestoneModalProps> = ({
       }
       onClose();
     } catch (err) {
-      console.error('マイルストーンの変更に失敗:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'マイルストーンの変更に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 

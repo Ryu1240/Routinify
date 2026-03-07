@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { AchievementTrendData } from '@/types/achievement';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { getAchievementTrend } from '../api/achievementsApi';
 
 export const useAchievementTrend = (
@@ -35,7 +36,9 @@ export const useAchievementTrend = (
       const trendData = await getAchievementTrend(routineTaskId, params);
       setData(trendData);
     } catch (err) {
-      console.error('達成率推移の取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage: '達成率推移の取得に失敗しました。',
+      });
       setError('達成率推移の取得に失敗しました。');
       setData([]);
     } finally {

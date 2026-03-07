@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Task, TaskStatus } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { tasksApi } from '@/features/tasks/api/tasksApi';
 
 export const useDashboardTasks = () => {
@@ -21,7 +22,10 @@ export const useDashboardTasks = () => {
       setTasks(data);
       setError(null);
     } catch (err) {
-      console.error('タスクの取得に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -47,7 +51,10 @@ export const useDashboardTasks = () => {
         // タスクを再取得
         await fetchTasks();
       } catch (err) {
-        console.error('タスク更新に失敗しました:', err);
+        handleApiError(err, {
+          defaultMessage:
+            'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
         throw err;
       }
     },
@@ -70,7 +77,10 @@ export const useDashboardTasks = () => {
 
         await updateTask(taskId, { status: newStatus });
       } catch (err) {
-        console.error('タスク状態の更新に失敗:', err);
+        handleApiError(err, {
+          defaultMessage:
+            'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
         throw err;
       }
     },
@@ -82,7 +92,10 @@ export const useDashboardTasks = () => {
       try {
         await updateTask(taskId, { status: 'completed' });
       } catch (err) {
-        console.error('タスク状態の更新に失敗:', err);
+        handleApiError(err, {
+          defaultMessage:
+            'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
         throw err;
       }
     },
@@ -94,7 +107,10 @@ export const useDashboardTasks = () => {
       try {
         await updateTask(taskId, { status: 'pending' });
       } catch (err) {
-        console.error('タスク状態の更新に失敗:', err);
+        handleApiError(err, {
+          defaultMessage:
+            'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
         throw err;
       }
     },

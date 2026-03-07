@@ -4,6 +4,7 @@ import {
   UpdateMilestoneDto,
   Milestone,
 } from '@/types/milestone';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { milestonesApi } from '../api/milestonesApi';
 
 export const useMilestoneMutations = (onRefresh: () => void) => {
@@ -24,7 +25,10 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
       // 作成後にマイルストーンリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('マイルストーンの作成に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'マイルストーンの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'マイルストーンの作成に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -47,7 +51,10 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
       // 更新後にマイルストーンリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('マイルストーンの更新に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'マイルストーンの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'マイルストーンの更新に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -67,7 +74,10 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
       // 削除後にマイルストーンリストを再取得
       onRefresh();
     } catch (err) {
-      console.error('マイルストーンの削除に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'マイルストーンの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'マイルストーンの削除に失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -95,7 +105,10 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
 
       return updatedMilestone;
     } catch (err) {
-      console.error('タスクの関連付けに失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの関連付けに失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの関連付けに失敗しました。しばらく時間をおいて再度お試しください。'
       );
@@ -123,7 +136,10 @@ export const useMilestoneMutations = (onRefresh: () => void) => {
 
       return updatedMilestone;
     } catch (err) {
-      console.error('タスクの関連付け解除に失敗しました:', err);
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの関連付け解除に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
       setError(
         'タスクの関連付け解除に失敗しました。しばらく時間をおいて再度お試しください。'
       );

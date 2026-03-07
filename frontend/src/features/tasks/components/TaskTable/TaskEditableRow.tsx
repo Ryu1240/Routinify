@@ -9,6 +9,7 @@ import {
 } from '@mantine/core';
 import { IconCheck, IconX, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { formatDate } from '@/shared/utils/taskUtils';
 import { DataTable } from '@/shared/components/DataTable/index';
 import { Task, UpdateTaskDto } from '@/types';
@@ -54,7 +55,10 @@ export const TaskEditableRow: React.FC<TaskEditableRowProps> = ({
       setSaving(true);
       await onSave(task.id, formData);
     } catch (error) {
-      console.error('保存エラー:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     } finally {
       setSaving(false);
     }

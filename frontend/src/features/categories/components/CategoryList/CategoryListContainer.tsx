@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useCategories } from '@/shared/hooks/useCategories';
 import { useAuth } from '@/shared/hooks/useAuth';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import {
   CreateCategoryDto,
   UpdateCategoryDto,
@@ -33,7 +34,10 @@ export const CategoryListContainer: React.FC = () => {
       await createCategory(categoryData);
       setIsCreateModalOpen(false);
     } catch (error) {
-      console.error('カテゴリ作成に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'カテゴリの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -54,7 +58,10 @@ export const CategoryListContainer: React.FC = () => {
       setIsEditModalOpen(false);
       setEditingCategory(null);
     } catch (error) {
-      console.error('カテゴリ更新に失敗:', error);
+      handleApiError(error, {
+        defaultMessage:
+          'カテゴリの更新に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
     }
   };
 
@@ -67,7 +74,10 @@ export const CategoryListContainer: React.FC = () => {
       try {
         await deleteCategory(categoryId);
       } catch (error) {
-        console.error('カテゴリ削除に失敗:', error);
+        handleApiError(error, {
+          defaultMessage:
+            'カテゴリの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
       }
     }
   };
