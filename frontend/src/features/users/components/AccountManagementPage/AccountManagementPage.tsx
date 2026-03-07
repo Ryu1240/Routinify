@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Container,
   Title,
   TextInput,
   Button,
@@ -53,19 +52,17 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
 
   if (loading && users.length === 0) {
     return (
-      <Container size="xl" py="xl">
-        <Group justify="center">
-          <Loader size="lg" color={COLORS.PRIMARY} />
-          <Text c={COLORS.MEDIUM}>読み込み中...</Text>
-        </Group>
-      </Container>
+      <Group justify="center">
+        <Loader size="lg" color={COLORS.PRIMARY} />
+        <Text c={COLORS.MEDIUM}>読み込み中...</Text>
+      </Group>
     );
   }
 
   const deleteTargetUser = users.find((u) => u.sub === deleteTargetUserId);
 
   return (
-    <Container size="xl" py="xl">
+    <>
       <Title order={2} mb="lg">
         アカウント管理
       </Title>
@@ -131,6 +128,6 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
         userName={deleteTargetUser?.name || deleteTargetUser?.nickname}
         loading={deleteLoading}
       />
-    </Container>
+    </>
   );
 };

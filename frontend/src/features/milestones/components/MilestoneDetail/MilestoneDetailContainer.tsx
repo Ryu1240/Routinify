@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Alert } from '@mantine/core';
+import { Alert } from '@mantine/core';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { ListPageState } from '@/shared/components';
 import { handleApiError } from '@/shared/utils/apiErrorUtils';
@@ -137,15 +137,9 @@ export const MilestoneDetailContainer: React.FC = () => {
 
   if (!milestone) {
     return (
-      <Container size="xl" py="xl">
-        <Alert
-          title="マイルストーンが見つかりません"
-          color="red"
-          variant="light"
-        >
-          指定されたマイルストーンは存在しないか、アクセス権限がありません。
-        </Alert>
-      </Container>
+      <Alert title="マイルストーンが見つかりません" color="red" variant="light">
+        指定されたマイルストーンは存在しないか、アクセス権限がありません。
+      </Alert>
     );
   }
 

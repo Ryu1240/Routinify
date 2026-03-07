@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Button, Title, Group, Text, Stack } from '@mantine/core';
+import { Button, Title, Group, Text, Stack } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { ListPageState } from '@/shared/components';
@@ -60,7 +60,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({
   }
 
   return (
-    <Container size="xl" py="xl">
+    <>
       <Title order={2} mb="lg">
         カテゴリ管理
       </Title>
@@ -106,6 +106,6 @@ export const CategoryList: React.FC<CategoryListProps> = ({
           {categories.length}件のカテゴリを表示中
         </Text>
       )}
-    </Container>
+    </>
   );
 };
