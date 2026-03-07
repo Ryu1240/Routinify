@@ -12,39 +12,46 @@ export const useAchievementTrend = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTrend = useCallback(async () => {
-    if (!routineTaskId || routineTaskId === 0) return;
+  const fetchTrend = useCallback(
+    async (silent?: boolean) => {
+      if (!routineTaskId || routineTaskId === 0) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        if (!silent) {
+          setLoading(true);
+          setError(null);
+        }
 
-      const params: {
-        period: 'weekly' | 'monthly';
-        weeks?: number;
-        months?: number;
-      } = {
-        period,
-      };
+        const params: {
+          period: 'weekly' | 'monthly';
+          weeks?: number;
+          months?: number;
+        } = {
+          period,
+        };
 
-      if (period === 'weekly') {
-        params.weeks = count;
-      } else {
-        params.months = count;
+        if (period === 'weekly') {
+          params.weeks = count;
+        } else {
+          params.months = count;
+        }
+
+        const trendData = await getAchievementTrend(routineTaskId, params);
+        setData(trendData);
+      } catch (err) {
+        handleApiError(err, {
+          defaultMessage: '達成率推移の取得に失敗しました。',
+        });
+        setError('達成率推移の取得に失敗しました。');
+        setData([]);
+      } finally {
+        if (!silent) {
+          setLoading(false);
+        }
       }
-
-      const trendData = await getAchievementTrend(routineTaskId, params);
-      setData(trendData);
-    } catch (err) {
-      handleApiError(err, {
-        defaultMessage: '達成率推移の取得に失敗しました。',
-      });
-      setError('達成率推移の取得に失敗しました。');
-      setData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [routineTaskId, period, count]);
+    },
+    [routineTaskId, period, count]
+  );
 
   useEffect(() => {
     fetchTrend();

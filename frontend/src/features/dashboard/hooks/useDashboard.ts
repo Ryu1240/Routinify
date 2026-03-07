@@ -10,9 +10,12 @@ export const useDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRoutineTasks = useCallback(async () => {
+  const fetchRoutineTasks = useCallback(async (silent?: boolean) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
+
       const allTasks = await getAllRoutineTasksWithStats();
 
       // 上位3つを選択: 達成率が高い順
@@ -37,7 +40,9 @@ export const useDashboard = () => {
         '習慣化タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 

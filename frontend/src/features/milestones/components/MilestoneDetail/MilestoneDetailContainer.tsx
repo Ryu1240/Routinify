@@ -93,6 +93,9 @@ export const MilestoneDetailContainer: React.FC = () => {
       if (milestoneId) {
         refreshMilestone();
       }
+      window.dispatchEvent(
+        new CustomEvent('tasks-refresh', { detail: { silent: true } })
+      );
     } catch (error) {
       handleApiError(error, {
         defaultMessage:

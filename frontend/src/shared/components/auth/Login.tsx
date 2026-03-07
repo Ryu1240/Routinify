@@ -22,7 +22,7 @@ const Login: React.FC<LoginProps> = () => {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate('/tasks');
+      navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
 

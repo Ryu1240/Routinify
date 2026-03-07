@@ -100,9 +100,9 @@ const AppContent: React.FC = () => {
         if (isInternalPath && isAllowedPath) {
           navigate(returnTo);
         } else {
-          // 不正なパスの場合はデフォルトのタスク一覧へ
+          // 不正なパスの場合はデフォルトのダッシュボードへ
           console.warn('Invalid redirect path blocked:', returnTo);
-          navigate('/tasks');
+          navigate('/dashboard');
         }
       }
     };
@@ -195,7 +195,7 @@ const AppContent: React.FC = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="/" element={<Navigate to="/tasks" replace />} />
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };
