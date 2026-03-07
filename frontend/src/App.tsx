@@ -9,10 +9,9 @@ import {
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
 import { Login } from '@/shared/components/auth';
-import { TaskList } from './pages/tasks';
-import { CategoryList } from './pages/categories';
-import { RoutineTaskList } from './pages/routineTasks';
-import { RoutineTaskForm } from './pages/routineTasks/RoutineTaskForm';
+import { TaskListPage } from './pages/tasks';
+import { CategoryListPage } from './pages/categories';
+import { RoutineTaskListPage, RoutineTaskFormPage } from './pages/routineTasks';
 import { MilestonesPage, MilestoneDetailPage } from './pages/milestones';
 import {
   AchievementListPage,
@@ -126,7 +125,7 @@ const AppContent: React.FC = () => {
         path="/tasks"
         element={
           <ProtectedRoute>
-            <TaskList />
+            <TaskListPage />
           </ProtectedRoute>
         }
       />
@@ -134,7 +133,7 @@ const AppContent: React.FC = () => {
         path="/categories"
         element={
           <ProtectedRoute>
-            <CategoryList />
+            <CategoryListPage />
           </ProtectedRoute>
         }
       />
@@ -142,7 +141,7 @@ const AppContent: React.FC = () => {
         path="/routine-tasks"
         element={
           <ProtectedRoute>
-            <RoutineTaskList />
+            <RoutineTaskListPage />
           </ProtectedRoute>
         }
       />
@@ -150,7 +149,7 @@ const AppContent: React.FC = () => {
         path="/routine-tasks/:id"
         element={
           <ProtectedRoute>
-            <RoutineTaskForm />
+            <RoutineTaskFormPage />
           </ProtectedRoute>
         }
       />

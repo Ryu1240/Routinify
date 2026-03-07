@@ -1,1 +1,2 @@
-export { default as RoutineTaskList } from './RoutineTaskList';
+export { default as RoutineTaskListPage } from './RoutineTaskListPage';
+export { default as RoutineTaskFormPage } from './RoutineTaskFormPage';

@@ -2,7 +2,7 @@ import React from 'react';
 import { RoutineTaskListContainer } from '@/features/routineTasks/components/RoutineTaskList';
 import { Layout } from '@/shared/components';
 
-const RoutineTaskList: React.FC = () => {
+const RoutineTaskListPage: React.FC = () => {
   return (
     <Layout>
       <RoutineTaskListContainer />
@@ -10,4 +10,4 @@ const RoutineTaskList: React.FC = () => {
   );
 };
 
-export default RoutineTaskList;
+export default RoutineTaskListPage;

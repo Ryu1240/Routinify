@@ -2,7 +2,7 @@ import React from 'react';
 import { CategoryListContainer } from '@/features/categories/components/CategoryList';
 import { Layout } from '@/shared/components';
 
-const CategoryList: React.FC = () => {
+const CategoryListPage: React.FC = () => {
   return (
     <Layout>
       <CategoryListContainer />
@@ -10,4 +10,4 @@ const CategoryList: React.FC = () => {
   );
 };
 
-export default CategoryList;
+export default CategoryListPage;
