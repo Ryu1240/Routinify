@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom';
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
-import { Login } from '@/shared/components/auth';
+import { Login, AuthCheckingScreen } from '@/shared/components/auth';
 import { TaskListPage } from './pages/tasks';
 import { CategoryListPage } from './pages/categories';
 import { RoutineTaskListPage, RoutineTaskFormPage } from './pages/routineTasks';
@@ -31,11 +31,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth0();
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
+    return <AuthCheckingScreen message="認証情報を確認中..." />;
   }
 
   if (!isAuthenticated) {
@@ -52,11 +48,7 @@ const AdminRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   // ローディング中はローディング表示を出す（権限チェック完了を待つ）
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
-    );
+    return <AuthCheckingScreen message="権限を確認中..." />;
   }
 
   // ローディング完了後に権限チェックを実行
