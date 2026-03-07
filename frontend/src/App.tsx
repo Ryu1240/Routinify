@@ -11,10 +11,7 @@ import { auth0Config } from './auth0-config';
 import { Login } from '@/shared/components/auth';
 import { TaskListPage } from './pages/tasks';
 import { CategoryListPage } from './pages/categories';
-import {
-  RoutineTaskListPage,
-  RoutineTaskFormPage,
-} from './pages/routineTasks';
+import { RoutineTaskListPage, RoutineTaskFormPage } from './pages/routineTasks';
 import { MilestonesPage, MilestoneDetailPage } from './pages/milestones';
 import {
   AchievementListPage,
