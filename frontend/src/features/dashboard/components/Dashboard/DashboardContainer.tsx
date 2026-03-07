@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDashboard, useDashboardTasks } from '../../hooks';
 import { Dashboard } from './Dashboard';
 
@@ -22,6 +22,19 @@ export const DashboardContainer: React.FC = () => {
 
   const loading = routineTasksLoading || tasksLoading;
   const error = routineTasksError || tasksError;
+
+  useEffect(() => {
+    const handleTasksRefresh = () => {
+      refetchRoutineTasks();
+      refreshTasks();
+    };
+
+    window.addEventListener('tasks-refresh', handleTasksRefresh);
+
+    return () => {
+      window.removeEventListener('tasks-refresh', handleTasksRefresh);
+    };
+  }, [refetchRoutineTasks, refreshTasks]);
 
   const handleRetry = () => {
     refetchRoutineTasks();

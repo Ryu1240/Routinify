@@ -8,10 +8,12 @@ export const useFetchRoutineTasks = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRoutineTasks = useCallback(async () => {
+  const fetchRoutineTasks = useCallback(async (silent?: boolean) => {
     try {
-      setLoading(true);
-      setError(null);
+      if (!silent) {
+        setLoading(true);
+        setError(null);
+      }
 
       const data = await routineTasksApi.fetchAll();
       setRoutineTasks(data);
@@ -21,12 +23,32 @@ export const useFetchRoutineTasks = () => {
       });
       setError('習慣化タスクの取得に失敗しました。');
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     fetchRoutineTasks();
+  }, [fetchRoutineTasks]);
+
+  // カスタムイベントをリッスンして習慣化タスク一覧を更新
+  useEffect(() => {
+    const handleTasksRefresh = (event: Event) => {
+      const customEvent = event as CustomEvent<{ silent?: boolean }>;
+      if (customEvent.detail?.silent) {
+        fetchRoutineTasks(true);
+      } else {
+        fetchRoutineTasks();
+      }
+    };
+
+    window.addEventListener('tasks-refresh', handleTasksRefresh);
+
+    return () => {
+      window.removeEventListener('tasks-refresh', handleTasksRefresh);
+    };
   }, [fetchRoutineTasks]);
 
   return {
