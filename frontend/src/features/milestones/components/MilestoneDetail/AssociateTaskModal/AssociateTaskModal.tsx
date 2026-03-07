@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Modal,
   Button,
@@ -47,15 +47,16 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const associatedTaskIdsRef = useRef(associatedTaskIds);
+  associatedTaskIdsRef.current = associatedTaskIds;
+
   const fetchTasks = useCallback(async () => {
     try {
       setTasksLoading(true);
       setError(null);
       const allTasks = await tasksApi.fetchAll(undefined, true);
-      // 既に関連付けられているタスクを除外
-      const availableTasks = allTasks.filter(
-        (task) => !associatedTaskIds.includes(task.id)
-      );
+      const ids = associatedTaskIdsRef.current;
+      const availableTasks = allTasks.filter((task) => !ids.includes(task.id));
       setTasks(availableTasks);
     } catch (err) {
       console.error('タスクの取得に失敗しました:', err);
@@ -65,7 +66,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     } finally {
       setTasksLoading(false);
     }
-  }, [associatedTaskIds]);
+  }, []);
 
   useEffect(() => {
     if (opened) {
