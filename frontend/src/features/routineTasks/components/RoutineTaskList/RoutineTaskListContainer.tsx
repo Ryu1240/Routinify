@@ -3,7 +3,13 @@ import { useRoutineTasks } from '@/shared/hooks';
 import { RoutineTaskList } from './RoutineTaskList';
 
 export const RoutineTaskListContainer: React.FC = () => {
-  const { routineTasks, loading, error, deleteRoutineTask } = useRoutineTasks();
+  const {
+    routineTasks,
+    loading,
+    error,
+    refreshRoutineTasks,
+    deleteRoutineTask,
+  } = useRoutineTasks();
 
   const handleDelete = async (id: number) => {
     try {
@@ -18,6 +24,7 @@ export const RoutineTaskListContainer: React.FC = () => {
       routineTasks={routineTasks}
       loading={loading}
       error={error}
+      onRetry={refreshRoutineTasks}
       onDelete={handleDelete}
     />
   );

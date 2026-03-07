@@ -47,6 +47,8 @@ services:
       - DATABASE_PASSWORD=password
       - REDIS_URL=redis://redis:6379/0
       - RAILS_ENV=development
+    env_file:
+      - ./backend/.env
     depends_on:
       db:
         condition: service_healthy

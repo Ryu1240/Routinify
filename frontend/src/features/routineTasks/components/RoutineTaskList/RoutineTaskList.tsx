@@ -12,12 +12,14 @@ import {
 import { IconPlus } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
+import { ListPageState } from '@/shared/components';
 import { RoutineTask } from '@/types';
 
 interface RoutineTaskListProps {
   routineTasks: RoutineTask[];
   loading: boolean;
   error: string | null;
+  onRetry?: () => void | Promise<void>;
   onDelete: (id: number) => void;
 }
 
@@ -60,23 +62,23 @@ export const RoutineTaskList: React.FC<RoutineTaskListProps> = ({
   routineTasks,
   loading,
   error,
+  onRetry,
   onDelete,
 }) => {
   const navigate = useNavigate();
 
   if (loading) {
     return (
-      <Box p="md">
-        <Text>読み込み中...</Text>
-      </Box>
+      <ListPageState
+        variant="loading"
+        loadingMessage="習慣化タスクを読み込み中..."
+      />
     );
   }
 
   if (error) {
     return (
-      <Box p="md">
-        <Text c="red">{error}</Text>
-      </Box>
+      <ListPageState variant="error" errorMessage={error} onRetry={onRetry} />
     );
   }
 

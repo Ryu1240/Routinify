@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Modal,
   Button,
@@ -47,6 +47,27 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const associatedTaskIdsRef = useRef(associatedTaskIds);
+  associatedTaskIdsRef.current = associatedTaskIds;
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      setTasksLoading(true);
+      setError(null);
+      const allTasks = await tasksApi.fetchAll(undefined, true);
+      const ids = associatedTaskIdsRef.current;
+      const availableTasks = allTasks.filter((task) => !ids.includes(task.id));
+      setTasks(availableTasks);
+    } catch (err) {
+      console.error('タスクの取得に失敗しました:', err);
+      setError(
+        'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
+      );
+    } finally {
+      setTasksLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (opened) {
       fetchTasks();
@@ -54,7 +75,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
       setSelectedTaskIds([]);
       setError(null);
     }
-  }, [opened]);
+  }, [opened, fetchTasks]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -70,26 +91,6 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
       );
     }
   }, [searchQuery, tasks]);
-
-  const fetchTasks = async () => {
-    try {
-      setTasksLoading(true);
-      setError(null);
-      const allTasks = await tasksApi.fetchAll(undefined, true);
-      // 既に関連付けられているタスクを除外
-      const availableTasks = allTasks.filter(
-        (task) => !associatedTaskIds.includes(task.id)
-      );
-      setTasks(availableTasks);
-    } catch (err) {
-      console.error('タスクの取得に失敗しました:', err);
-      setError(
-        'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
-      );
-    } finally {
-      setTasksLoading(false);
-    }
-  };
 
   const handleToggleTask = (taskId: number) => {
     setSelectedTaskIds((prev) =>
