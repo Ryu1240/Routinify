@@ -10,9 +10,12 @@ export const useDashboardTasks = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTasks = useCallback(async () => {
+  const fetchTasks = useCallback(async (silent?: boolean) => {
     try {
-      setLoading(true);
+      if (!silent) {
+        setLoading(true);
+      }
+
       // 未完了または進行中のタスクを期限が近い順に取得
       const data = await tasksApi.fetchAll({
         statuses: 'pending,in_progress',
@@ -30,7 +33,9 @@ export const useDashboardTasks = () => {
         'タスクの取得に失敗しました。しばらく時間をおいて再度お試しください。'
       );
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -48,8 +53,8 @@ export const useDashboardTasks = () => {
     async (taskId: number, taskData: { status?: TaskStatus }) => {
       try {
         await tasksApi.update(taskId, taskData);
-        // タスクを再取得
-        await fetchTasks();
+        // タスクを再取得（ローディングは出さずデータ差し替えのみ）
+        await fetchTasks(true);
         // 達成状況など他画面のデータも再取得させる
         window.dispatchEvent(
           new CustomEvent('tasks-refresh', { detail: { silent: true } })

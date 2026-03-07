@@ -25,8 +25,9 @@ export const DashboardContainer: React.FC = () => {
 
   useEffect(() => {
     const handleTasksRefresh = () => {
-      refetchRoutineTasks();
-      refreshTasks();
+      // ローディングは出さず、既存表示データを差し替えるだけ
+      refetchRoutineTasks(true);
+      refreshTasks(true);
     };
 
     window.addEventListener('tasks-refresh', handleTasksRefresh);

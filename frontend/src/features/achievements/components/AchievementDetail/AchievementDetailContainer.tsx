@@ -125,11 +125,11 @@ export const AchievementDetailContainer: React.FC = () => {
     trendChartCount
   );
 
-  // タスク更新時に達成状況を再取得
+  // タスク更新時に達成状況を再取得（ローディングは出さずデータ差し替えのみ）
   React.useEffect(() => {
     const handleTasksRefresh = () => {
-      refetchStats();
-      refetchTrend();
+      refetchStats(true);
+      refetchTrend(true);
     };
 
     window.addEventListener('tasks-refresh', handleTasksRefresh);
