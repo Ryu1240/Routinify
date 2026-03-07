@@ -25,6 +25,7 @@ export const TaskListContainer: React.FC = () => {
     createTask,
     updateTask,
     deleteTask,
+    refreshTasks,
   } = useTasks();
   const {
     categories,
@@ -192,6 +193,7 @@ export const TaskListContainer: React.FC = () => {
         onSort={(key) => setSorting(key as keyof Task)}
         loading={loading}
         error={error}
+        onRetry={refreshTasks}
         editingTaskId={editingTaskId}
         onEdit={handleEdit}
         onSave={handleSave}

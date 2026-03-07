@@ -4,14 +4,13 @@ import {
   Group,
   Text,
   Container,
-  Loader,
-  Alert,
   Button,
   Title,
   Stack,
 } from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { ListPageState } from '@/shared/components';
 import { Task, UpdateTaskDto, TaskStatus } from '@/types';
 import { Category, CreateCategoryDto } from '@/types/category';
 import { Milestone } from '@/types/milestone';
@@ -30,6 +29,7 @@ type TaskListProps = {
   onSort: (key: string) => void;
   loading: boolean;
   error: string | null;
+  onRetry?: () => void | Promise<void>;
   editingTaskId: number | null;
   onEdit: (taskId: number) => void;
   onSave: (taskId: number, taskData: UpdateTaskDto) => Promise<void>;
@@ -72,39 +72,33 @@ export const TaskList: React.FC<TaskListProps> = ({
   taskMilestoneMap,
   onOpenMilestoneModal,
   onToggleStatus,
+  onRetry,
 }) => {
   const isMobile = useIsMobile();
 
   if (authLoading || loading) {
     return (
-      <Container size="xl" py="xl">
-        <Group justify="center">
-          <Loader size="lg" color={COLORS.PRIMARY} />
-          <Text c={COLORS.MEDIUM}>
-            {authLoading ? '認証情報を確認中...' : 'タスクを読み込み中...'}
-          </Text>
-        </Group>
-      </Container>
+      <ListPageState
+        variant="loading"
+        loadingMessage={
+          authLoading ? '認証情報を確認中...' : 'タスクを読み込み中...'
+        }
+      />
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="認証が必要" color={COLORS.PRIMARY} variant="light">
-          タスク一覧を表示するにはログインが必要です。
-        </Alert>
-      </Container>
+      <ListPageState
+        variant="unauthenticated"
+        unauthenticatedMessage="タスク一覧を表示するにはログインが必要です。"
+      />
     );
   }
 
   if (error) {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="エラー" color={COLORS.PRIMARY} variant="light">
-          {error}
-        </Alert>
-      </Container>
+      <ListPageState variant="error" errorMessage={error} onRetry={onRetry} />
     );
   }
 

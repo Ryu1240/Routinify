@@ -1,16 +1,8 @@
 import React from 'react';
-import {
-  Container,
-  Loader,
-  Alert,
-  Group,
-  Text,
-  Title,
-  Stack,
-  Button,
-} from '@mantine/core';
+import { Container, Group, Title, Stack, Button } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { ListPageState } from '@/shared/components';
 import { Milestone, MilestoneFilters } from '@/types/milestone';
 import {
   MilestoneListFilters,
@@ -30,6 +22,7 @@ type MilestoneListProps = {
   ) => void;
   loading: boolean;
   error: string | null;
+  onRetry?: () => void | Promise<void>;
   onCreate?: () => void;
   onEdit?: (milestoneId: number) => void;
   onDelete?: (milestoneId: number) => void;
@@ -43,42 +36,34 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
   onFilterChange,
   loading,
   error,
+  onRetry,
   onCreate,
   onEdit,
   onDelete,
 }) => {
   if (authLoading || loading) {
     return (
-      <Container size="xl" py="xl">
-        <Group justify="center">
-          <Loader size="lg" color={COLORS.PRIMARY} />
-          <Text c={COLORS.MEDIUM}>
-            {authLoading
-              ? '認証情報を確認中...'
-              : 'マイルストーンを読み込み中...'}
-          </Text>
-        </Group>
-      </Container>
+      <ListPageState
+        variant="loading"
+        loadingMessage={
+          authLoading ? '認証情報を確認中...' : 'マイルストーンを読み込み中...'
+        }
+      />
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="認証が必要" color={COLORS.PRIMARY} variant="light">
-          マイルストーン一覧を表示するにはログインが必要です。
-        </Alert>
-      </Container>
+      <ListPageState
+        variant="unauthenticated"
+        unauthenticatedMessage="マイルストーン一覧を表示するにはログインが必要です。"
+      />
     );
   }
 
   if (error) {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="エラー" color={COLORS.PRIMARY} variant="light">
-          {error}
-        </Alert>
-      </Container>
+      <ListPageState variant="error" errorMessage={error} onRetry={onRetry} />
     );
   }
 

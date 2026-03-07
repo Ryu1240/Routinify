@@ -18,6 +18,7 @@ export const CategoryListContainer: React.FC = () => {
     createLoading,
     updateLoading,
     error,
+    refreshCategories,
     createCategory,
     updateCategory,
     deleteCategory,
@@ -79,6 +80,7 @@ export const CategoryListContainer: React.FC = () => {
         categories={categories}
         loading={loading}
         error={error}
+        onRetry={refreshCategories}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onAddCategory={() => setIsCreateModalOpen(true)}

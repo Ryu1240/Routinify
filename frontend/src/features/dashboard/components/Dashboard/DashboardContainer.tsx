@@ -7,12 +7,14 @@ export const DashboardContainer: React.FC = () => {
     routineTasks,
     loading: routineTasksLoading,
     error: routineTasksError,
+    refetchRoutineTasks,
   } = useDashboard();
 
   const {
     tasks,
     loading: tasksLoading,
     error: tasksError,
+    refreshTasks,
     toggleTaskStatus,
     setTaskStatusToCompleted,
     setTaskStatusToPending,
@@ -21,12 +23,18 @@ export const DashboardContainer: React.FC = () => {
   const loading = routineTasksLoading || tasksLoading;
   const error = routineTasksError || tasksError;
 
+  const handleRetry = () => {
+    refetchRoutineTasks();
+    refreshTasks();
+  };
+
   return (
     <Dashboard
       routineTasks={routineTasks}
       tasks={tasks}
       loading={loading}
       error={error}
+      onRetry={handleRetry}
       onToggleTaskStatus={toggleTaskStatus}
       onSetTaskStatusToCompleted={setTaskStatusToCompleted}
       onSetTaskStatusToPending={setTaskStatusToPending}

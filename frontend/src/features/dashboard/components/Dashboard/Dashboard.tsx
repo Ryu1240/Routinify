@@ -6,8 +6,6 @@ import {
   Card,
   Text,
   Stack,
-  Loader,
-  Alert,
   Group,
   ActionIcon,
   Tooltip,
@@ -15,13 +13,13 @@ import {
   Collapse,
 } from '@mantine/core';
 import {
-  IconAlertCircle,
   IconCheck,
   IconPlayerPlay,
   IconArrowBack,
   IconChevronDown,
   IconChevronUp,
 } from '@tabler/icons-react';
+import { ListPageState } from '@/shared/components';
 import { RoutineTaskStatsCard } from '../RoutineTaskStatsCard';
 import { RoutineTaskWithStats } from '@/types/achievement';
 import { Task, TaskStatus } from '@/types';
@@ -34,6 +32,7 @@ interface DashboardProps {
   tasks: Task[];
   loading: boolean;
   error: string | null;
+  onRetry?: () => void | Promise<void>;
   onToggleTaskStatus?: (
     taskId: number,
     currentStatus: TaskStatus | null
@@ -47,6 +46,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   tasks,
   loading,
   error,
+  onRetry,
   onToggleTaskStatus,
   onSetTaskStatusToCompleted,
   onSetTaskStatusToPending,
@@ -75,22 +75,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
     : inProgressTasks.slice(0, 10);
   if (loading) {
     return (
-      <Container size="xl" py="xl">
-        <Stack align="center" gap="md">
-          <Loader size="lg" />
-          <Text c="dimmed">データを読み込んでいます...</Text>
-        </Stack>
-      </Container>
+      <ListPageState
+        variant="loading"
+        loadingMessage="データを読み込んでいます..."
+      />
     );
   }
 
   if (error) {
     return (
-      <Container size="xl" py="xl">
-        <Alert icon={<IconAlertCircle size={16} />} title="エラー" color="red">
-          {error}
-        </Alert>
-      </Container>
+      <ListPageState variant="error" errorMessage={error} onRetry={onRetry} />
     );
   }
 

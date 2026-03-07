@@ -34,7 +34,8 @@ export const MilestoneListContainer: React.FC = () => {
   const [deletingMilestoneName, setDeletingMilestoneName] = useState<
     string | null
   >(null);
-  const { milestones, loading, error, fetchMilestones } = useFetchMilestones();
+  const { milestones, loading, error, fetchMilestones, refreshMilestones } =
+    useFetchMilestones();
   const {
     createMilestone,
     createLoading,
@@ -140,6 +141,7 @@ export const MilestoneListContainer: React.FC = () => {
         onFilterChange={handleFilterChange}
         loading={loading}
         error={error}
+        onRetry={() => refreshMilestones(filters)}
         onCreate={handleCreate}
         onEdit={handleEdit}
         onDelete={handleDelete}

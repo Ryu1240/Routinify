@@ -1,16 +1,8 @@
 import React from 'react';
-import {
-  Container,
-  Loader,
-  Alert,
-  Button,
-  Title,
-  Group,
-  Text,
-  Stack,
-} from '@mantine/core';
+import { Container, Button, Title, Group, Text, Stack } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
+import { ListPageState } from '@/shared/components';
 import { Category } from '@/types/category';
 import { CategoryTable } from '@/features/categories/components/CategoryTable';
 import { CategoryCard } from '@/features/categories/components/CategoryCard';
@@ -22,6 +14,7 @@ type CategoryListProps = {
   categories: Category[];
   loading: boolean;
   error: string | null;
+  onRetry?: () => void | Promise<void>;
   onEdit: (categoryId: number) => void;
   onDelete: (categoryId: number) => void;
   onAddCategory: () => void;
@@ -33,6 +26,7 @@ export const CategoryList: React.FC<CategoryListProps> = ({
   categories,
   loading,
   error,
+  onRetry,
   onEdit,
   onDelete,
   onAddCategory,
@@ -41,34 +35,27 @@ export const CategoryList: React.FC<CategoryListProps> = ({
 
   if (authLoading || loading) {
     return (
-      <Container size="xl" py="xl">
-        <Group justify="center">
-          <Loader size="lg" color={COLORS.PRIMARY} />
-          <Text c={COLORS.MEDIUM}>
-            {authLoading ? '認証情報を確認中...' : 'カテゴリを読み込み中...'}
-          </Text>
-        </Group>
-      </Container>
+      <ListPageState
+        variant="loading"
+        loadingMessage={
+          authLoading ? '認証情報を確認中...' : 'カテゴリを読み込み中...'
+        }
+      />
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="認証が必要" color={COLORS.PRIMARY} variant="light">
-          カテゴリ一覧を表示するにはログインが必要です。
-        </Alert>
-      </Container>
+      <ListPageState
+        variant="unauthenticated"
+        unauthenticatedMessage="カテゴリ一覧を表示するにはログインが必要です。"
+      />
     );
   }
 
   if (error) {
     return (
-      <Container size="xl" py="xl">
-        <Alert title="エラー" color={COLORS.PRIMARY} variant="light">
-          {error}
-        </Alert>
-      </Container>
+      <ListPageState variant="error" errorMessage={error} onRetry={onRetry} />
     );
   }
 

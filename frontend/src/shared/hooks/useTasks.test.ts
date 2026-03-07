@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { act } from 'react';
+import type { AxiosResponse } from 'axios';
 import { useTasks } from './useTasks';
 import axios from '@/lib/axios';
 
@@ -56,7 +57,7 @@ describe('useTasks', () => {
     const mockAxiosGet = vi.mocked(axios.get);
     mockAxiosGet.mockResolvedValue({
       data: { data: mockTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof mockTasks }>);
 
     const { result } = renderHook(() => useTasks());
 
@@ -100,7 +101,7 @@ describe('useTasks', () => {
     const mockAxiosGet = vi.mocked(axios.get);
     mockAxiosGet.mockResolvedValue({
       data: { data: mockTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof mockTasks }>);
 
     const { result } = renderHook(() => useTasks());
 
@@ -128,7 +129,7 @@ describe('useTasks', () => {
     const mockAxiosGet = vi.mocked(axios.get);
     mockAxiosGet.mockResolvedValue({
       data: { data: mockTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof mockTasks }>);
 
     const { result } = renderHook(() => useTasks());
 
@@ -156,7 +157,7 @@ describe('useTasks', () => {
     const mockAxiosGet = vi.mocked(axios.get);
     mockAxiosGet.mockResolvedValue({
       data: { data: mockTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof mockTasks }>);
 
     const { result } = renderHook(() => useTasks());
 
@@ -193,7 +194,7 @@ describe('useTasks', () => {
     const mockAxiosGet = vi.mocked(axios.get);
     mockAxiosGet.mockResolvedValue({
       data: { data: mockTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof mockTasks }>);
 
     const { result } = renderHook(() => useTasks());
 
@@ -207,7 +208,7 @@ describe('useTasks', () => {
     ];
     mockAxiosGet.mockResolvedValue({
       data: { data: newTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof newTasks }>);
 
     // リフレッシュを実行
     act(() => {
@@ -258,11 +259,11 @@ describe('useTasks', () => {
     // 初期fetch用のモック
     mockAxiosGet.mockResolvedValue({
       data: { data: mockTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof mockTasks }>);
 
     mockAxiosPost.mockResolvedValue({
       data: newTask,
-    } as any);
+    } as AxiosResponse<typeof newTask>);
 
     const { result } = renderHook(() => useTasks());
 
@@ -282,7 +283,7 @@ describe('useTasks', () => {
     const updatedTasks = [newTask, ...mockTasks];
     mockAxiosGet.mockResolvedValue({
       data: { data: updatedTasks },
-    } as any);
+    } as AxiosResponse<{ data: typeof updatedTasks }>);
 
     await act(async () => {
       await result.current.createTask(taskData);
@@ -318,7 +319,7 @@ describe('useTasks', () => {
     // fetchTasksは成功させる
     mockAxiosGet.mockResolvedValue({
       data: { data: [] },
-    } as any);
+    } as AxiosResponse<{ data: never[] }>);
 
     const { result } = renderHook(() => useTasks());
 

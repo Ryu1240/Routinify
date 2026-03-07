@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Modal,
   Button,
@@ -47,31 +47,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (opened) {
-      fetchTasks();
-      setSearchQuery('');
-      setSelectedTaskIds([]);
-      setError(null);
-    }
-  }, [opened]);
-
-  useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredTasks(tasks);
-    } else {
-      const query = searchQuery.toLowerCase();
-      setFilteredTasks(
-        tasks.filter(
-          (task) =>
-            task.title.toLowerCase().includes(query) ||
-            task.description?.toLowerCase().includes(query)
-        )
-      );
-    }
-  }, [searchQuery, tasks]);
-
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     try {
       setTasksLoading(true);
       setError(null);
@@ -89,7 +65,31 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     } finally {
       setTasksLoading(false);
     }
-  };
+  }, [associatedTaskIds]);
+
+  useEffect(() => {
+    if (opened) {
+      fetchTasks();
+      setSearchQuery('');
+      setSelectedTaskIds([]);
+      setError(null);
+    }
+  }, [opened, fetchTasks]);
+
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredTasks(tasks);
+    } else {
+      const query = searchQuery.toLowerCase();
+      setFilteredTasks(
+        tasks.filter(
+          (task) =>
+            task.title.toLowerCase().includes(query) ||
+            task.description?.toLowerCase().includes(query)
+        )
+      );
+    }
+  }, [searchQuery, tasks]);
 
   const handleToggleTask = (taskId: number) => {
     setSelectedTaskIds((prev) =>
