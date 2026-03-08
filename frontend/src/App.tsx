@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,18 +9,61 @@ import {
 import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { auth0Config } from './auth0-config';
 import { Login, AuthCheckingScreen } from '@/shared/components/auth';
-import { TaskListPage } from './pages/tasks';
-import { CategoryListPage } from './pages/categories';
-import { RoutineTaskListPage, RoutineTaskFormPage } from './pages/routineTasks';
-import { MilestonesPage, MilestoneDetailPage } from './pages/milestones';
-import {
-  AchievementListPage,
-  AchievementDetailPage,
-} from './pages/achievements';
-import { AccountManagementPage } from './pages/admin';
-import { ForbiddenPage } from './pages/errors';
-import { DashboardPage } from './pages/dashboard';
+import { PageLoader } from '@/shared/components/PageLoader';
 import { useHasAdminRole } from '@/shared/hooks/useHasAdminRole';
+
+// Lazy load pages
+const TaskListPage = React.lazy(() =>
+  import('./pages/tasks').then((module) => ({ default: module.TaskListPage }))
+);
+const CategoryListPage = React.lazy(() =>
+  import('./pages/categories').then((module) => ({
+    default: module.CategoryListPage,
+  }))
+);
+const RoutineTaskListPage = React.lazy(() =>
+  import('./pages/routineTasks').then((module) => ({
+    default: module.RoutineTaskListPage,
+  }))
+);
+const RoutineTaskFormPage = React.lazy(() =>
+  import('./pages/routineTasks').then((module) => ({
+    default: module.RoutineTaskFormPage,
+  }))
+);
+const MilestonesPage = React.lazy(() =>
+  import('./pages/milestones').then((module) => ({
+    default: module.MilestonesPage,
+  }))
+);
+const MilestoneDetailPage = React.lazy(() =>
+  import('./pages/milestones').then((module) => ({
+    default: module.MilestoneDetailPage,
+  }))
+);
+const AchievementListPage = React.lazy(() =>
+  import('./pages/achievements').then((module) => ({
+    default: module.AchievementListPage,
+  }))
+);
+const AchievementDetailPage = React.lazy(() =>
+  import('./pages/achievements').then((module) => ({
+    default: module.AchievementDetailPage,
+  }))
+);
+const AccountManagementPage = React.lazy(() =>
+  import('./pages/admin').then((module) => ({
+    default: module.AccountManagementPage,
+  }))
+);
+const ForbiddenPage = React.lazy(() =>
+  import('./pages/errors').then((module) => ({ default: module.ForbiddenPage }))
+);
+const DashboardPage = React.lazy(() =>
+  import('./pages/dashboard').then((module) => ({
+    default: module.DashboardPage,
+  }))
+);
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -103,92 +146,94 @@ const AppContent: React.FC = () => {
   }, [navigate]);
 
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/tasks"
-        element={
-          <ProtectedRoute>
-            <TaskListPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/categories"
-        element={
-          <ProtectedRoute>
-            <CategoryListPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/routine-tasks"
-        element={
-          <ProtectedRoute>
-            <RoutineTaskListPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/routine-tasks/:id"
-        element={
-          <ProtectedRoute>
-            <RoutineTaskFormPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/milestones"
-        element={
-          <ProtectedRoute>
-            <MilestonesPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/milestones/:id"
-        element={
-          <ProtectedRoute>
-            <MilestoneDetailPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/achievements"
-        element={
-          <ProtectedRoute>
-            <AchievementListPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/achievements/:id"
-        element={
-          <ProtectedRoute>
-            <AchievementDetailPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/accounts"
-        element={
-          <ProtectedRoute>
-            <AdminRoute>
-              <AccountManagementPage />
-            </AdminRoute>
-          </ProtectedRoute>
-        }
-      />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
+            <ProtectedRoute>
+              <TaskListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/categories"
+          element={
+            <ProtectedRoute>
+              <CategoryListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/routine-tasks"
+          element={
+            <ProtectedRoute>
+              <RoutineTaskListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/routine-tasks/:id"
+          element={
+            <ProtectedRoute>
+              <RoutineTaskFormPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/milestones"
+          element={
+            <ProtectedRoute>
+              <MilestonesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/milestones/:id"
+          element={
+            <ProtectedRoute>
+              <MilestoneDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/achievements"
+          element={
+            <ProtectedRoute>
+              <AchievementListPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/achievements/:id"
+          element={
+            <ProtectedRoute>
+              <AchievementDetailPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/accounts"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <AccountManagementPage />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </Suspense>
   );
 };
 
