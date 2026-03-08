@@ -1,5 +1,13 @@
 import React from 'react';
-import { TextInput, Group, Text, Button, Title, Stack } from '@mantine/core';
+import {
+  TextInput,
+  Group,
+  Text,
+  Button,
+  Title,
+  Stack,
+  Checkbox,
+} from '@mantine/core';
 import { IconSearch, IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { ListPageState } from '@/shared/components';
@@ -38,6 +46,8 @@ type TaskListProps = {
     taskId: number,
     currentStatus: TaskStatus | null
   ) => Promise<void>;
+  includeCompleted?: boolean;
+  onIncludeCompletedChange?: (value: boolean) => void;
 };
 
 export const TaskList: React.FC<TaskListProps> = ({
@@ -65,6 +75,8 @@ export const TaskList: React.FC<TaskListProps> = ({
   onOpenMilestoneModal,
   onToggleStatus,
   onRetry,
+  includeCompleted = false,
+  onIncludeCompletedChange,
 }) => {
   const isMobile = useIsMobile();
 
@@ -96,9 +108,18 @@ export const TaskList: React.FC<TaskListProps> = ({
 
   return (
     <>
-      <Title order={2} mb="lg">
-        タスク一覧
-      </Title>
+      <Group align="center" gap="lg" mb="lg">
+        <Title order={2}>タスク一覧</Title>
+        {onIncludeCompletedChange && (
+          <Checkbox
+            label="完了を含める"
+            checked={includeCompleted}
+            onChange={(event) =>
+              onIncludeCompletedChange(event.currentTarget.checked)
+            }
+          />
+        )}
+      </Group>
 
       <Group justify="space-between" mb="md">
         <TextInput
@@ -117,13 +138,13 @@ export const TaskList: React.FC<TaskListProps> = ({
           style={{ flex: 1 }}
         />
         <Button
-          leftSection={<IconPlus size={16} />}
-          onClick={onAddTask}
-          color={COLORS.PRIMARY}
-          variant="filled"
-        >
-          タスク追加
-        </Button>
+            leftSection={<IconPlus size={16} />}
+            onClick={onAddTask}
+            color={COLORS.PRIMARY}
+            variant="filled"
+          >
+            タスク追加
+          </Button>
       </Group>
 
       {/* 編集モード中またはデスクトップ時はテーブル表示 */}

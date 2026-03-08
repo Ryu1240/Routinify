@@ -27,6 +27,8 @@ export const TaskListContainer: React.FC = () => {
     updateTask,
     deleteTask,
     refreshTasks,
+    includeCompleted,
+    setIncludeCompleted,
   } = useTasks();
   const {
     categories,
@@ -235,6 +237,8 @@ export const TaskListContainer: React.FC = () => {
         taskMilestoneMap={taskMilestoneMap}
         onOpenMilestoneModal={handleOpenMilestoneModal}
         onToggleStatus={handleToggleStatus}
+        includeCompleted={includeCompleted}
+        onIncludeCompletedChange={setIncludeCompleted}
       />
 
       {editingTaskIdForMilestone !== null && (

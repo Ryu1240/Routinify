@@ -67,7 +67,9 @@ describe('useTasks', () => {
       expect(result.current.error).toBeNull();
     });
 
-    expect(mockAxiosGet).toHaveBeenCalledWith('/api/v1/tasks', { params: {} });
+    expect(mockAxiosGet).toHaveBeenCalledWith('/api/v1/tasks', {
+      params: { include_completed: false },
+    });
   });
 
   it('handles fetch error', async () => {

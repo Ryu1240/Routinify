@@ -46,7 +46,10 @@ describe('useFetchTasks', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(tasksApi.fetchAll).toHaveBeenCalledWith();
+    expect(tasksApi.fetchAll).toHaveBeenCalledWith(
+      { include_completed: false },
+      false
+    );
     expect(result.current.tasks).toEqual(mockTasks);
     expect(result.current.error).toBeNull();
   });
@@ -114,7 +117,10 @@ describe('useFetchTasks', () => {
       expect(result.current.tasks).toHaveLength(2);
     });
 
-    expect(tasksApi.fetchAll).toHaveBeenLastCalledWith(undefined, true);
+    expect(tasksApi.fetchAll).toHaveBeenLastCalledWith(
+      { include_completed: false },
+      true
+    );
   });
 
   it('tasks-refresh イベント（silent: true）で静かに再取得すること', async () => {
@@ -138,7 +144,10 @@ describe('useFetchTasks', () => {
       expect(result.current.tasks[0].id).toBe(99);
     });
 
-    expect(tasksApi.fetchAll).toHaveBeenLastCalledWith(undefined, true);
+    expect(tasksApi.fetchAll).toHaveBeenLastCalledWith(
+      { include_completed: false },
+      true
+    );
   });
 
   it('tasks-refresh イベント（silent なし）で refreshTasks が呼ばれること', async () => {
@@ -155,7 +164,23 @@ describe('useFetchTasks', () => {
     window.dispatchEvent(new CustomEvent('tasks-refresh'));
 
     await waitFor(() => {
-      expect(tasksApi.fetchAll).toHaveBeenLastCalledWith(undefined, true);
+      expect(tasksApi.fetchAll).toHaveBeenLastCalledWith(
+        { include_completed: false },
+        true
+      );
+    });
+  });
+
+  it('includeCompleted オプションを渡した場合、その値で fetchAll を呼び出すこと', async () => {
+    vi.mocked(tasksApi.fetchAll).mockResolvedValue(mockTasks);
+
+    renderHook(() => useFetchTasks({ includeCompleted: true }));
+
+    await waitFor(() => {
+      expect(tasksApi.fetchAll).toHaveBeenCalledWith(
+        { include_completed: true },
+        false
+      );
     });
   });
 });

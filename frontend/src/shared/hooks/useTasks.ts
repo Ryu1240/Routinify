@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useFetchTasks } from '@/features/tasks/hooks/useFetchTasks';
 import { useTaskFilters } from '@/features/tasks/hooks/useTaskFilters';
 import { useTaskSort } from '@/features/tasks/hooks/useTaskSort';
@@ -8,8 +9,12 @@ import { useTaskMutations } from '@/features/tasks/hooks/useTaskMutations';
  * フィルタとソートを組み合わせてタスク一覧を管理するフック
  */
 export const useTasks = () => {
+  const [includeCompleted, setIncludeCompleted] = useState(false);
+
   // データ取得
-  const { tasks, loading, error, refreshTasks } = useFetchTasks();
+  const { tasks, loading, error, refreshTasks } = useFetchTasks({
+    includeCompleted,
+  });
 
   // フィルタリング
   const { search, setSearch, filteredTasks } = useTaskFilters(tasks);
@@ -44,5 +49,7 @@ export const useTasks = () => {
     createTask,
     updateTask,
     deleteTask,
+    includeCompleted,
+    setIncludeCompleted,
   };
 };
