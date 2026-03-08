@@ -1,6 +1,7 @@
 module Api
   module V1
     class RoutineTasksController < BaseController
+      include PeriodParamsValidator
       def index
         validate_permissions([ 'read:routine-tasks' ]) do
           routine_tasks = RoutineTask.for_user(current_user_id).includes(:category)
@@ -11,12 +12,9 @@ module Api
       def show
         validate_permissions([ 'read:routine-tasks' ]) do
           routine_task = RoutineTask.find_by(id: params[:id], account_id: current_user_id)
+          return render_not_found('習慣化タスク') unless routine_task
 
-          if routine_task
-            render_success(data: RoutineTaskSerializer.new(routine_task).as_json)
-          else
-            render_not_found('習慣化タスク')
-          end
+          render_success(data: RoutineTaskSerializer.new(routine_task).as_json)
         end
       end
 
@@ -130,8 +128,8 @@ module Api
           return render_not_found('習慣化タスク') unless routine_task
 
           # パラメータの取得と変換
-          achievement_params = achievement_stats_params
-          return if performed? # バリデーションエラーで既にレスポンスを返している場合
+          achievement_params = validate_achievement_period_params
+          return unless achievement_params # バリデーションエラーで既にレスポンスを返している場合
 
           # サービスを呼び出し
           service = RoutineTaskAchievementService.new(
@@ -141,7 +139,7 @@ module Api
             end_date: achievement_params[:end_date]
           )
 
-          result = service.calculate
+          result = service.call
 
           if result.success?
             render_success(data: AchievementStatsSerializer.new(result.data).as_json)
@@ -157,8 +155,8 @@ module Api
           return render_not_found('習慣化タスク') unless routine_task
 
           # パラメータの取得と変換
-          trend_params = achievement_trend_params
-          return if performed? # バリデーションエラーで既にレスポンスを返している場合
+          trend_params = validate_trend_period_params
+          return unless trend_params # バリデーションエラーで既にレスポンスを返している場合
 
           # サービスを呼び出し
           service = RoutineTaskAchievementTrendService.new(
@@ -180,13 +178,8 @@ module Api
 
       def with_achievement_stats
         validate_permissions([ 'read:routine-tasks' ]) do
-          period = params[:period] || 'weekly'
-          unless %w[weekly monthly].include?(period)
-            return render_error(
-              errors: [ 'periodはweeklyまたはmonthlyである必要があります' ],
-              status: :bad_request
-            )
-          end
+          period = validate_simple_period
+          return unless period # バリデーションエラーで既にレスポンスを返している場合
 
           routine_tasks = RoutineTask.for_user(current_user_id)
                                     .where(is_active: true)
@@ -240,106 +233,6 @@ module Api
 
       def routine_task_params
         params.require(:routine_task).permit(:title, :frequency, :interval_value, :next_generation_at, :max_active_tasks, :category_id, :priority, :is_active, :due_date_offset_days, :due_date_offset_hour, :start_generation_at)
-      end
-
-      def achievement_stats_params
-        period = params[:period] || 'weekly'
-        start_date = params[:start_date]
-        end_date = params[:end_date]
-
-        # periodのバリデーション
-        unless %w[weekly monthly custom].include?(period)
-          render_error(
-            errors: [ 'periodはweekly、monthly、customのいずれかである必要があります' ],
-            status: :bad_request
-          )
-          return {}
-        end
-
-        # custom期間の場合、start_dateとend_dateが必須
-        if period == 'custom'
-          if start_date.blank? || end_date.blank?
-            render_error(
-              errors: [ 'periodがcustomの場合、start_dateとend_dateは必須です' ],
-              status: :bad_request
-            )
-            return {}
-          end
-        end
-
-        # start_dateとend_dateが指定されている場合、日付としてパース
-        if start_date.present? && end_date.present?
-          begin
-            start_date = Date.parse(start_date)
-            end_date = Date.parse(end_date)
-          rescue ArgumentError
-            render_error(
-              errors: [ 'start_dateとend_dateは有効な日付形式である必要があります' ],
-              status: :bad_request
-            )
-            return {}
-          end
-
-          # start_dateがend_dateより前であることを確認
-          if start_date > end_date
-            render_error(
-              errors: [ 'start_dateはend_dateより前である必要があります' ],
-              status: :bad_request
-            )
-            return {}
-          end
-        end
-
-        {
-          period: period,
-          start_date: start_date,
-          end_date: end_date
-        }
-      end
-
-      def achievement_trend_params
-        period = params[:period]
-        weeks = params[:weeks] || 4
-        months = params[:months] || 3
-
-        # periodのバリデーション
-        unless %w[weekly monthly].include?(period)
-          render_error(
-            errors: [ 'periodはweeklyまたはmonthlyである必要があります' ],
-            status: :bad_request
-          )
-          return {}
-        end
-
-        # weeksのバリデーション（週次の場合）
-        if period == 'weekly'
-          weeks = weeks.to_i
-          if weeks < 1 || weeks > 52
-            render_error(
-              errors: [ 'weeksは1以上52以下である必要があります' ],
-              status: :bad_request
-            )
-            return {}
-          end
-        end
-
-        # monthsのバリデーション（月次の場合）
-        if period == 'monthly'
-          months = months.to_i
-          if months < 1 || months > 24
-            render_error(
-              errors: [ 'monthsは1以上24以下である必要があります' ],
-              status: :bad_request
-            )
-            return {}
-          end
-        end
-
-        {
-          period: period,
-          weeks: weeks,
-          months: months
-        }
       end
     end
   end

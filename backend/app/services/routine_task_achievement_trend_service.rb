@@ -1,4 +1,6 @@
 class RoutineTaskAchievementTrendService < BaseService
+  include RoutineTaskAchievement::PeriodCalculator
+
   PERIODS = %w[weekly monthly].freeze
 
   def initialize(routine_task, period:, weeks: 4, months: 3)
@@ -74,36 +76,10 @@ class RoutineTaskAchievementTrendService < BaseService
     period_starts = []
     current_date = Date.current
     count.times do
-      period_start, = calculate_period_range(current_date)
+      period_start, = calculate_period_range(current_date, @period)
       period_starts << period_start
-      current_date = move_to_previous_period(current_date)
+      current_date = move_to_previous_period(current_date, @period)
     end
     period_starts.uniq
-  end
-
-  # 指定された日付が含まれる期間の開始日と終了日を計算
-  def calculate_period_range(date)
-    case @period
-    when 'weekly'
-      # 週次: 月曜日を開始日とする
-      [ date.beginning_of_week, date.end_of_week ]
-    when 'monthly'
-      # 月次: 1日を開始日とする
-      [ date.beginning_of_month, date.end_of_month ]
-    else
-      raise ArgumentError, "Invalid period for calculate_period_range: #{@period}"
-    end
-  end
-
-  # 前の期間に移動
-  def move_to_previous_period(date)
-    case @period
-    when 'weekly'
-      date - 1.week
-    when 'monthly'
-      date - 1.month
-    else
-      raise ArgumentError, "Invalid period for move_to_previous_period: #{@period}"
-    end
   end
 end
