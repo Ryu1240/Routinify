@@ -1236,6 +1236,59 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /routine-tasks/with-achievement-stats:
+    get:
+      tags:
+        - 習慣化タスク
+      summary: 達成状況付き習慣化タスク一覧の取得
+      description: 有効な習慣化タスクを達成状況とともに一括取得する（1回のAPIリクエスト）
+      security:
+        - Auth0:
+            - read:routine-tasks
+      parameters:
+        - name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [weekly, monthly]
+            default: weekly
+          description: 集計期間（週次または月次）
+      responses:
+        '200':
+          description: 達成状況付き習慣化タスク一覧の取得に成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: 習慣化タスクID
+                        title:
+                          type: string
+                          description: タイトル
+                        categoryName:
+                          type: string
+                          nullable: true
+                          description: カテゴリ名
+                        achievementStats:
+                          $ref: '#/components/schemas/AchievementStats'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /routine-tasks/{id}:
     parameters:
       - name: id

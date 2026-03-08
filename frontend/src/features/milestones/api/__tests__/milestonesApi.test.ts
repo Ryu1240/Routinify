@@ -79,6 +79,7 @@ describe('milestonesApi', () => {
         data: { success: true, data: mockMilestone },
       });
 
+      // eslint-disable-next-line testing-library/no-await-sync-query -- milestonesApi.getById は非同期API呼び出し
       const result = await milestonesApi.getById(1);
 
       expect(axios.get).toHaveBeenCalledWith('/api/v1/milestones/1');

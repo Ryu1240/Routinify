@@ -1,6 +1,7 @@
 class RoutineTask < ApplicationRecord
   has_many :tasks, -> { active }, class_name: 'Task', foreign_key: 'routine_task_id'
   has_many :tasks_with_deleted, class_name: 'Task', foreign_key: 'routine_task_id'
+  has_many :achievement_statistics, dependent: :destroy
   belongs_to :category, optional: true
 
   before_destroy :destroy_related_tasks

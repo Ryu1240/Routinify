@@ -34,34 +34,51 @@ class RoutineTaskAchievementTrendService < BaseService
   end
 
   def calculate_trend_data
-    data = []
-    current_date = Date.current
-
     count = @period == 'weekly' ? @weeks : @months
+    period_starts = collect_period_starts(count)
 
-    count.times do |i|
-      period_start, period_end = calculate_period_range(current_date)
+    # achievement_statistics から一括取得
+    cached = AchievementStatistic
+      .where(routine_task_id: @routine_task.id, period_type: @period, period_start_date: period_starts)
+      .index_by(&:period_start_date)
 
-      # その期間内のタスク統計を取得
-      period_stats = @routine_task.task_statistics_in_period(period_start, period_end)
+    data = period_starts.map do |period_start|
+      stat = cached[period_start]
+      if stat
+        {
+          period: period_start.to_s,
+          achievementRate: stat.achievement_rate.to_f,
+          totalCount: stat.total_count,
+          completedCount: stat.completed_count
+        }
+      else
+        period_end = @period == 'weekly' ? period_start.end_of_week : period_start.end_of_month
+        period_stats = @routine_task.task_statistics_in_period(period_start, period_end)
+        achievement_rate = @routine_task.achievement_rate_in_period(period_start, period_end, stats: period_stats)
 
-      # 達成率を計算
-      achievement_rate = @routine_task.achievement_rate_in_period(period_start, period_end, stats: period_stats)
+        UpdateAchievementStatisticsJob.perform_later(@routine_task.id, @period, period_start)
 
-      # データを追加（収集時は新しい順）
-      data << {
-        period: period_start.to_s,
-        achievementRate: achievement_rate,
-        totalCount: period_stats[:total_count],
-        completedCount: period_stats[:completed_count]
-      }
-
-      # 前の期間に移動
-      current_date = move_to_previous_period(current_date)
+        {
+          period: period_start.to_s,
+          achievementRate: achievement_rate,
+          totalCount: period_stats[:total_count],
+          completedCount: period_stats[:completed_count]
+        }
+      end
     end
 
-    # 古い順にソート（期間の開始日でソート）
     data.sort_by { |item| item[:period] }
+  end
+
+  def collect_period_starts(count)
+    period_starts = []
+    current_date = Date.current
+    count.times do
+      period_start, = calculate_period_range(current_date)
+      period_starts << period_start
+      current_date = move_to_previous_period(current_date)
+    end
+    period_starts.uniq
   end
 
   # 指定された日付が含まれる期間の開始日と終了日を計算
