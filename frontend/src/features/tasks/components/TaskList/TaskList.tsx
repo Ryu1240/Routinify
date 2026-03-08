@@ -112,7 +112,7 @@ export const TaskList: React.FC<TaskListProps> = ({
         <Title order={2}>タスク一覧</Title>
         {onIncludeCompletedChange && (
           <Checkbox
-            label="完了を含める"
+            label="完了を含めて表示する"
             checked={includeCompleted}
             onChange={(event) =>
               onIncludeCompletedChange(event.currentTarget.checked)

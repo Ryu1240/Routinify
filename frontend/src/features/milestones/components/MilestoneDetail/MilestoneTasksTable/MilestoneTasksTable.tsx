@@ -11,6 +11,7 @@ import {
   Checkbox,
   Tooltip,
 } from '@mantine/core';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- IconPlus used in タスクを追加 button (line 126)
 import { IconTrash, IconPlus, IconEdit } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { handleApiError } from '@/shared/utils/apiErrorUtils';
@@ -35,7 +36,7 @@ type MilestoneTasksTableProps = {
 export const MilestoneTasksTable: React.FC<MilestoneTasksTableProps> = ({
   tasks,
   onDissociateTask,
-  onAddTask,
+  onAddTask, // eslint-disable-line @typescript-eslint/no-unused-vars -- used in タスクを追加 button
   onEditTask,
   dissociateLoading = false,
 }) => {

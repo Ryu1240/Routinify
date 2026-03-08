@@ -73,7 +73,7 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
         <Group align="center" gap="lg">
           <Title order={2}>マイルストーン一覧</Title>
           <Checkbox
-            label="完了を含める"
+            label="完了を含めて表示する"
             checked={filters.includeCompleted ?? false}
             onChange={(event) =>
               onFilterChange('includeCompleted', event.currentTarget.checked)

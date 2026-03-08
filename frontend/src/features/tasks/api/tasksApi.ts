@@ -63,7 +63,7 @@ export const tasksApi = {
     return response.data.data;
   },
 
-  create: async (taskData: CreateTaskDto): Promise<void> => {
+  create: async (taskData: CreateTaskDto): Promise<Task> => {
     const body: TaskRequestBody = {
       task: {
         title: taskData.title,
@@ -73,7 +73,8 @@ export const tasksApi = {
         category_id: taskData.categoryId,
       },
     };
-    await axios.post('/api/v1/tasks', body);
+    const response = await axios.post<{ data: Task }>('/api/v1/tasks', body);
+    return response.data.data;
   },
 
   update: async (taskId: number, taskData: UpdateTaskDto): Promise<void> => {
