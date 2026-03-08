@@ -1,9 +1,6 @@
 import axios from '@/lib/axios';
 import { Task, CreateTaskDto, UpdateTaskDto } from '@/types';
-
-type TaskResponse = {
-  data: Task[];
-};
+import type { ApiResponse } from '@/types/api';
 
 type TaskRequestBody = {
   task: {
@@ -59,7 +56,10 @@ export const tasksApi = {
       : {
           params: requestParams,
         };
-    const response = await axios.get<TaskResponse>('/api/v1/tasks', config);
+    const response = await axios.get<ApiResponse<Task[]>>(
+      '/api/v1/tasks',
+      config
+    );
     return response.data.data;
   },
 
@@ -73,7 +73,7 @@ export const tasksApi = {
         category_id: taskData.categoryId,
       },
     };
-    const response = await axios.post<{ data: Task }>('/api/v1/tasks', body);
+    const response = await axios.post<ApiResponse<Task>>('/api/v1/tasks', body);
     return response.data.data;
   },
 

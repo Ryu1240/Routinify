@@ -4,10 +4,7 @@ import {
   CreateCategoryDto,
   UpdateCategoryDto,
 } from '@/types/category';
-
-type CategoryResponse = {
-  data: Category[];
-};
+import type { ApiResponse } from '@/types/api';
 
 type CategoryRequestBody = {
   category: {
@@ -17,7 +14,8 @@ type CategoryRequestBody = {
 
 export const categoriesApi = {
   fetchAll: async (): Promise<Category[]> => {
-    const response = await axios.get<CategoryResponse>('/api/v1/categories');
+    const response =
+      await axios.get<ApiResponse<Category[]>>('/api/v1/categories');
     return response.data.data;
   },
 

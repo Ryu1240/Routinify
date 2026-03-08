@@ -4,14 +4,7 @@ import {
   CreateRoutineTaskDto,
   UpdateRoutineTaskDto,
 } from '@/types';
-
-type RoutineTaskResponse = {
-  data: RoutineTask[];
-};
-
-type SingleRoutineTaskResponse = {
-  data: RoutineTask;
-};
+import type { ApiResponse } from '@/types/api';
 
 type RoutineTaskRequestBody = {
   routine_task: {
@@ -69,14 +62,14 @@ type GenerationStatusResponse = {
 
 export const routineTasksApi = {
   fetchAll: async (): Promise<RoutineTask[]> => {
-    const response = await axios.get<RoutineTaskResponse>(
+    const response = await axios.get<ApiResponse<RoutineTask[]>>(
       '/api/v1/routine_tasks'
     );
     return response.data.data;
   },
 
   fetchById: async (id: number): Promise<RoutineTask> => {
-    const response = await axios.get<SingleRoutineTaskResponse>(
+    const response = await axios.get<ApiResponse<RoutineTask>>(
       `/api/v1/routine_tasks/${id}`
     );
     return response.data.data;
@@ -100,7 +93,7 @@ export const routineTasksApi = {
         start_generation_at: routineTaskData.startGenerationAt,
       },
     };
-    const response = await axios.post<SingleRoutineTaskResponse>(
+    const response = await axios.post<ApiResponse<RoutineTask>>(
       '/api/v1/routine_tasks',
       body
     );
@@ -152,7 +145,7 @@ export const routineTasksApi = {
           }),
       },
     };
-    const response = await axios.put<SingleRoutineTaskResponse>(
+    const response = await axios.put<ApiResponse<RoutineTask>>(
       `/api/v1/routine_tasks/${id}`,
       body
     );

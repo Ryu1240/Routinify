@@ -407,6 +407,8 @@ declare namespace NodeJS {
 
 ## 📚 関連ドキュメント
 
+- [APIレスポンス型の配置方針](API_RESPONSE_TYPES_POLICY.md)（#294）
+- [データ取得戦略](DATA_FETCHING_STRATEGY.md)（#296）
 - [コンポーネント層の説明](LAYER_COMPONENTS.md)
 - [カスタムフック層の説明](LAYER_HOOKS.md)
 - [アーキテクチャガイド](../ARCHITECTURE_GUIDE.md)
