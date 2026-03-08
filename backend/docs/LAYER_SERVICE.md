@@ -26,12 +26,12 @@
 ```
 app/services/
 ├── base_service.rb           # 基底サービス
+├── job_status_service.rb     # ジョブステータス（Redis）操作
 ├── task_deletion_service.rb  # タスク削除サービス
-├── task_service.rb          # タスクサービス
-├── category_service.rb      # カテゴリサービス
-├── milestone_create_service.rb  # マイルストーン作成サービス
-├── milestone_update_service.rb  # マイルストーン更新サービス
-├── notification_service.rb  # 通知サービス
+├── routine_task_achievement_service.rb
+├── routine_task_achievement_trend_service.rb
+├── routine_task_achievement/    # RoutineTask 達成率計算専用
+│   └── period_calculator.rb    # 期間計算（weekly/monthly）
 └── delete_strategies/       # 削除戦略パターン
     ├── base_strategy.rb
     ├── soft_delete_strategy.rb   # 論理削除

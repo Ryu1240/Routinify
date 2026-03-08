@@ -88,11 +88,23 @@
 3. 期限が設定されていないタスク（`due_date IS NULL`）は、期限前タスクとして扱われる
 
 ### Step 5: ジョブステータスを更新
-- Redisにジョブステータスを保存
-- `status`: `'completed'` または `'failed'`
+- `JobStatusService` により Redis にジョブステータスを保存
+- `status`: `'running'`（実行中）、`'completed'`（完了）、`'failed'`（失敗）
 - `generatedTasksCount`: 生成されたタスク数
 - `completedAt`: 完了日時
 - エラー時は `error` メッセージも保存
+
+### 実装の責務分担
+- **RoutineTaskGeneratorJob**: 各ステップを private メソッドに分割
+  - `check_start_generation_at`: 開始期限チェック
+  - `calculate_tasks_to_generate`: 生成数計算
+  - `generate_tasks`: タスク生成ループ
+  - `update_routine_task_after_generation`: last_generated_at / next_generation_at 更新
+  - `cleanup_excess_tasks`: 超過タスクの削除
+- **JobStatusService**: Redis へのジョブステータス保存・取得を集約
+  - `create_pending(job_id)`: 初期ステータス保存（コントローラーの generate で使用）
+  - `update(job_id, status:, completed:, **options)`: ステータス更新
+  - `find(job_id)`: ステータス取得（コントローラーの generation_status で使用）
 
 ## 頻度（frequency）の仕様
 

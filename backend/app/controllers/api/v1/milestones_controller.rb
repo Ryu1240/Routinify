@@ -15,31 +15,29 @@ module Api
       def show
         validate_permissions([ 'read:milestones' ]) do
           milestone = Milestone.for_user(current_user_id).includes(:tasks).find_by(id: params[:id])
+          return render_not_found('マイルストーン') unless milestone
 
-          if milestone
-            render_success(data: MilestoneSerializer.new(milestone).as_json)
-          else
-            render_not_found('マイルストーン')
-          end
+          render_success(data: MilestoneSerializer.new(milestone).as_json)
         end
       end
 
       def create
         validate_permissions([ 'write:milestones' ]) do
-          service = MilestoneCreateService.new(
-            account_id: current_user_id,
-            milestone_params: milestone_params.to_h
+          milestone = Milestone.new(
+            milestone_params.to_h.merge(
+              account_id: current_user_id,
+              status: milestone_params[:status] || 'planning'
+            )
           )
-          result = service.call
 
-          if result.success?
+          if milestone.save
             render_success(
-              data: MilestoneSerializer.new(result.data).as_json,
-              message: result.message,
-              status: result.status
+              data: MilestoneSerializer.new(milestone).as_json,
+              message: I18n.t('messages.milestone.created', default: 'マイルストーンが正常に作成されました'),
+              status: :created
             )
           else
-            render_error(errors: result.errors, status: result.status)
+            render_error(errors: milestone.errors.full_messages)
           end
         end
       end
@@ -47,26 +45,15 @@ module Api
       def update
         validate_permissions([ 'write:milestones' ]) do
           milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
+          return render_not_found('マイルストーン') if milestone.nil?
 
-          if milestone.nil?
-            render_not_found('マイルストーン')
-            return
-          end
-
-          service = MilestoneUpdateService.new(
-            milestone: milestone,
-            milestone_params: milestone_params.to_h
-          )
-          result = service.call
-
-          if result.success?
+          if milestone.update(milestone_params)
             render_success(
-              data: MilestoneSerializer.new(result.data).as_json,
-              message: result.message,
-              status: result.status
+              data: MilestoneSerializer.new(milestone).as_json,
+              message: I18n.t('messages.milestone.updated', default: 'マイルストーンが正常に更新されました')
             )
           else
-            render_error(errors: result.errors, status: result.status)
+            render_error(errors: milestone.errors.full_messages)
           end
         end
       end
@@ -74,11 +61,7 @@ module Api
       def destroy
         validate_permissions([ 'delete:milestones' ]) do
           milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
-
-          if milestone.nil?
-            render_not_found('マイルストーン')
-            return
-          end
+          return render_not_found('マイルストーン') if milestone.nil?
 
           milestone.destroy
           head :no_content
@@ -88,11 +71,7 @@ module Api
       def associate_task
         validate_permissions([ 'write:milestones' ]) do
           milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
-
-          if milestone.nil?
-            render_not_found('マイルストーン')
-            return
-          end
+          return render_not_found('マイルストーン') if milestone.nil?
 
           raw_task_ids = task_association_params[:task_ids]
 
@@ -148,11 +127,7 @@ module Api
       def dissociate_task
         validate_permissions([ 'write:milestones' ]) do
           milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
-
-          if milestone.nil?
-            render_not_found('マイルストーン')
-            return
-          end
+          return render_not_found('マイルストーン') if milestone.nil?
 
           raw_task_ids = task_association_params[:task_ids]
 

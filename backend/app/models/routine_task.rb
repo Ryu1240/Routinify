@@ -197,6 +197,9 @@ class RoutineTask < ApplicationRecord
 
   def destroy_related_tasks
     # 紐づくタスク（論理削除済み含む）を物理削除
+    # milestone_tasks の外部キー制約を満たすため、関連する milestone_tasks を先に削除
+    task_ids = Task.unscoped.where(routine_task_id: id).pluck(:id)
+    MilestoneTask.where(task_id: task_ids).delete_all if task_ids.any?
     Task.unscoped.where(routine_task_id: id).delete_all
   end
 

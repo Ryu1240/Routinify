@@ -1,4 +1,6 @@
 class RoutineTaskAchievementService < BaseService
+  include RoutineTaskAchievement::PeriodCalculator
+
   PERIODS = %w[weekly monthly custom].freeze
   ACHIEVEMENT_THRESHOLD = 100.0
 
@@ -50,11 +52,6 @@ class RoutineTaskAchievementService < BaseService
       errors: [ '達成状況の計算に失敗しました' ],
       status: :internal_server_error
     )
-  end
-
-  # API層からの呼び出し用エイリアス
-  def calculate
-    call
   end
 
   private
@@ -135,7 +132,7 @@ class RoutineTaskAchievementService < BaseService
     current_date = Date.current
 
     loop do
-      period_start, period_end = calculate_period_range(current_date)
+      period_start, period_end = calculate_period_range(current_date, @period)
 
       # その期間内のタスク統計を取得
       period_stats = @routine_task.task_statistics_in_period(period_start, period_end)
@@ -152,36 +149,10 @@ class RoutineTaskAchievementService < BaseService
       count += 1
 
       # 次の期間に遡る
-      current_date = move_to_previous_period(current_date)
+      current_date = move_to_previous_period(current_date, @period)
     end
 
     count
-  end
-
-  # 指定された日付が含まれる期間の開始日と終了日を計算
-  def calculate_period_range(date)
-    case @period
-    when 'weekly'
-      [ date.beginning_of_week, date.end_of_week ]
-    when 'monthly'
-      [ date.beginning_of_month, date.end_of_month ]
-    else
-      # このメソッドはweekly/monthlyの場合のみ呼ばれる
-      raise ArgumentError, "Invalid period for calculate_period_range: #{@period}"
-    end
-  end
-
-  # 前の期間に移動
-  def move_to_previous_period(date)
-    case @period
-    when 'weekly'
-      date - 1.week
-    when 'monthly'
-      date - 1.month
-    else
-      # このメソッドはweekly/monthlyの場合のみ呼ばれる
-      raise ArgumentError, "Invalid period for move_to_previous_period: #{@period}"
-    end
   end
 
   # 平均完了日数（モデルから取得）

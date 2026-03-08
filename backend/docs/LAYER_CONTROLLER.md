@@ -33,7 +33,8 @@ app/controllers/
 │       └── milestones_controller.rb  # マイルストーンコントローラー
 ├── concerns/
 │   ├── error_handler.rb            # エラーハンドリング
-│   └── response_formatter.rb       # レスポンス整形
+│   ├── response_formatter.rb       # レスポンス整形
+│   └── period_params_validator.rb  # 期間パラメータバリデーション（習慣化タスク達成率用）
 └── application_controller.rb       # 基底コントローラー
 ```
 
@@ -383,26 +384,14 @@ module Api
           )
           result = service.call
 
-          if result.success?
-            render_success(
-              data: MilestoneSerializer.new(result.data).as_json,
-              message: result.message,
-              status: result.status
-            )
-          else
-            render_error(errors: result.errors, status: result.status)
-          end
+          handle_service_result(result) { |data| MilestoneSerializer.new(data).as_json }
         end
       end
 
       def update
         validate_permissions(['write:milestones']) do
           milestone = Milestone.for_user(current_user_id).find_by(id: params[:id])
-
-          if milestone.nil?
-            render_not_found('マイルストーン')
-            return
-          end
+          return render_not_found('マイルストーン') if milestone.nil?
 
           service = MilestoneUpdateService.new(
             milestone: milestone,
@@ -410,15 +399,7 @@ module Api
           )
           result = service.call
 
-          if result.success?
-            render_success(
-              data: MilestoneSerializer.new(result.data).as_json,
-              message: result.message,
-              status: result.status
-            )
-          else
-            render_error(errors: result.errors, status: result.status)
-          end
+          handle_service_result(result) { |data| MilestoneSerializer.new(data).as_json }
         end
       end
 
