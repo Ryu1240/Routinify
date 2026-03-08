@@ -177,6 +177,19 @@ RSpec.describe Task, type: :model do
         expect(Task.for_user('nonexistent')).to be_empty
       end
     end
+
+    describe '.incomplete' do
+      let!(:pending_task) { create(:task, account_id: 'user1', status: 'pending') }
+      let!(:in_progress_task) { create(:task, account_id: 'user1', status: 'in_progress') }
+      let!(:completed_task) { create(:task, account_id: 'user1', status: 'completed') }
+      let!(:on_hold_task) { create(:task, account_id: 'user1', status: 'on_hold') }
+
+      it '完了以外のステータスのタスクのみを返すこと' do
+        result = Task.where(account_id: 'user1').incomplete
+        expect(result).to contain_exactly(pending_task, in_progress_task, on_hold_task)
+        expect(result).not_to include(completed_task)
+      end
+    end
   end
 
   describe 'インスタンスメソッド' do

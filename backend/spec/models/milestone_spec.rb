@@ -155,6 +155,16 @@ RSpec.describe Milestone, type: :model do
       end
     end
 
+    describe '.incomplete' do
+      let!(:cancelled_milestone) { create(:milestone, account_id: 'user1', status: 'cancelled') }
+
+      it 'completedステータス以外のマイルストーンを返すこと' do
+        result = Milestone.where(account_id: [ 'user1', 'user2' ]).incomplete
+        expect(result).to contain_exactly(user1_milestone1, user1_milestone2, cancelled_milestone)
+        expect(result).not_to include(user2_milestone)
+      end
+    end
+
     describe '.for_user' do
       it '指定されたユーザーIDのマイルストーンのみを返すこと' do
         expect(Milestone.for_user('user1')).to contain_exactly(user1_milestone1, user1_milestone2)

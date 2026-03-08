@@ -13,6 +13,7 @@ class Milestone < ApplicationRecord
   scope :by_status, ->(status) { where(status: status) }
   scope :active, -> { where(status: %w[planning in_progress]) }
   scope :completed, -> { where(status: 'completed') }
+  scope :incomplete, -> { where.not(status: 'completed') }
 
   scope :search_by_name, ->(query) { where('name ILIKE ?', "%#{query}%") if query.present? }
   scope :overdue, -> { where('due_date < ?', Date.current) }

@@ -13,6 +13,7 @@ class Task < ApplicationRecord
   validates :due_date, future_date: { allow_past: true }, allow_nil: true
 
   scope :active, -> { where(deleted_at: nil) }
+  scope :incomplete, -> { where.not(status: 'completed') }
   scope :by_account, ->(account_id) { where(account_id: account_id) }
   scope :by_status, ->(status) { where(status: status) }
   scope :by_statuses, ->(statuses) { where(status: statuses) if statuses.present? }
