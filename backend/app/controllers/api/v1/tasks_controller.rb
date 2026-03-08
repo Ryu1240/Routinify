@@ -3,7 +3,7 @@ module Api
     class TasksController < BaseController
       def index
         validate_permissions([ 'read:tasks' ]) do
-          tasks = Task.for_user(current_user_id).includes(:category)
+          tasks = Task.for_user(current_user_id).includes(:category, :milestones)
           tasks = apply_filters(tasks, search_params)
 
           render_success(data: tasks.map { |task| TaskSerializer.new(task).as_json })

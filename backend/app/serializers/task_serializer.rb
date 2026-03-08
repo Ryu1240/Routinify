@@ -11,6 +11,7 @@ class TaskSerializer < BaseSerializer
       categoryName: @object.category&.name,
       overdue: @object.overdue?,
       completed: @object.completed?,
+      milestoneIds: @object.milestone_ids,
       createdAt: format_datetime(@object.created_at),
       updatedAt: format_datetime(@object.updated_at)
     }
