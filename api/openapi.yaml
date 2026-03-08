@@ -990,6 +990,14 @@ paths:
       security:
         - Auth0:
             - read:tasks
+      parameters:
+        - name: include_completed
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: trueの場合、完了ステータスのタスクも含める。デフォルトは完了を除外
       responses:
         '200':
           description: タスク一覧の取得に成功
@@ -1951,6 +1959,13 @@ paths:
           schema:
             type: string
           description: カンマ区切りのマイルストーンID（指定時は該当IDのみ返却）
+        - name: include_completed
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: trueの場合、完了ステータスのマイルストーンも含める。デフォルトは完了を除外
       responses:
         '200':
           description: マイルストーン一覧の取得に成功
