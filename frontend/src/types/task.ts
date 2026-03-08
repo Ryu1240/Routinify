@@ -11,6 +11,7 @@ export type Task = {
   dueDate: string | null;
   readonly createdAt: string;
   readonly updatedAt: string;
+  milestoneIds?: number[];
 };
 
 export type TaskStatus = 'pending' | 'in_progress' | 'completed';

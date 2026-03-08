@@ -143,6 +143,11 @@ components:
         categoryId:
           type: integer
           nullable: true
+        milestoneIds:
+          type: array
+          items:
+            type: integer
+          description: 紐づくマイルストーンIDの配列（紐づきがない場合は空配列）
       required:
         - id
         - title
@@ -1887,6 +1892,12 @@ paths:
             enum: [asc, desc]
             default: desc
           description: ソート順
+        - name: ids
+          in: query
+          required: false
+          schema:
+            type: string
+          description: カンマ区切りのマイルストーンID（指定時は該当IDのみ返却）
       responses:
         '200':
           description: マイルストーン一覧の取得に成功

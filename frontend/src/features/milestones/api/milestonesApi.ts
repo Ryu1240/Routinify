@@ -49,6 +49,7 @@ export const milestonesApi = {
     if (filters?.search) params.q = filters.search;
     if (filters?.sortBy) params.sort_by = filters.sortBy;
     if (filters?.sortOrder) params.sort_order = filters.sortOrder;
+    if (filters?.ids?.length) params.ids = filters.ids.join(',');
 
     const response = await axios.get<MilestoneResponse>('/api/v1/milestones', {
       params,

@@ -202,7 +202,7 @@ module Api
       end
 
       def search_params
-        params.permit(:status, :due_date_range, :q, :sort_by, :sort_order)
+        params.permit(:status, :due_date_range, :q, :sort_by, :sort_order, :ids)
       end
 
       def task_association_params
@@ -219,6 +219,10 @@ module Api
         milestones = milestones.by_status(filters[:status]) if filters[:status].present?
         milestones = apply_due_date_filter(milestones, filters[:due_date_range]) if filters[:due_date_range].present?
         milestones = milestones.search_by_name(filters[:q]) if filters[:q].present?
+        if filters[:ids].present?
+          ids = filters[:ids].to_s.split(',').map(&:strip).reject(&:blank?).map(&:to_i)
+          milestones = milestones.where(id: ids) if ids.any?
+        end
         milestones
       end
 

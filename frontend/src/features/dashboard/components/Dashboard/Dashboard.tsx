@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Title,
   Grid,
@@ -6,29 +6,23 @@ import {
   Text,
   Stack,
   Group,
-  ActionIcon,
-  Tooltip,
   Button,
   Collapse,
 } from '@mantine/core';
-import {
-  IconCheck,
-  IconPlayerPlay,
-  IconArrowBack,
-  IconChevronDown,
-  IconChevronUp,
-} from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { ListPageState } from '@/shared/components';
 import { RoutineTaskStatsCard } from '../RoutineTaskStatsCard';
 import { RoutineTaskWithStats } from '@/types/achievement';
 import { Task, TaskStatus } from '@/types';
-import dayjs from 'dayjs';
+import { Milestone } from '@/types/milestone';
 import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 import { AchievementBadge } from '@/features/achievements/components/AchievementBadge';
+import { DueSoonTasksSection } from './DueSoonTasksSection';
 
 interface DashboardProps {
   routineTasks: RoutineTaskWithStats[];
   tasks: Task[];
+  milestones: Milestone[];
   loading: boolean;
   error: string | null;
   onRetry?: () => void | Promise<void>;
@@ -43,6 +37,7 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({
   routineTasks,
   tasks,
+  milestones,
   loading,
   error,
   onRetry,
@@ -50,28 +45,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onSetTaskStatusToCompleted,
   onSetTaskStatusToPending,
 }) => {
-  const [showAllPending, setShowAllPending] = useState(false);
-  const [showAllInProgress, setShowAllInProgress] = useState(false);
   const [isRoutineTasksExpanded, setIsRoutineTasksExpanded] = useState(false);
   const isMobile = useIsMobile();
-
-  const pendingTasks = useMemo(
-    () =>
-      tasks.filter((task) => task.status === 'pending' || task.status === null),
-    [tasks]
-  );
-
-  const inProgressTasks = useMemo(
-    () => tasks.filter((task) => task.status === 'in_progress'),
-    [tasks]
-  );
-
-  const displayedPendingTasks = showAllPending
-    ? pendingTasks
-    : pendingTasks.slice(0, 10);
-  const displayedInProgressTasks = showAllInProgress
-    ? inProgressTasks
-    : inProgressTasks.slice(0, 10);
   if (loading) {
     return (
       <ListPageState
@@ -187,221 +162,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* 期限が近いタスク一覧セクション */}
-      <div>
-        <Title order={2} mb="md">
-          期限が近いタスク
-        </Title>
-        {tasks.length === 0 ? (
-          <Text c="dimmed">未完了または進行中のタスクがありません</Text>
-        ) : (
-          <Grid>
-            {/* 未着手タスク（左側） */}
-            <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 2, md: 1 }}>
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Title order={3} mb="md" size="h4">
-                  未着手{' '}
-                  {pendingTasks.length > 0 && `(${pendingTasks.length}件)`}
-                </Title>
-                <Stack gap="sm">
-                  {pendingTasks.length === 0 ? (
-                    <Text c="dimmed" size="sm">
-                      未着手のタスクがありません
-                    </Text>
-                  ) : (
-                    <>
-                      {displayedPendingTasks.map((task) => (
-                        <Card
-                          key={task.id}
-                          padding="md"
-                          radius="sm"
-                          withBorder
-                          style={{
-                            borderLeft: '4px solid var(--mantine-color-gray-6)',
-                          }}
-                        >
-                          <Stack gap="xs">
-                            <Group justify="space-between" align="flex-start">
-                              <Text fw={600} style={{ flex: 1 }}>
-                                {task.title}
-                              </Text>
-                              <Group gap="xs">
-                                {onSetTaskStatusToCompleted && (
-                                  <Tooltip label="完了に変更">
-                                    <ActionIcon
-                                      size="sm"
-                                      variant="subtle"
-                                      color="green"
-                                      onClick={() =>
-                                        onSetTaskStatusToCompleted(task.id)
-                                      }
-                                    >
-                                      <IconCheck size={16} />
-                                    </ActionIcon>
-                                  </Tooltip>
-                                )}
-                                {onToggleTaskStatus && (
-                                  <Tooltip label="進行中に変更">
-                                    <ActionIcon
-                                      size="sm"
-                                      variant="subtle"
-                                      color="blue"
-                                      onClick={() =>
-                                        onToggleTaskStatus(task.id, task.status)
-                                      }
-                                    >
-                                      <IconPlayerPlay size={16} />
-                                    </ActionIcon>
-                                  </Tooltip>
-                                )}
-                              </Group>
-                            </Group>
-                            <Group gap="md">
-                              {task.dueDate && (
-                                <Text size="sm" c="dimmed">
-                                  期限:{' '}
-                                  {dayjs(task.dueDate).format('YYYY年MM月DD日')}
-                                </Text>
-                              )}
-                              {!task.dueDate && (
-                                <Text size="sm" c="dimmed">
-                                  期限: なし
-                                </Text>
-                              )}
-                            </Group>
-                          </Stack>
-                        </Card>
-                      ))}
-                      {pendingTasks.length > 10 && (
-                        <Button
-                          variant="subtle"
-                          size="sm"
-                          fullWidth
-                          onClick={() => setShowAllPending(!showAllPending)}
-                          rightSection={
-                            showAllPending ? (
-                              <IconChevronUp size={16} />
-                            ) : (
-                              <IconChevronDown size={16} />
-                            )
-                          }
-                        >
-                          {showAllPending
-                            ? '折りたたむ'
-                            : `もっと見る (残り${pendingTasks.length - 10}件)`}
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </Stack>
-              </Card>
-            </Grid.Col>
-
-            {/* 進行中タスク（右側） */}
-            <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 1, md: 2 }}>
-              <Card shadow="sm" padding="lg" radius="md" withBorder>
-                <Title order={3} mb="md" size="h4">
-                  進行中{' '}
-                  {inProgressTasks.length > 0 &&
-                    `(${inProgressTasks.length}件)`}
-                </Title>
-                <Stack gap="sm">
-                  {inProgressTasks.length === 0 ? (
-                    <Text c="dimmed" size="sm">
-                      進行中のタスクがありません
-                    </Text>
-                  ) : (
-                    <>
-                      {displayedInProgressTasks.map((task) => (
-                        <Card
-                          key={task.id}
-                          padding="md"
-                          radius="sm"
-                          withBorder
-                          style={{
-                            borderLeft: '4px solid var(--mantine-color-blue-6)',
-                          }}
-                        >
-                          <Stack gap="xs">
-                            <Group justify="space-between" align="flex-start">
-                              <Text fw={600} style={{ flex: 1 }}>
-                                {task.title}
-                              </Text>
-                              <Group gap="xs">
-                                {onSetTaskStatusToCompleted && (
-                                  <Tooltip label="完了に変更">
-                                    <ActionIcon
-                                      size="sm"
-                                      variant="subtle"
-                                      color="green"
-                                      onClick={() =>
-                                        onSetTaskStatusToCompleted(task.id)
-                                      }
-                                    >
-                                      <IconCheck size={16} />
-                                    </ActionIcon>
-                                  </Tooltip>
-                                )}
-                                {onSetTaskStatusToPending && (
-                                  <Tooltip label="未着手に戻す">
-                                    <ActionIcon
-                                      size="sm"
-                                      variant="subtle"
-                                      color="gray"
-                                      onClick={() =>
-                                        onSetTaskStatusToPending(task.id)
-                                      }
-                                    >
-                                      <IconArrowBack size={16} />
-                                    </ActionIcon>
-                                  </Tooltip>
-                                )}
-                              </Group>
-                            </Group>
-                            <Group gap="md">
-                              {task.dueDate && (
-                                <Text size="sm" c="dimmed">
-                                  期限:{' '}
-                                  {dayjs(task.dueDate).format('YYYY年MM月DD日')}
-                                </Text>
-                              )}
-                              {!task.dueDate && (
-                                <Text size="sm" c="dimmed">
-                                  期限: なし
-                                </Text>
-                              )}
-                            </Group>
-                          </Stack>
-                        </Card>
-                      ))}
-                      {inProgressTasks.length > 10 && (
-                        <Button
-                          variant="subtle"
-                          size="sm"
-                          fullWidth
-                          onClick={() =>
-                            setShowAllInProgress(!showAllInProgress)
-                          }
-                          rightSection={
-                            showAllInProgress ? (
-                              <IconChevronUp size={16} />
-                            ) : (
-                              <IconChevronDown size={16} />
-                            )
-                          }
-                        >
-                          {showAllInProgress
-                            ? '折りたたむ'
-                            : `もっと見る (残り${inProgressTasks.length - 10}件)`}
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </Stack>
-              </Card>
-            </Grid.Col>
-          </Grid>
-        )}
-      </div>
+      <DueSoonTasksSection
+        tasks={tasks}
+        milestones={milestones}
+        onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
+        onToggleTaskStatus={onToggleTaskStatus}
+        onSetTaskStatusToPending={onSetTaskStatusToPending}
+      />
     </Stack>
   );
 };
