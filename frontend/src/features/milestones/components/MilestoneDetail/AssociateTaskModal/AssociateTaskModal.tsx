@@ -47,6 +47,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [includeCompleted, setIncludeCompleted] = useState(false);
 
   const associatedTaskIdsRef = useRef(associatedTaskIds);
   associatedTaskIdsRef.current = associatedTaskIds;
@@ -56,7 +57,7 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
       setTasksLoading(true);
       setError(null);
       const allTasks = await tasksApi.fetchAll(
-        { include_completed: true },
+        { include_completed: includeCompleted },
         true
       );
       const ids = associatedTaskIdsRef.current;
@@ -73,16 +74,21 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     } finally {
       setTasksLoading(false);
     }
-  }, []);
+  }, [includeCompleted]);
 
   useEffect(() => {
     if (opened) {
       fetchTasks();
+    }
+  }, [opened, fetchTasks]);
+
+  useEffect(() => {
+    if (opened) {
       setSearchQuery('');
       setSelectedTaskIds([]);
       setError(null);
     }
-  }, [opened, fetchTasks]);
+  }, [opened]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -146,9 +152,18 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
       opened={opened}
       onClose={handleClose}
       title={
-        <Title order={3} c={COLORS.PRIMARY}>
-          タスクを追加
-        </Title>
+        <Group align="center" gap="lg">
+          <Title order={3} c={COLORS.PRIMARY}>
+            タスクを追加
+          </Title>
+          <Checkbox
+            label="完了を含める"
+            checked={includeCompleted}
+            onChange={(event) => {
+              setIncludeCompleted(event.currentTarget.checked);
+            }}
+          />
+        </Group>
       }
       size="xl"
       centered
