@@ -20,7 +20,7 @@ class UpdateAchievementStatisticsJob < ApplicationJob
       start_date: period_start,
       end_date: period_end
     )
-    result = service.calculate
+    result = service.call
 
     return unless result.success?
 

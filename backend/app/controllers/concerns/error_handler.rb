@@ -41,9 +41,10 @@ module ErrorHandler
     }, status: :bad_request
   end
 
-  def handle_service_result(result)
+  def handle_service_result(result, &data_transform)
     if result.success?
-      render_success(data: result.data, message: result.message, status: result.status)
+      data = data_transform ? data_transform.call(result.data) : result.data
+      render_success(data: data, message: result.message, status: result.status)
     else
       render_error(errors: result.errors, message: result.message, status: result.status)
     end
