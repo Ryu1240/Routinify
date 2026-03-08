@@ -14,6 +14,24 @@ ActiveRecord::Schema[8.0].define(version: 0) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
+  create_table "achievement_statistics", force: :cascade do |t|
+    t.integer "routine_task_id", null: false
+    t.string "period_type", limit: 50, null: false
+    t.date "period_start_date", null: false
+    t.date "period_end_date", null: false
+    t.integer "total_count", null: false
+    t.integer "completed_count", null: false
+    t.integer "incomplete_count", null: false
+    t.integer "overdue_count", null: false
+    t.decimal "achievement_rate", precision: 5, scale: 2, null: false
+    t.integer "consecutive_periods_count", null: false
+    t.decimal "average_completion_days", precision: 10, scale: 2, null: false
+    t.datetime "calculated_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["routine_task_id", "period_type", "period_start_date"], name: "index_achievement_statistics_on_routine_period", unique: true
+  end
+
   create_table "categories", force: :cascade do |t|
     t.string "account_id", limit: 255
     t.string "name", limit: 255
@@ -80,6 +98,7 @@ ActiveRecord::Schema[8.0].define(version: 0) do
     t.index ["routine_task_id", "status", "generated_at"], name: "index_tasks_on_routine_and_status_and_generated"
   end
 
+  add_foreign_key "achievement_statistics", "routine_tasks", on_delete: :cascade
   add_foreign_key "milestone_tasks", "milestones"
   add_foreign_key "milestone_tasks", "tasks"
   add_foreign_key "routine_tasks", "categories", on_delete: :nullify
