@@ -14,9 +14,8 @@ type CategoryRequestBody = {
 
 export const categoriesApi = {
   fetchAll: async (): Promise<Category[]> => {
-    const response = await axios.get<ApiResponse<Category[]>>(
-      '/api/v1/categories'
-    );
+    const response =
+      await axios.get<ApiResponse<Category[]>>('/api/v1/categories');
     return response.data.data;
   },
 
