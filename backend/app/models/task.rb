@@ -57,11 +57,6 @@ class Task < ApplicationRecord
     end
   end
 
-  # 論理削除（deleted_atを設定）
-  def soft_delete
-    update_column(:deleted_at, Time.current)
-  end
-
   # 物理削除
   def hard_delete
     destroy
@@ -77,7 +72,31 @@ class Task < ApplicationRecord
     routine_task_id.present?
   end
 
+  after_commit :schedule_achievement_statistics_update,
+               on: [ :create, :update ],
+               if: -> {
+                 routine_task_id.present? && (
+                   saved_change_to_status? ||
+                   saved_change_to_generated_at? ||
+                   saved_change_to_deleted_at?
+                 )
+               }
+
+  # 論理削除（deleted_atを設定）
+  # update を使用して after_commit を発火させ、達成状況統計の更新をトリガーする
+  def soft_delete
+    update(deleted_at: Time.current)
+  end
+
   private
+
+  def schedule_achievement_statistics_update
+    base_date = (generated_at || created_at).in_time_zone('Tokyo').to_date
+
+    # 週次・月次の両方の統計を更新
+    UpdateAchievementStatisticsJob.perform_later(routine_task_id, 'weekly', base_date.beginning_of_week)
+    UpdateAchievementStatisticsJob.perform_later(routine_task_id, 'monthly', base_date.beginning_of_month)
+  end
 
   def set_default_status
     self.status ||= 'pending'

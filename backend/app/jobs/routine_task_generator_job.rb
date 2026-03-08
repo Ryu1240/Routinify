@@ -19,6 +19,7 @@ class RoutineTaskGeneratorJob < ApplicationJob
 
     # Step 2: タスクを生成（上限に関係なく全て生成）
     generated_tasks_count = 0
+    generated_task_dates = []
     if tasks_to_generate > 0
       base_time = routine_task.calculate_base_time_for_generation(current_time)
       base_date = base_time.in_time_zone('Tokyo').to_date
@@ -38,6 +39,7 @@ class RoutineTaskGeneratorJob < ApplicationJob
           generated_at: generation_date
         )
         generated_tasks_count += 1
+        generated_task_dates << generation_date.to_date
       end
 
       # Step 3: タスクが生成された場合のみ、last_generated_atとnext_generation_atを更新
@@ -48,7 +50,10 @@ class RoutineTaskGeneratorJob < ApplicationJob
     end
 
     # Step 4: max_active_tasksを超えている場合、古いタスクを削除
-    cleanup_excess_tasks(routine_task)
+    deleted_task_dates = cleanup_excess_tasks(routine_task)
+
+    # Step 5: 達成状況統計の非同期更新をスケジュール
+    schedule_achievement_statistics_updates(routine_task.id, generated_task_dates + deleted_task_dates)
 
     # ジョブ完了ステータスを更新
     update_job_status(job_id, 'completed', true, generated_tasks_count: generated_tasks_count, completed_at: current_time)
@@ -64,7 +69,7 @@ class RoutineTaskGeneratorJob < ApplicationJob
     routine_task.reload
     incomplete_tasks = routine_task.tasks.where.not(status: 'completed')
     excess_count = incomplete_tasks.count - routine_task.max_active_tasks
-    return unless excess_count > 0
+    return [] unless excess_count > 0
 
     current_date = Date.current
     overdue_tasks = incomplete_tasks.where('due_date < ?', current_date).order(created_at: :asc)
@@ -78,7 +83,24 @@ class RoutineTaskGeneratorJob < ApplicationJob
       overdue_tasks.limit(excess_count).to_a
     end
 
+    deleted_dates = tasks_to_delete.filter_map { |t| (t.generated_at || t.created_at)&.to_date }
     Task.unscoped.where(id: tasks_to_delete.map(&:id)).update_all(deleted_at: Time.current)
+    deleted_dates
+  end
+
+  def schedule_achievement_statistics_updates(routine_task_id, dates)
+    return if dates.blank?
+
+    period_pairs = dates.flat_map do |date|
+      [
+        [ 'weekly', date.beginning_of_week ],
+        [ 'monthly', date.beginning_of_month ]
+      ]
+    end.uniq
+
+    period_pairs.each do |period_type, period_start|
+      UpdateAchievementStatisticsJob.perform_later(routine_task_id, period_type, period_start)
+    end
   end
 
   def update_job_status(job_id, status, completed, additional_data = {})
