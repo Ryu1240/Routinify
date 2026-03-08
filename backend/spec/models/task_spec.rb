@@ -179,13 +179,22 @@ RSpec.describe Task, type: :model do
     end
 
     describe '.incomplete' do
-      let!(:pending_task) { create(:task, account_id: 'user1', status: 'pending') }
-      let!(:in_progress_task) { create(:task, account_id: 'user1', status: 'in_progress') }
-      let!(:completed_task) { create(:task, account_id: 'user1', status: 'completed') }
-      let!(:on_hold_task) { create(:task, account_id: 'user1', status: 'on_hold') }
+      # 親スコープの user1_task1, user1_task2 と混同しないよう別の account_id を使用
+      let!(:pending_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'pending')
+      end
+      let!(:in_progress_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'in_progress')
+      end
+      let!(:completed_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'completed')
+      end
+      let!(:on_hold_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'on_hold')
+      end
 
       it '完了以外のステータスのタスクのみを返すこと' do
-        result = Task.where(account_id: 'user1').incomplete
+        result = Task.where(account_id: 'incomplete_test_user').incomplete
         expect(result).to contain_exactly(pending_task, in_progress_task, on_hold_task)
         expect(result).not_to include(completed_task)
       end
