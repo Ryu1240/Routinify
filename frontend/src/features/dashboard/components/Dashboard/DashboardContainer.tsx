@@ -12,6 +12,7 @@ export const DashboardContainer: React.FC = () => {
 
   const {
     tasks,
+    milestones,
     loading: tasksLoading,
     error: tasksError,
     refreshTasks,
@@ -46,6 +47,7 @@ export const DashboardContainer: React.FC = () => {
     <Dashboard
       routineTasks={routineTasks}
       tasks={tasks}
+      milestones={milestones}
       loading={loading}
       error={error}
       onRetry={handleRetry}

@@ -1,12 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { Task, TaskStatus } from '@/types';
+import { Milestone } from '@/types/milestone';
 import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import { tasksApi } from '@/features/tasks/api/tasksApi';
+import { milestonesApi } from '@/features/milestones/api/milestonesApi';
 
 export const useDashboardTasks = () => {
   const { isAuthenticated, hasAccessToken } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,6 +27,19 @@ export const useDashboardTasks = () => {
       });
       setTasks(data);
       setError(null);
+
+      // マイルストーンに紐づくタスクがある場合、該当マイルストーンを取得
+      const milestoneIds = Array.from(
+        new Set(data.flatMap((task) => task.milestoneIds ?? []))
+      );
+      if (milestoneIds.length > 0) {
+        const milestonesData = await milestonesApi.getAll({
+          ids: milestoneIds,
+        });
+        setMilestones(milestonesData);
+      } else {
+        setMilestones([]);
+      }
     } catch (err) {
       handleApiError(err, {
         defaultMessage:
@@ -128,6 +144,7 @@ export const useDashboardTasks = () => {
 
   return {
     tasks,
+    milestones,
     loading,
     error,
     toggleTaskStatus,
