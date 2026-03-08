@@ -4,8 +4,6 @@ import {
   RoutineTaskWithStats,
   AchievementTrendData,
 } from '@/types/achievement';
-import { handleApiError } from '@/shared/utils/apiErrorUtils';
-import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 
 // APIレスポンス型（バックエンドはcamelCaseで返す）
 type AchievementStatsApiResponse = {
@@ -48,56 +46,29 @@ export const getAchievementStats = async (
   return response.data.data;
 };
 
+// APIレスポンス型（with_achievement_stats エンドポイント）
+type RoutineTasksWithStatsApiResponse = {
+  success: boolean;
+  data: RoutineTaskWithStats[];
+};
+
 /**
- * 全習慣化タスクを取得し、それぞれの週次達成率を並行取得する
+ * 全習慣化タスクを達成状況付きで一括取得する
+ * 新エンドポイント（1回のAPIリクエスト）を使用
+ * @param period - 週次または月次（default: 'weekly'）
  * @returns 達成状況付きの習慣化タスク一覧（有効なもののみ）
  */
-export const getAllRoutineTasksWithStats = async (): Promise<
-  RoutineTaskWithStats[]
-> => {
-  // 全習慣化タスクを取得
-  const routineTasks = await routineTasksApi.fetchAll();
+export const getAllRoutineTasksWithStats = async (
+  period: 'weekly' | 'monthly' = 'weekly'
+): Promise<RoutineTaskWithStats[]> => {
+  const queryParams = new URLSearchParams();
+  queryParams.append('period', period);
 
-  // 有効な習慣化タスクのみをフィルタリング
-  const activeTasks = routineTasks.filter((task) => task.isActive);
+  const response = await axios.get<RoutineTasksWithStatsApiResponse>(
+    `/api/v1/routine_tasks/with_achievement_stats?${queryParams.toString()}`
+  );
 
-  // 各タスクの週次達成率を並行取得
-  const statsPromises = activeTasks.map(async (task) => {
-    try {
-      const stats = await getAchievementStats(task.id, { period: 'weekly' });
-      return {
-        id: task.id,
-        title: task.title,
-        categoryName: task.categoryName,
-        achievementStats: stats,
-      };
-    } catch (error: unknown) {
-      handleApiError(error, {
-        defaultMessage: `習慣化タスク ${task.title} の達成状況取得に失敗しました。`,
-        notify: false,
-      });
-      // エラーが発生した場合はデフォルト値を返す
-      return {
-        id: task.id,
-        title: task.title,
-        categoryName: task.categoryName,
-        achievementStats: {
-          totalCount: 0,
-          completedCount: 0,
-          incompleteCount: 0,
-          overdueCount: 0,
-          achievementRate: 0,
-          period: 'weekly' as const,
-          startDate: new Date().toISOString().split('T')[0],
-          endDate: new Date().toISOString().split('T')[0],
-          consecutivePeriodsCount: 0,
-          averageCompletionDays: 0,
-        },
-      };
-    }
-  });
-
-  return Promise.all(statsPromises);
+  return response.data.data;
 };
 
 // APIレスポンス型（バックエンドはcamelCaseで返す）

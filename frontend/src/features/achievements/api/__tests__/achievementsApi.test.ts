@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from '@/lib/axios';
-import { routineTasksApi } from '@/features/routineTasks/api/routineTasksApi';
 import {
   getAchievementStats,
   getAchievementTrend,
@@ -12,7 +11,6 @@ import type {
 } from '@/types/achievement';
 
 vi.mock('@/lib/axios');
-vi.mock('@/features/routineTasks/api/routineTasksApi');
 
 describe('achievementsApi', () => {
   beforeEach(() => {
@@ -127,25 +125,7 @@ describe('achievementsApi', () => {
   });
 
   describe('getAllRoutineTasksWithStats', () => {
-    it('routineTasksApi.fetchAll で取得した有効タスクに対し getAchievementStats を呼び出し結果を返すこと', async () => {
-      const mockRoutineTasks = [
-        {
-          id: 1,
-          title: 'Task 1',
-          categoryName: 'Cat1',
-          isActive: true,
-        },
-        {
-          id: 2,
-          title: 'Task 2',
-          categoryName: 'Cat2',
-          isActive: true,
-        },
-      ];
-      vi.mocked(routineTasksApi.fetchAll).mockResolvedValue(
-        mockRoutineTasks as Awaited<ReturnType<typeof routineTasksApi.fetchAll>>
-      );
-
+    it('GET /api/v1/routine_tasks/with_achievement_stats を呼び出し結果を返すこと', async () => {
       const mockStats: AchievementStats = {
         totalCount: 10,
         completedCount: 8,
@@ -158,58 +138,46 @@ describe('achievementsApi', () => {
         consecutivePeriodsCount: 3,
         averageCompletionDays: 1.5,
       };
+      const mockData = [
+        {
+          id: 1,
+          title: 'Task 1',
+          categoryName: 'Cat1',
+          achievementStats: mockStats,
+        },
+        {
+          id: 2,
+          title: 'Task 2',
+          categoryName: 'Cat2',
+          achievementStats: mockStats,
+        },
+      ];
       (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: { success: true, data: mockStats },
+        data: { success: true, data: mockData },
       });
 
       const result = await getAllRoutineTasksWithStats();
 
-      expect(routineTasksApi.fetchAll).toHaveBeenCalled();
+      expect(axios.get).toHaveBeenCalledWith(
+        expect.stringContaining('/api/v1/routine_tasks/with_achievement_stats')
+      );
+      expect(axios.get).toHaveBeenCalledWith(
+        expect.stringContaining('period=weekly')
+      );
       expect(result).toHaveLength(2);
-      expect(result[0]).toEqual({
-        id: 1,
-        title: 'Task 1',
-        categoryName: 'Cat1',
-        achievementStats: mockStats,
-      });
-      expect(result[1]).toEqual({
-        id: 2,
-        title: 'Task 2',
-        categoryName: 'Cat2',
-        achievementStats: mockStats,
-      });
+      expect(result[0]).toEqual(mockData[0]);
+      expect(result[1]).toEqual(mockData[1]);
     });
 
-    it('isActive が false のタスクは結果に含めないこと', async () => {
-      const mockRoutineTasks = [
-        { id: 1, title: 'Active', categoryName: null, isActive: true },
-        { id: 2, title: 'Inactive', categoryName: null, isActive: false },
-      ];
-      vi.mocked(routineTasksApi.fetchAll).mockResolvedValue(
-        mockRoutineTasks as Awaited<ReturnType<typeof routineTasksApi.fetchAll>>
-      );
+    it('period を monthly に指定した場合クエリに含めること', async () => {
       (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: {
-          success: true,
-          data: {
-            totalCount: 0,
-            completedCount: 0,
-            incompleteCount: 0,
-            overdueCount: 0,
-            achievementRate: 0,
-            period: 'weekly',
-            startDate: '',
-            endDate: '',
-            consecutivePeriodsCount: 0,
-            averageCompletionDays: 0,
-          },
-        },
+        data: { success: true, data: [] },
       });
 
-      const result = await getAllRoutineTasksWithStats();
+      await getAllRoutineTasksWithStats('monthly');
 
-      expect(result).toHaveLength(1);
-      expect(result[0].id).toBe(1);
+      const callUrl = (axios.get as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(callUrl).toContain('period=monthly');
     });
   });
 });
