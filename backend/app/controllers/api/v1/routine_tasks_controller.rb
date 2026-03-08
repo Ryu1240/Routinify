@@ -178,7 +178,65 @@ module Api
         end
       end
 
+      def with_achievement_stats
+        validate_permissions([ 'read:routine-tasks' ]) do
+          period = params[:period] || 'weekly'
+          unless %w[weekly monthly].include?(period)
+            return render_error(
+              errors: [ 'periodはweeklyまたはmonthlyである必要があります' ],
+              status: :bad_request
+            )
+          end
+
+          routine_tasks = RoutineTask.for_user(current_user_id)
+                                    .where(is_active: true)
+                                    .includes(:category, :achievement_statistics)
+
+          today = Date.current
+          period_start = period == 'weekly' ? today.beginning_of_week : today.beginning_of_month
+
+          stats_by_rt = AchievementStatistic
+            .where(routine_task_id: routine_tasks.map(&:id), period_type: period, period_start_date: period_start)
+            .index_by(&:routine_task_id)
+
+          data = routine_tasks.map do |rt|
+            stat = stats_by_rt[rt.id]
+            if stat
+              achievement_stats = AchievementStatsSerializer.new(stat.to_achievement_stats_hash).as_json
+            else
+              UpdateAchievementStatisticsJob.perform_later(rt.id, period, period_start)
+              achievement_stats = empty_achievement_stats(period, period_start)
+            end
+
+            {
+              id: rt.id,
+              title: rt.title,
+              categoryName: rt.category&.name,
+              achievementStats: achievement_stats
+            }
+          end
+
+          render_success(data: data)
+        end
+      end
+
       private
+
+      def empty_achievement_stats(period, period_start)
+        period_end = period == 'weekly' ? period_start.end_of_week : period_start.end_of_month
+        AchievementStatsSerializer.new({
+          total_count: 0,
+          completed_count: 0,
+          incomplete_count: 0,
+          overdue_count: 0,
+          achievement_rate: 0,
+          period: period,
+          start_date: period_start.to_s,
+          end_date: period_end.to_s,
+          consecutive_periods_count: 0,
+          average_completion_days: 0
+        }).as_json
+      end
 
       def routine_task_params
         params.require(:routine_task).permit(:title, :frequency, :interval_value, :next_generation_at, :max_active_tasks, :category_id, :priority, :is_active, :due_date_offset_days, :due_date_offset_hour, :start_generation_at)

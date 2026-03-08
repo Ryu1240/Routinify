@@ -9,6 +9,9 @@ Rails.application.routes.draw do
       resources :tasks, only: [ :index, :show, :create, :update, :destroy ]
       resources :categories, only: [ :index, :create, :update, :destroy ]
       resources :routine_tasks, only: [ :index, :show, :create, :update, :destroy ] do
+        collection do
+          get :with_achievement_stats
+        end
         member do
           post :generate
           get :generation_status
