@@ -61,6 +61,8 @@ services:
         # 循環依存を避けるため、固定値を使用（カスタムドメインの場合は手動で変更）
         # sync: falseにしてRender Dashboardで手動設定することも可能
         value: https://routinify-frontend.onrender.com
+      - key: SOLID_QUEUE_IN_PUMA
+        value: "true"
     buildCommand: bundle install && bundle exec rails assets:precompile
     # 無料プランではpreDeployCommandは使用できません。
     # 起動スクリプト（bin/start.sh）でマイグレーションとサーバー起動を実行します。
