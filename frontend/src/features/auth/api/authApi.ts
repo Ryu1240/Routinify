@@ -1,20 +1,20 @@
 import axios from '@/lib/axios';
 
-export interface LoginResponse {
+type LoginResponse = {
   user: {
     id: string;
     email: string;
     roles: string[];
   };
-}
+};
 
-export interface UserResponse {
+type UserResponse = {
   user: {
     id: string;
     email: string;
     roles: string[];
   };
-}
+};
 
 export const authApi = {
   /**

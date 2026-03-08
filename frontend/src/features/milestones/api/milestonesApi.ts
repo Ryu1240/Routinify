@@ -5,10 +5,7 @@ import {
   CreateMilestoneDto,
   UpdateMilestoneDto,
 } from '@/types/milestone';
-
-type MilestoneResponse = {
-  data: Milestone[];
-};
+import type { ApiResponse } from '@/types/api';
 
 type MilestoneDetailResponse = {
   success: boolean;
@@ -53,9 +50,10 @@ export const milestonesApi = {
     if (filters?.includeCompleted !== undefined)
       params.include_completed = String(filters.includeCompleted);
 
-    const response = await axios.get<MilestoneResponse>('/api/v1/milestones', {
-      params,
-    });
+    const response = await axios.get<ApiResponse<Milestone[]>>(
+      '/api/v1/milestones',
+      { params }
+    );
     return response.data.data;
   },
 

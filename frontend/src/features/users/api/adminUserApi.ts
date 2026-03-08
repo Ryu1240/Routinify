@@ -13,7 +13,7 @@ export type AdminUser = {
   loginsCount?: number;
 };
 
-export type UserListResponse = {
+type UserListResponse = {
   data: AdminUser[];
   total: number;
   start: number;
@@ -28,7 +28,7 @@ export type UserListParams = {
   order?: 'asc' | 'desc';
 };
 
-type ApiResponse = {
+type AdminUsersListApiResponse = {
   success: boolean;
   data: {
     users: AdminUser[];
@@ -58,9 +58,12 @@ export const adminUserApi = {
       queryParams.order = params.order;
     }
 
-    const response = await axios.get<ApiResponse>('/api/v1/admin/users', {
-      params: queryParams,
-    });
+    const response = await axios.get<AdminUsersListApiResponse>(
+      '/api/v1/admin/users',
+      {
+        params: queryParams,
+      }
+    );
     const apiData = response.data.data;
     return {
       data: apiData.users,
