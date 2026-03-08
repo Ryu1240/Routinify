@@ -38,6 +38,18 @@ describe('tasksApi', () => {
       expect(result).toEqual(mockTasks);
     });
 
+    it('include_completed パラメータを送信すること', async () => {
+      (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: { data: [] },
+      });
+
+      await tasksApi.fetchAll({ include_completed: true });
+
+      expect(axios.get).toHaveBeenCalledWith('/api/v1/tasks', {
+        params: { include_completed: true },
+      });
+    });
+
     it('params を渡した場合クエリパラメータとして送信すること', async () => {
       (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: { data: [] },

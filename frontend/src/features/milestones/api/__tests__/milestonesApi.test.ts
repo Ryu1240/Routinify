@@ -64,6 +64,18 @@ describe('milestonesApi', () => {
       });
     });
 
+    it('includeCompleted パラメータを送信すること', async () => {
+      (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: { data: [] },
+      });
+
+      await milestonesApi.getAll({ includeCompleted: true });
+
+      expect(axios.get).toHaveBeenCalledWith('/api/v1/milestones', {
+        params: { include_completed: 'true' },
+      });
+    });
+
     it('エラーが発生した場合、エラーをスローすること', async () => {
       (axios.get as ReturnType<typeof vi.fn>).mockRejectedValue(
         new Error('Network error')

@@ -23,6 +23,7 @@ type FetchAllParams = {
   overdue?: boolean;
   due_today?: boolean;
   q?: string;
+  include_completed?: boolean;
 };
 
 export const tasksApi = {
@@ -30,7 +31,7 @@ export const tasksApi = {
     params?: FetchAllParams,
     skipCache = false
   ): Promise<Task[]> => {
-    const requestParams: Record<string, string | number> = {};
+    const requestParams: Record<string, string | number | boolean> = {};
     if (params) {
       if (params.statuses) requestParams.statuses = params.statuses;
       if (params.sort_by) requestParams.sort_by = params.sort_by;
@@ -40,6 +41,8 @@ export const tasksApi = {
       if (params.due_today)
         requestParams.due_today = params.due_today.toString();
       if (params.q) requestParams.q = params.q;
+      if (params.include_completed !== undefined)
+        requestParams.include_completed = params.include_completed;
     }
 
     const config = skipCache

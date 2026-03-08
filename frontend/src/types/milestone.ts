@@ -33,6 +33,7 @@ export type MilestoneFilters = {
   sortBy?: 'created_at' | 'due_date' | 'progress';
   sortOrder?: 'asc' | 'desc';
   ids?: number[];
+  includeCompleted?: boolean;
 };
 
 // 定数
