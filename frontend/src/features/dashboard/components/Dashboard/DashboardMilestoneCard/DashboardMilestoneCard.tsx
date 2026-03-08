@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Card, Text, Stack, Group, Button, Collapse, Progress } from '@mantine/core';
+import {
+  Card,
+  Text,
+  Stack,
+  Group,
+  Button,
+  Collapse,
+  Progress,
+} from '@mantine/core';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import { Milestone } from '@/types/milestone';

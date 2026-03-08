@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Card,
-  Title,
-  Text,
-  Stack,
-  Button,
-} from '@mantine/core';
+import { Card, Title, Text, Stack, Button } from '@mantine/core';
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
 import { Task } from '@/types';
 import { Milestone } from '@/types/milestone';
@@ -51,10 +45,7 @@ export const DashboardTasksColumn: React.FC<DashboardTasksColumnProps> = ({
   const displayedTasks = showAll ? tasks : tasks.slice(0, displayLimit);
   const displayedMilestones = showAll
     ? milestonesWithTasks
-    : milestonesWithTasks.slice(
-        0,
-        Math.max(0, displayLimit - tasks.length)
-      );
+    : milestonesWithTasks.slice(0, Math.max(0, displayLimit - tasks.length));
   const hasMore = totalCount > displayLimit;
 
   return (

@@ -48,7 +48,6 @@ export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
       (t) => !hasMilestoneIds(t)
     );
 
-
     const milestonesInPending: MilestoneWithTasks[] = [];
     const milestonesInProgress: MilestoneWithTasks[] = [];
 
@@ -138,9 +137,7 @@ export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
         期限が近いタスク
       </Title>
       {!hasAnyTasks ? (
-        <Text c="dimmed">
-          未完了または進行中のタスクがありません
-        </Text>
+        <Text c="dimmed">未完了または進行中のタスクがありません</Text>
       ) : (
         <Grid>
           <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 2, md: 1 }}>
