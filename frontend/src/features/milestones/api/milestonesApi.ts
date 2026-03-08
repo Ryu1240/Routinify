@@ -50,6 +50,8 @@ export const milestonesApi = {
     if (filters?.sortBy) params.sort_by = filters.sortBy;
     if (filters?.sortOrder) params.sort_order = filters.sortOrder;
     if (filters?.ids?.length) params.ids = filters.ids.join(',');
+    if (filters?.includeCompleted !== undefined)
+      params.include_completed = String(filters.includeCompleted);
 
     const response = await axios.get<MilestoneResponse>('/api/v1/milestones', {
       params,

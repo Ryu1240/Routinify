@@ -1,5 +1,5 @@
 import React from 'react';
-import { Group, Title, Stack, Button } from '@mantine/core';
+import { Group, Title, Stack, Button, Checkbox } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { ListPageState } from '@/shared/components';
@@ -69,8 +69,17 @@ export const MilestoneList: React.FC<MilestoneListProps> = ({
 
   return (
     <>
-      <Group justify="space-between" mb="lg">
-        <Title order={2}>マイルストーン一覧</Title>
+      <Group justify="space-between" align="center" mb="lg">
+        <Group align="center" gap="lg">
+          <Title order={2}>マイルストーン一覧</Title>
+          <Checkbox
+            label="完了を含めて表示する"
+            checked={filters.includeCompleted ?? false}
+            onChange={(event) =>
+              onFilterChange('includeCompleted', event.currentTarget.checked)
+            }
+          />
+        </Group>
         {onCreate && (
           <Button
             leftSection={<IconPlus size={18} />}

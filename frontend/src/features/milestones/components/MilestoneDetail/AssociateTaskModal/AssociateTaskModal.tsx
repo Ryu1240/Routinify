@@ -16,6 +16,7 @@ import {
 import { IconPlus, IconSearch } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { Task } from '@/types/task';
+import { CreateTaskDto } from '@/types';
 import { tasksApi } from '@/features/tasks/api/tasksApi';
 import { handleApiError } from '@/shared/utils/apiErrorUtils';
 import {
@@ -25,6 +26,8 @@ import {
   getStatusLabel,
   formatDate,
 } from '@/shared/utils/taskUtils';
+import { CreateTaskModal } from '@/features/tasks/components/CreateTaskModal';
+import { useCategories } from '@/shared/hooks/useCategories';
 
 type AssociateTaskModalProps = {
   opened: boolean;
@@ -47,7 +50,15 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTaskIds, setSelectedTaskIds] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [includeCompleted, setIncludeCompleted] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
 
+  const {
+    categories,
+    createCategory,
+    createLoading: categoryCreateLoading,
+  } = useCategories();
   const associatedTaskIdsRef = useRef(associatedTaskIds);
   associatedTaskIdsRef.current = associatedTaskIds;
 
@@ -55,7 +66,10 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     try {
       setTasksLoading(true);
       setError(null);
-      const allTasks = await tasksApi.fetchAll(undefined, true);
+      const allTasks = await tasksApi.fetchAll(
+        { include_completed: includeCompleted },
+        true
+      );
       const ids = associatedTaskIdsRef.current;
       const availableTasks = allTasks.filter((task) => !ids.includes(task.id));
       setTasks(availableTasks);
@@ -70,16 +84,21 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     } finally {
       setTasksLoading(false);
     }
-  }, []);
+  }, [includeCompleted]);
 
   useEffect(() => {
     if (opened) {
       fetchTasks();
+    }
+  }, [opened, fetchTasks]);
+
+  useEffect(() => {
+    if (opened) {
       setSearchQuery('');
       setSelectedTaskIds([]);
       setError(null);
     }
-  }, [opened, fetchTasks]);
+  }, [opened]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -133,38 +152,96 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
     onClose();
   };
 
+  const handleCreateTask = async (taskData: CreateTaskDto) => {
+    try {
+      setCreateLoading(true);
+      const newTask = await tasksApi.create(taskData);
+      setTasks((prev) => [newTask, ...prev]);
+      setSelectedTaskIds((prev) => [...prev, newTask.id]);
+      setIsCreateModalOpen(false);
+      window.dispatchEvent(
+        new CustomEvent('tasks-refresh', { detail: { silent: true } })
+      );
+    } catch (err) {
+      handleApiError(err, {
+        defaultMessage:
+          'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
+      throw err;
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   const allSelected =
     filteredTasks.length > 0 && selectedTaskIds.length === filteredTasks.length;
   const someSelected =
     selectedTaskIds.length > 0 && selectedTaskIds.length < filteredTasks.length;
+
+  const actionButtons = (
+    <Group gap="xs">
+      <Button variant="outline" onClick={handleClose} disabled={loading}>
+        キャンセル
+      </Button>
+      <Button
+        onClick={handleAssociate}
+        loading={loading}
+        disabled={selectedTaskIds.length === 0 || loading}
+        color={COLORS.PRIMARY}
+        leftSection={loading ? <Loader size={16} /> : <IconPlus size={16} />}
+      >
+        追加 ({selectedTaskIds.length})
+      </Button>
+    </Group>
+  );
 
   return (
     <Modal
       opened={opened}
       onClose={handleClose}
       title={
-        <Title order={3} c={COLORS.PRIMARY}>
-          タスクを追加
-        </Title>
+        <Group align="center" gap="lg">
+          <Title order={3} c={COLORS.PRIMARY}>
+            タスクを追加
+          </Title>
+          <Checkbox
+            label="完了を含めて表示する"
+            checked={includeCompleted}
+            onChange={(event) => {
+              setIncludeCompleted(event.currentTarget.checked);
+            }}
+          />
+        </Group>
       }
       size="xl"
       centered
     >
       <Stack gap="md">
-        <TextInput
-          placeholder="タスクを検索..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.currentTarget.value)}
-          leftSection={<IconSearch size={16} />}
-          styles={{
-            input: {
-              borderColor: COLORS.LIGHT,
-              '&:focus': {
-                borderColor: COLORS.PRIMARY,
+        <Group justify="space-between" gap="md">
+          <TextInput
+            placeholder="タスクを検索..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.currentTarget.value)}
+            leftSection={<IconSearch size={16} />}
+            style={{ flex: 1 }}
+            styles={{
+              input: {
+                borderColor: COLORS.LIGHT,
+                '&:focus': {
+                  borderColor: COLORS.PRIMARY,
+                },
               },
-            },
-          }}
-        />
+            }}
+          />
+          <Button
+            variant="light"
+            color={COLORS.PRIMARY}
+            leftSection={<IconPlus size={16} />}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            新規タスクを作成
+          </Button>
+        </Group>
 
         {error && (
           <Alert title="エラー" color="red" variant="light">
@@ -173,26 +250,37 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
         )}
 
         {tasksLoading ? (
-          <Group justify="center" py="xl">
-            <Loader size="md" color={COLORS.PRIMARY} />
-            <Text c={COLORS.MEDIUM}>タスクを読み込み中...</Text>
-          </Group>
+          <>
+            <Group justify="center" py="xl">
+              <Loader size="md" color={COLORS.PRIMARY} />
+              <Text c={COLORS.MEDIUM}>タスクを読み込み中...</Text>
+            </Group>
+            <Group justify="flex-end" align="center">
+              {actionButtons}
+            </Group>
+          </>
         ) : filteredTasks.length === 0 ? (
-          <Text c="dimmed" ta="center" py="xl">
-            {searchQuery.trim() === ''
-              ? '関連付け可能なタスクがありません'
-              : '検索結果が見つかりません'}
-          </Text>
+          <>
+            <Text c="dimmed" ta="center" py="xl">
+              {searchQuery.trim() === ''
+                ? '関連付け可能なタスクがありません'
+                : '検索結果が見つかりません'}
+            </Text>
+            <Group justify="flex-end" align="center">
+              {actionButtons}
+            </Group>
+          </>
         ) : (
           <>
             {filteredTasks.length > 0 && (
-              <Group justify="space-between">
+              <Group justify="space-between" align="center">
                 <Checkbox
                   checked={allSelected}
                   indeterminate={someSelected}
                   onChange={handleSelectAll}
                   label={`全選択 (${selectedTaskIds.length}/${filteredTasks.length})`}
                 />
+                {actionButtons}
               </Group>
             )}
             <Table striped highlightOnHover>
@@ -254,24 +342,17 @@ export const AssociateTaskModal: React.FC<AssociateTaskModalProps> = ({
             </Table>
           </>
         )}
-
-        <Group justify="flex-end" mt="md">
-          <Button variant="outline" onClick={handleClose} disabled={loading}>
-            キャンセル
-          </Button>
-          <Button
-            onClick={handleAssociate}
-            loading={loading}
-            disabled={selectedTaskIds.length === 0 || loading}
-            color={COLORS.PRIMARY}
-            leftSection={
-              loading ? <Loader size={16} /> : <IconPlus size={16} />
-            }
-          >
-            追加 ({selectedTaskIds.length})
-          </Button>
-        </Group>
       </Stack>
+
+      <CreateTaskModal
+        opened={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateTask}
+        loading={createLoading}
+        categories={categories}
+        onCreateCategory={createCategory}
+        createCategoryLoading={categoryCreateLoading}
+      />
     </Modal>
   );
 };

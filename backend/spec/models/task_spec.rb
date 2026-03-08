@@ -177,6 +177,28 @@ RSpec.describe Task, type: :model do
         expect(Task.for_user('nonexistent')).to be_empty
       end
     end
+
+    describe '.incomplete' do
+      # 親スコープの user1_task1, user1_task2 と混同しないよう別の account_id を使用
+      let!(:pending_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'pending')
+      end
+      let!(:in_progress_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'in_progress')
+      end
+      let!(:completed_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'completed')
+      end
+      let!(:on_hold_task) do
+        create(:task, account_id: 'incomplete_test_user', status: 'on_hold')
+      end
+
+      it '完了以外のステータスのタスクのみを返すこと' do
+        result = Task.where(account_id: 'incomplete_test_user').incomplete
+        expect(result).to contain_exactly(pending_task, in_progress_task, on_hold_task)
+        expect(result).not_to include(completed_task)
+      end
+    end
   end
 
   describe 'インスタンスメソッド' do

@@ -5,6 +5,43 @@ RSpec.describe 'GET /api/v1/tasks', type: :request do
   include_context 'tasks request spec setup'
 
   describe 'GET /api/v1/tasks' do
+    context 'include_completed パラメータ' do
+      before do
+        create(:task, account_id: user_id, status: 'pending')
+        create(:task, account_id: user_id, status: 'in_progress')
+        create(:task, account_id: user_id, status: 'completed')
+      end
+
+      it 'デフォルトでは完了タスクを除外すること' do
+        get '/api/v1/tasks', headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        statuses = json_response['data'].map { |t| t['status'] }
+        expect(statuses).to contain_exactly('pending', 'in_progress')
+        expect(statuses).not_to include('completed')
+      end
+
+      it 'include_completed=true で完了タスクも含めること' do
+        get '/api/v1/tasks', params: { include_completed: 'true' }, headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect(json_response['data'].length).to eq(3)
+        statuses = json_response['data'].map { |t| t['status'] }
+        expect(statuses).to include('completed')
+      end
+
+      it 'status 指定時は include_completed に関係なくそのステータスのみ返すこと' do
+        get '/api/v1/tasks', params: { status: 'completed' }, headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect(json_response['data'].length).to eq(1)
+        expect(json_response['data'].first['status']).to eq('completed')
+      end
+    end
+
     context '正常系' do
       before do
         create_list(:task, 3, account_id: user_id)
@@ -131,12 +168,14 @@ RSpec.describe 'GET /api/v1/tasks', type: :request do
         expect(statuses).not_to include('completed', 'on_hold')
       end
 
-      it 'statusesパラメータが空の場合、すべてのタスクを返すこと' do
+      it 'statusesパラメータが空の場合、デフォルトでは完了を除外して返すこと' do
         get '/api/v1/tasks', params: { statuses: '' }, headers: auth_headers
 
         expect(response).to have_http_status(:ok)
         json_response = JSON.parse(response.body)
-        expect(json_response['data'].length).to eq(4)
+        expect(json_response['data'].length).to eq(3)
+        statuses = json_response['data'].map { |t| t['status'] }
+        expect(statuses).not_to include('completed')
       end
 
       it '無効なステータスが含まれている場合、有効なステータスのみでフィルタリングすること' do

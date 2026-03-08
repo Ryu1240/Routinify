@@ -38,6 +38,18 @@ describe('tasksApi', () => {
       expect(result).toEqual(mockTasks);
     });
 
+    it('include_completed パラメータを送信すること', async () => {
+      (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
+        data: { data: [] },
+      });
+
+      await tasksApi.fetchAll({ include_completed: true });
+
+      expect(axios.get).toHaveBeenCalledWith('/api/v1/tasks', {
+        params: { include_completed: true },
+      });
+    });
+
     it('params を渡した場合クエリパラメータとして送信すること', async () => {
       (axios.get as ReturnType<typeof vi.fn>).mockResolvedValue({
         data: { data: [] },
@@ -92,12 +104,23 @@ describe('tasksApi', () => {
   });
 
   describe('create', () => {
-    it('POST /api/v1/tasks を正しい body で呼び出すこと', async () => {
+    it('POST /api/v1/tasks を正しい body で呼び出し作成したタスクを返すこと', async () => {
+      const createdTask = {
+        id: 1,
+        accountId: 'acc-1',
+        title: 'New Task',
+        dueDate: '2025-12-31',
+        status: 'pending',
+        priority: 'high',
+        categoryId: 1,
+        createdAt: '2025-01-01T00:00:00Z',
+        updatedAt: '2025-01-01T00:00:00Z',
+      };
       (axios.post as ReturnType<typeof vi.fn>).mockResolvedValue({
-        data: {},
+        data: { data: createdTask },
       });
 
-      await tasksApi.create({
+      const result = await tasksApi.create({
         title: 'New Task',
         dueDate: '2025-12-31',
         status: 'pending',
@@ -114,6 +137,7 @@ describe('tasksApi', () => {
           category_id: 1,
         },
       });
+      expect(result).toEqual(createdTask);
     });
 
     it('エラーが発生した場合、エラーをスローすること', async () => {

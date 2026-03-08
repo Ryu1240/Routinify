@@ -71,6 +71,43 @@ RSpec.describe 'GET /api/v1/milestones', type: :request do
       end
     end
 
+    context 'include_completed パラメータ' do
+      before do
+        create(:milestone, account_id: user_id, status: 'planning', name: 'Planning')
+        create(:milestone, account_id: user_id, status: 'in_progress', name: 'In Progress')
+        create(:milestone, account_id: user_id, status: 'completed', name: 'Completed')
+      end
+
+      it 'デフォルトでは完了マイルストーンを除外すること' do
+        get '/api/v1/milestones', headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        statuses = json_response['data'].map { |m| m['status'] }
+        expect(statuses).to contain_exactly('planning', 'in_progress')
+        expect(statuses).not_to include('completed')
+      end
+
+      it 'include_completed=true で完了マイルストーンも含めること' do
+        get '/api/v1/milestones', params: { include_completed: 'true' }, headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect(json_response['data'].length).to eq(3)
+        statuses = json_response['data'].map { |m| m['status'] }
+        expect(statuses).to include('completed')
+      end
+
+      it 'status 指定時は include_completed に関係なくそのステータスのみ返すこと' do
+        get '/api/v1/milestones', params: { status: 'completed' }, headers: auth_headers
+
+        expect(response).to have_http_status(:ok)
+        json_response = JSON.parse(response.body)
+        expect(json_response['data'].length).to eq(1)
+        expect(json_response['data'].first['status']).to eq('completed')
+      end
+    end
+
     context 'フィルタリング機能' do
       before do
         create(:milestone, account_id: user_id, status: 'planning', name: 'Planning Milestone')
