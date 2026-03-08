@@ -79,15 +79,7 @@ module Api
           job_id = SecureRandom.uuid
 
           # ジョブ初期ステータスをRedisに保存
-          redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0'))
-          initial_status = {
-            jobId: job_id,
-            status: 'pending',
-            completed: false,
-            createdAt: Time.current.iso8601
-          }
-          redis.setex("job_status:#{job_id}", 24.hours.to_i, initial_status.to_json)
-          redis.close
+          JobStatusService.new.create_pending(job_id)
 
           # ジョブをキューに投入
           RoutineTaskGeneratorJob.perform_later(routine_task.id, job_id)
@@ -108,16 +100,13 @@ module Api
           job_id = params[:job_id]
           return render_error(errors: [ 'job_idパラメータが必要です' ], status: :bad_request) if job_id.blank?
 
-          # Redisからジョブステータスを取得
-          redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://redis:6379/0'))
-          job_status_json = redis.get("job_status:#{job_id}")
-          redis.close
+          # ジョブステータスを取得
+          job_status = JobStatusService.new.find(job_id)
 
-          if job_status_json.nil?
+          if job_status.nil?
             return render_error(errors: [ '指定されたジョブが見つかりません' ], status: :not_found)
           end
 
-          job_status = JSON.parse(job_status_json, symbolize_names: true)
           render_success(data: job_status)
         end
       end
