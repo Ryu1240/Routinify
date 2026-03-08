@@ -30,11 +30,7 @@ module Api
         validate_permissions([ 'write:tasks' ]) do
           user_id = current_user_id
           category = Category.find_by(id: params[:id], account_id: user_id)
-
-          if category.nil?
-            render_not_found('カテゴリ')
-            return
-          end
+          return render_not_found('カテゴリ') if category.nil?
 
           if category.update(category_params)
             render_success(
@@ -51,11 +47,7 @@ module Api
         validate_permissions([ 'delete:tasks' ]) do
           user_id = current_user_id
           category = Category.find_by(id: params[:id], account_id: user_id)
-
-          if category.nil?
-            render_not_found('カテゴリ')
-            return
-          end
+          return render_not_found('カテゴリ') if category.nil?
 
           category.destroy
           head :no_content
