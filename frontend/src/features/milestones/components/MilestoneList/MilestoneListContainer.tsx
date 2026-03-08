@@ -19,6 +19,7 @@ export const MilestoneListContainer: React.FC = () => {
   const [filters, setFilters] = React.useState<MilestoneFilters>({
     sortBy: 'created_at',
     sortOrder: 'desc',
+    includeCompleted: false,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
