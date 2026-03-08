@@ -26,11 +26,16 @@
 ```
 app/services/
 ├── base_service.rb           # 基底サービス
+├── task_deletion_service.rb  # タスク削除サービス
 ├── task_service.rb          # タスクサービス
 ├── category_service.rb      # カテゴリサービス
 ├── milestone_create_service.rb  # マイルストーン作成サービス
 ├── milestone_update_service.rb  # マイルストーン更新サービス
-└── notification_service.rb  # 通知サービス
+├── notification_service.rb  # 通知サービス
+└── delete_strategies/       # 削除戦略パターン
+    ├── base_strategy.rb
+    ├── soft_delete_strategy.rb   # 論理削除
+    └── hard_delete_strategy.rb  # 物理削除
 ```
 
 ### **継承関係**
@@ -377,6 +382,24 @@ class MilestoneUpdateService < BaseService
       status: :internal_server_error
     )
   end
+end
+```
+
+### **タスク削除サービス（削除戦略パターン）**
+
+タスク削除の論理削除/物理削除の分岐ロジックを、Strategy パターンで分離したサービスです。
+
+- **TaskDeletionService**: タスクを受け取り、`routine_task_related?` に応じて戦略を選択して削除を実行
+- **SoftDeleteStrategy**: 習慣化タスク由来のタスク → `deleted_at` を設定（論理削除）
+- **HardDeleteStrategy**: 通常タスク → `destroy`（物理削除）
+
+```ruby
+# コントローラーからの呼び出し例
+result = TaskDeletionService.new(task: task).call
+if result.success?
+  render_success(status: :no_content)
+else
+  render_error(errors: result.errors, status: result.status)
 end
 ```
 

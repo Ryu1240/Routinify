@@ -60,10 +60,12 @@ module Api
           task = Task.with_deleted.find_by(id: params[:id], account_id: current_user_id)
           return render_not_found('タスク') unless task
 
-          task.delete_task
-          render_success(
-            status: :no_content
-          )
+          result = TaskDeletionService.new(task: task).call
+          if result.success?
+            render_success(status: :no_content)
+          else
+            render_error(errors: result.errors, status: result.status)
+          end
         end
       end
 
