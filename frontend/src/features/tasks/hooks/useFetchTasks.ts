@@ -40,12 +40,9 @@ export const useFetchTasks = (options: UseFetchTasksOptions = {}) => {
     [includeCompleted]
   );
 
-  const refreshTasks = useCallback(
-    async () => {
-      await fetchTasks(true);
-    },
-    [fetchTasks]
-  );
+  const refreshTasks = useCallback(async () => {
+    await fetchTasks(true);
+  }, [fetchTasks]);
 
   useEffect(() => {
     if (hasAccessToken) {

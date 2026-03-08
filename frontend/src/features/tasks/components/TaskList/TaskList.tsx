@@ -138,13 +138,13 @@ export const TaskList: React.FC<TaskListProps> = ({
           style={{ flex: 1 }}
         />
         <Button
-            leftSection={<IconPlus size={16} />}
-            onClick={onAddTask}
-            color={COLORS.PRIMARY}
-            variant="filled"
-          >
-            タスク追加
-          </Button>
+          leftSection={<IconPlus size={16} />}
+          onClick={onAddTask}
+          color={COLORS.PRIMARY}
+          variant="filled"
+        >
+          タスク追加
+        </Button>
       </Group>
 
       {/* 編集モード中またはデスクトップ時はテーブル表示 */}
