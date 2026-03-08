@@ -329,52 +329,6 @@ RSpec.describe Task, type: :model do
       end
     end
 
-    describe '#soft_delete' do
-      it 'deleted_atを設定すること' do
-        expect { task.soft_delete }.to change { Task.with_deleted.find(task.id).deleted_at }.from(nil).to(be_present)
-      end
-
-      it '削除されたタスクはactiveスコープで取得できないこと' do
-        task.soft_delete
-        expect(Task.active.find_by(id: task.id)).to be_nil
-      end
-
-      it 'with_deletedスコープで取得できること' do
-        task.soft_delete
-        expect(Task.with_deleted.find_by(id: task.id)).to be_present
-      end
-    end
-
-    describe '#hard_delete' do
-      it 'タスクを物理削除すること' do
-        task_id = task.id
-        task.hard_delete
-        expect(Task.with_deleted.find_by(id: task_id)).to be_nil
-      end
-    end
-
-    describe '#delete_task' do
-      context '習慣化タスクに紐づくタスクの場合' do
-        it '論理削除すること' do
-          expect { routine_task_related_task.delete_task }.to change { Task.with_deleted.find(routine_task_related_task.id).deleted_at }.from(nil).to(be_present)
-        end
-
-        it 'タスクはデータベースに残ること' do
-          task_id = routine_task_related_task.id
-          routine_task_related_task.delete_task
-          expect(Task.with_deleted.find_by(id: task_id)).to be_present
-        end
-      end
-
-      context '習慣化タスクに紐づかないタスクの場合' do
-        it '物理削除すること' do
-          task_id = task.id
-          task.delete_task
-          expect(Task.with_deleted.find_by(id: task_id)).to be_nil
-        end
-      end
-    end
-
     describe '#deleted?' do
       it '削除されていないタスクでfalseを返すこと' do
         expect(task.deleted?).to be false

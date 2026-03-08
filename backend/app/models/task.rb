@@ -49,20 +49,6 @@ class Task < ApplicationRecord
     status == 'pending'
   end
 
-  # 論理削除/物理削除の分岐
-  def delete_task
-    if routine_task_related?
-      soft_delete
-    else
-      hard_delete
-    end
-  end
-
-  # 物理削除
-  def hard_delete
-    destroy
-  end
-
   # 論理削除済みか判定
   def deleted?
     deleted_at.present?
@@ -82,12 +68,6 @@ class Task < ApplicationRecord
                    saved_change_to_deleted_at?
                  )
                }
-
-  # 論理削除（deleted_atを設定）
-  # update を使用して after_commit を発火させ、達成状況統計の更新をトリガーする
-  def soft_delete
-    update(deleted_at: Time.current)
-  end
 
   private
 
