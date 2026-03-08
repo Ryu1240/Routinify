@@ -4,6 +4,7 @@ module Api
       def index
         validate_permissions([ 'read:tasks' ]) do
           tasks = Task.for_user(current_user_id).includes(:category, :milestones)
+          tasks = apply_base_scope(tasks, search_params)
           tasks = apply_filters(tasks, search_params)
 
           render_success(data: tasks.map { |task| TaskSerializer.new(task).as_json })
@@ -73,7 +74,14 @@ module Api
       end
 
       def search_params
-        params.permit(:status, :statuses, :overdue, :due_today, :q, :page, :per_page, :sort_by, :sort_order)
+        params.permit(:status, :statuses, :overdue, :due_today, :q, :page, :per_page, :sort_by, :sort_order, :include_completed)
+      end
+
+      def apply_base_scope(tasks, filters)
+        return tasks if ActiveModel::Type::Boolean.new.cast(filters[:include_completed])
+        return tasks if filters[:status].present? || filters[:statuses].present?
+
+        tasks.incomplete
       end
 
       def apply_filters(tasks, filters)

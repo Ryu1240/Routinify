@@ -4,6 +4,7 @@ module Api
       def index
         validate_permissions([ 'read:milestones' ]) do
           milestones = Milestone.for_user(current_user_id).includes(:tasks)
+          milestones = apply_base_scope(milestones, search_params)
           milestones = apply_filters(milestones, search_params)
           milestones = apply_sort(milestones, search_params)
 
@@ -202,7 +203,14 @@ module Api
       end
 
       def search_params
-        params.permit(:status, :due_date_range, :q, :sort_by, :sort_order, :ids)
+        params.permit(:status, :due_date_range, :q, :sort_by, :sort_order, :ids, :include_completed)
+      end
+
+      def apply_base_scope(milestones, filters)
+        return milestones if ActiveModel::Type::Boolean.new.cast(filters[:include_completed])
+        return milestones if filters[:status].present?
+
+        milestones.incomplete
       end
 
       def task_association_params
