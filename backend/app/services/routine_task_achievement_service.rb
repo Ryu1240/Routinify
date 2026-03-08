@@ -13,6 +13,12 @@ class RoutineTaskAchievementService < BaseService
     validate_period!
     calculate_period_dates!
 
+    # 週次・月次かつ現在週・現在月の場合は AchievementStatistic を優先
+    cached = fetch_cached_statistic
+    if cached
+      return ServiceResult.success(data: cached)
+    end
+
     stats = task_statistics
     result = {
       total_count: stats[:total_count],
@@ -26,6 +32,11 @@ class RoutineTaskAchievementService < BaseService
       consecutive_periods_count: consecutive_periods_count,
       average_completion_days: average_completion_days
     }
+
+    # 週次・月次の場合、次回用に非同期で保存をスケジュール
+    if %w[weekly monthly].include?(@period)
+      UpdateAchievementStatisticsJob.perform_later(@routine_task.id, @period, @start_date)
+    end
 
     ServiceResult.success(data: result)
   rescue ArgumentError => e
@@ -88,6 +99,18 @@ class RoutineTaskAchievementService < BaseService
       # 特定期間: ユーザー指定の期間（start_date 〜 end_date）
       # start_dateとend_dateは既に設定されている
     end
+  end
+
+  # 週次・月次の場合、AchievementStatistic からキャッシュを取得（カスタム期間は対象外）
+  def fetch_cached_statistic
+    return nil if @period == 'custom'
+
+    stat = AchievementStatistic.find_by(
+      routine_task_id: @routine_task.id,
+      period_type: @period,
+      period_start_date: @start_date
+    )
+    stat&.to_achievement_stats_hash
   end
 
   # タスク統計情報を一括で取得（モデルから取得）
