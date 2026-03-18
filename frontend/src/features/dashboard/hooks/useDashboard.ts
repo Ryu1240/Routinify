@@ -16,7 +16,7 @@ export const useDashboard = () => {
         setLoading(true);
       }
 
-      const allTasks = await getAllRoutineTasksWithStats();
+      const allTasks = await getAllRoutineTasksWithStats('monthly');
 
       // 上位3つを選択: 達成率が高い順
       const sortedTasks = allTasks.sort((a, b) => {
