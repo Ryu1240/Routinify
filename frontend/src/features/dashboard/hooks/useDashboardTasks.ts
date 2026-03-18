@@ -142,6 +142,25 @@ export const useDashboardTasks = () => {
     [updateTask]
   );
 
+  const deleteTask = useCallback(
+    async (taskId: number) => {
+      try {
+        await tasksApi.delete(taskId);
+        await fetchTasks(true);
+        window.dispatchEvent(
+          new CustomEvent('tasks-refresh', { detail: { silent: true } })
+        );
+      } catch (err) {
+        handleApiError(err, {
+          defaultMessage:
+            'タスクの削除に失敗しました。しばらく時間をおいて再度お試しください。',
+        });
+        throw err;
+      }
+    },
+    [fetchTasks]
+  );
+
   return {
     tasks,
     milestones,
@@ -150,6 +169,7 @@ export const useDashboardTasks = () => {
     toggleTaskStatus,
     setTaskStatusToCompleted,
     setTaskStatusToPending,
+    deleteTask,
     refreshTasks: fetchTasks,
   };
 };

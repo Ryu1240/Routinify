@@ -32,6 +32,7 @@ interface DashboardProps {
   ) => Promise<void>;
   onSetTaskStatusToCompleted?: (taskId: number) => Promise<void>;
   onSetTaskStatusToPending?: (taskId: number) => Promise<void>;
+  onDeleteTask?: (taskId: number) => Promise<void>;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -44,6 +45,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onToggleTaskStatus,
   onSetTaskStatusToCompleted,
   onSetTaskStatusToPending,
+  onDeleteTask,
 }) => {
   const [isRoutineTasksExpanded, setIsRoutineTasksExpanded] = useState(false);
   const isMobile = useIsMobile();
@@ -168,6 +170,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
         onToggleTaskStatus={onToggleTaskStatus}
         onSetTaskStatusToPending={onSetTaskStatusToPending}
+        onDeleteTask={onDeleteTask}
       />
     </Stack>
   );

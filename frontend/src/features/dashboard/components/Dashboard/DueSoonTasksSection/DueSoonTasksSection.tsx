@@ -19,6 +19,7 @@ type DueSoonTasksSectionProps = {
     currentStatus: TaskStatus | null
   ) => Promise<void>;
   onSetTaskStatusToPending?: (taskId: number) => Promise<void>;
+  onDeleteTask?: (taskId: number) => Promise<void>;
 };
 
 export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
@@ -27,6 +28,7 @@ export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
   onSetTaskStatusToCompleted,
   onToggleTaskStatus,
   onSetTaskStatusToPending,
+  onDeleteTask,
 }) => {
   const {
     standalonePendingTasks,
@@ -150,6 +152,7 @@ export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
               onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
               onToggleTaskStatus={onToggleTaskStatus}
               onSetTaskStatusToPending={onSetTaskStatusToPending}
+              onDeleteTask={onDeleteTask}
             />
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }} order={{ base: 1, md: 2 }}>
@@ -162,6 +165,7 @@ export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
               onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
               onToggleTaskStatus={onToggleTaskStatus}
               onSetTaskStatusToPending={onSetTaskStatusToPending}
+              onDeleteTask={onDeleteTask}
             />
           </Grid.Col>
         </Grid>

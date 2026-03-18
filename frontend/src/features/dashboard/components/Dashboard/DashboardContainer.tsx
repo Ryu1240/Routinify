@@ -19,6 +19,7 @@ export const DashboardContainer: React.FC = () => {
     toggleTaskStatus,
     setTaskStatusToCompleted,
     setTaskStatusToPending,
+    deleteTask,
   } = useDashboardTasks();
 
   const loading = routineTasksLoading || tasksLoading;
@@ -43,6 +44,16 @@ export const DashboardContainer: React.FC = () => {
     refreshTasks();
   };
 
+  const handleDelete = async (taskId: number) => {
+    if (window.confirm('このタスクを削除してもよろしいですか？')) {
+      try {
+        await deleteTask(taskId);
+      } catch {
+        // handleApiError でエラー表示済み
+      }
+    }
+  };
+
   return (
     <Dashboard
       routineTasks={routineTasks}
@@ -54,6 +65,7 @@ export const DashboardContainer: React.FC = () => {
       onToggleTaskStatus={toggleTaskStatus}
       onSetTaskStatusToCompleted={setTaskStatusToCompleted}
       onSetTaskStatusToPending={setTaskStatusToPending}
+      onDeleteTask={handleDelete}
     />
   );
 };

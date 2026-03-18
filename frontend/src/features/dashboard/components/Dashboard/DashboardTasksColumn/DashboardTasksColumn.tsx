@@ -27,6 +27,7 @@ type DashboardTasksColumnProps = {
     currentStatus: TaskStatus | null
   ) => Promise<void>;
   onSetTaskStatusToPending?: (taskId: number) => Promise<void>;
+  onDeleteTask?: (taskId: number) => Promise<void>;
 };
 
 export const DashboardTasksColumn: React.FC<DashboardTasksColumnProps> = ({
@@ -39,6 +40,7 @@ export const DashboardTasksColumn: React.FC<DashboardTasksColumnProps> = ({
   onSetTaskStatusToCompleted,
   onToggleTaskStatus,
   onSetTaskStatusToPending,
+  onDeleteTask,
 }) => {
   const [showAll, setShowAll] = useState(false);
   const totalCount = tasks.length + milestonesWithTasks.length;
@@ -70,6 +72,7 @@ export const DashboardTasksColumn: React.FC<DashboardTasksColumnProps> = ({
                 onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
                 onToggleTaskStatus={onToggleTaskStatus}
                 onSetTaskStatusToPending={onSetTaskStatusToPending}
+                onDelete={onDeleteTask}
               />
             ))}
             {displayedMilestones.map(({ milestone, tasks: msTasks }) => (
@@ -81,6 +84,7 @@ export const DashboardTasksColumn: React.FC<DashboardTasksColumnProps> = ({
                 onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
                 onToggleTaskStatus={onToggleTaskStatus}
                 onSetTaskStatusToPending={onSetTaskStatusToPending}
+                onDeleteTask={onDeleteTask}
               />
             ))}
             {hasMore && (
