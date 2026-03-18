@@ -25,6 +25,7 @@ type DashboardMilestoneCardProps = {
     currentStatus: import('@/types').TaskStatus | null
   ) => Promise<void>;
   onSetTaskStatusToPending?: (taskId: number) => Promise<void>;
+  onDeleteTask?: (taskId: number) => Promise<void>;
 };
 
 export const DashboardMilestoneCard: React.FC<DashboardMilestoneCardProps> = ({
@@ -34,6 +35,7 @@ export const DashboardMilestoneCard: React.FC<DashboardMilestoneCardProps> = ({
   onSetTaskStatusToCompleted,
   onToggleTaskStatus,
   onSetTaskStatusToPending,
+  onDeleteTask,
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -94,6 +96,7 @@ export const DashboardMilestoneCard: React.FC<DashboardMilestoneCardProps> = ({
                 onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
                 onToggleTaskStatus={onToggleTaskStatus}
                 onSetTaskStatusToPending={onSetTaskStatusToPending}
+                onDelete={onDeleteTask}
               />
             ))}
           </Stack>

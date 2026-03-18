@@ -1,8 +1,14 @@
 import React from 'react';
 import { Card, Text, Stack, Group, ActionIcon, Tooltip } from '@mantine/core';
-import { IconCheck, IconPlayerPlay, IconArrowBack } from '@tabler/icons-react';
+import {
+  IconCheck,
+  IconPlayerPlay,
+  IconArrowBack,
+  IconTrash,
+} from '@tabler/icons-react';
 import { Task, TaskStatus } from '@/types';
 import dayjs from 'dayjs';
+import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 type DashboardTaskCardProps = {
   task: Task;
@@ -13,6 +19,7 @@ type DashboardTaskCardProps = {
     currentStatus: TaskStatus | null
   ) => Promise<void>;
   onSetTaskStatusToPending?: (taskId: number) => Promise<void>;
+  onDelete?: (taskId: number) => Promise<void>;
 };
 
 export const DashboardTaskCard: React.FC<DashboardTaskCardProps> = ({
@@ -21,8 +28,64 @@ export const DashboardTaskCard: React.FC<DashboardTaskCardProps> = ({
   onSetTaskStatusToCompleted,
   onToggleTaskStatus,
   onSetTaskStatusToPending,
+  onDelete,
 }) => {
+  const isMobile = useIsMobile();
   const isPending = task.status === 'pending' || task.status === null;
+
+  const actionButtons = (
+    <>
+      {onSetTaskStatusToCompleted && (
+        <Tooltip label="完了に変更">
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            color="green"
+            onClick={() => onSetTaskStatusToCompleted(task.id)}
+          >
+            <IconCheck size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+      {isPending && onToggleTaskStatus && (
+        <Tooltip label="進行中に変更">
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            color="blue"
+            onClick={() => onToggleTaskStatus(task.id, task.status)}
+          >
+            <IconPlayerPlay size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+      {!isPending && onSetTaskStatusToPending && (
+        <Tooltip label="未着手に戻す">
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            color="gray"
+            onClick={() => onSetTaskStatusToPending(task.id)}
+          >
+            <IconArrowBack size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+      {onDelete && (
+        <Tooltip label="削除">
+          <ActionIcon
+            size="sm"
+            variant="subtle"
+            color="red"
+            onClick={() => onDelete(task.id)}
+          >
+            <IconTrash size={16} />
+          </ActionIcon>
+        </Tooltip>
+      )}
+    </>
+  );
+
   return (
     <Card
       padding="md"
@@ -37,44 +100,13 @@ export const DashboardTaskCard: React.FC<DashboardTaskCardProps> = ({
           <Text fw={600} style={{ flex: 1 }}>
             {task.title}
           </Text>
-          <Group gap="xs">
-            {onSetTaskStatusToCompleted && (
-              <Tooltip label="完了に変更">
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  color="green"
-                  onClick={() => onSetTaskStatusToCompleted(task.id)}
-                >
-                  <IconCheck size={16} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-            {isPending && onToggleTaskStatus && (
-              <Tooltip label="進行中に変更">
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  color="blue"
-                  onClick={() => onToggleTaskStatus(task.id, task.status)}
-                >
-                  <IconPlayerPlay size={16} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-            {!isPending && onSetTaskStatusToPending && (
-              <Tooltip label="未着手に戻す">
-                <ActionIcon
-                  size="sm"
-                  variant="subtle"
-                  color="gray"
-                  onClick={() => onSetTaskStatusToPending(task.id)}
-                >
-                  <IconArrowBack size={16} />
-                </ActionIcon>
-              </Tooltip>
-            )}
-          </Group>
+          {isMobile ? (
+            <Stack gap="xs" align="flex-end">
+              {actionButtons}
+            </Stack>
+          ) : (
+            <Group gap="xs">{actionButtons}</Group>
+          )}
         </Group>
         <Group gap="md">
           {task.dueDate ? (
