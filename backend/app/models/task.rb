@@ -59,22 +59,18 @@ class Task < ApplicationRecord
     routine_task_id.present?
   end
 
-  after_commit :schedule_achievement_statistics_update,
-               on: [ :create, :update ],
-               if: -> {
-                 routine_task_id.present? && (
-                   saved_change_to_status? ||
-                   saved_change_to_generated_at? ||
-                   saved_change_to_deleted_at?
-                 )
-               }
+  after_commit :schedule_achievement_statistics_update, on: [ :create, :update ]
 
   private
 
   def schedule_achievement_statistics_update
-    base_date = (generated_at || created_at).in_time_zone('Tokyo').to_date
+    return unless routine_task_id.present? && (
+      saved_change_to_status? ||
+      saved_change_to_generated_at? ||
+      saved_change_to_deleted_at?
+    )
 
-    # 週次・月次の両方の統計を更新
+    base_date = (generated_at || created_at).in_time_zone('Tokyo').to_date
     UpdateAchievementStatisticsJob.perform_later(routine_task_id, 'weekly', base_date.beginning_of_week)
     UpdateAchievementStatisticsJob.perform_later(routine_task_id, 'monthly', base_date.beginning_of_month)
   end

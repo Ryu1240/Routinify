@@ -18,10 +18,10 @@ class UpdateAchievementStatisticsJob < ApplicationJob
       routine_task,
       period: period_type,
       start_date: period_start,
-      end_date: period_end
+      end_date: period_end,
+      for_update: true
     )
     result = service.call
-
     return unless result.success?
 
     data = result.data

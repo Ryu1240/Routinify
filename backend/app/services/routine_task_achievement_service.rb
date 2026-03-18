@@ -4,21 +4,22 @@ class RoutineTaskAchievementService < BaseService
   PERIODS = %w[weekly monthly custom].freeze
   ACHIEVEMENT_THRESHOLD = 100.0
 
-  def initialize(routine_task, period:, start_date: nil, end_date: nil)
+  def initialize(routine_task, period:, start_date: nil, end_date: nil, for_update: false)
     @routine_task = routine_task
     @period = period.to_s
     @start_date = start_date&.to_date
     @end_date = end_date&.to_date
+    @for_update = for_update # true のときはテーブル更新用なのでキャッシュを使わず必ず再計算
   end
 
   def call
     validate_period!
     calculate_period_dates!
 
-    # 週次・月次かつ現在週・現在月の場合は AchievementStatistic を優先
-    cached = fetch_cached_statistic
-    if cached
-      return ServiceResult.success(data: cached)
+    # テーブル更新用でない場合、週次・月次かつキャッシュありなら AchievementStatistic を返す
+    unless @for_update
+      cached = fetch_cached_statistic
+      return ServiceResult.success(data: cached) if cached
     end
 
     stats = task_statistics
@@ -35,8 +36,8 @@ class RoutineTaskAchievementService < BaseService
       average_completion_days: average_completion_days
     }
 
-    # 週次・月次の場合、次回用に非同期で保存をスケジュール
-    if %w[weekly monthly].include?(@period)
+    # 週次・月次の場合、テーブル更新でないときのみ次回用に非同期で保存をスケジュール
+    if %w[weekly monthly].include?(@period) && !@for_update
       UpdateAchievementStatisticsJob.perform_later(@routine_task.id, @period, @start_date)
     end
 
