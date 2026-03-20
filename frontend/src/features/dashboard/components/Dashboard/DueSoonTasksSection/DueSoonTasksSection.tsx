@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
-import { Title, Grid, Text } from '@mantine/core';
+import { Title, Grid, Text, Group } from '@mantine/core';
 import { Task } from '@/types';
 import { Milestone } from '@/types/milestone';
 import { DashboardTasksColumn } from '../DashboardTasksColumn';
 import { TaskStatus } from '@/types';
+import { AddTaskButton } from '@/features/tasks/components/AddTaskButton';
 
 type MilestoneWithTasks = {
   milestone: Milestone;
@@ -13,6 +14,7 @@ type MilestoneWithTasks = {
 type DueSoonTasksSectionProps = {
   tasks: Task[];
   milestones: Milestone[];
+  onAddTask?: () => void;
   onSetTaskStatusToCompleted?: (taskId: number) => Promise<void>;
   onToggleTaskStatus?: (
     taskId: number,
@@ -25,6 +27,7 @@ type DueSoonTasksSectionProps = {
 export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
   tasks,
   milestones,
+  onAddTask,
   onSetTaskStatusToCompleted,
   onToggleTaskStatus,
   onSetTaskStatusToPending,
@@ -135,9 +138,10 @@ export const DueSoonTasksSection: React.FC<DueSoonTasksSectionProps> = ({
 
   return (
     <div>
-      <Title order={2} mb="md">
-        期限が近いタスク
-      </Title>
+      <Group justify="space-between" align="center" mb="md">
+        <Title order={2}>期限が近いタスク</Title>
+        {onAddTask && <AddTaskButton onClick={onAddTask} />}
+      </Group>
       {!hasAnyTasks ? (
         <Text c="dimmed">未完了または進行中のタスクがありません</Text>
       ) : (

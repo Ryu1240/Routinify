@@ -23,6 +23,7 @@ interface DashboardProps {
   routineTasks: RoutineTaskWithStats[];
   tasks: Task[];
   milestones: Milestone[];
+  onAddTask?: () => void;
   loading: boolean;
   error: string | null;
   onRetry?: () => void | Promise<void>;
@@ -39,6 +40,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   routineTasks,
   tasks,
   milestones,
+  onAddTask,
   loading,
   error,
   onRetry,
@@ -167,6 +169,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <DueSoonTasksSection
         tasks={tasks}
         milestones={milestones}
+        onAddTask={onAddTask}
         onSetTaskStatusToCompleted={onSetTaskStatusToCompleted}
         onToggleTaskStatus={onToggleTaskStatus}
         onSetTaskStatusToPending={onSetTaskStatusToPending}

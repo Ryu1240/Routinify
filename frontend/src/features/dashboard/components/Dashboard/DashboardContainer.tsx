@@ -1,8 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDashboard, useDashboardTasks } from '../../hooks';
 import { Dashboard } from './Dashboard';
+import { CreateTaskModal } from '@/features/tasks/components/CreateTaskModal';
+import { useCategories } from '@/shared/hooks/useCategories';
+import { CreateTaskDto } from '@/types';
+import { handleApiError } from '@/shared/utils/apiErrorUtils';
+import { tasksApi } from '@/features/tasks/api/tasksApi';
 
 export const DashboardContainer: React.FC = () => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const {
     routineTasks,
     loading: routineTasksLoading,
@@ -21,6 +28,11 @@ export const DashboardContainer: React.FC = () => {
     setTaskStatusToPending,
     deleteTask,
   } = useDashboardTasks();
+  const {
+    categories,
+    createCategory,
+    createLoading: createCategoryLoading,
+  } = useCategories();
 
   const loading = routineTasksLoading || tasksLoading;
   const error = routineTasksError || tasksError;
@@ -54,18 +66,53 @@ export const DashboardContainer: React.FC = () => {
     }
   };
 
+  const handleAddTask = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleCreateTask = async (taskData: CreateTaskDto) => {
+    try {
+      setCreateLoading(true);
+      await tasksApi.create(taskData);
+      setIsCreateModalOpen(false);
+      window.dispatchEvent(
+        new CustomEvent('tasks-refresh', { detail: { silent: true } })
+      );
+    } catch (error) {
+      handleApiError(error, {
+        defaultMessage:
+          'タスクの作成に失敗しました。しばらく時間をおいて再度お試しください。',
+      });
+      throw error;
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   return (
-    <Dashboard
-      routineTasks={routineTasks}
-      tasks={tasks}
-      milestones={milestones}
-      loading={loading}
-      error={error}
-      onRetry={handleRetry}
-      onToggleTaskStatus={toggleTaskStatus}
-      onSetTaskStatusToCompleted={setTaskStatusToCompleted}
-      onSetTaskStatusToPending={setTaskStatusToPending}
-      onDeleteTask={handleDelete}
-    />
+    <>
+      <Dashboard
+        routineTasks={routineTasks}
+        tasks={tasks}
+        milestones={milestones}
+        onAddTask={handleAddTask}
+        loading={loading}
+        error={error}
+        onRetry={handleRetry}
+        onToggleTaskStatus={toggleTaskStatus}
+        onSetTaskStatusToCompleted={setTaskStatusToCompleted}
+        onSetTaskStatusToPending={setTaskStatusToPending}
+        onDeleteTask={handleDelete}
+      />
+      <CreateTaskModal
+        opened={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateTask}
+        loading={createLoading}
+        categories={categories}
+        onCreateCategory={createCategory}
+        createCategoryLoading={createCategoryLoading}
+      />
+    </>
   );
 };
