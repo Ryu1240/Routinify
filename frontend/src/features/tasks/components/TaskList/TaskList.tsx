@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-  TextInput,
-  Group,
-  Text,
-  Button,
-  Title,
-  Stack,
-  Checkbox,
-} from '@mantine/core';
-import { IconSearch, IconPlus } from '@tabler/icons-react';
+import { TextInput, Group, Text, Title, Stack, Checkbox } from '@mantine/core';
+import { IconSearch } from '@tabler/icons-react';
 import { COLORS } from '@/shared/constants/colors';
 import { ListPageState } from '@/shared/components';
 import { Task, UpdateTaskDto, TaskStatus } from '@/types';
@@ -16,6 +8,7 @@ import { Category, CreateCategoryDto } from '@/types/category';
 import { Milestone } from '@/types/milestone';
 import { TaskTable } from '@/features/tasks/components/TaskTable';
 import { TaskCard } from '@/features/tasks/components/TaskCard';
+import { AddTaskButton } from '@/features/tasks/components/AddTaskButton';
 import { useIsMobile } from '@/shared/hooks/useMediaQuery';
 
 type TaskListProps = {
@@ -137,14 +130,7 @@ export const TaskList: React.FC<TaskListProps> = ({
           }}
           style={{ flex: 1 }}
         />
-        <Button
-          leftSection={<IconPlus size={16} />}
-          onClick={onAddTask}
-          color={COLORS.PRIMARY}
-          variant="filled"
-        >
-          タスク追加
-        </Button>
+        <AddTaskButton onClick={onAddTask} />
       </Group>
 
       {/* 編集モード中またはデスクトップ時はテーブル表示 */}
