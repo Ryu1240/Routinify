@@ -262,3 +262,103 @@
 - データベーストランザクションタイムアウトやメモリ圧迫を防ぐ
 - すぐに論理削除されるタスクの過剰なコールバック実行を防ぐ
 
+## フロー図（Mermaid）
+
+以下は実装（`RoutineTaskGeneratorJob`、`RoutineTask`）に基づくフロー図である。生成件数の詳細は **`tasks_to_generate_count` のコードを正**とする（本文 Step 1 の数式説明が古い場合がある）。
+
+### 全体像（API からジョブまで）
+
+`RoutineTasksController#generate` が `job_id` を発行し、Redis に pending を保存したうえで `RoutineTaskGeneratorJob.perform_later` を実行する。
+
+```mermaid
+flowchart LR
+  subgraph api [API]
+    GenPOST[POST generate]
+    StatusGET[GET generation_status]
+  end
+  Redis[(JobStatusService Redis)]
+  Queue[ActiveJob queue]
+  Job[RoutineTaskGeneratorJob]
+
+  GenPOST --> CreatePending[create_pending job_id]
+  CreatePending --> Redis
+  GenPOST --> PerformLater[perform_later id job_id]
+  PerformLater --> Queue
+  Queue --> Job
+  StatusGET --> Redis
+```
+
+### メインフロー: `RoutineTaskGeneratorJob#perform`
+
+```mermaid
+flowchart TD
+  Start([perform開始]) --> Running[job_status running]
+  Running --> FindRT[RoutineTask.find]
+  FindRT --> CheckStart{"current_time < start_generation_at?"}
+  CheckStart -->|Yes| CompleteEarly[job_status completed count0]
+  CompleteEarly --> EndEarly([return])
+
+  CheckStart -->|No| CalcCount[tasks_to_generate_count]
+  CalcCount --> GenTasks[generate_tasks]
+  GenTasks --> HasGen{"generated_count > 0?"}
+  HasGen -->|Yes| UpdateRT[update last_generated_at next_generation_at]
+  HasGen -->|No| SkipUpdate[更新スキップ]
+  UpdateRT --> Cleanup[cleanup_excess_tasks]
+  SkipUpdate --> Cleanup
+  Cleanup --> SchedStats[schedule_achievement_statistics_updates]
+  SchedStats --> CompleteOk[job_status completed]
+  CompleteOk --> EndOk([終了])
+
+  FindRT -.->|例外| Rescue[job_status failed]
+  Rescue --> Reraise([raise])
+  CalcCount -.->|例外| Rescue
+  GenTasks -.->|例外| Rescue
+  UpdateRT -.->|例外| Rescue
+  Cleanup -.->|例外| Rescue
+  SchedStats -.->|例外| Rescue
+```
+
+補足:
+
+- 開始前は `current_time < start_generation_at` なら生成せず `generated_tasks_count: 0` で完了する。
+- `last_generated_at` / `next_generation_at` の更新は **`generated_count > 0` のときのみ**。
+- `cleanup_excess_tasks` は生成の有無にかかわらず実行する。
+- 生成日・削除日から週次・月次の組ごとに `UpdateAchievementStatisticsJob` を `perform_later` する。
+
+### 生成数算出: `RoutineTask#tasks_to_generate_count`
+
+```mermaid
+flowchart TD
+  T0([tasks_to_generate_count]) --> Guard{"last_generated_at あり かつ next_generation_at > current_time?"}
+  Guard -->|Yes| Z0[return 0]
+  Guard -->|No| Base[calculate_base_time_for_generation]
+  Base --> Planned[基準日から interval_days 刻みで予定日を列挙]
+  Planned --> Filter[現在日 JST 以前のみ]
+  Filter --> Dedup[tasks_with_deleted の generated_at 日付と重複除外]
+  Dedup --> Limit["件数を min(件数, min(max_active_tasks * 5, 100))"]
+  Limit --> Ret[return 件数]
+```
+
+`calculate_base_time_for_generation` の基準:
+
+- `last_generated_at` があり、かつ `next_generation_at <= current_time` → `next_generation_at` の JST 始まりの日を基準にする。
+- `last_generated_at` あり、`next_generation_at > current_time` → `last_generated_at`（多くは上記ガードで先に 0 を返す）。
+- 初回（`last_generated_at` なし）→ `start_generation_at`。
+
+### タスク生成ループ: `generate_tasks`
+
+```mermaid
+flowchart TD
+  G0([generate_tasks]) --> GCheck{"tasks_to_generate <= 0?"}
+  GCheck -->|Yes| GEmpty[return 0 と空配列]
+  GCheck -->|No| GBase[calculate_base_time_for_generation]
+  GBase --> Init[i = 0]
+  Init --> More{"i < tasks_to_generate?"}
+  More -->|Yes| GDate["generation_date = base_date + i * interval_days JST 0時"]
+  GDate --> Due[due_date = calculate_due_date または generation_date]
+  Due --> Create[Task.create 継承と pending]
+  Create --> Inc[i をインクリメント]
+  Inc --> More
+  More -->|No| GDone[return count と生成日付配列]
+```
+
