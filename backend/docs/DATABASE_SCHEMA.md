@@ -1,7 +1,7 @@
 # データベーススキーマ設計書
 
-**最終更新日**: 2025-11-01
-**バージョン**: 2.3.0
+**最終更新日**: 2026-03-28
+**バージョン**: 2.4.0
 
 ## 概要
 
@@ -23,6 +23,7 @@
 | tasks | タスク情報を管理 | ✅ 実装済み |
 | categories | タスクのカテゴリを管理 | ✅ 実装済み |
 | routine_tasks | 習慣化タスクのテンプレートを管理 | ✅ 実装済み |
+| achievement_statistics | 習慣化タスクの達成状況集計（週次・月次） | ✅ 実装済み |
 | milestones | マイルストーン情報を管理 | ✅ 実装済み |
 | milestone_tasks | タスクとマイルストーンの関連付け | ✅ 実装済み |
 
@@ -31,41 +32,50 @@
 ## ER図
 
 ```
-┌──────────────────────┐
-│   routine_tasks      │ (習慣化タスクテンプレート)
-├──────────────────────┤
-│ id (PK)              │
-│ account_id           │
-│ title                │
-│ frequency            │
-│ interval_value       │
-│ last_generated_at    │
+┌──────────────────────┐                    ┌─────────────┐
+│   routine_tasks      │ (習慣化テンプレ)   │ categories  │
+├──────────────────────┤                    ├─────────────┤
+│ id (PK)              │                    │ id (PK)     │
+│ account_id           │                    │ account_id  │
+│ title                │                    │ name        │
+│ frequency            │                    │ created_at  │
+│ interval_value       │                    │ updated_at  │
+│ last_generated_at    │                    └─────────────┘
 │ next_generation_at   │
 │ max_active_tasks     │
-│ category_id (FK)     │──┐
-│ priority             │  │
-│ is_active            │  │
-│ created_at           │  │
-│ updated_at           │  │
-└──────────────────────┘  │
-         │                │
-         │ 1:N            │
-         ▼                │
-┌──────────────────┐      │       ┌─────────────┐
-│      tasks       │      │       │ categories  │
-├──────────────────┤      │       ├─────────────┤
-│ id (PK)          │      │       │ id (PK)     │
-│ account_id       │      └──────►│ account_id  │
-│ title            │              │ name        │
-│ due_date         │              │ created_at  │
-│ status           │              │ updated_at  │
-│ priority         │              └─────────────┘
-│ category_id (FK) │──────────────────┘
-│ routine_task_id  │
-│ generated_at     │
-│ created_at       │
-│ updated_at       │
-└──────────────────┘
+│ category_id (FK)     │                 │
+│ priority             │
+│ is_active            │
+│ created_at           │
+│ updated_at           │
+└──────────────────────┘
+         │
+    ┌────┴────┐
+    │1:N  1:N│
+    ▼         ▼
+┌──────────────────┐ ┌────────────────────────────────────┐
+│      tasks       │ │      achievement_statistics         │
+├──────────────────┤ │ (達成状況集計: weekly / monthly)    │
+│ id (PK)          │ ├────────────────────────────────────┤
+│ account_id       │ │ id (PK)                            │
+│ title            │ │ routine_task_id (FK)               │
+│ due_date         │ │ period_type                        │
+│ status           │ │ period_start_date                  │
+│ priority         │ │ period_end_date                    │
+│ category_id (FK) │ │ total_count                        │
+│ routine_task_id  │ │ completed_count                    │
+│ generated_at     │ │ incomplete_count                   │
+│ created_at       │ │ overdue_count                      │
+│ updated_at       │ │ achievement_rate                   │
+└──────────────────┘ │ consecutive_periods_count          │
+         │            │ average_completion_days            │
+         │            │ calculated_at                      │
+         │            │ created_at                         │
+         │            │ updated_at                         │
+         │            └────────────────────────────────────┘
+         │
+         │ category_id (FK)
+         └──────────────────────────────────► categories（上記と同一）
          │
          │ N:M
          │
@@ -94,6 +104,8 @@
 │ updated_at       │
 └──────────────────┘
 ```
+
+**注記**: `routine_tasks.category_id` と `tasks.category_id` は `categories.id` を参照する（外部キー）。
 
 ---
 
@@ -268,7 +280,9 @@ add_foreign_key 'routine_tasks', 'categories', on_delete: :nullify
 
 ```ruby
 class RoutineTask < ApplicationRecord
-  has_many :tasks, dependent: :nullify
+  has_many :tasks, -> { active }, class_name: 'Task', foreign_key: 'routine_task_id'
+  has_many :tasks_with_deleted, class_name: 'Task', foreign_key: 'routine_task_id'
+  has_many :achievement_statistics, dependent: :destroy
   belongs_to :category, optional: true
 
   FREQUENCIES = %w[daily weekly monthly custom].freeze
@@ -335,6 +349,53 @@ class RoutineTask < ApplicationRecord
       errors.add(:start_generation_at, 'は一度でも生成が行われると変更できません')
     end
   end
+end
+```
+
+---
+
+### achievement_statistics
+
+**説明**: 習慣化タスク（`routine_tasks`）ごとに、週次・月次の区間単位でタスク集計・達成率などをキャッシュするテーブル。`UpdateAchievementStatisticsJob` 等で更新される。
+
+#### カラム
+
+| カラム名 | 型 | NULL | 説明 |
+|---------|---|------|------|
+| id | integer | NO | 主キー（Rails 既定） |
+| routine_task_id | integer | NO | 習慣化タスクID（外部キー、`routine_tasks` に CASCADE 削除） |
+| period_type | string(50) | NO | `weekly` または `monthly` |
+| period_start_date | date | NO | 集計区間の開始日（週は週の始まり、月は月初など） |
+| period_end_date | date | NO | 集計区間の終了日 |
+| total_count | integer | NO | 区間内タスク総数 |
+| completed_count | integer | NO | 完了数 |
+| incomplete_count | integer | NO | 未完了数 |
+| overdue_count | integer | NO | 期限超過かつ未完了の件数 |
+| achievement_rate | decimal(5,2) | NO | 達成率（0〜100） |
+| consecutive_periods_count | integer | NO | 連続達成などに用いる期間カウント |
+| average_completion_days | decimal(10,2) | NO | 完了までの平均日数 |
+| calculated_at | datetime | NO | 当該行を計算した日時 |
+| created_at | datetime | NO | 作成日時 |
+| updated_at | datetime | NO | 更新日時 |
+
+#### インデックス・制約
+
+```ruby
+add_index 'achievement_statistics',
+          %w[routine_task_id period_type period_start_date],
+          name: 'index_achievement_statistics_on_routine_period',
+          unique: true
+add_foreign_key 'achievement_statistics', 'routine_tasks', on_delete: :cascade
+```
+
+#### モデル
+
+```ruby
+class AchievementStatistic < ApplicationRecord
+  belongs_to :routine_task
+
+  PERIOD_TYPES = %w[weekly monthly].freeze
+  # バリデーション・スコープ・API 用シリアライズは app/models/achievement_statistic.rb を参照
 end
 ```
 
@@ -496,12 +557,13 @@ end
 Category (1) ──< has_many >── (N) Task
 Category (1) ──< has_many >── (N) RoutineTask
 RoutineTask (1) ──< has_many >── (N) Task
+RoutineTask (1) ──< has_many >── (N) AchievementStatistic
 Milestone (N) ──< has_many through :milestone_tasks >── (N) Task
 ```
 
 **削除時の動作**:
 - カテゴリ削除 → タスク・習慣タスクの `category_id` が NULL
-- 習慣タスク削除 → タスクの `routine_task_id` が NULL（生成済みタスクは残る）
+- 習慣タスク削除 → 紐づく `achievement_statistics` は CASCADE で削除、タスクの `routine_task_id` は NULL（生成済みタスクは残る）
 - マイルストーン削除 → 関連する `milestone_tasks` レコードが削除（タスクは残る）
 - タスク削除 → 関連する `milestone_tasks` レコードが削除（マイルストーンは残る）
 
@@ -556,6 +618,7 @@ Milestone (N) ──< has_many through :milestone_tasks >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
+| 2026-03-28 | 2.4.0 | `achievement_statistics` テーブルをテーブル一覧・ER図・リレーション・詳細節に追記。`RoutineTask` のモデル抜粋を `has_many :achievement_statistics` 等に合わせて更新。習慣タスク削除時に統計行が CASCADE される旨を削除時の動作に追記。 |
 | 2025-11-01 | 2.3.0 | milestonesテーブルにaccount_id, description, start_date, status, completed_atカラムを追加。nameを必須に変更。account_idとstatusにインデックス追加。MilestoneモデルとMilestoneTaskモデルを実装。進捗率計算メソッド、ステータス判定メソッドを追加。Taskモデルにmilestone関連のアソシエーションを追加。milestone_tasksテーブルに複合主キー(milestone_id, task_id)を設定。MilestoneTaskモデルに複合主キー対応のコメントとfind_by_idsヘルパーメソッドを追加。 |
 | 2025-11-01 | 2.2.0 | routine_tasksテーブルのカラム情報を完全化。due_date_offset_days、due_date_offset_hour、start_generation_atカラムの説明を追加。モデルコードを最新の実装に合わせて更新。 |
 | 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
