@@ -31,81 +31,102 @@
 
 ## ER図
 
-```
-┌──────────────────────┐                    ┌─────────────┐
-│   routine_tasks      │ (習慣化テンプレ)   │ categories  │
-├──────────────────────┤                    ├─────────────┤
-│ id (PK)              │                    │ id (PK)     │
-│ account_id           │                    │ account_id  │
-│ title                │                    │ name        │
-│ frequency            │                    │ created_at  │
-│ interval_value       │                    │ updated_at  │
-│ last_generated_at    │                    └─────────────┘
-│ next_generation_at   │
-│ max_active_tasks     │
-│ category_id (FK)     │                 │
-│ priority             │
-│ is_active            │
-│ created_at           │
-│ updated_at           │
-└──────────────────────┘
-         │
-    ┌────┴────┐
-    │1:N  1:N│
-    ▼         ▼
-┌──────────────────┐ ┌────────────────────────────────────┐
-│      tasks       │ │      achievement_statistics         │
-├──────────────────┤ │ (達成状況集計: weekly / monthly)    │
-│ id (PK)          │ ├────────────────────────────────────┤
-│ account_id       │ │ id (PK)                            │
-│ title            │ │ routine_task_id (FK)               │
-│ due_date         │ │ period_type                        │
-│ status           │ │ period_start_date                  │
-│ priority         │ │ period_end_date                    │
-│ category_id (FK) │ │ total_count                        │
-│ routine_task_id  │ │ completed_count                    │
-│ generated_at     │ │ incomplete_count                   │
-│ created_at       │ │ overdue_count                      │
-│ updated_at       │ │ achievement_rate                   │
-└──────────────────┘ │ consecutive_periods_count          │
-         │            │ average_completion_days            │
-         │            │ calculated_at                      │
-         │            │ created_at                         │
-         │            │ updated_at                         │
-         │            └────────────────────────────────────┘
-         │
-         │ category_id (FK)
-         └──────────────────────────────────► categories（上記と同一）
-         │
-         │ N:M
-         │
-         ▼
-┌──────────────────────┐
-│   milestone_tasks    │ (中間テーブル)
-├──────────────────────┤
-│ milestone_id (FK)    │──┐
-│ task_id (FK)         │  │
-└──────────────────────┘  │
-         │                │
-         │                │
-         ▼                │
-┌──────────────────┐      │
-│   milestones      │      │
-├──────────────────┤      │
-│ id (PK)          │◄─────┘
-│ account_id       │
-│ name             │
-│ description      │
-│ start_date       │
-│ status           │
-│ due_date         │
-│ completed_at     │
-│ created_at       │
-│ updated_at       │
-└──────────────────┘
+Mermaid（`erDiagram`）で表現する。GitHub や VS Code のプレビュー、ドキュメントサイトなどでレンダリングできる。
+
+```mermaid
+erDiagram
+  categories ||--o{ routine_tasks : "category_id"
+  categories ||--o{ tasks : "category_id"
+  routine_tasks ||--o{ tasks : "routine_task_id"
+  routine_tasks ||--o{ achievement_statistics : "routine_task_id"
+  milestones ||--o{ milestone_tasks : "milestone_id"
+  tasks ||--o{ milestone_tasks : "task_id"
+
+  categories {
+    int id PK
+    string account_id
+    string name
+    datetime created_at
+    datetime updated_at
+  }
+
+  routine_tasks {
+    int id PK
+    string account_id
+    string title
+    string frequency
+    int interval_value
+    datetime last_generated_at
+    datetime next_generation_at
+    int max_active_tasks
+    int category_id FK
+    string priority
+    boolean is_active
+    int due_date_offset_days
+    int due_date_offset_hour
+    datetime start_generation_at
+    datetime created_at
+    datetime updated_at
+  }
+
+  tasks {
+    int id PK
+    string account_id
+    string title
+    date due_date
+    string status
+    string priority
+    int category_id FK
+    int routine_task_id FK
+    datetime generated_at
+    datetime deleted_at
+    datetime created_at
+    datetime updated_at
+  }
+
+  achievement_statistics {
+    int id PK
+    int routine_task_id FK
+    string period_type
+    date period_start_date
+    date period_end_date
+    int total_count
+    int completed_count
+    int incomplete_count
+    int overdue_count
+    float achievement_rate
+    int consecutive_periods_count
+    float average_completion_days
+    datetime calculated_at
+    datetime created_at
+    datetime updated_at
+  }
+
+  milestone_tasks {
+    int milestone_id PK
+    int task_id PK
+  }
+
+  milestones {
+    int id PK
+    string name
+    string account_id
+    text description
+    date start_date
+    string status
+    date due_date
+    datetime completed_at
+    datetime created_at
+    datetime updated_at
+  }
 ```
 
-**注記**: `routine_tasks.category_id` と `tasks.category_id` は `categories.id` を参照する（外部キー）。
+**注記**:
+
+- `routine_tasks.category_id` / `tasks.category_id` → `categories.id`（削除時は参照元を NULL にする想定で `on_delete: :nullify`）。
+- `tasks.routine_task_id` → `routine_tasks.id`（削除時 `on_delete: :nullify`）。
+- `achievement_statistics.routine_task_id` → `routine_tasks.id`（削除時 `on_delete: :cascade`）。
+- `milestone_tasks` は複合主キー `(milestone_id, task_id)`。
 
 ---
 
@@ -618,7 +639,7 @@ Milestone (N) ──< has_many through :milestone_tasks >── (N) Task
 
 | 日付 | バージョン | 変更内容 |
 |------|-----------|---------|
-| 2026-03-28 | 2.4.0 | `achievement_statistics` テーブルをテーブル一覧・ER図・リレーション・詳細節に追記。`RoutineTask` のモデル抜粋を `has_many :achievement_statistics` 等に合わせて更新。習慣タスク削除時に統計行が CASCADE される旨を削除時の動作に追記。 |
+| 2026-03-28 | 2.4.0 | `achievement_statistics` テーブルをテーブル一覧・ER図・リレーション・詳細節に追記。`RoutineTask` のモデル抜粋を `has_many :achievement_statistics` 等に合わせて更新。習慣タスク削除時に統計行が CASCADE される旨を削除時の動作に追記。ER図を ASCII から Mermaid `erDiagram` に変更。 |
 | 2025-11-01 | 2.3.0 | milestonesテーブルにaccount_id, description, start_date, status, completed_atカラムを追加。nameを必須に変更。account_idとstatusにインデックス追加。MilestoneモデルとMilestoneTaskモデルを実装。進捗率計算メソッド、ステータス判定メソッドを追加。Taskモデルにmilestone関連のアソシエーションを追加。milestone_tasksテーブルに複合主キー(milestone_id, task_id)を設定。MilestoneTaskモデルに複合主キー対応のコメントとfind_by_idsヘルパーメソッドを追加。 |
 | 2025-11-01 | 2.2.0 | routine_tasksテーブルのカラム情報を完全化。due_date_offset_days、due_date_offset_hour、start_generation_atカラムの説明を追加。モデルコードを最新の実装に合わせて更新。 |
 | 2025-10-21 | 2.1.0 | routine_tasksテーブルのinterval_valueカラムをNULL許可に変更。frequencyがcustomの場合のみinterval_valueが必須、daily/weekly/monthlyの場合はNULLとする仕様に変更。 |
